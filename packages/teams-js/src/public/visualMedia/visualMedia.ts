@@ -1,3 +1,11 @@
+/**
+ * @hidden
+ * Interact with images. Allows the app developer ask the user to get images from their camera / camera roll / file system.
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
@@ -11,12 +19,6 @@ import * as image from './image';
  */
 const visualMediaTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * @hidden
- * Interact with images. Allows the app developer ask the user to get images from their camera / camera roll / file system.
- *
- * @beta
- */
 /**
  * @hidden
  * The required value of the visualMedia files from gallery

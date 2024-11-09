@@ -1,3 +1,11 @@
+/**
+ * Module to power up the in-app browser experiences in the host app.
+ * For e.g., opening a URL in the host app inside a browser
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -11,12 +19,6 @@ import { runtime } from './runtime';
  */
 const secondaryBrowserTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * Module to power up the in-app browser experiences in the host app.
- * For e.g., opening a URL in the host app inside a browser
- *
- * @beta
- */
 /**
  * Open a URL in the secondary browser.
  *

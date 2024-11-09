@@ -1,3 +1,10 @@
+/**
+ * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
+ * actions like drag and drop to compose
+ * @beta
+ * @module
+ */
+
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { createFile, decodeAttachment } from '../internal/mediaUtil';
@@ -13,11 +20,6 @@ const Files3PLogger = getLogger('thirdPartyCloudStorage');
  */
 const thirdPartyCloudStorageTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
- * actions like drag and drop to compose
- * @beta
- */
 /**
  * Interface to assemble file chunks
  * @beta
