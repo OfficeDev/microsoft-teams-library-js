@@ -20,7 +20,7 @@ export default [
       name: '@microsoft/teams-js',
       format: 'es',
       preserveModules: true,
-      entryFileNames: '[name].js',
+      entryFileNames: '[name].cjs',
       sourcemap: false,
       plugins: [terser()],
       globals: {

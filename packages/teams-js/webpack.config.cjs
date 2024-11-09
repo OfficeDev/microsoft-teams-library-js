@@ -19,7 +19,7 @@ module.exports = {
     'MicrosoftTeams.min': './src/index.ts',
   },
   output: {
-    filename: '[name].js',
+    filename: '[name].cjs',
     // the following setting is required for SRI to work
     crossOriginLoading: 'anonymous',
     path: path.resolve(__dirname, 'dist/umd'),
