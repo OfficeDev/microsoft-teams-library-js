@@ -1,3 +1,13 @@
+/**
+ * @hidden
+ * @internal
+ * @beta
+ * @module
+ * Limited to Microsoft-internal use
+ *
+ * CRUD operations for tabs associated with apps
+ */
+
 import { callFunctionInHostAndHandleResponse } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ResponseHandler, SimpleTypeResponseHandler } from '../../internal/responseHandler';
@@ -13,14 +23,6 @@ import { AppTypes, HostEntityIds, isSupported as isHostEntitySupported } from '.
  */
 const hostEntityTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * @hidden
- * @internal
- * @beta
- * Limited to Microsoft-internal use
- *
- * CRUD operations for tabs associated with apps
- */
 /**
  * Represents information about a static tab instance
  */

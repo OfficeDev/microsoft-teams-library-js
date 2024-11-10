@@ -1,16 +1,18 @@
-import * as Handlers from '../../internal/handlers'; //Cannot used named imports because of conflict with some names
-import { ensureInitialized } from '../../internal/internalAPIs';
-import { ResumeContext } from '../interfaces';
-import { runtime } from '../runtime';
 /**
- * A namespace for enabling the suspension or delayed termination of an app when the user navigates away.
+ * A module for enabling the suspension or delayed termination of an app when the user navigates away.
  * When an app registers for the registerBeforeSuspendOrTerminateHandler, it chooses to delay termination.
  * When an app registers for both registerBeforeSuspendOrTerminateHandler and registerOnResumeHandler, it chooses the suspension of the app .
  * Please note that selecting suspension doesn't guarantee prevention of background termination.
  * The outcome is influenced by factors such as available memory and the number of suspended apps.
  *
  * @beta
+ * @module
  */
+
+import * as Handlers from '../../internal/handlers'; //Cannot used named imports because of conflict with some names
+import { ensureInitialized } from '../../internal/internalAPIs';
+import { ResumeContext } from '../interfaces';
+import { runtime } from '../runtime';
 
 /**
  * Register on resume handler function type

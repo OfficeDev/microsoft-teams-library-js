@@ -1,3 +1,10 @@
+/**
+ * @hidden
+ * Module for an app to support a checkout flow by interacting with the marketplace cart in the host.
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import {
@@ -16,11 +23,6 @@ import { runtime } from './runtime';
  */
 const marketplaceTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * @hidden
- * Module for an app to support a checkout flow by interacting with the marketplace cart in the host.
- * @beta
- */
 /**
  * @hidden
  * the version of the current cart interface
