@@ -6,11 +6,11 @@
  * @beta
  * @module
  */
+import { validateAppIdInstance } from '../internal/appIdValidation';
 import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
-import { validateAppIdInstance } from '../internal/appIdValidation';
 import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
