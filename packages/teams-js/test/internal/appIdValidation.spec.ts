@@ -81,26 +81,6 @@ describe('validateStringAsAppId', () => {
   });
 });
 
-describe('validateStringAsAppId', () => {
-  test('should not throw for "valid" app ids', () => {
-    expect(() => validateStringAsAppId('8e6523aa-97f9-49ad-8614-75cae22f6597')).not.toThrow();
-    expect(() => validateStringAsAppId('com.microsoft.teamspace.tab.youtube')).not.toThrow();
-  });
-
-  test('should throw error with "script" in message for app id containing script tag', () => {
-    expect(() => validateStringAsAppId('<script>alert("Hello")</script>')).toThrowError(/script/i);
-  });
-
-  test('should throw error with "length" in message for app id too long or too short', () => {
-    expect(() => validateStringAsAppId('a')).toThrowError(/length/i);
-    expect(() => validateStringAsAppId('a'.repeat(maximumValidAppIdLength))).toThrowError(/length/i);
-  });
-
-  test('should throw error with "printable" in message for app id containing non-printable characters', () => {
-    expect(() => validateStringAsAppId('hello\u0080world')).toThrowError(/printable/i);
-  });
-});
-
 describe('validateAppIdInstance', () => {
   test('should throw error when appId is an object but not instance of AppId', () => {
     expect(() => validateAppIdInstance({ Object: 'object' } as unknown as AppId)).toThrowError(
