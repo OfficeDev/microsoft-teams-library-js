@@ -187,22 +187,37 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-          - job: E2ETestAndroid
-            displayName: 'E2E Tests - Android'
+          - job: E2ETestAndroidA
+            displayName: 'E2E Tests - Android - Plan A'
             pool:
               name: Azure Pipelines
-              image: internal-macos12
+              image: macos-15
               os: macOS
             steps:
               - template: tools/yaml-templates/android-test.yml@self
                 parameters:
                   androidAppHostingSdkGitPath: AndroidAppHostingSdk
+                  shardNum: 2
+                  shardIndex: 0
+
+          - job: E2ETestAndroidB
+            displayName: 'E2E Tests - Android - Plan B'
+            pool:
+              name: Azure Pipelines
+              image: macos-15
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/android-test.yml@self
+                parameters:
+                  androidAppHostingSdkGitPath: AndroidAppHostingSdk
+                  shardNum: 2
+                  shardIndex: 1
 
           - job: E2ETestIOS
             displayName: 'E2E Tests - IOS - Plan A'
             pool:
               name: Azure Pipelines
-              image: internal-macos12
+              image: macos-latest-internal
               os: macOS
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
@@ -214,7 +229,7 @@ extends:
             displayName: 'E2E Tests - IOS - Plan B'
             pool:
               name: Azure Pipelines
-              image: internal-macos12
+              image: macos-latest-internal
               os: macOS
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
