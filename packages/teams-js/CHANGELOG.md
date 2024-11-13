@@ -10,21 +10,12 @@ Wed, 13 Nov 2024 19:22:01 GMT
 
 ### Minor changes
 
-- Made the `appInstallDialog`, `authentication`, `barCode`, `calendar`, `call`, and `clipboard` files treeshakable
+- Made the library treeshakable
 - Made `externalAppAuthenticationForCEA.ts` throw `Error` objects instead of `SdkErrors`.
-- Made the `app`, `appInitialization`, and `settings` files treeshakable
-- Made the `copilot`, `hostEntity`, `messageChannels`, and `teams` files treeshakable
-- Made the `appEntity`, `conversations`, `copilot`, `externalAppAuthentication`, `externalAppAuthenticationForCEA`, `externalAppCardActions`, `externalAppCardActionsForCEA`, `externalAppCommands`, `files`, `logs`, `meetingRoom`, `notifications`, `otherAppStateChange`, and `remoteCamera` files treeshakable
-- Made the `meeting`, `profile`, sharing`, and `stageView` files treeshakable
 - Replaced `Buffer` with `uint8array-extras` to allow for `buffer` polyfill removal
 - Added validation for AppId instance in CEA APIs
 - Changed the `notifySuccess` function to indicate through a promise when the function finished processing in the host.
-- Made the `videoEffects`, `videoEffectsEx`, `visualMedia`, and `webStorage` files treeshakable
-- Made the `app` (now fully), `chat`, and `geoLocation` files treeshakable
-- Made the `dialog` file treeshakable
 - Added new timestamp and handler for analyzing latencies due to message delays between app and hub.
-- Made the `pages` file treeshakable
-- Made the `liveShareHosts`, `location`, `mail`, `marketplace`, media`, `menus`, `monetization`, `nestedAppAuth`, `people`, `search`, `secondaryBrowser`, `tasks`, `teamsAPIs`, and `thirdPartyCloudStorage` files treeshakable
 
 ### Patches
 
