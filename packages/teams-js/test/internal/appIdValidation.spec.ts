@@ -3,8 +3,10 @@ import {
   isStringWithinAppIdLengthLimits,
   maximumValidAppIdLength,
   minimumValidAppIdLength,
+  validateAppIdInstance,
   validateStringAsAppId,
 } from '../../src/internal/appIdValidation';
+import { AppId } from '../../src/public/appId';
 
 describe('doesStringContainNonPrintableCharacters', () => {
   test('should return true for strings with only non-printable characters', () => {
@@ -76,5 +78,25 @@ describe('validateStringAsAppId', () => {
 
   test('should throw error with "printable" in message for app id containing non-printable characters', () => {
     expect(() => validateStringAsAppId('hello\u0080world')).toThrowError(/printable/i);
+  });
+});
+
+describe('validateAppIdInstance', () => {
+  test('should throw error when appId is an object but not instance of AppId', () => {
+    expect(() => validateAppIdInstance({ Object: 'object' } as unknown as AppId)).toThrowError(
+      'Potential app id ([object Object]) is invalid; it is not an instance of AppId class.',
+    );
+  });
+
+  test('should throw error when appId is an instance of an object other than AppId', () => {
+    class NotAppId {}
+    const notAppIdInstance = new NotAppId();
+    expect(() => validateAppIdInstance(notAppIdInstance as unknown as AppId)).toThrowError(
+      'Potential app id ([object Object]) is invalid; it is not an instance of AppId class.',
+    );
+  });
+  test('should not throw error when appId is an instance of AppId', () => {
+    const appIdInstance = new AppId('app-id-that-does-not-throw');
+    expect(() => validateAppIdInstance(appIdInstance)).not.toThrow();
   });
 });
