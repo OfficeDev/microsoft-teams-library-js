@@ -1,3 +1,4 @@
+import { AppId } from '../public/appId';
 import { hasScriptTags } from './utils';
 
 /**
@@ -39,4 +40,18 @@ export function doesStringContainNonPrintableCharacters(str: string): boolean {
     const charCode = char.charCodeAt(0);
     return charCode < 32 || charCode > 126;
   });
+}
+
+/**
+ * @hidden
+ * Checks if the incoming app id is an instance of AppId
+ * @param potentialAppId An object to check if it's an instance of AppId
+ * @throws Error with a message describing the violation
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateAppIdInstance(potentialAppId: AppId): void {
+  if (!(potentialAppId instanceof AppId)) {
+    throw new Error(`Potential app id (${potentialAppId}) is invalid; it is not an instance of AppId class.`);
+  }
 }
