@@ -1,8 +1,37 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Mon, 21 Oct 2024 18:11:30 GMT and should not be manually modified.
+This log was last generated on Wed, 13 Nov 2024 19:22:01 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.31.0
+
+Wed, 13 Nov 2024 19:22:01 GMT
+
+### Minor changes
+
+- Made the `appInstallDialog`, `authentication`, `barCode`, `calendar`, `call`, and `clipboard` files treeshakable
+- Made `externalAppAuthenticationForCEA.ts` throw `Error` objects instead of `SdkErrors`.
+- Made the `app`, `appInitialization`, and `settings` files treeshakable
+- Made the `copilot`, `hostEntity`, `messageChannels`, and `teams` files treeshakable
+- Made the `appEntity`, `conversations`, `copilot`, `externalAppAuthentication`, `externalAppAuthenticationForCEA`, `externalAppCardActions`, `externalAppCardActionsForCEA`, `externalAppCommands`, `files`, `logs`, `meetingRoom`, `notifications`, `otherAppStateChange`, and `remoteCamera` files treeshakable
+- Made the `meeting`, `profile`, sharing`, and `stageView` files treeshakable
+- Replaced `Buffer` with `uint8array-extras` to allow for `buffer` polyfill removal
+- Added validation for AppId instance in CEA APIs
+- Changed the `notifySuccess` function to indicate through a promise when the function finished processing in the host.
+- Made the `videoEffects`, `videoEffectsEx`, `visualMedia`, and `webStorage` files treeshakable
+- Made the `app` (now fully), `chat`, and `geoLocation` files treeshakable
+- Made the `dialog` file treeshakable
+- Added new timestamp and handler for analyzing latencies due to message delays between app and hub.
+- Made the `pages` file treeshakable
+- Made the `liveShareHosts`, `location`, `mail`, `marketplace`, media`, `menus`, `monetization`, `nestedAppAuth`, `people`, `search`, `secondaryBrowser`, `tasks`, `teamsAPIs`, and `thirdPartyCloudStorage` files treeshakable
+
+### Patches
+
+- Add userClickTimeV2 to app `Context` to provide the timestamp when the user clicked the app using the performance timer API.
+- Increased the initialize response wait-timeout to 60 sec
+- Removed `type: module` from package.json to fix nextjs bug
+- Added validation for `IActionExecuteInvokeRequest.data` element in `ExternalAppAuthentication` and `ExternalAppAuthenticationForCEA` capabilities. The element can be of type primitive or plain object only
 
 ## 2.30.0
 
