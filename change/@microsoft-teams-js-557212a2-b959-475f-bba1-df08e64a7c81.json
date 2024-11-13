@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Increased the initialize response wait-timeout to 60 sec",
-  "packageName": "@microsoft/teams-js",
-  "email": "niharikad@microsoft.com",
-  "dependentChangeType": "patch"
-}
