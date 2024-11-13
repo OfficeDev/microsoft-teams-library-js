@@ -23,16 +23,16 @@ describe('store', () => {
   });
 
   describe('openStoreExperience', () => {
-    const paramFullStore: store.OpenStoreParams = {
-      dialogType: store.StoreDialogType.fullStore,
+    const paramFullStore: store.OpenFullStoreAndICSParams = {
+      dialogType: store.StoreDialogType.FullStore,
     };
     const paramAppDetail: store.OpenAppDetailParams = {
-      dialogType: store.StoreDialogType.appDetail,
+      dialogType: store.StoreDialogType.AppDetail,
       appId: new AppId('1542629c-01b3-4a6d-8f76-1938b779e48d'),
     };
     const argsAppDetail = ['appdetail', '1542629c-01b3-4a6d-8f76-1938b779e48d'];
     const paramAppDetailWithoutId = {
-      dialogType: store.StoreDialogType.appDetail,
+      dialogType: store.StoreDialogType.AppDetail,
     };
 
     const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -55,6 +55,7 @@ describe('store', () => {
 
         it(`should pass along entire openStoreExperience parameter in ${context} context`, async () => {
           await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
           store.openStoreExperience(paramAppDetail).then(() => {
             const openMessage = utils.findMessageByFunc('store.open');
             expect(openMessage).not.toBeNull();
@@ -64,6 +65,7 @@ describe('store', () => {
 
         it(`should throw error when trying to open app details but lack app id in ${context} context`, async () => {
           await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
           // eslint-disable-next-line strict-null-checks/all
           store.openStoreExperience(paramAppDetailWithoutId as store.OpenAppDetailParams).catch((e) => {
             expect(e).toEqual(new Error(store.errorMissingAppId));

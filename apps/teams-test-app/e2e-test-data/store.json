@@ -16,7 +16,7 @@
       "inputValue": {
         "dialogType": "fullstore"
       },
-      "expectedAlertValue": "dialog.open() called"
+      "expectedAlertValue": "openStoreExperience called"
     }
   ]
 }

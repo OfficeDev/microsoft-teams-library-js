@@ -35,12 +35,18 @@ const StoreAPIs = (): ReactElement => {
             dialogType: input.dialogType,
             appId: appId,
           };
-          store.openStoreExperience(openStoreParam as store.OpenStoreParams | store.OpenAppDetailParams);
+          store.openStoreExperience(
+            openStoreParam as
+              | store.OpenFullStoreAndICSParams
+              | store.OpenAppDetailParams
+              | store.OpenSpecificStoreParams,
+          );
           return '';
         },
       },
       defaultInput: JSON.stringify({
-        dialogType: 'ics',
+        dialogType: 'appdetail',
+        appId: '1542629c-01b3-4a6d-8f76-1938b779e48d',
       }),
     });
   return (
