@@ -6,7 +6,7 @@
  * @beta
  * @module
  */
-
+import { validateAppIdInstance } from '../internal/appIdValidation';
 import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -41,7 +41,7 @@ export async function authenticateWithSSO(
     throw errorNotSupportedOnPlatform;
   }
 
-  validateId(conversationId, new Error('conversation id is not valid.'));
+  validateInput(appId, conversationId);
 
   return callFunctionInHost(
     ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
@@ -77,7 +77,7 @@ export async function authenticateWithOauth(
     throw errorNotSupportedOnPlatform;
   }
 
-  validateId(conversationId, new Error('conversation id is not valid.'));
+  validateInput(appId, conversationId);
 
   // Ask the parent window to open an authentication window with the parameters provided by the caller.
   return callFunctionInHost(
@@ -123,7 +123,7 @@ export async function authenticateAndResendRequest(
     throw errorNotSupportedOnPlatform;
   }
 
-  validateId(conversationId, new Error('conversation id is not valid.'));
+  validateInput(appId, conversationId);
 
   externalAppAuthentication.validateActionExecuteInvokeRequest(originalRequestInfo);
 
@@ -176,7 +176,7 @@ export async function authenticateWithSSOAndResendRequest(
     throw errorNotSupportedOnPlatform;
   }
 
-  validateId(conversationId, new Error('conversation id is not valid.'));
+  validateInput(appId, conversationId);
 
   externalAppAuthentication.validateActionExecuteInvokeRequest(originalRequestInfo);
 
@@ -212,4 +212,19 @@ export async function authenticateWithSSOAndResendRequest(
  */
 export function isSupported(): boolean {
   return ensureInitialized(runtime) && runtime.supports.externalAppAuthenticationForCEA ? true : false;
+}
+
+/**
+ * @hidden
+ * Checks if the input is valid
+ * @param appId App ID of the app upon whose behalf Copilot is requesting authentication. This must be a UUID.
+ * @param conversationId ConversationId To tell the bot what conversation the calls are coming from
+
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateInput(appId: AppId, conversationId: string): void {
+  validateId(conversationId, new Error('conversation id is not valid.'));
+  validateAppIdInstance(appId);
 }
