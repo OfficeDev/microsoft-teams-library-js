@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "added explicit `.cjs` and `.mjs` file extensions to published files",
+  "packageName": "@microsoft/teams-js",
+  "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
