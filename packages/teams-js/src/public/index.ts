@@ -21,6 +21,7 @@ export {
   DeepLinkParameters,
   DialogInfo,
   DialogSize,
+  EduType,
   ErrorCode,
   FileOpenPreference,
   FrameContext,
