@@ -31,7 +31,13 @@ describe('store', () => {
       appId: new AppId('1542629c-01b3-4a6d-8f76-1938b779e48d'),
     };
     const argsAppDetail = ['appdetail', '1542629c-01b3-4a6d-8f76-1938b779e48d'];
-    const paramAppDetailWithoutId = {
+    const paramInvalidStoreType = {
+      dialogType: '123',
+    };
+    const paramStoreNoId = {
+      dialogType: store.StoreDialogType.SpecificStore,
+    };
+    const paramAppDetailNoId = {
       dialogType: store.StoreDialogType.AppDetail,
     };
 
@@ -63,11 +69,29 @@ describe('store', () => {
           });
         });
 
+        it(`should throw error when trying to open store but getting invalid store type in ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
+          // eslint-disable-next-line strict-null-checks/all
+          store.openStoreExperience(paramInvalidStoreType as store.OpenAppDetailParams).catch((e) => {
+            expect(e).toEqual(new Error(store.errorInvalidDialogType));
+          });
+        });
+
+        it(`should throw error when trying to open store with navigation to a specific collection but lack collection id in ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
+          // eslint-disable-next-line strict-null-checks/all
+          store.openStoreExperience(paramStoreNoId as store.OpenAppDetailParams).catch((e) => {
+            expect(e).toEqual(new Error(store.errorMissingCollectionId));
+          });
+        });
+
         it(`should throw error when trying to open app details but lack app id in ${context} context`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
           // eslint-disable-next-line strict-null-checks/all
-          store.openStoreExperience(paramAppDetailWithoutId as store.OpenAppDetailParams).catch((e) => {
+          store.openStoreExperience(paramAppDetailNoId as store.OpenAppDetailParams).catch((e) => {
             expect(e).toEqual(new Error(store.errorMissingAppId));
           });
         });

@@ -78,6 +78,14 @@ export interface OpenSpecificStoreParams {
 /**
  * @beta
  * @hidden
+ * error message when getting invalid store dialog type
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const errorInvalidDialogType = 'Invalid store dialog type, but type needed to specify store to open';
+/**
+ * @beta
+ * @hidden
  * error message when getting wrong app id or missing app id
  * @internal
  * Limited to Microsoft-internal use
@@ -108,6 +116,9 @@ export async function openStoreExperience(
   ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
+  }
+  if (!Object.values(StoreDialogType).includes(openStoreParams.dialogType)) {
+    throw new Error(errorInvalidDialogType);
   }
   if (openStoreParams.dialogType === StoreDialogType.AppDetail && !(openStoreParams.appId instanceof AppId)) {
     throw new Error(errorMissingAppId);

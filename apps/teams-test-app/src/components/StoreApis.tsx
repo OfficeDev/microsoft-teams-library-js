@@ -20,7 +20,7 @@ const StoreAPIs = (): ReactElement => {
     });
 
   const OpenStore = (): ReactElement =>
-    ApiWithTextInput<{ dialogType: store.StoreDialogType; appId?: string }>({
+    ApiWithTextInput<{ dialogType: string; appId?: string; collectionId?: string }>({
       name: 'storeOpen',
       title: 'Store Open',
       onClick: {
@@ -34,6 +34,7 @@ const StoreAPIs = (): ReactElement => {
           const openStoreParam = {
             dialogType: input.dialogType,
             appId: appId,
+            collectionId: input.collectionId,
           };
           store.openStoreExperience(
             openStoreParam as
