@@ -704,10 +704,12 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
   ) {
     Communication.parentWindow = messageSource;
     Communication.parentOrigin = messageOrigin;
+    if (Communication.parentWindow === Communication.topWindow) {
+      Communication.topOrigin = messageOrigin;
+    }
   } else if (
-    !Communication.childWindow ||
-    Communication.childWindow.closed ||
-    messageSource === Communication.childWindow
+    messageSource != Communication.topWindow &&
+    (!Communication.childWindow || Communication.childWindow.closed || messageSource === Communication.childWindow)
   ) {
     Communication.childWindow = messageSource;
     Communication.childOrigin = messageOrigin;
@@ -804,6 +806,11 @@ function removeMessageHandlers(message: MessageResponse, map: Map<MessageUUID, F
 function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
   const logger = handleIncomingMessageFromParentLogger;
   const timeWhenMessageArrived = getCurrentTimestamp();
+
+  if (evt.data.func == 'topOriginInfo') {
+    Communication.topOrigin = evt.data.args[0];
+    return;
+  }
 
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
@@ -925,6 +932,10 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
+
+            if (message.func == 'initialize') {
+              sendMessageEventToChild('topOriginInfo', [Communication.topOrigin]);
+            }
           }
         },
       );
