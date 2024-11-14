@@ -57,13 +57,13 @@
       "expectedTestAppValue": "[{\"id\":\"testId\",\"title\":\"testTitle\",\"folderId\":\"testFolderId\",\"providerType\":2,\"providerCode\":\"GOOGLEDRIVE\",\"ownerDisplayName\":\"testOwnerDisplayName\"}]"
     },
     {
-      "title": "getCloudStorageFolders API Call - Failure (Not Full Trust)",
+      "title": "getCloudStorageFolders API Call - Failure (Not microsoft owned)",
       "type": "callResponse",
       "platformsExcluded": ["iOS"],
       "version": ">2.0.0-beta.5",
       "boxSelector": "#box_getCloudStorageFolders2",
       "inputValue": "testChannelId",
-      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false}"]],
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false, \"isMicrosoftOwned\": false}"]],
       "expectedTestAppValue": "{\"errorCode\":500,\"message\":\"App does not have the required permissions for this operation\"}"
     },
     {
