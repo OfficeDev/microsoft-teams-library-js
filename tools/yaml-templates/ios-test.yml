@@ -14,11 +14,13 @@ steps:
 
   - task: Bash@3
     displayName: 'Install XCTestHtmlReport for publishing result'
+    id: installXCTestHtmlReport
     inputs:
       targetType: inline
       script: |
         brew install xctesthtmlreport
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+      continue-on-error: true
       condition: always()
 
   - task: NodeTool@0
