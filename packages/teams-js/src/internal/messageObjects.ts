@@ -1,3 +1,4 @@
+import { TeamsJSConsumptionSource } from './constants';
 import { UUID as MessageUUID } from './uuidObject';
 
 /**
@@ -22,6 +23,7 @@ export interface MessageRequest {
   args?: any[];
   apiVersionTag?: string;
   isPartialResponse?: boolean;
+  teamsJSConsumptionSource: TeamsJSConsumptionSource;
 }
 
 /**

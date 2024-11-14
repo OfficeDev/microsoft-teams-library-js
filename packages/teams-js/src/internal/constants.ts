@@ -177,3 +177,18 @@ export const errorRuntimeNotSupported = 'The runtime version is not supported';
 
 /** @hidden */
 export const errorCallNotStarted = 'The call was not properly started';
+
+export enum TeamsJSConsumptionSource {
+  NPM = 'NPM',
+  CDN = 'CDN',
+  unknown = 'unkown',
+}
+
+// This assignment is replaced by the release pipeline
+declare const CONSUMPTION_SOURCE = TeamsJSConsumptionSource.unknown;
+
+/**
+ * @hidden
+ *  Package consumption source.
+ */
+export const consumptionSource = CONSUMPTION_SOURCE;

@@ -8,6 +8,7 @@ import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { ISerializable, isSerializable } from '../public/serializable.interface';
 import { version } from '../public/version';
+import { consumptionSource } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import HostToAppMessageDelayTelemetry from './hostToAppTelemetry';
@@ -1101,6 +1102,7 @@ function createMessageRequest(
     monotonicTimestamp: getCurrentTimestamp(),
     args: args || [],
     apiVersionTag: apiVersionTag,
+    teamsJSConsumptionSource: consumptionSource,
   };
 }
 
