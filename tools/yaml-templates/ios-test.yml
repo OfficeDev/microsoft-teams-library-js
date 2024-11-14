@@ -19,8 +19,10 @@ steps:
       targetType: inline
       script: |
         brew install xctesthtmlreport
+
+        echo "##vso[task.setvariable variable=xctestHtmlReportInstalled]Yes"
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-      continue-on-error: true
+      continueOnError: true
       condition: always()
 
   - task: NodeTool@0
@@ -154,7 +156,7 @@ steps:
       cd "${output}"
       zip -r "$(agent.JobName)_DebugLogs.zip" .
     displayName: Preparations for publishing results
-    condition: eq(variables['task.iOS_E2E_Test_Task.status'], 'failed')
+    condition: eq(variables['xctestHtmlReportInstalled'], 'Yes')
 
   - task: 1ES.PublishPipelineArtifact@1
     inputs:
