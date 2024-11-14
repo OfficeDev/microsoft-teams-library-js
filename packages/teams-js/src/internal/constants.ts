@@ -185,7 +185,7 @@ export enum TeamsJSConsumptionSource {
 }
 
 // This assignment is replaced by the release pipeline
-declare const CONSUMPTION_SOURCE = TeamsJSConsumptionSource.unknown;
+const CONSUMPTION_SOURCE = TeamsJSConsumptionSource.unknown;
 
 /**
  * @hidden

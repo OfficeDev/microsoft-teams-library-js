@@ -23,7 +23,7 @@ export interface MessageRequest {
   args?: any[];
   apiVersionTag?: string;
   isPartialResponse?: boolean;
-  teamsJSConsumptionSource: TeamsJSConsumptionSource;
+  teamsJSConsumptionSource?: TeamsJSConsumptionSource;
 }
 
 /**
