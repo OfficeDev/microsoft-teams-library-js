@@ -36,13 +36,18 @@ const StoreAPIs = (): ReactElement => {
             appId: appId,
             collectionId: input.collectionId,
           };
-          store.openStoreExperience(
-            openStoreParam as
-              | store.OpenFullStoreAndICSParams
-              | store.OpenAppDetailParams
-              | store.OpenSpecificStoreParams,
-          );
-          return '';
+          // eslint-disable-next-line no-useless-catch
+          try {
+            await store.openStoreExperience(
+              openStoreParam as
+                | store.OpenFullStoreAndICSParams
+                | store.OpenAppDetailParams
+                | store.OpenSpecificStoreParams,
+            );
+            return 'store opened';
+          } catch (e) {
+            throw e;
+          }
         },
       },
       defaultInput: JSON.stringify({
