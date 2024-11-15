@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added optional `FeatureSet` field to `AppEligibilityInformation` interface",
+  "packageName": "@microsoft/teams-js",
+  "email": "email not defined",
+  "dependentChangeType": "patch"
+}
