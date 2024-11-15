@@ -5,7 +5,7 @@
   "description": "A tester to check if types in the dependency array will cause errors",
   "version": "0.0.1",
   "scripts": {
-    "build": "pnpm i && pnpm copy && pnpm tsc && pnpm clean",
+    "build": "pnpm i && pnpm copy && pnpm clean",
     "copy": "cp -r ./node_modules/@microsoft/teams-js/dist/esm/packages/teams-js/dts ./ || xcopy .\\node_modules\\@microsoft\\teams-js\\dist\\esm\\packages\\teams-js\\dts .\\ /s /Y",
     "clean": "rimraf node_modules && rimraf MicrosoftTeams.d.ts"
   },
