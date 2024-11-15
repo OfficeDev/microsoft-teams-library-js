@@ -1148,6 +1148,26 @@ export interface AppEligibilityInformation {
    * Education Eligibility Information for the app user
    */
   userClassification: UserClassification | null;
+  /**
+   * Feature Sets
+   */
+  featureSet?: FeatureSet | null;
+}
+
+/**
+ * @hidden
+ * @beta
+ * Represents the feature set available to the user.
+ */
+export interface FeatureSet {
+  /**
+   * UX Feature set
+   */
+  uxFeatures: string[];
+  /**
+   * Server Feature set
+   */
+  serverFeatures: string[];
 }
 
 /**
