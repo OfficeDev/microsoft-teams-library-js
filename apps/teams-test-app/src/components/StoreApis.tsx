@@ -38,12 +38,7 @@ const StoreAPIs = (): ReactElement => {
           };
           // eslint-disable-next-line no-useless-catch
           try {
-            await store.openStoreExperience(
-              openStoreParam as
-                | store.OpenFullStoreAndICSParams
-                | store.OpenAppDetailParams
-                | store.OpenSpecificStoreParams,
-            );
+            await store.openStoreExperience(openStoreParam as store.OpenStoreParams);
             return 'store opened';
           } catch (e) {
             throw e;

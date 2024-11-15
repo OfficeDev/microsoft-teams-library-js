@@ -78,6 +78,16 @@ export interface OpenSpecificStoreParams {
 /**
  * @beta
  * @hidden
+ * Interface of open store function parameters, including OpenFullStoreAndICSParams, OpenAppDetailParams, OpenSpecificStoreParams
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export type OpenStoreParams = OpenFullStoreAndICSParams | OpenAppDetailParams | OpenSpecificStoreParams;
+
+/**
+ * @beta
+ * @hidden
  * error message when getting invalid store dialog type
  * @internal
  * Limited to Microsoft-internal use
@@ -110,9 +120,7 @@ export const errorMissingCollectionId =
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function openStoreExperience(
-  openStoreParams: OpenFullStoreAndICSParams | OpenAppDetailParams | OpenSpecificStoreParams,
-): Promise<void> {
+export async function openStoreExperience(openStoreParams: OpenStoreParams): Promise<void> {
   ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -126,13 +134,15 @@ export async function openStoreExperience(
   if (openStoreParams.dialogType === StoreDialogType.SpecificStore && !openStoreParams.collectionId) {
     throw new Error(errorMissingCollectionId);
   }
+  const openStoreParamsJson = JSON.stringify(openStoreParams, (_key, value) => {
+    if (value instanceof AppId) {
+      return value.toString();
+    }
+    return value;
+  });
   return callFunctionInHost(
     ApiName.Store_Open,
-    [
-      openStoreParams.dialogType,
-      (openStoreParams as OpenAppDetailParams).appId,
-      (openStoreParams as OpenSpecificStoreParams).collectionId,
-    ],
+    [openStoreParamsJson],
     getApiVersionTag(StoreVersionTagNum, ApiName.Store_Open),
   );
 }
