@@ -125,15 +125,15 @@ export function unregisterAppInstallationHandler(): void {
  * @throws Error if {@link app.initialize} has not successfully completed or if the platform
  * does not support the otherAppStateChange capability.
  */
-export function notifyAppInstall(appId: AppId): Promise<void> {
+export function notifyInstallCompleted(appId: AppId): Promise<void> {
   if (!isSupported()) {
     throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
   }
 
   return callFunctionInHost(
-    ApiName.OtherAppStateChange_NotifyAppInstall,
+    ApiName.OtherAppStateChange_NotifyInstallCompleted,
     [appId.toString()],
-    getApiVersionTag(otherAppStateChangeTelemetryVersionNumber, ApiName.OtherAppStateChange_NotifyAppInstall),
+    getApiVersionTag(otherAppStateChangeTelemetryVersionNumber, ApiName.OtherAppStateChange_NotifyInstallCompleted),
   );
 }
 

@@ -44,7 +44,7 @@ const NotifyAppInstallHandler = (): React.ReactElement =>
     name: 'otherAppStateChange_notifyAppInstall',
     title: 'Notify App Install',
     onClick: async () => {
-      otherAppStateChange.notifyAppInstall(new AppId('12345'));
+      otherAppStateChange.notifyInstallCompleted(new AppId('12345'));
       return 'notified';
     },
   });

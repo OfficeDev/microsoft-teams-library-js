@@ -170,11 +170,11 @@ describe('otherAppStateChange', () => {
         utils.sendMessage(ApiName.OtherAppStateChange_Install, { appIds: ['123', '456'] });
       });
     });
-    describe('notifyAppInstall', () => {
+    describe('notifyInstallCompleted', () => {
       const mockAppId = new AppId('1542629c-01b3-4a6d-8f76-1938b779e48d');
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
-        expect(() => otherAppStateChange.notifyAppInstall(mockAppId)).toThrowError();
+        expect(() => otherAppStateChange.notifyInstallCompleted(mockAppId)).toThrowError();
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -183,7 +183,7 @@ describe('otherAppStateChange', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-          expect(() => otherAppStateChange.notifyAppInstall(mockAppId)).toThrowError(
+          expect(() => otherAppStateChange.notifyInstallCompleted(mockAppId)).toThrowError(
             ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString(),
           );
         });
@@ -192,7 +192,7 @@ describe('otherAppStateChange', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
 
-          expect(() => otherAppStateChange.notifyAppInstall(mockAppId)).not.toThrowError();
+          expect(() => otherAppStateChange.notifyInstallCompleted(mockAppId)).not.toThrowError();
         });
       });
 
@@ -201,8 +201,8 @@ describe('otherAppStateChange', () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
 
-        otherAppStateChange.notifyAppInstall(mockAppId);
-        const message = utils.findMessageByFunc(ApiName.OtherAppStateChange_NotifyAppInstall);
+        otherAppStateChange.notifyInstallCompleted(mockAppId);
+        const message = utils.findMessageByFunc(ApiName.OtherAppStateChange_NotifyInstallCompleted);
         expect(message?.args).not.toBeUndefined();
         expect(message?.args?.length).toBe(1);
         console.log('hangyin message?.args', message?.args);

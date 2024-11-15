@@ -35,7 +35,7 @@
       "expectedTestAppValue": "received"
     },
     {
-      "title": "notifyAppInstall - Success",
+      "title": "notifyInstallCompleted - Success",
       "type": "callResponse",
       "boxSelector": "#box_otherAppStateChange_notifyAppInstall",
       "expectedTestAppValue": "notified"
