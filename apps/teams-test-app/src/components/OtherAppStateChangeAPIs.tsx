@@ -39,9 +39,9 @@ const UnregisterAppInstallHandler = (): React.ReactElement =>
     },
   });
 
-const NotifyAppInstallHandler = (): React.ReactElement =>
+const NotifyInstallCompletedHandler = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'otherAppStateChange_notifyAppInstall',
+    name: 'otherAppStateChange_notifyInstallCompleted',
     title: 'Notify App Install',
     onClick: async () => {
       otherAppStateChange.notifyInstallCompleted(new AppId('12345'));
@@ -55,7 +55,7 @@ const OtherAppStateChangedAPIs = (): ReactElement => (
       <CheckOtherAppStateChangeCapability />
       <RegisterAppInstallHandler />
       <UnregisterAppInstallHandler />
-      <NotifyAppInstallHandler />
+      <NotifyInstallCompletedHandler />
     </ModuleWrapper>
   </>
 );
