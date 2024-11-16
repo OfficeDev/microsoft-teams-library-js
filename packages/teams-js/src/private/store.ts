@@ -17,69 +17,79 @@ const StoreVersionTagNum = ApiVersionNumber.V_2;
  * @beta
  * @hidden
  * Enum of store dialog type
- *
- * @enum FullStore - open a store without navigation
- * @enum SpecificStore - open a store with navigation to a specific collection
- * @enum InContextStore - open in-context-store
- * @enum AppDetail - open detail dialog (DD)
- *
  * @internal
  * Limited to Microsoft-internal use
  */
 export enum StoreDialogType {
+  /**
+   * open a store without navigation
+   */
   FullStore = 'fullstore',
+  /**
+   * open a store with navigation to a specific collection
+   */
   SpecificStore = 'specificstore',
+  /**
+   * open in-context-store
+   */
   InContextStore = 'ics',
+  /**
+   * open detail dialog (DD)
+   */
   AppDetail = 'appdetail',
 }
+
 /**
  * @beta
  * @hidden
  * Interface of open full store, copilot store and in-context-store function parameter
- *
- * @param dialogType - the store dialog type, defined by {@link StoreDialogType}
- *
  * @internal
  * Limited to Microsoft-internal use
  */
 export interface OpenFullStoreAndICSParams {
+  /**
+   * the store dialog type, defined by {@link StoreDialogType}
+   */
   dialogType: StoreDialogType.FullStore | StoreDialogType.InContextStore;
 }
 /**
  * @beta
  * @hidden
  * Interface of open app detail dialog function parameter, make sure app id is appended
- *
- * @param dialogType - need to be app detail type, defined by {@link StoreDialogType}
- * @param appId - app id of the dialog to open
- *
  * @internal
  * Limited to Microsoft-internal use
  */
 export interface OpenAppDetailParams {
+  /**
+   * need to be app detail type, defined by {@link StoreDialogType}
+   */
   dialogType: StoreDialogType.AppDetail;
+  /**
+   * app id of the dialog to open
+   */
   appId: AppId;
 }
 /**
  * @beta
  * @hidden
  * Interface of open store specific to a collection function parameter, make sure collection id is appended
- *
- * @param dialogType - need to be specific store type, defined by {@link StoreDialogType}
- * @param collectionId - collection id of the plugin store to open
- *
  * @internal
  * Limited to Microsoft-internal use
  */
 export interface OpenSpecificStoreParams {
+  /**
+   * need to be specific store type, defined by {@link StoreDialogType}
+   */
   dialogType: StoreDialogType.SpecificStore;
+  /**
+   * collection id of the plugin store to open
+   */
   collectionId: string;
 }
 /**
  * @beta
  * @hidden
  * Interface of open store function parameters, including OpenFullStoreAndICSParams, OpenAppDetailParams, OpenSpecificStoreParams
- *
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -125,7 +135,7 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  if (!Object.values(StoreDialogType).includes(openStoreParams.dialogType)) {
+  if (openStoreParams === undefined || !Object.values(StoreDialogType).includes(openStoreParams.dialogType)) {
     throw new Error(errorInvalidDialogType);
   }
   if (openStoreParams.dialogType === StoreDialogType.AppDetail && !(openStoreParams.appId instanceof AppId)) {
@@ -134,15 +144,13 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
   if (openStoreParams.dialogType === StoreDialogType.SpecificStore && !openStoreParams.collectionId) {
     throw new Error(errorMissingCollectionId);
   }
-  const openStoreParamsJson = JSON.stringify(openStoreParams, (_key, value) => {
-    if (value instanceof AppId) {
-      return value.toString();
-    }
-    return value;
-  });
   return callFunctionInHost(
     ApiName.Store_Open,
-    [openStoreParamsJson],
+    [
+      openStoreParams.dialogType,
+      (openStoreParams as OpenAppDetailParams).appId,
+      (openStoreParams as OpenSpecificStoreParams).collectionId,
+    ],
     getApiVersionTag(StoreVersionTagNum, ApiName.Store_Open),
   );
 }
