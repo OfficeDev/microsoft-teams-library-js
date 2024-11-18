@@ -40,6 +40,31 @@ export enum PresenceStatus {
    * User is offline and cannot be contacted
    */
   Offline = 'Offline',
+
+  /**
+   * User is out of office
+   */
+  OutOfOffice = 'OutOfOffice',
+}
+
+/**
+ * Out of office details for a user
+ */
+export interface OutOfOfficeDetails {
+  /**
+   * Start time of OOF period (ISO string)
+   */
+  startTime: string;
+
+  /**
+   * End time of OOF period (ISO string)
+   */
+  endTime: string;
+
+  /**
+   * OOF message to display
+   */
+  message: string;
 }
 
 /**
@@ -55,6 +80,12 @@ export interface UserPresence {
    * Optional custom status message
    */
   customMessage?: string;
+
+  /**
+   * Optional out of office details
+   * Only present when status is OutOfOffice
+   */
+  outOfOfficeDetails?: OutOfOfficeDetails;
 }
 
 /**
@@ -80,6 +111,12 @@ export interface SetPresenceParams {
    * Optional custom status message
    */
   customMessage?: string;
+
+  /**
+   * Optional out of office details
+   * Only valid when status is OutOfOffice
+   */
+  outOfOfficeDetails?: OutOfOfficeDetails;
 }
 
 /**
@@ -87,7 +124,31 @@ export interface SetPresenceParams {
  */
 class UserPresenceResponseHandler extends ResponseHandler<UserPresence, UserPresence> {
   public validate(response: UserPresence): boolean {
-    return response !== undefined && Object.values(PresenceStatus).includes(response.status);
+    if (response === undefined || !Object.values(PresenceStatus).includes(response.status)) {
+      return false;
+    }
+
+    // Validate OOF details if present
+    if (response.outOfOfficeDetails) {
+      if (response.status !== PresenceStatus.OutOfOffice) {
+        return false; // OOF details only valid with OOF status
+      }
+
+      const { startTime, endTime, message } = response.outOfOfficeDetails;
+      if (!startTime || !endTime || !message || typeof message !== 'string') {
+        return false;
+      }
+
+      // Validate date strings
+      try {
+        new Date(startTime).toISOString();
+        new Date(endTime).toISOString();
+      } catch {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   public deserialize(response: UserPresence): UserPresence {
@@ -167,6 +228,7 @@ export function getPresence(params: GetPresenceParams): Promise<UserPresence> {
  * - The library has not been initialized
  * - The status parameter is invalid
  * - The custom message parameter is invalid
+ * - The out of office details are invalid
  */
 export function setPresence(params: SetPresenceParams): Promise<void> {
   ensureInitialized(runtime, FrameContexts.content);
@@ -177,6 +239,7 @@ export function setPresence(params: SetPresenceParams): Promise<void> {
 
   validateStatus(params.status);
   validateCustomMessage(params.customMessage);
+  validateOutOfOfficeDetails(params.status, params.outOfOfficeDetails);
 
   return callFunctionInHostAndHandleResponse(
     'presence.setPresence',
@@ -233,5 +296,55 @@ function validateStatus(status: PresenceStatus): void {
 function validateCustomMessage(customMessage: unknown): void {
   if (customMessage !== undefined && typeof customMessage !== 'string') {
     throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: Custom message must be a string`);
+  }
+}
+
+/**
+ * Validates out of office details if provided
+ * @param status Current presence status
+ * @param details Out of office details to validate
+ * @throws Error if details are invalid
+ */
+function validateOutOfOfficeDetails(status: PresenceStatus, details?: OutOfOfficeDetails): void {
+  if (!details) {
+    if (status === PresenceStatus.OutOfOffice) {
+      throw new Error(
+        `Error code: ${ErrorCode.INVALID_ARGUMENTS}, ` +
+          'message: Out of office details required when status is OutOfOffice',
+      );
+    }
+    return;
+  }
+
+  if (status !== PresenceStatus.OutOfOffice) {
+    throw new Error(
+      `Error code: ${ErrorCode.INVALID_ARGUMENTS}, ` +
+        'message: Out of office details only valid when status is OutOfOffice',
+    );
+  }
+
+  const { startTime, endTime, message } = details;
+
+  if (!startTime || !endTime || !message) {
+    throw new Error(
+      `Error code: ${ErrorCode.INVALID_ARGUMENTS}, ` +
+        'message: Out of office details must include startTime, endTime, and message',
+    );
+  }
+
+  if (typeof message !== 'string') {
+    throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: Out of office message must be a string`);
+  }
+
+  try {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    if (end <= start) {
+      throw new Error(
+        `Error code: ${ErrorCode.INVALID_ARGUMENTS}, ` + 'message: Out of office end time must be after start time',
+      );
+    }
+  } catch {
+    throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: Invalid date format for out of office times`);
   }
 }
