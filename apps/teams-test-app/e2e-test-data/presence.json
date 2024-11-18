@@ -1,14 +1,9 @@
 {
   "name": "Presence",
-  "version": ">2.0.0-beta.0",
-  "platforms": "*",
-  "checkIsSupported": {
-    "version": ">2.0.0-beta.3"
-  },
   "featureTests": [
     {
       "feature": {
-        "id": "getPresence",
+        "id": "presence",
         "version": 1
       },
       "testCases": [
@@ -30,15 +25,7 @@
             "upn": ""
           },
           "expectedTestAppValue": "Error: Error: UPN is required"
-        }
-      ]
-    },
-    {
-      "feature": {
-        "id": "setPresence",
-        "version": 1
-      },
-      "testCases": [
+        },
         {
           "title": "setPresence API Call - Success",
           "type": "callResponse",
