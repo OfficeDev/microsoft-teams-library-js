@@ -55,6 +55,25 @@
             "status": "InvalidStatus"
           },
           "expectedTestAppValue": "Error: Error: Invalid status value"
+        },
+        {
+          "title": "setPresence API Call - Invalid Custom Message Type",
+          "type": "callResponse",
+          "boxSelector": "#box_setPresence",
+          "inputValue": {
+            "status": "Available",
+            "customMessage": 123
+          },
+          "expectedTestAppValue": "Error: Error: Error code: 4000, message: Custom message must be a string"
+        },
+        {
+          "title": "getPresence API Call - Whitespace UPN",
+          "type": "callResponse",
+          "boxSelector": "#box_getPresence",
+          "inputValue": {
+            "upn": "   "
+          },
+          "expectedTestAppValue": "Error: Error: Error code: 4000, message: UPN cannot be null or empty"
         }
       ]
     }

@@ -166,6 +166,7 @@ export function getPresence(params: GetPresenceParams): Promise<UserPresence> {
  * - The presence capability is not supported
  * - The library has not been initialized
  * - The status parameter is invalid
+ * - The custom message parameter is invalid
  */
 export function setPresence(params: SetPresenceParams): Promise<void> {
   ensureInitialized(runtime, FrameContexts.content);
@@ -175,6 +176,7 @@ export function setPresence(params: SetPresenceParams): Promise<void> {
   }
 
   validateStatus(params.status);
+  validateCustomMessage(params.customMessage);
 
   return callFunctionInHostAndHandleResponse(
     'presence.setPresence',
@@ -207,7 +209,7 @@ export function isSupported(): boolean {
  * @throws Error if UPN is invalid
  */
 function validateUpn(upn: string): void {
-  if (!upn || upn.length === 0) {
+  if (!upn || upn.trim().length === 0) {
     throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: UPN cannot be null or empty`);
   }
 }
@@ -220,5 +222,16 @@ function validateUpn(upn: string): void {
 function validateStatus(status: PresenceStatus): void {
   if (!Object.values(PresenceStatus).includes(status)) {
     throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: Invalid presence status`);
+  }
+}
+
+/**
+ * Validates that the custom message parameter is a string if provided
+ * @param customMessage The custom message to validate
+ * @throws Error if custom message is provided but not a string
+ */
+function validateCustomMessage(customMessage: unknown): void {
+  if (customMessage !== undefined && typeof customMessage !== 'string') {
+    throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: Custom message must be a string`);
   }
 }
