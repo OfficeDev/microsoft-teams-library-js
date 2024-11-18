@@ -4,7 +4,7 @@
     {
       "feature": {
         "id": "presence",
-        "version": 1
+        "version": 2
       },
       "testCases": [
         {
@@ -74,6 +74,40 @@
             "upn": "   "
           },
           "expectedTestAppValue": "Error: Error: Error code: 4000, message: UPN cannot be null or empty"
+        },
+        {
+          "title": "setPresence API Call - Set Out of Office",
+          "type": "callResponse",
+          "boxSelector": "#box_setPresence",
+          "inputValue": {
+            "status": "OutOfOffice",
+            "customMessage": "On vacation",
+            "outOfOfficeDetails": {
+              "startTime": "2024-03-20T00:00:00Z",
+              "endTime": "2024-03-27T00:00:00Z",
+              "message": "Annual leave - back next week"
+            }
+          },
+          "expectedAlertValue": "setPresence called with status: OutOfOffice and message: On vacation\nOOF from 3/20/2024 to 3/27/2024",
+          "expectedTestAppValue": "Presence set successfully"
+        },
+        {
+          "title": "getPresence API Call - Get OOF User",
+          "type": "callResponse",
+          "boxSelector": "#box_getPresence",
+          "inputValue": {
+            "upn": "oof.user@contoso.com"
+          },
+          "expectedAlertValue": "getPresence called for user: oof.user@contoso.com",
+          "expectedTestAppValue": {
+            "status": "OutOfOffice",
+            "customMessage": "Mock presence status",
+            "outOfOfficeDetails": {
+              "startTime": "__ANY_STRING__",
+              "endTime": "__ANY_STRING__",
+              "message": "On vacation until next week"
+            }
+          }
         }
       ]
     }
