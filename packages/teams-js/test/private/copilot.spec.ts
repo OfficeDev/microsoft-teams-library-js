@@ -339,7 +339,29 @@ describe('copilot', () => {
         await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
       });
 
-      it('getEligibilityInfo should throw if AppEligibilityInformation.featureSet.serverFeatures or uxFeatures is undefined', async () => {
+      it('getEligibilityInfo should throw if AppEligibilityInformation.featureSet.serverFeatures is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformationWithInvalidUxFeatures = {
+          ...mockedAppEligibilityInformation,
+          featureSet: {
+            serverFeatures: undefined,
+            uxFeatures: [],
+          },
+        };
+
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformationWithInvalidUxFeatures);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.featureSet.uxFeatures is undefined', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig(copilotRuntimeConfig);
 

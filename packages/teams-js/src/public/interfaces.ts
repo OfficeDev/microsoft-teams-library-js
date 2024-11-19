@@ -1133,6 +1133,10 @@ export interface AppEligibilityInformation {
    */
   cohort: Cohort | null;
   /**
+   * Feature Sets
+   */
+  featureSet?: FeatureSet;
+  /**
    * Indicates that the user is eligible for Microsoft Entra ID Authenticated Copilot experience.
    */
   isCopilotEligible: boolean;
@@ -1148,10 +1152,6 @@ export interface AppEligibilityInformation {
    * Education Eligibility Information for the app user
    */
   userClassification: UserClassification | null;
-  /**
-   * Feature Sets
-   */
-  featureSet?: FeatureSet;
 }
 
 /**
@@ -1161,13 +1161,13 @@ export interface AppEligibilityInformation {
  */
 export interface FeatureSet {
   /**
-   * UX Feature set
-   */
-  uxFeatures: string[];
-  /**
    * Server Feature set
    */
   serverFeatures: string[];
+  /**
+   * UX Feature set
+   */
+  uxFeatures: string[];
 }
 
 /**
