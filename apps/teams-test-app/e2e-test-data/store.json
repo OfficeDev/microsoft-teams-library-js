@@ -111,7 +111,7 @@
       "inputValue": {
         "dialogType": "fullstore"
       },
-      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false}"]],
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false, \"isMicrosoftOwned\": false}"]],
       "expectedTestAppValue": "Error: Error: 500, message: App does not have the required permissions for this operation"
     }
   ]
