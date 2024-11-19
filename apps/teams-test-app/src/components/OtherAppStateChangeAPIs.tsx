@@ -42,7 +42,7 @@ const UnregisterAppInstallHandler = (): React.ReactElement =>
 const NotifyInstallCompletedHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'otherAppStateChange_notifyInstallCompleted',
-    title: 'Notify App Install',
+    title: 'Notify Install Completed',
     onClick: async () => {
       otherAppStateChange.notifyInstallCompleted(new AppId('12345'));
       return 'notified';
