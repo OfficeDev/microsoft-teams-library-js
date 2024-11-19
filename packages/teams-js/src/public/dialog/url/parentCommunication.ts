@@ -4,7 +4,6 @@
  * @remarks
  * Note that dialog can be invoked from parentless scenarios e.g. Search Message Extensions. The subcapability `parentCommunication` is not supported in such scenarios.
  *
- * @beta
  * @module
  */
 
@@ -24,8 +23,6 @@ import { PostMessageChannel } from '../dialog';
  * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
  *
  * @param message - The message to send to the parent
- *
- * @beta
  */
 export function sendMessageToParentFromDialog(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,8 +47,6 @@ export function sendMessageToParentFromDialog(
  *  Send message to the dialog from the parent
  *
  * @param message - The message to send
- *
- * @beta
  */
 export function sendMessageToDialog(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,8 +71,6 @@ export function sendMessageToDialog(
  * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
  *
  * @param listener - The listener that will be triggered.
- *
- * @beta
  */
 export function registerOnMessageFromParent(listener: PostMessageChannel): void {
   ensureInitialized(runtime, FrameContexts.task);
@@ -110,8 +103,6 @@ export function registerOnMessageFromParent(listener: PostMessageChannel): void 
  * @returns boolean to represent whether dialog.url.parentCommunication capability is supported
  *
  * @throws Error if {@linkcode app.initialize} has not successfully completed
- *
- * @beta
  */
 export function isSupported(): boolean {
   return ensureInitialized(runtime) && !!runtime.supports.dialog?.url?.parentCommunication;

@@ -1,5 +1,15 @@
 {
-  "cSpell.words": ["adal", "frameless", "ipados", "teamsjs", "teamspace", "uninitialize", "xvfb"],
+  "cSpell.words": [
+    "adal",
+    "frameless",
+    "ipados",
+    "parentless",
+    "Subcapability",
+    "teamsjs",
+    "teamspace",
+    "uninitialize",
+    "xvfb"
+  ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "eslint.workingDirectories": [
     "./apps/ssr-test-app/",
