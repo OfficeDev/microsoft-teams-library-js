@@ -10,10 +10,10 @@ Wed, 13 Nov 2024 19:22:01 GMT
 
 ### Minor changes
 
-- Made the library treeshakable
+- Made the library treeshakable.
 - Made `externalAppAuthenticationForCEA.ts` throw `Error` objects instead of `SdkErrors`.
-- Replaced `Buffer` with `uint8array-extras` to allow for `buffer` polyfill removal
-- Added validation for AppId instance in CEA APIs
+- Replaced `Buffer` with `uint8array-extras` to allow for `buffer` polyfill removal.
+- Added validation for AppId instance in CEA APIs.
 - Changed the `notifySuccess` function to indicate through a promise when the function finished processing in the host.
 - Added new timestamp and handler for analyzing latencies due to message delays between app and hub.
 
