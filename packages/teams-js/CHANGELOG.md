@@ -1,8 +1,17 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 13 Nov 2024 19:22:01 GMT and should not be manually modified.
+This log was last generated on Tue, 19 Nov 2024 21:40:10 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.31.1
+
+Tue, 19 Nov 2024 21:40:10 GMT
+
+### Patches
+
+- Fixed a bug causing `buffer` polyfill to stil be included
+- Fixed bugs regarding `EduType`not being exported, and enum typings
 
 ## 2.31.0
 
