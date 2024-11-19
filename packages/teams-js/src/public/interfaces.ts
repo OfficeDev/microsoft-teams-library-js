@@ -1151,7 +1151,7 @@ export interface AppEligibilityInformation {
   /**
    * Feature Sets
    */
-  featureSet?: FeatureSet | null;
+  featureSet?: FeatureSet;
 }
 
 /**
