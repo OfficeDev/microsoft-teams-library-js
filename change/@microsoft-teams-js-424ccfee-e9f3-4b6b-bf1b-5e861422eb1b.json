@@ -1,6 +1,6 @@
 {
-  "type": "minor",
-  "comment": "Made the `app`, `appInitialization`, and `settings` files treeshakable",
+  "type": "patch",
+  "comment": "Fixed bugs regarding `EduType`not being exported, and enum typings",
   "packageName": "@microsoft/teams-js",
   "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
   "dependentChangeType": "patch"
