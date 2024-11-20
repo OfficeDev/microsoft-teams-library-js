@@ -1,7 +1,6 @@
 /**
  * Module to open a dialog that sends results to the bot framework
  *
- * @beta
  * @module
  */
 
@@ -20,8 +19,6 @@ import { DialogSubmitHandler, PostMessageChannel } from '../dialog';
  * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
  *
  * @returns a function that can be used to send messages to the dialog.
- *
- * @beta
  */
 export function open(
   botUrlDialogInfo: BotUrlDialogInfo,
@@ -42,8 +39,6 @@ export function open(
  * @returns boolean to represent whether dialog.url.bot is supported
  *
  * @throws Error if {@linkcode app.initialize} has not successfully completed
- *
- * @beta
  */
 export function isSupported(): boolean {
   return (

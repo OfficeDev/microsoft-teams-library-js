@@ -19,8 +19,6 @@ import * as parentCommunication from './parentCommunication';
  * @param urlDialogInfo - An object containing the parameters of the dialog module.
  * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
  * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
- *
- * @beta
  */
 export function open(
   urlDialogInfo: UrlDialogInfo,
@@ -45,8 +43,6 @@ export function open(
  *  If this function is called from a dialog while {@link M365ContentAction} is set in the context object by the host, result will be ignored
  *
  * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
- *
- * @beta
  */
 export function submit(result?: string | object, appIds?: string | string[]): void {
   urlSubmitHelper(getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Submit), result, appIds);
@@ -58,8 +54,6 @@ export function submit(result?: string | object, appIds?: string | string[]): vo
  * @returns boolean to represent whether dialog.url module is supported
  *
  * @throws Error if {@linkcode app.initialize} has not successfully completed
- *
- * @beta
  */
 export function isSupported(): boolean {
   return ensureInitialized(runtime) && (runtime.supports.dialog && runtime.supports.dialog.url) !== undefined;
