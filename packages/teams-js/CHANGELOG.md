@@ -1,8 +1,28 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Mon, 21 Oct 2024 18:11:30 GMT and should not be manually modified.
+This log was last generated on Wed, 13 Nov 2024 19:22:01 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.31.0
+
+Wed, 13 Nov 2024 19:22:01 GMT
+
+### Minor changes
+
+- Made the library treeshakable.
+- Made `externalAppAuthenticationForCEA.ts` throw `Error` objects instead of `SdkErrors`.
+- Replaced `Buffer` with `uint8array-extras` to allow for `buffer` polyfill removal.
+- Added validation for AppId instance in CEA APIs.
+- Changed the `notifySuccess` function to indicate through a promise when the function finished processing in the host.
+- Added new timestamp and handler for analyzing latencies due to message delays between app and hub.
+
+### Patches
+
+- Add userClickTimeV2 to app `Context` to provide the timestamp when the user clicked the app using the performance timer API.
+- Increased the initialize response wait-timeout to 60 sec
+- Removed `type: module` from package.json to fix nextjs bug
+- Added validation for `IActionExecuteInvokeRequest.data` element in `ExternalAppAuthentication` and `ExternalAppAuthenticationForCEA` capabilities. The element can be of type primitive or plain object only
 
 ## 2.30.0
 
