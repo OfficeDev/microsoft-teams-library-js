@@ -4,7 +4,9 @@
  * @module
  */
 
+import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { HostClientType } from './constants';
 import { runtime } from './runtime';
 
 /**
@@ -16,5 +18,26 @@ import { runtime } from './runtime';
  * @beta
  */
 export function isNAAChannelRecommended(): boolean {
-  return (ensureInitialized(runtime) && runtime.isNAAChannelRecommended) ?? false;
+  return (
+    (ensureInitialized(runtime) &&
+      (runtime.isNAAChannelRecommended || isNAAChannelRecommendedForLegacyTeamsMobile())) ??
+    false
+  );
+}
+
+function isNAAChannelRecommendedForLegacyTeamsMobile(): boolean {
+  return ensureInitialized(runtime) &&
+    isHostAndroidOrIOSOrIPadOS() &&
+    runtime.isLegacyTeams &&
+    runtime.supports.nestedAppAuth
+    ? true
+    : false;
+}
+
+function isHostAndroidOrIOSOrIPadOS(): boolean {
+  return (
+    GlobalVars.hostClientType === HostClientType.android ||
+    GlobalVars.hostClientType === HostClientType.ios ||
+    GlobalVars.hostClientType === HostClientType.ipados
+  );
 }
