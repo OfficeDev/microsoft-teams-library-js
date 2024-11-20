@@ -222,7 +222,7 @@ extends:
             displayName: 'E2E Tests - IOS - Plan A'
             pool:
               name: Azure Pipelines
-              image: macos-latest-internal
+              image: macos-13-arm64
               os: macOS
             timeoutInMinutes: 90
             steps:
@@ -235,7 +235,7 @@ extends:
             displayName: 'E2E Tests - IOS - Plan B'
             pool:
               name: Azure Pipelines
-              image: macos-latest-internal
+              image: macos-13-arm64
               os: macOS
             timeoutInMinutes: 90
             steps:
