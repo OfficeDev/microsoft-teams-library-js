@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { errorRuntimeNotInitialized } from '../../src/internal/constants';
+import { GlobalVars } from '../../src/internal/globalVars';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app, HostClientType } from '../../src/public';
 import {
@@ -243,6 +244,7 @@ describe('runtime', () => {
 
           for (const clientType of capabilityAdditionsInASpecificVersion.hostClientTypes) {
             await utils.initializeWithContext('content', clientType);
+            GlobalVars.hostClientType = clientType;
             const generatedCapabilityObjectForThisVersion = generateVersionBasedTeamsRuntimeConfig(
               version,
               versionAndPlatformAgnosticTeamsRuntimeConfig,
