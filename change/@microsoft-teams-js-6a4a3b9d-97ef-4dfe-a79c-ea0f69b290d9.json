@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Removed `type: module` from package.json to fix nextjs bug",
-  "packageName": "@microsoft/teams-js",
-  "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
