@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `nestedAppAuth` capability against a new client version `2.1.1` to support isNAAChannelRecommended for Teams Mobile",
+  "packageName": "@microsoft/teams-js",
+  "email": "singhmanp@microsoft.com",
+  "dependentChangeType": "patch"
+}

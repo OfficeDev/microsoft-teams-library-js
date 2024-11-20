@@ -13,7 +13,6 @@
  * @remarks Note that dialogs were previously called "task modules". While they have been renamed for clarity, the functionality has been maintained.
  * For more details, see [Dialogs](https://learn.microsoft.com/microsoftteams/platform/task-modules-and-cards/what-are-task-modules)
  *
- * @beta
  * @module
  */
 
@@ -29,8 +28,6 @@ import * as url from './url/url';
 
 /**
  * Data Structure to represent the SDK response when dialog closes
- *
- * @beta
  */
 export interface ISdkResponse {
   /**
@@ -49,7 +46,6 @@ export interface ISdkResponse {
 
 /**
  * Handler used to receive and process messages sent between a dialog and the app that launched it
- * @beta
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type PostMessageChannel = (message: any) => void;
@@ -59,8 +55,6 @@ export type PostMessageChannel = (message: any) => void;
  * or an error if the dialog was closed by the user.
  *
  * @see {@linkcode ISdkResponse}
- *
- * @beta
  */
 export type DialogSubmitHandler = (result: ISdkResponse) => void;
 
@@ -72,8 +66,6 @@ export type DialogSubmitHandler = (result: ISdkResponse) => void;
  * Function is called during app initialization
  * @internal
  * Limited to Microsoft-internal use
- *
- * @beta
  */
 export function initialize(): void {
   registerHandler(

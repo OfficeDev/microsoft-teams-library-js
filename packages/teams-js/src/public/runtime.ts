@@ -592,6 +592,12 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
       hostClientTypes: [HostClientType.android, HostClientType.ios],
     },
   ],
+  '2.1.1': [
+    {
+      capability: { nestedAppAuth: {} },
+      hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados],
+    },
+  ],
 };
 
 const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
