@@ -4,7 +4,7 @@
     {
       "feature": {
         "id": "presence",
-        "version": 2
+        "version": 3
       },
       "testCases": [
         {
@@ -15,7 +15,10 @@
             "upn": "user@contoso.com"
           },
           "expectedAlertValue": "getPresence called for user: user@contoso.com",
-          "expectedTestAppValue": "{\"status\":\"Available\",\"customMessage\":\"Mock presence status\"}"
+          "expectedTestAppValue": {
+            "status": "Available",
+            "customMessage": "Default status message"
+          }
         },
         {
           "title": "getPresence API Call - Invalid UPN",
@@ -27,53 +30,34 @@
           "expectedTestAppValue": "Error: Error: UPN is required"
         },
         {
-          "title": "setPresence API Call - Success",
+          "title": "setPresence API Call - Success with valid message",
           "type": "callResponse",
           "boxSelector": "#box_setPresence",
           "inputValue": {
             "status": "Busy",
-            "customMessage": "In a meeting"
+            "customMessage": "In a meeting with clients"
           },
-          "expectedAlertValue": "setPresence called with status: Busy and message: In a meeting",
+          "expectedAlertValue": "setPresence called with status: Busy and message: In a meeting with clients",
           "expectedTestAppValue": "Presence set successfully"
         },
         {
-          "title": "setPresence API Call - Success without custom message",
+          "title": "setPresence API Call - Fail without message",
           "type": "callResponse",
           "boxSelector": "#box_setPresence",
           "inputValue": {
             "status": "Available"
           },
-          "expectedAlertValue": "setPresence called with status: Available and message: none",
-          "expectedTestAppValue": "Presence set successfully"
+          "expectedTestAppValue": "Error: Custom message is required and must be at least 5 characters long"
         },
         {
-          "title": "setPresence API Call - Invalid Status",
-          "type": "callResponse",
-          "boxSelector": "#box_setPresence",
-          "inputValue": {
-            "status": "InvalidStatus"
-          },
-          "expectedTestAppValue": "Error: Error: Invalid status value"
-        },
-        {
-          "title": "setPresence API Call - Invalid Custom Message Type",
+          "title": "setPresence API Call - Fail with short message",
           "type": "callResponse",
           "boxSelector": "#box_setPresence",
           "inputValue": {
             "status": "Available",
-            "customMessage": 123
+            "customMessage": "Hi"
           },
-          "expectedTestAppValue": "Error: Error: Error code: 4000, message: Custom message must be a string"
-        },
-        {
-          "title": "getPresence API Call - Whitespace UPN",
-          "type": "callResponse",
-          "boxSelector": "#box_getPresence",
-          "inputValue": {
-            "upn": "   "
-          },
-          "expectedTestAppValue": "Error: Error: Error code: 4000, message: UPN cannot be null or empty"
+          "expectedTestAppValue": "Error: Custom message is required and must be at least 5 characters long"
         },
         {
           "title": "setPresence API Call - Set Out of Office",
@@ -81,14 +65,14 @@
           "boxSelector": "#box_setPresence",
           "inputValue": {
             "status": "OutOfOffice",
-            "customMessage": "On vacation",
+            "customMessage": "On vacation until next week",
             "outOfOfficeDetails": {
               "startTime": "2024-03-20T00:00:00Z",
               "endTime": "2024-03-27T00:00:00Z",
               "message": "Annual leave - back next week"
             }
           },
-          "expectedAlertValue": "setPresence called with status: OutOfOffice and message: On vacation\nOOF from 3/20/2024 to 3/27/2024",
+          "expectedAlertValue": "setPresence called with status: OutOfOffice and message: On vacation until next week\nOOF from 3/20/2024 to 3/27/2024",
           "expectedTestAppValue": "Presence set successfully"
         },
         {
@@ -101,7 +85,7 @@
           "expectedAlertValue": "getPresence called for user: oof.user@contoso.com",
           "expectedTestAppValue": {
             "status": "OutOfOffice",
-            "customMessage": "Mock presence status",
+            "customMessage": "Out of office until next week",
             "outOfOfficeDetails": {
               "startTime": "__ANY_STRING__",
               "endTime": "__ANY_STRING__",

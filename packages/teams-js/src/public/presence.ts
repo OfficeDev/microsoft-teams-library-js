@@ -77,9 +77,9 @@ export interface UserPresence {
   status: PresenceStatus;
 
   /**
-   * Optional custom status message
+   * Required custom status message (minimum 5 characters)
    */
-  customMessage?: string;
+  customMessage: string;
 
   /**
    * Optional out of office details
@@ -108,9 +108,9 @@ export interface SetPresenceParams {
   status: PresenceStatus;
 
   /**
-   * Optional custom status message
+   * Required custom status message (minimum 5 characters)
    */
-  customMessage?: string;
+  customMessage: string;
 
   /**
    * Optional out of office details
@@ -124,7 +124,12 @@ export interface SetPresenceParams {
  */
 class UserPresenceResponseHandler extends ResponseHandler<UserPresence, UserPresence> {
   public validate(response: UserPresence): boolean {
-    if (response === undefined || !Object.values(PresenceStatus).includes(response.status)) {
+    if (
+      response === undefined ||
+      !Object.values(PresenceStatus).includes(response.status) ||
+      !response.customMessage ||
+      response.customMessage.length < 5
+    ) {
       return false;
     }
 
@@ -289,13 +294,20 @@ function validateStatus(status: PresenceStatus): void {
 }
 
 /**
- * Validates that the custom message parameter is a string if provided
+ * Validates that the custom message parameter meets requirements
  * @param customMessage The custom message to validate
- * @throws Error if custom message is provided but not a string
+ * @throws Error if custom message is missing or too short
  */
 function validateCustomMessage(customMessage: unknown): void {
-  if (customMessage !== undefined && typeof customMessage !== 'string') {
-    throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: Custom message must be a string`);
+  if (!customMessage || typeof customMessage !== 'string') {
+    throw new Error(
+      `Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: Custom message is required and must be a string`,
+    );
+  }
+  if (customMessage.length < 5) {
+    throw new Error(
+      `Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: Custom message must be at least 5 characters long`,
+    );
   }
 }
 
