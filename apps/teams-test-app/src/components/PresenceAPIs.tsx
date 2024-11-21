@@ -32,7 +32,7 @@ const GetPresence = (): React.ReactElement =>
   });
 
 const SetPresence = (): React.ReactElement =>
-  ApiWithTextInput<{ status: presence.PresenceStatus; customMessage?: string }>({
+  ApiWithTextInput<presence.SetPresenceParams>({
     name: 'setPresence',
     title: 'Set Presence',
     onClick: {
@@ -42,6 +42,9 @@ const SetPresence = (): React.ReactElement =>
         }
         if (!Object.values(presence.PresenceStatus).includes(input.status)) {
           throw new Error('Invalid status value');
+        }
+        if (!input.customMessage || input.customMessage.length < 5) {
+          throw new Error('Custom message is required and must be at least 5 characters long');
         }
       },
       submit: async (input) => {
