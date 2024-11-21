@@ -1,0 +1,118 @@
+{
+  "name": "Store",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityStore"
+  },
+  "version": ">2.31.0",
+  "hostSdkVersion": {
+    "web": ">4.5.0"
+  },
+  "testCases": [
+    {
+      "title": "openStoreExperience API Call Full Store - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "fullstore"
+      },
+      "expectedAlertValue": "openStoreExperience called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "openStoreExperience API Call In-Context-Store - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "ics"
+      },
+      "expectedAlertValue": "openStoreExperience called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "openStoreExperience API Call App Detail - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "appdetail",
+        "appId": "1542629c-01b3-4a6d-8f76-1938b779e48d"
+      },
+      "expectedAlertValue": "openStoreExperience called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "openStoreExperience API Call App Detail With Invalid AppId - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "appdetail",
+        "appId": "123"
+      },
+      "expectedTestAppValue": "Error: Error: Potential app id (123) is invalid; its length 3 is not within the length limits (4-256)."
+    },
+    {
+      "title": "openStoreExperience API Call App Detail With Empty AppId - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "appdetail",
+        "appId": ""
+      },
+      "expectedTestAppValue": "Error: Error: Potential app id () is invalid; its length 0 is not within the length limits (4-256)."
+    },
+    {
+      "title": "openStoreExperience API Call App Detail Without AppId - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "appdetail"
+      },
+      "expectedTestAppValue": "Error: Error: No App Id present, but AppId needed to open AppDetail store"
+    },
+    {
+      "title": "openStoreExperience API Call Specific Store - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "specificstore",
+        "collectionId": "copilotplugins"
+      },
+      "expectedAlertValue": "openStoreExperience called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "openStoreExperience API Call Specific Store With Empty CollectionId - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "specificstore",
+        "collectionId": ""
+      },
+      "expectedTestAppValue": "Error: Error: No Collection Id present, but CollectionId needed to open a store specific to a collection"
+    },
+    {
+      "title": "openStoreExperience API Call Specific Store Without CollectionId - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "specificstore"
+      },
+      "expectedTestAppValue": "Error: Error: No Collection Id present, but CollectionId needed to open a store specific to a collection"
+    },
+    {
+      "title": "openStoreExperience API Call With Invalid Dialog Type - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "123"
+      },
+      "expectedTestAppValue": "Error: Error: Invalid store dialog type, but type needed to specify store to open"
+    },
+    {
+      "title": "openStoreExperience API Call Without Permission - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "fullstore"
+      },
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false, \"isMicrosoftOwned\": false}"]],
+      "expectedTestAppValue": "Error: Error: 500, message: App does not have the required permissions for this operation"
+    }
+  ]
+}
