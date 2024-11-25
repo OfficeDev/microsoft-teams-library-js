@@ -16,6 +16,48 @@ const NestedAppAuthRequest = JSON.stringify({
   },
 });
 
+const validateNAARequestInput = (input): void => {
+  if (!input) {
+    throw new Error('Input is required.');
+  }
+
+  if (input.messageType !== 'NestedAppAuthRequest') {
+    throw new Error('Invalid or missing messageType. Expected "NestedAppAuthRequest".');
+  }
+
+  if (!input.method) {
+    throw new Error('Method name is required in payload');
+  }
+
+  if (!input.requestId) {
+    throw new Error('RequestId is required in payload');
+  }
+};
+
+const validateTopWindowNAARequestInput = (input): void => {
+  if (!input) {
+    throw new Error('Input is required.');
+  }
+
+  if (!input.id) {
+    throw new Error('"id" is required.');
+  }
+
+  if (!input.func) {
+    throw new Error('"func" is required.');
+  }
+
+  if (!input.data) {
+    throw new Error('"data" is required with NAA payload');
+  }
+
+  try {
+    validateNAARequestInput(JSON.parse(input.data));
+  } catch (error) {
+    throw new Error('NAA payload must be a valid JSON');
+  }
+};
+
 type NestedAppAuthBridge = {
   postMessage: (message: string) => void;
   addEventListener: (type: string, listener: (response: unknown) => void) => void;
@@ -35,7 +77,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
       name: 'SendMessageToNestedAppAuthBridge',
       title: 'Send NAA Message to NestedAppAuth Bridge',
       onClick: {
-        validateInput: () => {},
+        validateInput: validateNAARequestInput,
         submit: async (input, setResult) => {
           const bridge = (window as Window & { nestedAppAuthBridge?: NestedAppAuthBridge }).nestedAppAuthBridge;
           if (!bridge) {
@@ -65,7 +107,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
       name: 'SendMessageToTopWindow',
       title: 'Send NAA Message to Top Window',
       onClick: {
-        validateInput: () => {},
+        validateInput: validateTopWindowNAARequestInput,
         submit: async (input, setResult) => {
           try {
             const targetOrigin = 'https://local.teams.office.com:8080';
@@ -119,9 +161,9 @@ const NestedAppAuthAPIs = (): ReactElement => {
         return;
       }
 
-      const iframeContainer = document.getElementById('NestedChildiframeContainer');
+      const iframeContainer = document.getElementById('nestedChildiframeContainer');
       if (!iframeContainer) {
-        console.error('Container not found: NestedChildiframeContainer');
+        console.error('Container not found: nestedChildiframeContainer');
         return;
       }
 
@@ -147,7 +189,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
           disabled={iframeAdded}
         />
         <div
-          id="NestedChildiframeContainer"
+          id="nestedChildiframeContainer"
           style={{
             marginTop: '2px',
             height: '400px',
