@@ -34,6 +34,9 @@ module.exports = {
   devtool: 'source-map',
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    fallback: {
+      buffer: require.resolve('skeleton-buffer/'),
+    },
   },
   module: {
     rules: [
@@ -71,6 +74,10 @@ module.exports = {
 
     // https://www.npmjs.com/package/webpack-subresource-integrity
     new SubresourceIntegrityPlugin({ enabled: true }),
+
+    new ProvidePlugin({
+      Buffer: ['skeleton-buffer', 'Buffer'],
+    }),
 
     // Webpackmanifest produces the json file containing asset(JS file) and its corresponding hash values(Example: https://github.com/waysact/webpack-subresource-integrity/blob/main/examples/webpack-assets-manifest/webpack.config.js)
     new WebpackAssetsManifest({
