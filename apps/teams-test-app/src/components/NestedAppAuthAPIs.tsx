@@ -8,11 +8,11 @@ const NestedAppAuthRequest = JSON.stringify({
   messageType: 'NestedAppAuthRequest',
   method: 'GetToken',
   sendTime: 1732269811006,
-  clientLibrary: 'MetaOS',
+  clientLibrary: 'testOS',
   clientLibraryVersion: '1.0.0',
-  requestId: '684352c2-7ab7-4def-b7e1-56a386c02a0a',
+  requestId: '684352c2-7ab7-4def-b7e1-XXXXXXXXXXX',
   tokenParams: {
-    correlationId: '39dc85fe-9054-11ed-a1eb-0242ac120002',
+    correlationId: '39dc85fe-9054-11ed-a1eb-XXXXXXXXXXX',
   },
 });
 
