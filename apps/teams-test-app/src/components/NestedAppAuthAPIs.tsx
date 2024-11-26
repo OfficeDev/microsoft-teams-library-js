@@ -74,7 +74,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
 
   const SendMessageToNestedAppAuthBridge = (): React.ReactElement =>
     ApiWithTextInput({
-      name: 'SendMessageToNestedAppAuthBridge',
+      name: 'sendMessageToNestedAppAuthBridge',
       title: 'Send NAA Message to NestedAppAuth Bridge',
       onClick: {
         validateInput: validateNAARequestInput,
@@ -104,7 +104,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
 
   const SendMessageToTopWindow = (): React.ReactElement =>
     ApiWithTextInput({
-      name: 'SendMessageToTopWindow',
+      name: 'sendMessageToTopWindow',
       title: 'Send NAA Message to Top Window',
       onClick: {
         validateInput: validateTopWindowNAARequestInput,
@@ -161,9 +161,9 @@ const NestedAppAuthAPIs = (): ReactElement => {
         return;
       }
 
-      const iframeContainer = document.getElementById('nestedChildiframeContainer');
+      const iframeContainer = document.getElementById('nestedChildIframeContainer');
       if (!iframeContainer) {
-        console.error('Container not found: nestedChildiframeContainer');
+        console.error('Container not found: nestedChildIframeContainer');
         return;
       }
 
@@ -189,7 +189,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
           disabled={iframeAdded}
         />
         <div
-          id="nestedChildiframeContainer"
+          id="nestedChildIframeContainer"
           style={{
             marginTop: '2px',
             height: '400px',
