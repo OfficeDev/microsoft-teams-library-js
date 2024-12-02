@@ -218,26 +218,26 @@ extends:
                   shardNum: 2
                   shardIndex: 1
 
-          # - job: E2ETestIOS
-          #   displayName: 'E2E Tests - IOS - Plan A'
-          #   pool:
-          #     name: Azure Pipelines
-          #     image: macos-latest-internal
-          #     os: macOS
-          #   steps:
-          #     - template: tools/yaml-templates/ios-test.yml@self
-          #       parameters:
-          #         iOSAppHostingSdkGitPath: IOSAppHostingSdk
-          #         testPlan: iosE2ETestPlanA
+          - job: E2ETestIOS
+            displayName: 'E2E Tests - IOS - Plan A'
+            pool:
+              name: Azure Pipelines
+              image: macos-latest-internal
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/ios-test.yml@self
+                parameters:
+                  iOSAppHostingSdkGitPath: IOSAppHostingSdk
+                  testPlan: iosE2ETestPlanA
 
-          # - job: E2ETestIOS2
-          #   displayName: 'E2E Tests - IOS - Plan B'
-          #   pool:
-          #     name: Azure Pipelines
-          #     image: macos-latest-internal
-          #     os: macOS
-          #   steps:
-          #     - template: tools/yaml-templates/ios-test.yml@self
-          #       parameters:
-          #         iOSAppHostingSdkGitPath: IOSAppHostingSdk
-          #         testPlan: iosE2ETestPlanB
+          - job: E2ETestIOS2
+            displayName: 'E2E Tests - IOS - Plan B'
+            pool:
+              name: Azure Pipelines
+              image: macos-latest-internal
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/ios-test.yml@self
+                parameters:
+                  iOSAppHostingSdkGitPath: IOSAppHostingSdk
+                  testPlan: iosE2ETestPlanB
