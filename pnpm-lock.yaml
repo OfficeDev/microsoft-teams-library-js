@@ -36,6 +36,9 @@ importers:
 
   .:
     dependencies:
+      skeleton-buffer:
+        specifier: file:./skeleton-buffer
+        version: file:skeleton-buffer
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -347,12 +350,6 @@ importers:
       webpack-cli:
         specifier: ^5.1.4
         version: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.1.0)(webpack@5.96.1)
-
-  apps/typed-dependency-tester:
-    devDependencies:
-      '@microsoft/teams-js':
-        specifier: workspace:*
-        version: link:../../packages/teams-js
 
   packages/teams-js:
     dependencies:
@@ -5879,6 +5876,9 @@ packages:
 
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
+
+  skeleton-buffer@file:skeleton-buffer:
+    resolution: {directory: skeleton-buffer, type: directory}
 
   slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
@@ -13573,6 +13573,10 @@ snapshots:
       totalist: 3.0.1
 
   sisteransi@1.0.5: {}
+
+  skeleton-buffer@file:skeleton-buffer:
+    dependencies:
+      base64-js: 1.5.1
 
   slash@3.0.0: {}
 
