@@ -1134,6 +1134,7 @@ export interface AppEligibilityInformation {
   cohort: Cohort | null;
   /**
    * Feature Sets
+   * If this property is undefined, it indicates that the host is an older version that doesn't support this property.
    */
   featureSet?: FeatureSet;
   /**
@@ -1163,11 +1164,11 @@ export interface FeatureSet {
   /**
    * Server Feature set
    */
-  serverFeatures: string[];
+  serverFeatures: ReadonlyArray<string>;
   /**
    * UX Feature set
    */
-  uxFeatures: string[];
+  uxFeatures: ReadonlyArray<string>;
 }
 
 /**
