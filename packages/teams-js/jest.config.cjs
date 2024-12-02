@@ -7,5 +7,5 @@ module.exports = {
   globals: {
     PACKAGE_VERSION: packageVersion,
   },
-  setupFilesAfterEnv: ['./jest-setup.cjs'],
+  //setupFilesAfterEnv: ['./jest-setup.cjs'],
 };

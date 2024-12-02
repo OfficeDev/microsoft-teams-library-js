@@ -36,6 +36,9 @@ importers:
 
   .:
     dependencies:
+      skeleton-buffer:
+        specifier: file:./skeleton-buffer
+        version: file:skeleton-buffer
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -205,9 +208,6 @@ importers:
       rollup:
         specifier: ^4.24.4
         version: 4.24.4
-      rollup-plugin-dts:
-        specifier: ^6.1.1
-        version: 6.1.1(rollup@4.24.4)(typescript@4.9.5)
       rollup-plugin-polyfill-node:
         specifier: ^0.13.0
         version: 0.13.0(rollup@4.24.4)
@@ -350,12 +350,6 @@ importers:
       webpack-cli:
         specifier: ^5.1.4
         version: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.1.0)(webpack@5.96.1)
-
-  apps/typed-dependency-tester:
-    devDependencies:
-      '@microsoft/teams-js':
-        specifier: workspace:*
-        version: link:../../packages/teams-js
 
   packages/teams-js:
     dependencies:
@@ -5708,13 +5702,6 @@ packages:
     engines: {node: '>=14.18'}
     hasBin: true
 
-  rollup-plugin-dts@6.1.1:
-    resolution: {integrity: sha512-aSHRcJ6KG2IHIioYlvAOcEq6U99sVtqDDKVhnwt70rW6tsz3tv5OSjEiWcgzfsHdLyGXZ/3b/7b/+Za3Y6r1XA==}
-    engines: {node: '>=16'}
-    peerDependencies:
-      rollup: ^3.29.4 || ^4
-      typescript: ^4.5 || ^5.0
-
   rollup-plugin-polyfill-node@0.13.0:
     resolution: {integrity: sha512-FYEvpCaD5jGtyBuBFcQImEGmTxDTPbiHjJdrYIp+mFIwgXiXabxvKUK7ZT9P31ozu2Tqm9llYQMRWsfvTMTAOw==}
     peerDependencies:
@@ -5889,6 +5876,9 @@ packages:
 
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
+
+  skeleton-buffer@file:skeleton-buffer:
+    resolution: {directory: skeleton-buffer, type: directory}
 
   slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
@@ -13318,14 +13308,6 @@ snapshots:
     dependencies:
       glob: 10.4.2
 
-  rollup-plugin-dts@6.1.1(rollup@4.24.4)(typescript@4.9.5):
-    dependencies:
-      magic-string: 0.30.11
-      rollup: 4.24.4
-      typescript: 4.9.5
-    optionalDependencies:
-      '@babel/code-frame': 7.24.7
-
   rollup-plugin-polyfill-node@0.13.0(rollup@4.24.4):
     dependencies:
       '@rollup/plugin-inject': 5.0.5(rollup@4.24.4)
@@ -13591,6 +13573,10 @@ snapshots:
       totalist: 3.0.1
 
   sisteransi@1.0.5: {}
+
+  skeleton-buffer@file:skeleton-buffer:
+    dependencies:
+      base64-js: 1.5.1
 
   slash@3.0.0: {}
 

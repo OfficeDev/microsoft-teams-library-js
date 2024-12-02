@@ -1,7 +1,6 @@
 /**
  * Module to update the dialog
  *
- * @beta
  * @module
  */
 
@@ -15,8 +14,6 @@ import { runtime } from '../runtime';
  * Update dimensions - height/width of a dialog.
  *
  * @param dimensions - An object containing width and height properties.
- *
- * @beta
  */
 export function resize(dimensions: DialogSize): void {
   updateResizeHelper(getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Update_Resize), dimensions);
@@ -27,8 +24,6 @@ export function resize(dimensions: DialogSize): void {
  * @returns boolean to represent whether dialog.update capabilty is supported
  *
  * @throws Error if {@linkcode app.initialize} has not successfully completed
- *
- * @beta
  */
 export function isSupported(): boolean {
   return ensureInitialized(runtime) && runtime.supports.dialog
