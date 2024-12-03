@@ -5,7 +5,7 @@ import { FrameContexts } from '../public/constants';
 import { HostToAppPerformanceMetrics, LoadContext, ResumeContext } from '../public/interfaces';
 import * as pages from '../public/pages/pages';
 import { runtime } from '../public/runtime';
-import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { callFunctionInHost, Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';
@@ -198,9 +198,20 @@ export function registerHostToAppPerformanceMetricsHandler(
  * Limited to Microsoft-internal use
  */
 export function handleHostToAppPerformanceMetrics(metrics: HostToAppPerformanceMetrics): void {
+  console.log('NOW IT WILL CHEKCK WHETHER THE HANDLER IS REGISTERED OR NOT');
+  // post the metrics to the parent window without using async/await. That will make sure the metric is posted asynchronously,
+  // and does not stop the response to go to the calling app.
+  // IF we don't want to post back everything, we can add a check here to see if the API name is copilot.eligibility
+  callFunctionInHost(
+    'reportTelemetryEvent',
+    [metrics.actionName, metrics.messageDelay, metrics.requestStartedAt],
+    'v3_reportTelemetryEvent',
+  );
   if (!HandlersPrivate.hostToAppPerformanceMetricsHandler) {
+    console.log('not registered');
     return;
   }
+  console.log('registered');
   HandlersPrivate.hostToAppPerformanceMetricsHandler(metrics);
 }
 
