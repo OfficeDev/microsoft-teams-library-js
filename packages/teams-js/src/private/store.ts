@@ -40,7 +40,14 @@ export enum StoreDialogType {
   AppDetail = 'appdetail',
 }
 
-interface StoreSizeInfo {
+/**
+ * @beta
+ * @hidden
+ * Interface of store dialog size
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface StoreSizeInfo {
   size?: DialogSize;
 }
 
