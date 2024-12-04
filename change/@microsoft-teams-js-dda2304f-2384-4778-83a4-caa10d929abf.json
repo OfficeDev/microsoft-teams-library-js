@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "re-add otherAppState and store e2e tests & add store size info interface",
+  "packageName": "@microsoft/teams-js",
+  "email": "yt6520143@163.com",
+  "dependentChangeType": "patch"
+}
