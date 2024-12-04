@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Fixed bugs regarding `EduType`not being exported, and enum typings",
+  "comment": "Resolved an issue with non-necessary polyfills being included",
   "packageName": "@microsoft/teams-js",
   "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
   "dependentChangeType": "patch"

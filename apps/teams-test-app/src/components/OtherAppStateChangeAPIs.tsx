@@ -1,4 +1,4 @@
-import { otherAppStateChange } from '@microsoft/teams-js';
+import { AppId, otherAppStateChange } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput } from './utils';
@@ -39,12 +39,23 @@ const UnregisterAppInstallHandler = (): React.ReactElement =>
     },
   });
 
+const NotifyInstallCompletedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'otherAppStateChange_notifyInstallCompleted',
+    title: 'Notify Install Completed',
+    onClick: async () => {
+      otherAppStateChange.notifyInstallCompleted(new AppId('12345'));
+      return 'notified';
+    },
+  });
+
 const OtherAppStateChangedAPIs = (): ReactElement => (
   <>
     <ModuleWrapper title="OtherAppStateChanged">
       <CheckOtherAppStateChangeCapability />
       <RegisterAppInstallHandler />
       <UnregisterAppInstallHandler />
+      <NotifyInstallCompletedHandler />
     </ModuleWrapper>
   </>
 );

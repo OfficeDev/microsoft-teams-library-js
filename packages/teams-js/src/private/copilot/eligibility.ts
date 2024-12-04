@@ -80,7 +80,9 @@ function isEligibilityInfoValid(eligibilityInfo: AppEligibilityInformation): boo
     eligibilityInfo.userClassification === undefined ||
     eligibilityInfo.isCopilotEligible === undefined ||
     eligibilityInfo.isCopilotEnabledRegion === undefined ||
-    eligibilityInfo.isOptedOutByAdmin === undefined
+    eligibilityInfo.isOptedOutByAdmin === undefined ||
+    (eligibilityInfo.featureSet &&
+      (eligibilityInfo.featureSet.serverFeatures === undefined || eligibilityInfo.featureSet.uxFeatures === undefined))
   ) {
     return false;
   }
