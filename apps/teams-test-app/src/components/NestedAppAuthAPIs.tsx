@@ -152,26 +152,25 @@ const NestedAppAuthAPIs = (): ReactElement => {
       }),
     });
 
-  const AddChildIframeSection = (): React.ReactElement | null => {
+  const AddChildIframeSection = (): React.ReactElement => {
     const [iframeAdded, setIframeAdded] = useState(false);
 
     const addChildIframe = (): void => {
       if (iframeAdded) {
-        console.log('Iframe already added.');
         return;
       }
 
       const iframeContainer = document.getElementById('nestedChildIframeContainer');
       if (!iframeContainer) {
-        console.error('Container not found: nestedChildIframeContainer');
+        console.error('Iframe container not found');
         return;
       }
 
       const childIframe = document.createElement('iframe');
-      childIframe.src = `${window.location.href}?appInitializationTest=true&groupedMode=NestedAppAuthAPIs`;
+      childIframe.src = '/naa_childIframe.html';
       childIframe.id = 'nestedAuthChildIframe';
-      childIframe.width = '100%';
-      childIframe.height = '400px';
+      childIframe.style.width = '100%';
+      childIframe.style.height = '400px';
       childIframe.style.border = 'none';
 
       iframeContainer.appendChild(childIframe);
@@ -179,9 +178,18 @@ const NestedAppAuthAPIs = (): ReactElement => {
     };
 
     return (
-      <div style={{ border: '5px solid black', padding: '2px', margin: '2px' }}>
-        <h2>Add Nested Child Iframe</h2>
+      <div
+        className="boxAndButton"
+        id="box_naaNestedChildIframe"
+        style={{
+          border: '5px solid black',
+          padding: '5px',
+          margin: '1px',
+        }}
+      >
+        <h2>Child Iframe</h2>
         <input
+          id="button_addNestedChildIframe"
           name="button_addNestedChildIframe"
           type="button"
           value="Add Child Iframe"
@@ -191,19 +199,14 @@ const NestedAppAuthAPIs = (): ReactElement => {
         <div
           id="nestedChildIframeContainer"
           style={{
-            marginTop: '2px',
-            height: '400px',
-            border: '2px solid red',
-            overflow: 'hidden',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            marginTop: '20px',
+            height: '450px',
+            border: '1px solid red',
           }}
-        ></div>
+        />
       </div>
     );
   };
-
   return (
     <ModuleWrapper title="NestedAppAuth">
       <CheckIsNAAChannelRecommended />

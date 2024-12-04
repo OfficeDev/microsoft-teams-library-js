@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nested Child Iframe Content</title>
+    <style>
+      .input-container input[type='text'] {
+        margin-top: 10px;
+        padding: 5px;
+        width: 180px;
+      }
+
+      .input-container input[type='button'] {
+        width: 100px;
+      }
+
+      .input-row {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+
+      .response-box {
+        display: flex;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        padding: 2px;
+        height: 30px;
+      }
+
+      .default-button {
+        margin-left: 0;
+      }
+
+      .section-container h4 {
+        margin-top: 5px;
+        font-size: 16px;
+      }
+
+      .section-container {
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div class="section-container">
+        <h4>NestedAppAuthBridge</h4>
+        <div class="input-row">
+          <input
+            id="input_childPayloadForBridge"
+            name="input_childPayloadForBridge"
+            type="text"
+            placeholder="Payload for NestedAppAuthBridge"
+          />
+          <input
+            id="button_sendPayloadToBridge"
+            name="button_sendPayloadToBridge"
+            type="button"
+            value="Send to NAA Bridge"
+            onClick="sendMessageToBridge()"
+          />
+        </div>
+        <input
+          id="button_defaultPayloadForBridge"
+          name="button_defaultPayloadForBridge"
+          type="button"
+          value="Default"
+          class="default-button"
+          onClick="setDefaultPayloadForBridge()"
+        />
+        <div id="text_bridge_response_for_child" class="response-box">No response yet</div>
+      </div>
+
+      <div class="section-container">
+        <h4>Top Window</h4>
+        <div class="input-row">
+          <input
+            id="input_childPayloadForTopWindow"
+            name="input_childPayloadForTopWindow"
+            type="text"
+            placeholder="Payload for Top Window"
+          />
+          <input
+            id="button_sendPayloadToTopWindow"
+            name="button_sendPayloadToTopWindow"
+            type="button"
+            value="Send to Top Window"
+            onClick="sendMessageToTopWindow()"
+          />
+        </div>
+        <input
+          id="button_defaultPayloadForTopWindow"
+          name="button_defaultPayloadForTopWindow"
+          type="button"
+          value="Default"
+          class="default-button"
+          onClick="setDefaultPayloadForTopWindow()"
+        />
+        <div id="text_topWindow_response_for_child" class="response-box">No response yet</div>
+      </div>
+    </div>
+
+    <script>
+      const targetOrigin = 'https://local.teams.office.com:8080';
+
+      // Utility function to display a response in a given element
+      const displayResponse = (element, message) => {
+        element.innerText = message;
+      };
+
+      // Predefined payloads
+      const defaultPayloadForBridge =
+        '{"messageType":"NestedAppAuthRequest","method":"GetToken","sendTime":1732269811006,"clientLibrary":"testOS","clientLibraryVersion":"1.0.0","requestId":"684352c2-7ab7-4def-b7e1-XXXXXXXXXXX","tokenParams":{"correlationId":"39dc85fe-9054-11ed-a1eb-XXXXXXXXXXX"}}';
+      const defaultPayloadForTopWindow =
+        '{"id":"2","func":"nestedAppAuth.execute","args":[],"data":"{\\"messageType\\":\\"NestedAppAuthRequest\\",\\"method\\":\\"GetToken\\",\\"sendTime\\":1732269811006,\\"clientLibrary\\":\\"testOS\\",\\"clientLibraryVersion\\":\\"1.0.0\\",\\"requestId\\":\\"684352c2-7ab7-4def-b7e1-XXXXXXXXXXX\\",\\"tokenParams\\":{\\"correlationId\\":\\"39dc85fe-9054-11ed-a1eb-XXXXXXXXXXX\\"}}"}';
+
+      // Functions to set default payloads
+      function setDefaultPayloadForBridge() {
+        const inputElement = document.getElementById('input_childPayloadForBridge');
+        if (inputElement) {
+          inputElement.value = defaultPayloadForBridge;
+        }
+      }
+
+      function setDefaultPayloadForTopWindow() {
+        const inputElement = document.getElementById('input_childPayloadForTopWindow');
+        if (inputElement) {
+          inputElement.value = defaultPayloadForTopWindow;
+        }
+      }
+
+      // Send Message to NestedAppAuthBridge
+      function sendMessageToBridge() {
+        const inputElement = document.getElementById('input_childPayloadForBridge');
+        const responseElement = document.getElementById('text_bridge_response_for_child');
+
+        if (!inputElement || !responseElement) return;
+
+        try {
+          // Validate and send the payload
+          const payload = JSON.parse(inputElement.value);
+
+          // Inline validation for NestedAppAuthRequest
+          if (!payload) throw new Error('Input is required.');
+          if (payload.messageType !== 'NestedAppAuthRequest') {
+            throw new Error('Invalid or missing messageType. Expected "NestedAppAuthRequest".');
+          }
+          if (!payload.method) throw new Error('Method name is required in payload.');
+          if (!payload.requestId) throw new Error('RequestId is required in payload.');
+
+          const bridge = window.nestedAppAuthBridge;
+          if (!bridge) {
+            displayResponse(responseElement, 'NAA Bridge not available');
+            return;
+          }
+
+          bridge.postMessage(JSON.stringify(payload));
+          displayResponse(responseElement, 'Message sent to Bridge. Awaiting response...');
+
+          bridge.addEventListener('message', (response) => {
+            displayResponse(responseElement, JSON.stringify(response));
+          });
+        } catch (error) {
+          console.error('Validation error:', error.message);
+          displayResponse(responseElement, `Validation Error: ${error.message}`);
+        }
+      }
+
+      // Send Message to Top Window
+      function sendMessageToTopWindow() {
+        const inputElement = document.getElementById('input_childPayloadForTopWindow');
+        const responseElement = document.getElementById('text_topWindow_response_for_child');
+
+        if (!inputElement || !responseElement) return;
+
+        try {
+          // Validate and send the payload
+          const payload = JSON.parse(inputElement.value);
+
+          // Inline validation for Top Window
+          if (!payload) throw new Error('Input is required.');
+          if (!payload.id) throw new Error('"id" is required.');
+          if (!payload.func) throw new Error('"func" is required.');
+          if (!payload.data) throw new Error('"data" is required with NAA payload.');
+
+          // Validate nested NAA payload in "data"
+          const nestedData = JSON.parse(payload.data);
+          if (nestedData.messageType !== 'NestedAppAuthRequest') {
+            throw new Error('Invalid or missing messageType in NAA payload. Expected "NestedAppAuthRequest".');
+          }
+
+          if (!window.top) {
+            displayResponse(responseElement, 'Top window not accessible');
+            return;
+          }
+
+          window.top.postMessage(payload, targetOrigin);
+          displayResponse(responseElement, 'Message sent to Top Window. Awaiting response...');
+
+          window.addEventListener('message', (event) => {
+            if (event.origin !== targetOrigin) {
+              console.warn('Received message from unexpected origin:', event.origin);
+              return;
+            }
+            displayResponse(responseElement, JSON.stringify(event.data));
+          });
+        } catch (error) {
+          console.error('Validation error:', error.message);
+          displayResponse(responseElement, `Validation Error: ${error.message}`);
+        }
+      }
+    </script>
+  </body>
+</html>
