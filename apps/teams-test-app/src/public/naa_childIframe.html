@@ -106,18 +106,29 @@
     </div>
 
     <script>
+      let defaultPayloadForBridge = '';
+      let defaultPayloadForTopWindow = '';
+
+      // Listen for messages from the parent
+      window.addEventListener('message', (event) => {
+        // Validate the origin if known
+        if (event.origin !== window.location.origin) return;
+
+        const data = event.data;
+        if (data.defaultPayloadForBridge) {
+          defaultPayloadForBridge = data.defaultPayloadForBridge;
+        }
+        if (data.defaultPayloadForTopWindow) {
+          defaultPayloadForTopWindow = data.defaultPayloadForTopWindow;
+        }
+      });
+
       const targetOrigin = 'https://local.teams.office.com:8080';
 
       // Utility function to display a response in a given element
       const displayResponse = (element, message) => {
         element.innerText = message;
       };
-
-      // Predefined payloads
-      const defaultPayloadForBridge =
-        '{"messageType":"NestedAppAuthRequest","method":"GetToken","sendTime":1732269811006,"clientLibrary":"testOS","clientLibraryVersion":"1.0.0","requestId":"684352c2-7ab7-4def-b7e1-XXXXXXXXXXX","tokenParams":{"correlationId":"39dc85fe-9054-11ed-a1eb-XXXXXXXXXXX"}}';
-      const defaultPayloadForTopWindow =
-        '{"id":"2","func":"nestedAppAuth.execute","args":[],"data":"{\\"messageType\\":\\"NestedAppAuthRequest\\",\\"method\\":\\"GetToken\\",\\"sendTime\\":1732269811006,\\"clientLibrary\\":\\"testOS\\",\\"clientLibraryVersion\\":\\"1.0.0\\",\\"requestId\\":\\"684352c2-7ab7-4def-b7e1-XXXXXXXXXXX\\",\\"tokenParams\\":{\\"correlationId\\":\\"39dc85fe-9054-11ed-a1eb-XXXXXXXXXXX\\"}}"}';
 
       // Functions to set default payloads
       function setDefaultPayloadForBridge() {
@@ -159,12 +170,12 @@
             return;
           }
 
-          bridge.postMessage(JSON.stringify(payload));
-          displayResponse(responseElement, 'Message sent to Bridge. Awaiting response...');
-
           bridge.addEventListener('message', (response) => {
             displayResponse(responseElement, JSON.stringify(response));
           });
+
+          bridge.postMessage(JSON.stringify(payload));
+          displayResponse(responseElement, 'Message sent to Bridge. Awaiting response...');
         } catch (error) {
           console.error('Validation error:', error.message);
           displayResponse(responseElement, `Validation Error: ${error.message}`);
@@ -199,9 +210,6 @@
             return;
           }
 
-          window.top.postMessage(payload, targetOrigin);
-          displayResponse(responseElement, 'Message sent to Top Window. Awaiting response...');
-
           window.addEventListener('message', (event) => {
             if (event.origin !== targetOrigin) {
               console.warn('Received message from unexpected origin:', event.origin);
@@ -209,6 +217,9 @@
             }
             displayResponse(responseElement, JSON.stringify(event.data));
           });
+
+          window.top.postMessage(payload, targetOrigin);
+          displayResponse(responseElement, 'Message sent to Top Window. Awaiting response...');
         } catch (error) {
           console.error('Validation error:', error.message);
           displayResponse(responseElement, `Validation Error: ${error.message}`);

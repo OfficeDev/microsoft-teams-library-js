@@ -175,6 +175,20 @@ const NestedAppAuthAPIs = (): ReactElement => {
 
       iframeContainer.appendChild(childIframe);
       setIframeAdded(true);
+
+      // Send payload to the iframe after it loads
+      childIframe.onload = () => {
+        const payloads = {
+          defaultPayloadForBridge: NestedAppAuthRequest,
+          defaultPayloadForTopWindow: JSON.stringify({
+            id: '2',
+            func: 'nestedAppAuth.execute',
+            args: [],
+            data: NestedAppAuthRequest,
+          }),
+        };
+        childIframe.contentWindow?.postMessage(payloads, window.location.origin);
+      };
     };
 
     return (
