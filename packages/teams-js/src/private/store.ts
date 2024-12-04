@@ -1,6 +1,7 @@
 import { callFunctionInHost } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { DialogSize } from '../public';
 import { AppId } from '../public/appId';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -39,6 +40,10 @@ export enum StoreDialogType {
   AppDetail = 'appdetail',
 }
 
+interface StoreSizeInfo {
+  size?: DialogSize;
+}
+
 /**
  * @beta
  * @hidden
@@ -46,7 +51,7 @@ export enum StoreDialogType {
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenFullStoreAndICSParams {
+export interface OpenFullStoreAndICSParams extends StoreSizeInfo {
   /**
    * the store dialog type, defined by {@link StoreDialogType}
    */
@@ -59,7 +64,7 @@ export interface OpenFullStoreAndICSParams {
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenAppDetailParams {
+export interface OpenAppDetailParams extends StoreSizeInfo {
   /**
    * need to be app detail type, defined by {@link StoreDialogType}
    */
@@ -76,7 +81,7 @@ export interface OpenAppDetailParams {
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenSpecificStoreParams {
+export interface OpenSpecificStoreParams extends StoreSizeInfo {
   /**
    * need to be specific store type, defined by {@link StoreDialogType}
    */
@@ -150,6 +155,7 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
       openStoreParams.dialogType,
       (openStoreParams as OpenAppDetailParams).appId,
       (openStoreParams as OpenSpecificStoreParams).collectionId,
+      JSON.stringify(openStoreParams.size),
     ],
     getApiVersionTag(StoreVersionTagNum, ApiName.Store_Open),
   );
