@@ -1116,6 +1116,7 @@ function createMessageRequest(
  * @returns {NestedAppAuthRequest} Returns a NestedAppAuthRequest object with a unique id, the function name set to 'nestedAppAuthRequest', the current timestamp, an empty args array, and the provided message as data.
  */
 function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
+  const apiVersionTag = getApiVersionTag(ApiVersionNumber.V_2, ApiName.NestedAppAuth_Execute);
   const messageId: MessageID = CommunicationPrivate.nextMessageId++;
   const messageUuid: MessageUUID = new MessageUUID();
   CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
@@ -1129,6 +1130,7 @@ function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
     // We avoid overloading the args array with the message to avoid potential issues processing of these messages on the hubSDK.
     args: [],
     data: message,
+    apiVersionTag: apiVersionTag,
   };
 }
 
