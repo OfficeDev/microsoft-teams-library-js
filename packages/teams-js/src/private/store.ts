@@ -48,6 +48,9 @@ export enum StoreDialogType {
  * Limited to Microsoft-internal use
  */
 export interface StoreSizeInfo {
+  /**
+   * the store dialog size, defined by {@link DialogSize}, if not present, the host will choose an appropriate size
+   */
   size?: DialogSize;
 }
 

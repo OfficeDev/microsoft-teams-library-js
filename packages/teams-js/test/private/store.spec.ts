@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { store } from '../../src/private';
 import { app, AppId } from '../../src/public';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize, latestRuntimeApiVersion } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -31,6 +31,19 @@ describe('store', () => {
       appId: new AppId('1542629c-01b3-4a6d-8f76-1938b779e48d'),
     };
     const argsAppDetail = ['appdetail', '1542629c-01b3-4a6d-8f76-1938b779e48d'];
+    const paramAppDetailWithSize: store.OpenAppDetailParams = {
+      dialogType: store.StoreDialogType.AppDetail,
+      appId: new AppId('1542629c-01b3-4a6d-8f76-1938b779e48d'),
+      size: {
+        width: DialogDimension.Large,
+        height: DialogDimension.Large,
+      },
+    };
+    const argsAppDetailWithSize = [
+      'appdetail',
+      '1542629c-01b3-4a6d-8f76-1938b779e48d',
+      JSON.stringify(paramAppDetail.size),
+    ];
     const paramInvalidStoreType = {
       dialogType: '123',
     };
@@ -66,6 +79,16 @@ describe('store', () => {
             const openMessage = utils.findMessageByFunc('store.open');
             expect(openMessage).not.toBeNull();
             expect(openMessage?.args).toEqual([argsAppDetail]);
+          });
+        });
+
+        it(`should pass along entire openStoreExperience parameter in ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
+          store.openStoreExperience(paramAppDetailWithSize).then(() => {
+            const openMessage = utils.findMessageByFunc('store.open');
+            expect(openMessage).not.toBeNull();
+            expect(openMessage?.args).toEqual([argsAppDetailWithSize]);
           });
         });
 
