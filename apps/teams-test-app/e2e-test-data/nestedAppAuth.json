@@ -2,6 +2,7 @@
   "name": "nestedAppAuth",
   "platforms": "*",
   "version": ">=2.22.0",
+  "cypressTopWindowReplacement": true,
   "testCases": [
     {
       "title": "nestedAppAuth isNAAChannelRecommended API Call - Success",
@@ -28,6 +29,64 @@
         "ios": ">=6.0.0"
       },
       "expectedTestAppValue": "NAA deeply nested auth is supported"
+    },
+    {
+      "title": "nestedAppAuth - Send NAA message to NAA bridge from parent window",
+      "type": "callResponse",
+      "boxSelector": "#box_sendMessageToNestedAppAuthBridge",
+      "inputValue": {
+        "messageType": "NestedAppAuthRequest",
+        "method": "GetToken",
+        "sendTime": 1732269811006,
+        "clientLibrary": "MetaOS",
+        "clientLibraryVersion": "1.0.0",
+        "requestId": "684352c2-7ab7-4def-b7e1-56a386c02a0a",
+        "tokenParams": { "correlationId": "39dc85fe-9054-11ed-a1eb-0242ac120002" }
+      },
+      "expectedAlertValue": "nestedAppAuth.execute called with payload: ##JSON_INPUT_VALUE##, origin: https://localhost:4000/, isTrustedOrigin: true",
+      "expectedTestAppValue": {
+        "messageType": "NestedAppAuthResponse",
+        "requestId": "684352c2-7ab7-4def-b7e1-56a386c02a0a",
+        "success": true,
+        "initContext": {
+          "sdkName": "OfficeAuth",
+          "sdkVersion": "16.0.18015.15000",
+          "capabilities": { "queryAccount": false },
+          "accountContext": {
+            "homeAccountId": "bb5r835b-0e7b",
+            "environment": "login.windows.net",
+            "tenantId": "2855cd1be"
+          }
+        }
+      }
+    },
+    {
+      "title": "nestedAppAuth - Send NAA message to top window from parent window",
+      "type": "callResponse",
+      "boxSelector": "#box_sendMessageToTopWindow",
+      "platformsExcluded": ["iOS"],
+      "inputValue": {
+        "id": "2",
+        "func": "nestedAppAuth.execute",
+        "args": [],
+        "data": "{\"messageType\":\"NestedAppAuthRequest\",\"method\":\"GetToken\",\"sendTime\":1732269811006,\"clientLibrary\":\"MetaOS\",\"clientLibraryVersion\":\"1.0.0\",\"requestId\":\"684352c2-7ab7-4def-b7e1-56a386c02a0a\",\"tokenParams\":{\"correlationId\":\"39dc85fe-9054-11ed-a1eb-0242ac120002\"}}"
+      },
+      "expectedAlertValue": "nestedAppAuth.execute called with payload: {\"messageType\":\"NestedAppAuthRequest\",\"method\":\"GetToken\",\"sendTime\":1732269811006,\"clientLibrary\":\"MetaOS\",\"clientLibraryVersion\":\"1.0.0\",\"requestId\":\"684352c2-7ab7-4def-b7e1-56a386c02a0a\",\"tokenParams\":{\"correlationId\":\"39dc85fe-9054-11ed-a1eb-0242ac120002\"}}, origin: https://localhost:4000/, isTrustedOrigin: true",
+      "expectedTestAppValue": {
+        "messageType": "NestdedAppAuthResponse",
+        "requestId": "684352c2-7ab7-4def-b7e1-56a386c02a0a",
+        "success": true,
+        "initContext": {
+          "sdkName": "OfficeAuth",
+          "sdkVersion": "16.0.18015.15000",
+          "capabilities": { "queryAccount": false },
+          "accountContext": {
+            "homeAccountId": "bb5r835b-0e7b",
+            "environment": "login.windows.net",
+            "tenantId": "2855cd1be"
+          }
+        }
+      }
     }
   ]
 }
