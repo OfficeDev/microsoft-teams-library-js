@@ -147,11 +147,16 @@ steps:
 
       echo "ls -lR ${output}"
       ls -lR "${output}"
+
+      echo "Zipping logs directory..."
+      cd "$(agent.buildDirectory)/Logs/$(agent.JobName)"
+      zip -r "$(agent.JobName)_DebugLogs.zip" .
     displayName: Preparations for publishing results
     condition: always()
 
   - task: 1ES.PublishPipelineArtifact@1
     inputs:
-      path: '$(agent.buildDirectory)/Logs'
+      pathToPublish: '$(agent.buildDirectory)/Logs/$(agent.JobName)/$(agent.JobName)_DebugLogs.zip'
       artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
     condition: always()
+    continueOnError: true
