@@ -156,7 +156,7 @@ steps:
 
   - task: 1ES.PublishPipelineArtifact@1
     inputs:
-      pathToPublish: '$(agent.buildDirectory)/Logs/$(agent.JobName)/$(agent.JobName)_DebugLogs.zip'
+      path: '$(agent.buildDirectory)/Logs/$(agent.JobName)/$(agent.JobName)_DebugLogs.zip'
       artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
     condition: always()
     continueOnError: true
