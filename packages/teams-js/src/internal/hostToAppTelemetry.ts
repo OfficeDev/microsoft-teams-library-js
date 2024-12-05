@@ -86,6 +86,9 @@ export default class HostToAppMessageDelayTelemetry {
       );
       return;
     }
+    console.log('callbackInformation', callbackInformation);
+    console.log('message', message);
+    //the api call should always reach here regardless the handler is registered or not
     handleHostToAppPerformanceMetrics({
       actionName: callbackInformation.name,
       messageDelay: endTime - message.monotonicTimestamp,
