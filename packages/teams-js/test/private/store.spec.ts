@@ -36,7 +36,15 @@ describe('store', () => {
       appId: new AppId('1542629c-01b3-4a6d-8f76-1938b779e48d'),
       size: {
         width: DialogDimension.Large,
-        height: DialogDimension.Large,
+        height: 300,
+      },
+    };
+    const paramAppDetailWithInvalidSize: store.OpenAppDetailParams = {
+      dialogType: store.StoreDialogType.AppDetail,
+      appId: new AppId('1542629c-01b3-4a6d-8f76-1938b779e48d'),
+      size: {
+        width: DialogDimension.Large,
+        height: -300,
       },
     };
     const argsAppDetailWithSize = [
@@ -116,6 +124,14 @@ describe('store', () => {
           // eslint-disable-next-line strict-null-checks/all
           store.openStoreExperience(paramAppDetailNoId as store.OpenAppDetailParams).catch((e) => {
             expect(e).toEqual(new Error(store.errorMissingAppId));
+          });
+        });
+
+        it(`should throw error when trying to open app details but with invalid dialog size in ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
+          store.openStoreExperience(paramAppDetailWithInvalidSize as store.OpenAppDetailParams).catch((e) => {
+            expect(e).toEqual(new Error(store.errorInvalidDialogSize));
           });
         });
       }

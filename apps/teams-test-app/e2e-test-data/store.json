@@ -121,6 +121,32 @@
       },
       "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false, \"isMicrosoftOwned\": false}"]],
       "expectedTestAppValue": "Error: Error: 500, message: App does not have the required permissions for this operation"
+    },
+    {
+      "title": "openStoreExperience API Call With Invalid Dialog Width Size - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "ics",
+        "size": {
+          "width": -300,
+          "height": "large"
+        }
+      },
+      "expectedTestAppValue": "Error: Error: Invalid store dialog size"
+    },
+    {
+      "title": "openStoreExperience API Call With Invalid Dialog Height Size - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "ics",
+        "size": {
+          "width": 300,
+          "height": -300
+        }
+      },
+      "expectedTestAppValue": "Error: Error: Invalid store dialog size"
     }
   ]
 }

@@ -113,6 +113,15 @@ export type OpenStoreParams = OpenFullStoreAndICSParams | OpenAppDetailParams | 
 /**
  * @beta
  * @hidden
+ * error message when getting illegal store dialog size
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const errorInvalidDialogSize = 'Invalid store dialog size';
+
+/**
+ * @beta
+ * @hidden
  * error message when getting invalid store dialog type
  * @internal
  * Limited to Microsoft-internal use
@@ -150,14 +159,24 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  if (openStoreParams === undefined || !Object.values(StoreDialogType).includes(openStoreParams.dialogType)) {
+  const { dialogType, size } = openStoreParams;
+  if (openStoreParams === undefined || !Object.values(StoreDialogType).includes(dialogType)) {
     throw new Error(errorInvalidDialogType);
   }
-  if (openStoreParams.dialogType === StoreDialogType.AppDetail && !(openStoreParams.appId instanceof AppId)) {
+  if (dialogType === StoreDialogType.AppDetail && !(openStoreParams.appId instanceof AppId)) {
     throw new Error(errorMissingAppId);
   }
-  if (openStoreParams.dialogType === StoreDialogType.SpecificStore && !openStoreParams.collectionId) {
+  if (dialogType === StoreDialogType.SpecificStore && !openStoreParams.collectionId) {
     throw new Error(errorMissingCollectionId);
+  }
+  if (size !== undefined) {
+    const { width, height } = size;
+    if (width !== undefined && typeof width === 'number' && width < 0) {
+      throw new Error(errorInvalidDialogSize);
+    }
+    if (height !== undefined && typeof height === 'number' && height < 0) {
+      throw new Error(errorInvalidDialogSize);
+    }
   }
   return callFunctionInHost(
     ApiName.Store_Open,
