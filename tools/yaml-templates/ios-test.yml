@@ -6,12 +6,6 @@ parameters:
     default: iosE2ETestPlan
     type: string
 
-variables:
-  - name: logsDirectory
-    value: '$(agent.buildDirectory)/Logs/$(agent.JobName)'
-  - name: debugLogsZip
-    value: '$(agent.JobName)_DebugLogs.zip'
-
 steps:
   - checkout: self
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
@@ -143,26 +137,27 @@ steps:
 
   - bash: |
       output="$(agent.buildDirectory)/Logs/$(agent.JobName)"
-      rm -rf "$(logsDirectory)" > /dev/null
 
-      mkdir -p "$(logsDirectory)"
+      rm -rf "${output}" > /dev/null
+      mkdir -p "${output}"
 
-      cp -r $(Agent.BuildDirectory)/iOSHost/TestResults "$(logsDirectory)/output.xcresult"
-      xchtmlreport -r $(logsDirectory)/output.xcresult -j
+      cp -r $(Agent.BuildDirectory)/iOSHost/TestResults "${output}/output.xcresult"
+      xchtmlreport -r ${output}/output.xcresult -j
+      echo "ls -lR ${output}"
 
-
-      echo "ls -lR $(logsDirectory)"
-      ls -lR "$(logsDirectory)"
+      ls -lR "${output}"
+      echo "Zipping logs directory..."
+      cd "$(agent.buildDirectory)/Logs/$(agent.JobName)"
 
       echo "Zipping logs directory..."
-      cd "$(logsDirectory)"
-      zip -r "$(debugLogsZip)" .
+      cd "${output}"
+      zip -r "$(agent.JobName)_DebugLogs.zip" .
     displayName: Preparations for publishing results
     condition: always()
 
   - task: 1ES.PublishPipelineArtifact@1
     inputs:
-      path: '$(logsDirectory)/$(debugLogsZip)'
+      path: '$(agent.buildDirectory)/Logs/$(agent.JobName)/$(agent.JobName)_DebugLogs.zip'
       artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
     condition: always()
     continueOnError: true
