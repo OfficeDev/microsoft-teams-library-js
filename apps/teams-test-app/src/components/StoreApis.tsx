@@ -1,4 +1,4 @@
-import { AppId, store } from '@microsoft/teams-js';
+import { AppId, DialogSize, store } from '@microsoft/teams-js';
 import { ReactElement } from 'react';
 import React from 'react';
 
@@ -20,7 +20,7 @@ const StoreAPIs = (): ReactElement => {
     });
 
   const OpenStore = (): ReactElement =>
-    ApiWithTextInput<{ dialogType: string; appId?: string; collectionId?: string }>({
+    ApiWithTextInput<{ dialogType: string; appId?: string; collectionId?: string; size?: DialogSize }>({
       name: 'storeOpen',
       title: 'Store Open',
       onClick: {
@@ -35,6 +35,7 @@ const StoreAPIs = (): ReactElement => {
             dialogType: input.dialogType,
             appId: appId,
             collectionId: input.collectionId,
+            size: input.size,
           };
           // eslint-disable-next-line no-useless-catch
           try {
@@ -48,6 +49,10 @@ const StoreAPIs = (): ReactElement => {
       defaultInput: JSON.stringify({
         dialogType: 'appdetail',
         appId: '1542629c-01b3-4a6d-8f76-1938b779e48d',
+        size: {
+          width: 'large',
+          height: 300,
+        },
       }),
     });
   return (

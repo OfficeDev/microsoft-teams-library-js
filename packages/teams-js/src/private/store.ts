@@ -1,6 +1,7 @@
 import { callFunctionInHost } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { DialogSize } from '../public';
 import { AppId } from '../public/appId';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -42,11 +43,25 @@ export enum StoreDialogType {
 /**
  * @beta
  * @hidden
+ * Interface of store dialog size
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface StoreSizeInfo {
+  /**
+   * the store dialog size, defined by {@link DialogSize}, if not present, the host will choose an appropriate size
+   */
+  size?: DialogSize;
+}
+
+/**
+ * @beta
+ * @hidden
  * Interface of open full store, copilot store and in-context-store function parameter
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenFullStoreAndICSParams {
+export interface OpenFullStoreAndICSParams extends StoreSizeInfo {
   /**
    * the store dialog type, defined by {@link StoreDialogType}
    */
@@ -59,7 +74,7 @@ export interface OpenFullStoreAndICSParams {
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenAppDetailParams {
+export interface OpenAppDetailParams extends StoreSizeInfo {
   /**
    * need to be app detail type, defined by {@link StoreDialogType}
    */
@@ -76,7 +91,7 @@ export interface OpenAppDetailParams {
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenSpecificStoreParams {
+export interface OpenSpecificStoreParams extends StoreSizeInfo {
   /**
    * need to be specific store type, defined by {@link StoreDialogType}
    */
@@ -94,6 +109,15 @@ export interface OpenSpecificStoreParams {
  * Limited to Microsoft-internal use
  */
 export type OpenStoreParams = OpenFullStoreAndICSParams | OpenAppDetailParams | OpenSpecificStoreParams;
+
+/**
+ * @beta
+ * @hidden
+ * error message when getting illegal store dialog size
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const errorInvalidDialogSize = 'Invalid store dialog size';
 
 /**
  * @beta
@@ -135,14 +159,24 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  if (openStoreParams === undefined || !Object.values(StoreDialogType).includes(openStoreParams.dialogType)) {
+  const { dialogType, size } = openStoreParams;
+  if (openStoreParams === undefined || !Object.values(StoreDialogType).includes(dialogType)) {
     throw new Error(errorInvalidDialogType);
   }
-  if (openStoreParams.dialogType === StoreDialogType.AppDetail && !(openStoreParams.appId instanceof AppId)) {
+  if (dialogType === StoreDialogType.AppDetail && !(openStoreParams.appId instanceof AppId)) {
     throw new Error(errorMissingAppId);
   }
-  if (openStoreParams.dialogType === StoreDialogType.SpecificStore && !openStoreParams.collectionId) {
+  if (dialogType === StoreDialogType.SpecificStore && !openStoreParams.collectionId) {
     throw new Error(errorMissingCollectionId);
+  }
+  if (size !== undefined) {
+    const { width, height } = size;
+    if (width !== undefined && typeof width === 'number' && width < 0) {
+      throw new Error(errorInvalidDialogSize);
+    }
+    if (height !== undefined && typeof height === 'number' && height < 0) {
+      throw new Error(errorInvalidDialogSize);
+    }
   }
   return callFunctionInHost(
     ApiName.Store_Open,
@@ -150,6 +184,7 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
       openStoreParams.dialogType,
       (openStoreParams as OpenAppDetailParams).appId,
       (openStoreParams as OpenSpecificStoreParams).collectionId,
+      JSON.stringify(openStoreParams.size),
     ],
     getApiVersionTag(StoreVersionTagNum, ApiName.Store_Open),
   );

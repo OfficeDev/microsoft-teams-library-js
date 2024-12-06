@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added the ability to specify size of store dialogs.",
+  "packageName": "@microsoft/teams-js",
+  "email": "yt6520143@163.com",
+  "dependentChangeType": "patch"
+}
