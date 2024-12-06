@@ -143,11 +143,8 @@ steps:
 
       cp -r $(Agent.BuildDirectory)/iOSHost/TestResults "${output}/output.xcresult"
       xchtmlreport -r ${output}/output.xcresult -j
-      echo "ls -lR ${output}"
 
-      ls -lR "${output}"
-      echo "Zipping logs directory..."
-      cd "$(agent.buildDirectory)/Logs/$(agent.JobName)"
+      echo "ls -lR ${output}"
 
       echo "Zipping logs directory..."
       cd "${output}"
