@@ -49,6 +49,10 @@ const StoreAPIs = (): ReactElement => {
       defaultInput: JSON.stringify({
         dialogType: 'appdetail',
         appId: '1542629c-01b3-4a6d-8f76-1938b779e48d',
+        size: {
+          width: 'large',
+          height: 300,
+        },
       }),
     });
   return (
