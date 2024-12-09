@@ -384,4 +384,22 @@ describe('copilot', () => {
       });
     });
   });
+
+  describe('copilot.customTelemetry', () => {
+    describe('sendCustomTelemetryData', () => {
+      it('sendCustomTelemetryData should throw if called before initialization', async () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        await expect(copilot.customTelemetry.sendCustomTelemetryData()).rejects.toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+      it('sendCustomTelemetryData should throw if called before initialization', async () => {
+        expect.assertions(1);
+        copilot.customTelemetry.sendCustomTelemetryData();
+        const message = utils.findMessageByFunc('copilot.customTelemetry.sendCustomTelemetryData');
+        expect(message).not.toBeNull();
+      });
+    });
+  });
 });
