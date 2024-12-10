@@ -16,7 +16,7 @@ import { runtime } from '../../public/runtime';
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 const copilotLogger = getLogger('copilot');
 
-enum Stage {
+export enum Stage {
   STAGE_E = 'E',
 }
 /**

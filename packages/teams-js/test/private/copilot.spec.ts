@@ -396,7 +396,7 @@ describe('copilot', () => {
       });
       it('sendCustomTelemetryData should throw if called before initialization', async () => {
         expect.assertions(1);
-        copilot.customTelemetry.sendCustomTelemetryData();
+        copilot.customTelemetry.sendCustomTelemetryData(copilot.Stage.STAGE_E);
         const message = utils.findMessageByFunc('copilot.customTelemetry.sendCustomTelemetryData');
         expect(message).not.toBeNull();
       });
