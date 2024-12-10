@@ -20,11 +20,17 @@ export enum Stage {
   STAGE_E = 'E',
 }
 /**
+ * Sends custom telemetry data to the host.
+ *
+ * @param {Stage} [name=Stage.STAGE_E] - The stage of the telemetry data. Defaults to Stage.STAGE_E.
+ * @param {number} [timestamp=getCurrentTimestamp() ?? Date.now()] - The timestamp of the telemetry data. Defaults to the current timestamp.
+ * @returns {Promise<void>} - A promise that resolves when the telemetry data has been sent.
+ * @throws {Error} - Throws an error if the app has not been successfully initialized.
+ *
  * @hidden
  * @internal
  * Limited to Microsoft-internal use
  * @beta
- * @throws Error if {@linkcode app.initialize} has not successfully completed
  */
 export function sendCustomTelemetryData(
   name: Stage = Stage.STAGE_E,
