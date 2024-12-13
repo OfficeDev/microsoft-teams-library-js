@@ -112,6 +112,7 @@ steps:
 
   - task: Bash@3
     displayName: 'iOS UI/E2E Tests'
+    name: iOS_E2E_Test_Task
     inputs:
       targetType: inline
       script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -parallel-testing-enabled YES -parallel-testing-worker-count 2 -test-iterations 3 -retry-tests-on-failure -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' -screenshot-enabled=\"YES\" -quiet -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
@@ -144,14 +145,18 @@ steps:
       cp -r $(Agent.BuildDirectory)/iOSHost/TestResults "${output}/output.xcresult"
       xchtmlreport -r ${output}/output.xcresult -j
 
-
       echo "ls -lR ${output}"
       ls -lR "${output}"
+
+      echo "Zipping logs directory..."
+      cd "${output}"
+      zip -r "$(agent.JobName)_DebugLogs.zip" .
     displayName: Preparations for publishing results
-    condition: always()
+    condition: eq(variables['task.iOS_E2E_Test_Task.status'], 'failed')
 
   - task: 1ES.PublishPipelineArtifact@1
     inputs:
-      path: '$(agent.buildDirectory)/Logs'
+      path: '$(agent.buildDirectory)/Logs/$(agent.JobName)/$(agent.JobName)_DebugLogs.zip'
       artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
-    condition: always()
+    condition: eq(variables['task.iOS_E2E_Test_Task.status'], 'failed')
+    continueOnError: true
