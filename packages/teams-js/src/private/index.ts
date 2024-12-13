@@ -19,9 +19,9 @@ export {
   openFilePreview,
 } from './privateAPIs';
 export * as conversations from './conversations';
-//It is necessary to export OpenConversationRequest from conversations.ts individually as well
+//It is necessary to export ConversationResponse and OpenConversationRequest from conversations.ts individually as well
 //to keep the named exports so as to not break the existing consumers directly referencing the named exports.
-export { OpenConversationRequest } from './conversations';
+export { ConversationResponse, OpenConversationRequest } from './conversations';
 export * as copilot from './copilot/copilot';
 export * as externalAppAuthentication from './externalAppAuthentication';
 export * as externalAppAuthenticationForCEA from './externalAppAuthenticationForCEA';
