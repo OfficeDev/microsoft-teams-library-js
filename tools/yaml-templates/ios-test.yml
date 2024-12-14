@@ -12,13 +12,21 @@ steps:
     path: iOSHost
     persistCredentials: true
 
+    # the line: echo "##vso[task.setvariable variable=xctestHtmlReportInstalled]Yes"
+    # is to set a self-defined variable to indicate task of this bash file is completing successfully because task may
+    # fail and exit earlier before this line (encounters an error when installing xctesthtmlreport tool)
+    # please use the link below for more information
+    # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/conditions?view=azure-devops#variables-created-in-a-step-used-in-subsequent-step-conditions
   - task: Bash@3
     displayName: 'Install XCTestHtmlReport for publishing result'
     inputs:
       targetType: inline
       script: |
         brew install xctesthtmlreport
+
+        echo "##vso[task.setvariable variable=xctestHtmlReportInstalled]Yes"
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+      continueOnError: true
       condition: always()
 
   - task: NodeTool@0
@@ -136,6 +144,8 @@ steps:
       mergeTestResults: true
     condition: succeededOrFailed()
 
+    # The condition of this task is to say, only when xctestHtmlReportInstall task successfully be executed,
+    # this task will then be executed to publish results to the artifact.
   - bash: |
       output="$(agent.buildDirectory)/Logs/$(agent.JobName)"
       rm -rf "${output}" > /dev/null
@@ -152,11 +162,11 @@ steps:
       cd "${output}"
       zip -r "$(agent.JobName)_DebugLogs.zip" .
     displayName: Preparations for publishing results
-    condition: eq(variables['task.iOS_E2E_Test_Task.status'], 'failed')
+    condition: eq(variables['xctestHtmlReportInstalled'], 'Yes')
 
   - task: 1ES.PublishPipelineArtifact@1
     inputs:
       path: '$(agent.buildDirectory)/Logs/$(agent.JobName)/$(agent.JobName)_DebugLogs.zip'
       artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
-    condition: eq(variables['task.iOS_E2E_Test_Task.status'], 'failed')
+    condition: and(eq(variables['task.iOS_E2E_Test_Task.status'], 'failed'), eq(variables['xctestHtmlReportInstalled'], 'Yes'))
     continueOnError: true
