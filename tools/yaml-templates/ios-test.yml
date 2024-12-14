@@ -144,6 +144,8 @@ steps:
       mergeTestResults: true
     condition: succeededOrFailed()
 
+    # The condition of this task is to say, only when xctestHtmlReportInstall task successfully be executed,
+    # this task will then be executed to publish results to the artifact.
   - bash: |
       output="$(agent.buildDirectory)/Logs/$(agent.JobName)"
       rm -rf "${output}" > /dev/null
