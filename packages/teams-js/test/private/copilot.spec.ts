@@ -1,4 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { ApiName } from '../../src/internal/telemetry';
+import { UUID } from '../../src/internal/uuidObject';
 import * as copilot from '../../src/private/copilot/copilot';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -51,6 +53,7 @@ const copilotRuntimeConfig: Runtime = {
   supports: {
     copilot: {
       eligibility: {},
+      customTelemetry: {},
     },
     pages: {
       appButton: {},
@@ -390,14 +393,16 @@ describe('copilot', () => {
       it('sendCustomTelemetryData should throw if called before initialization', async () => {
         expect.assertions(1);
         utils.uninitializeRuntimeConfig();
-        await expect(copilot.customTelemetry.sendCustomTelemetryData()).rejects.toThrowError(
+        await expect(copilot.customTelemetry.sendCustomTelemetryData(new UUID())).rejects.toThrowError(
           new Error(errorLibraryNotInitialized),
         );
       });
-      it('sendCustomTelemetryData should throw if called before initialization', async () => {
+
+      it('sendCustomTelemetryData message should not be null', async () => {
         expect.assertions(1);
-        copilot.customTelemetry.sendCustomTelemetryData(copilot.Stage.STAGE_E);
-        const message = utils.findMessageByFunc('copilot.customTelemetry.sendCustomTelemetryData');
+        await utils.initializeWithContext(FrameContexts.content);
+        await expect(copilot.customTelemetry.sendCustomTelemetryData(new UUID()));
+        const message = utils.findMessageByFunc(ApiName.Copilot_CustomTelemetry_SendCustomTelemetryData);
         expect(message).not.toBeNull();
       });
     });

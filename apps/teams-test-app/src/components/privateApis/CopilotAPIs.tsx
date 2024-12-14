@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
+import { UUID } from 'crypto';
 
 const CopilotAPIs = (): ReactElement => {
   const CheckCopilotEligibilityCapability = (): ReactElement =>
@@ -25,7 +26,7 @@ const CopilotAPIs = (): ReactElement => {
 
   const SendCustomTelemetryData = (): ReactElement =>
     ApiWithTextInput<{
-      name: copilot.Stage;
+      stageNameIdentifier: UUID;
       timestamp: number;
     }>({
       name: 'sendCustomTelemetryData',
