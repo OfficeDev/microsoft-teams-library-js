@@ -12,6 +12,11 @@ steps:
     path: iOSHost
     persistCredentials: true
 
+    # the line: echo "##vso[task.setvariable variable=xctestHtmlReportInstalled]Yes"
+    # is to set a self-defined variable to indicate task of this bash file is completing successfully because task may
+    # fail and exit earlier before this line (encounters an error when installing xctesthtmlreport tool)
+    # please use the link below for more information
+    # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/conditions?view=azure-devops#variables-created-in-a-step-used-in-subsequent-step-conditions
   - task: Bash@3
     displayName: 'Install XCTestHtmlReport for publishing result'
     inputs:
