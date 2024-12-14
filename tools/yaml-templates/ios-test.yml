@@ -166,5 +166,5 @@ steps:
     inputs:
       path: '$(agent.buildDirectory)/Logs/$(agent.JobName)/$(agent.JobName)_DebugLogs.zip'
       artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
-    condition: eq(variables['task.iOS_E2E_Test_Task.status'], 'failed')
+    condition: and(eq(variables['task.iOS_E2E_Test_Task.status'], 'failed'), eq(variables['xctestHtmlReportInstalled'], 'Yes'))
     continueOnError: true
