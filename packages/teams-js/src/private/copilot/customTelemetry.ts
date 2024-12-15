@@ -22,8 +22,8 @@ const copilotLogger = getLogger('copilot');
  *
  * @param { UUID } stageNameIdentifier - The stageName UUID identifier for the telemetry data.
  * @param { number } [timestamp=getCurrentTimestamp() ?? Date.now()] - The timestamp of the telemetry data. Defaults to the current timestamp.
- * @returns { Promise<void> } - A promise that resolves when the telemetry data has been sent.
- * @throws { Error } - Throws an error if the app has not been successfully initialized.
+ * @returns { Promise<void> } - promise resolves when the hubsdk acknowledges that it has received the message.
+ * @throws { Error } - Throws an error if the app has not been successfully initialized or the host-sdk returns an error as a response to this call
  *
  * @hidden
  * @internal
@@ -35,7 +35,11 @@ export async function sendCustomTelemetryData(
   timestamp: number = getCurrentTimestamp() ?? Date.now(),
 ): Promise<void> {
   ensureInitialized(runtime);
-  copilotLogger('Sending custom telemetry data to host. to record timestamp: %s', timestamp);
+  copilotLogger(
+    'Sending custom telemetry data to host for stage: %s to record timestamp: %s',
+    stageNameIdentifier,
+    timestamp,
+  );
   return callFunctionInHost(
     ApiName.Copilot_CustomTelemetry_SendCustomTelemetryData,
     [stageNameIdentifier.toString(), timestamp],
