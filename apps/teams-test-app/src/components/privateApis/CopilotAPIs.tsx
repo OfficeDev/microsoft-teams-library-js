@@ -1,9 +1,8 @@
-import { copilot } from '@microsoft/teams-js';
+import { copilot, UUID } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
-import { UUID } from 'crypto';
 
 const CopilotAPIs = (): ReactElement => {
   const CheckCopilotEligibilityCapability = (): ReactElement =>
@@ -35,11 +34,17 @@ const CopilotAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         validateInput: (_input) => {},
         submit: async (input) => {
-          const result = await copilot.customTelemetry.sendCustomTelemetryData(input.name, input.timestamp);
+          const result = await copilot.customTelemetry.sendCustomTelemetryData(
+            input.stageNameIdentifier,
+            input.timestamp,
+          );
           return JSON.stringify(result);
         },
       },
-      defaultInput: JSON.stringify({ name: copilot.Stage.STAGE_E, timestamp: Date.now() }),
+      defaultInput: JSON.stringify({
+        stageNameIdentifier: new UUID('805a4340-d5e0-4587-8f04-0ae88219699f'),
+        timestamp: Date.now(),
+      }),
     });
 
   return (

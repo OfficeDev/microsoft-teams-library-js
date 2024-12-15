@@ -401,7 +401,7 @@ describe('copilot', () => {
       it('sendCustomTelemetryData message should not be null', async () => {
         expect.assertions(1);
         await utils.initializeWithContext(FrameContexts.content);
-        await expect(copilot.customTelemetry.sendCustomTelemetryData(new UUID()));
+        await expect(copilot.customTelemetry.sendCustomTelemetryData(new UUID('805a4340-d5e0-4587-8f04-0ae88219699f')));
         const message = utils.findMessageByFunc(ApiName.Copilot_CustomTelemetry_SendCustomTelemetryData);
         expect(message).not.toBeNull();
       });
