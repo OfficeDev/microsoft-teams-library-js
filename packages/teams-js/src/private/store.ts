@@ -89,8 +89,6 @@ export interface OpenInContextStoreParams extends StoreSizeInfo {
 
   /**
    * The application meta capabilities (e.g., ["copilotPlugins", "copilotExtensions"]).
-   * Reference:
-   * https://domoreexp.visualstudio.com/Teamspace/_git/teams-modular-packages?path=/packages/data/data-schema/src/module.graphql&version=GBmaster&line=9463&lineEnd=9463&lineStartColumn=6&lineEndColumn=25&lineStyle=plain&_a=contents
    */
   appMetaCapabilities?: string[];
 
