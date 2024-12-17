@@ -3,11 +3,13 @@
  * @module
  */
 
-import { sendAndHandleStatusAndReason } from '../internal/communication';
+import { callFunctionInHostAndHandleResponse, sendAndHandleStatusAndReason } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { SimpleTypeResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+import { ISerializable } from './serializable.interface';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -61,6 +63,25 @@ export function composeMail(composeMailParams: ComposeMailParams): Promise<void>
       ),
     );
   });
+}
+
+/**
+ * Compose a new email in the user's mailbox, opening it in the drafts UX instead of the standard email.
+ *
+ * @param composeMailParamsWithHandoff - Object that specifies the type of mail item to compose and the details of the mail item.
+ *
+ */
+export function composeMailWithHandoff(composeMailParamsWithHandoff: ComposeMailParamsWithHandoff): Promise<boolean> {
+  ensureInitialized(runtime, FrameContexts.content);
+  if (!isSupported()) {
+    throw new Error('Not supported');
+  }
+  return callFunctionInHostAndHandleResponse<boolean, boolean>(
+    ApiName.Mail_ComposeMailWithHandoff,
+    [new SerializableComposeMailParamsWithHandoff(composeMailParamsWithHandoff)],
+    new SimpleTypeResponseHandler(),
+    getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_ComposeMailWithHandoff),
+  );
 }
 
 /**
@@ -155,3 +176,31 @@ export type ComposeMailParams =
   | ComposeReplyOrForwardParams<ComposeMailType.Reply>
   | ComposeReplyOrForwardParams<ComposeMailType.ReplyAll>
   | ComposeReplyOrForwardParams<ComposeMailType.Forward>;
+
+/**
+ * Extended parameters for {@link composeMail}, including support for external handoff.
+ *
+ * This interface wraps {@link ComposeMailParams} to provide additional functionality for scenarios
+ * where an external handoff is needed, such as transferring a draft email created in BizChat.
+ *
+ * @see {@link ComposeNewParams} for parameters when composing a new mail item.
+ * @see {@link ComposeReplyOrForwardParams} for reply or forward-specific parameters.
+ * @see {@link ComposeMailType} for supported mail operation types.
+ */
+export interface ComposeMailParamsWithHandoff {
+  /**
+   * Base parameters for composing a mail item.
+   */
+  composeMailParams: ComposeMailParams;
+  /**
+   * Use this endpoint to retrieve the handoff payload when BizChat creates an email draft for external handoff.
+   */
+  handoffId?: string;
+}
+
+class SerializableComposeMailParamsWithHandoff implements ISerializable {
+  public constructor(private composeMailParamsWithHandoff: ComposeMailParamsWithHandoff) {}
+  public serialize(): object {
+    return this.composeMailParamsWithHandoff;
+  }
+}

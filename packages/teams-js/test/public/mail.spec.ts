@@ -265,6 +265,102 @@ describe('mail', () => {
     });
   });
 
+  describe('composeMailWithHandoff', () => {
+    const composeMailParams: mail.ComposeMailParams = {
+      type: mail.ComposeMailType.New,
+    };
+    const composeMailParamsWithHandoff: mail.ComposeMailParamsWithHandoff = {
+      composeMailParams: composeMailParams,
+      handoffId: 'mockHandoffId',
+    };
+
+    it('should not allow calls before initialization', () => {
+      return expect(() => mail.composeMailWithHandoff(composeMailParamsWithHandoff)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
+    });
+
+    Object.keys(FrameContexts)
+      .map((k) => FrameContexts[k])
+      .forEach((frameContext) => {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          if (frameContext === FrameContexts.content) {
+            return;
+          }
+          await utils.initializeWithContext(frameContext);
+          expect.assertions(1);
+          expect(() => mail.composeMailWithHandoff(composeMailParamsWithHandoff)).toThrowError(
+            `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
+          );
+        });
+      });
+
+    it('should not allow calls if runtime does not support mail', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect.assertions(1);
+      const error = new Error('Not supported');
+      try {
+        mail.composeMailWithHandoff(composeMailParamsWithHandoff);
+      } catch (e) {
+        expect(e).toEqual(error);
+      }
+    });
+
+    it('should successfully throw if the composeMailParamsWithHandoff message sends and fails', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
+
+      const composeMailPromise = mail.composeMailWithHandoff(composeMailParamsWithHandoff);
+
+      const message = utils.findMessageByFunc('mail.composeMailWithHandoff');
+
+      const data = {
+        success: false,
+        error: dataError,
+      };
+
+      await utils.respondToMessage(message, data.success, data.error);
+      await composeMailPromise.catch((e) => expect(e).toMatchObject(new Error(dataError)));
+    });
+
+    it('should successfully send the composeMailParamsWithHandoff message', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
+
+      const promise = mail.composeMailWithHandoff(composeMailParamsWithHandoff);
+
+      const message = utils.findMessageByFunc('mail.composeMailWithHandoff');
+
+      const data = {
+        success: true,
+      };
+
+      await utils.respondToMessage(message, data.success);
+      await promise;
+
+      expect(message).not.toBeNull();
+      expect(message.args.length).toEqual(1);
+      expect(message.args[0]).toStrictEqual(composeMailParamsWithHandoff);
+    });
+
+    it('should resolve promise after successfully sending the composeMail message', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
+
+      const promise = mail.composeMailWithHandoff(composeMailParamsWithHandoff);
+
+      const message = utils.findMessageByFunc('mail.composeMailWithHandoff');
+
+      const data = {
+        success: true,
+      };
+
+      await utils.respondToMessage(message, data.success);
+      await expect(promise).resolves.not.toThrow();
+    });
+  });
+
   describe('isSupported', () => {
     it('should return false if the runtime says mail is not supported', async () => {
       await utils.initializeWithContext(FrameContexts.content);
