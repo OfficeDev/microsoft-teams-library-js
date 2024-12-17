@@ -235,6 +235,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly clipboard?: {};
     readonly conversations?: {};
     readonly copilot?: {
+      readonly customTelemetry?: {};
       readonly eligibility?: {};
     };
     readonly dialog?: {
