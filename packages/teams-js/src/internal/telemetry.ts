@@ -1,5 +1,5 @@
+// We are directly referencing the browser implementation of `debug` to resolve an issue with polyfilling. For a full write-up on the bug please see ADO Bug #9619161
 import { debug as registerLogger, Debugger } from 'debug/src/browser';
-// We are directly referencing the browser implementation of `debug` to resolve an issue with polyfilling. For a full write-up on the bug please see: https://office.visualstudio.com/MetaOS/_workitems/edit/9619161/
 
 import { UUID } from './uuidObject';
 
