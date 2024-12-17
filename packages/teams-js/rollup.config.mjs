@@ -36,7 +36,7 @@ export default [
       typescript(),
       json(),
       commonjs(),
-      nodePolyfills({ include: './src/**/*' }),
+      nodePolyfills(),
     ],
     treeshake: {
       moduleSideEffects: [
