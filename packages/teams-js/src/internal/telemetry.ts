@@ -1,4 +1,4 @@
-import { debug as registerLogger, Debugger } from 'debug';
+import { debug as registerLogger, Debugger } from 'debug/src/browser';
 
 import { UUID } from './uuidObject';
 
