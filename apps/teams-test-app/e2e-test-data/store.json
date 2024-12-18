@@ -147,6 +147,37 @@
         }
       },
       "expectedTestAppValue": "Error: Error: Invalid store dialog size"
+    },
+    {
+      "title": "openStoreExperience API Call InContextStore with Filters - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "ics",
+        "appCapability": "Bot",
+        "appMetaCapabilities": ["copilotplugins", "copilotExtensions"],
+        "installationScope": "Team",
+        "filteredOutAppIds": ["123"],
+        "size": {
+          "width": "large",
+          "height": "large"
+        }
+      },
+      "expectedAlertValue": "openStoreExperience called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "openStoreExperience API Call InContextStore with Filters - Invalid Params - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "ics",
+        "size": {
+          "width": "large",
+          "height": "large"
+        },
+        "appCapability": 1234
+      },
+      "expectedTestAppValue": "Error: Error: 4000, message: appCapability must be a string"
     }
   ]
 }

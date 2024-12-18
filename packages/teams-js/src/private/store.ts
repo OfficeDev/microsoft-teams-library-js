@@ -57,15 +57,50 @@ export interface StoreSizeInfo {
 /**
  * @beta
  * @hidden
- * Interface of open full store, copilot store and in-context-store function parameter
+ * Interface for opening the full store function parameters
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenFullStoreAndICSParams extends StoreSizeInfo {
+export interface OpenFullStoreParams extends StoreSizeInfo {
   /**
-   * the store dialog type, defined by {@link StoreDialogType}
+   * The store dialog type, specifically the full store, defined by {@link StoreDialogType}
    */
-  dialogType: StoreDialogType.FullStore | StoreDialogType.InContextStore;
+  dialogType: StoreDialogType.FullStore;
+}
+/**
+ * @beta
+ * @hidden
+ * Interface for opening the in-context store function parameters
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface OpenInContextStoreParams extends StoreSizeInfo {
+  /**
+   * The store dialog type, specifically the in-context store, defined by {@link StoreDialogType}
+   */
+  dialogType: StoreDialogType.InContextStore;
+
+  /**
+   * The application capability (e.g., "Tab", "Bot", "Messaging", "Connector", "CUSTOMBOT").
+   * Defaults to "Bot".
+   */
+  appCapability?: string;
+
+  /**
+   * The application meta capabilities (e.g., ["copilotPlugins", "copilotExtensions"]).
+   */
+  appMetaCapabilities?: string[];
+
+  /**
+   * The installation scope (e.g., "Personal" | "Team").
+   * Defaults to "Personal".
+   */
+  installationScope?: string;
+
+  /**
+   * A list of app IDs to be filtered out.
+   */
+  filteredOutAppIds?: string[];
 }
 /**
  * @beta
@@ -104,11 +139,19 @@ export interface OpenSpecificStoreParams extends StoreSizeInfo {
 /**
  * @beta
  * @hidden
- * Interface of open store function parameters, including OpenFullStoreAndICSParams, OpenAppDetailParams, OpenSpecificStoreParams
+ * Interface of open store function parameters, including:
+ * - `OpenAppDetailParams`
+ * - `OpenFullStoreParams`
+ * - `OpenInContextStoreParams`
+ * - `OpenSpecificStoreParams`
  * @internal
  * Limited to Microsoft-internal use
  */
-export type OpenStoreParams = OpenFullStoreAndICSParams | OpenAppDetailParams | OpenSpecificStoreParams;
+export type OpenStoreParams =
+  | OpenFullStoreParams
+  | OpenInContextStoreParams
+  | OpenAppDetailParams
+  | OpenSpecificStoreParams;
 
 /**
  * @beta
@@ -178,6 +221,15 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
       throw new Error(errorInvalidDialogSize);
     }
   }
+  const inContextStoreFilters =
+    dialogType === StoreDialogType.InContextStore
+      ? JSON.stringify({
+          appCapability: openStoreParams.appCapability,
+          appMetaCapabilities: openStoreParams.appMetaCapabilities,
+          installationScope: openStoreParams.installationScope,
+          filteredOutAppIds: openStoreParams.filteredOutAppIds,
+        })
+      : undefined;
   return callFunctionInHost(
     ApiName.Store_Open,
     [
@@ -185,6 +237,7 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
       (openStoreParams as OpenAppDetailParams).appId,
       (openStoreParams as OpenSpecificStoreParams).collectionId,
       JSON.stringify(openStoreParams.size),
+      inContextStoreFilters,
     ],
     getApiVersionTag(StoreVersionTagNum, ApiName.Store_Open),
   );

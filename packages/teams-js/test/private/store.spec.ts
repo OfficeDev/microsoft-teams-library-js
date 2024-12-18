@@ -23,7 +23,7 @@ describe('store', () => {
   });
 
   describe('openStoreExperience', () => {
-    const paramFullStore: store.OpenFullStoreAndICSParams = {
+    const paramFullStore: store.OpenFullStoreParams = {
       dialogType: store.StoreDialogType.FullStore,
     };
     const paramAppDetail: store.OpenAppDetailParams = {
