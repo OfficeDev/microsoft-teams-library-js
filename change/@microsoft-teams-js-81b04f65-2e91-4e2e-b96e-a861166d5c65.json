@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added `ConversationResponse` to explicit named exports for back-compat",
+  "packageName": "@microsoft/teams-js",
+  "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}

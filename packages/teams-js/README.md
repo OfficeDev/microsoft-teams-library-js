@@ -71,7 +71,7 @@ The [Teams Test App](https://aka.ms/teams-test-app) is used to validate the Team
 
 ## Troubleshooting
 
-If the CDN hash value on the npm page is out of date please refer to [here] (https://github.com/OfficeDev/microsoft-teams-library-js/blob/main/packages/teams-js/README.md) for an up to date version. If you notice this problem, please report that issue to us in [GitHub Issues] (https://github.com/OfficeDev/microsoft-teams-library-js/issues)
+If the CDN hash value on the npm page is out of date please refer to [here](https://github.com/OfficeDev/microsoft-teams-library-js/blob/main/packages/teams-js/README.md) for an up to date version. If you notice this problem, please report that issue to us in [GitHub Issues](https://github.com/OfficeDev/microsoft-teams-library-js/issues)
 
 ## Contributing
 
