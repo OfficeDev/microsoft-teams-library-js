@@ -149,7 +149,7 @@
       "expectedTestAppValue": "Error: Error: Invalid store dialog size"
     },
     {
-      "title": "openStoreExperience API Call InContextStore - Success",
+      "title": "openStoreExperience API Call InContextStore with Filters - Success",
       "type": "callResponse",
       "boxSelector": "#box_storeOpen",
       "inputValue": {
@@ -166,7 +166,7 @@
       "expectedAlertValue": "openStoreExperience called with ##JSON_INPUT_VALUE##"
     },
     {
-      "title": "openStoreExperience API Call InContextStore With Invalid Params - Fail",
+      "title": "openStoreExperience API Call InContextStore with Filters - Invalid Params - Fail",
       "type": "callResponse",
       "boxSelector": "#box_storeOpen",
       "inputValue": {
