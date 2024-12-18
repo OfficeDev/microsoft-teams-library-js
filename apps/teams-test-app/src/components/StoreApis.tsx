@@ -20,7 +20,16 @@ const StoreAPIs = (): ReactElement => {
     });
 
   const OpenStore = (): ReactElement =>
-    ApiWithTextInput<{ dialogType: string; appId?: string; collectionId?: string; size?: DialogSize }>({
+    ApiWithTextInput<{
+      dialogType: string;
+      appId?: string;
+      collectionId?: string;
+      size?: DialogSize;
+      appCapability?: string;
+      appMetaCapabilities?: string[];
+      installationScope?: string;
+      filteredOutAppIds?: string[];
+    }>({
       name: 'storeOpen',
       title: 'Store Open',
       onClick: {
@@ -36,6 +45,10 @@ const StoreAPIs = (): ReactElement => {
             appId: appId,
             collectionId: input.collectionId,
             size: input.size,
+            appCapability: input.appCapability,
+            appMetaCapabilities: input.appMetaCapabilities,
+            installationScope: input.installationScope,
+            filteredOutAppIds: input.filteredOutAppIds,
           };
           // eslint-disable-next-line no-useless-catch
           try {
