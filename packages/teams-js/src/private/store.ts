@@ -1,6 +1,7 @@
 import { callFunctionInHost } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { DialogSize } from '../public';
 import { AppId } from '../public/appId';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -42,15 +43,64 @@ export enum StoreDialogType {
 /**
  * @beta
  * @hidden
- * Interface of open full store, copilot store and in-context-store function parameter
+ * Interface of store dialog size
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenFullStoreAndICSParams {
+export interface StoreSizeInfo {
   /**
-   * the store dialog type, defined by {@link StoreDialogType}
+   * the store dialog size, defined by {@link DialogSize}, if not present, the host will choose an appropriate size
    */
-  dialogType: StoreDialogType.FullStore | StoreDialogType.InContextStore;
+  size?: DialogSize;
+}
+
+/**
+ * @beta
+ * @hidden
+ * Interface for opening the full store function parameters
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface OpenFullStoreParams extends StoreSizeInfo {
+  /**
+   * The store dialog type, specifically the full store, defined by {@link StoreDialogType}
+   */
+  dialogType: StoreDialogType.FullStore;
+}
+/**
+ * @beta
+ * @hidden
+ * Interface for opening the in-context store function parameters
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface OpenInContextStoreParams extends StoreSizeInfo {
+  /**
+   * The store dialog type, specifically the in-context store, defined by {@link StoreDialogType}
+   */
+  dialogType: StoreDialogType.InContextStore;
+
+  /**
+   * The application capability (e.g., "Tab", "Bot", "Messaging", "Connector", "CUSTOMBOT").
+   * Defaults to "Bot".
+   */
+  appCapability?: string;
+
+  /**
+   * The application meta capabilities (e.g., ["copilotPlugins", "copilotExtensions"]).
+   */
+  appMetaCapabilities?: string[];
+
+  /**
+   * The installation scope (e.g., "Personal" | "Team").
+   * Defaults to "Personal".
+   */
+  installationScope?: string;
+
+  /**
+   * A list of app IDs to be filtered out.
+   */
+  filteredOutAppIds?: string[];
 }
 /**
  * @beta
@@ -59,7 +109,7 @@ export interface OpenFullStoreAndICSParams {
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenAppDetailParams {
+export interface OpenAppDetailParams extends StoreSizeInfo {
   /**
    * need to be app detail type, defined by {@link StoreDialogType}
    */
@@ -76,7 +126,7 @@ export interface OpenAppDetailParams {
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenSpecificStoreParams {
+export interface OpenSpecificStoreParams extends StoreSizeInfo {
   /**
    * need to be specific store type, defined by {@link StoreDialogType}
    */
@@ -89,11 +139,28 @@ export interface OpenSpecificStoreParams {
 /**
  * @beta
  * @hidden
- * Interface of open store function parameters, including OpenFullStoreAndICSParams, OpenAppDetailParams, OpenSpecificStoreParams
+ * Interface of open store function parameters, including:
+ * - `OpenAppDetailParams`
+ * - `OpenFullStoreParams`
+ * - `OpenInContextStoreParams`
+ * - `OpenSpecificStoreParams`
  * @internal
  * Limited to Microsoft-internal use
  */
-export type OpenStoreParams = OpenFullStoreAndICSParams | OpenAppDetailParams | OpenSpecificStoreParams;
+export type OpenStoreParams =
+  | OpenFullStoreParams
+  | OpenInContextStoreParams
+  | OpenAppDetailParams
+  | OpenSpecificStoreParams;
+
+/**
+ * @beta
+ * @hidden
+ * error message when getting illegal store dialog size
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const errorInvalidDialogSize = 'Invalid store dialog size';
 
 /**
  * @beta
@@ -135,21 +202,42 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  if (openStoreParams === undefined || !Object.values(StoreDialogType).includes(openStoreParams.dialogType)) {
+  const { dialogType, size } = openStoreParams;
+  if (openStoreParams === undefined || !Object.values(StoreDialogType).includes(dialogType)) {
     throw new Error(errorInvalidDialogType);
   }
-  if (openStoreParams.dialogType === StoreDialogType.AppDetail && !(openStoreParams.appId instanceof AppId)) {
+  if (dialogType === StoreDialogType.AppDetail && !(openStoreParams.appId instanceof AppId)) {
     throw new Error(errorMissingAppId);
   }
-  if (openStoreParams.dialogType === StoreDialogType.SpecificStore && !openStoreParams.collectionId) {
+  if (dialogType === StoreDialogType.SpecificStore && !openStoreParams.collectionId) {
     throw new Error(errorMissingCollectionId);
   }
+  if (size !== undefined) {
+    const { width, height } = size;
+    if (width !== undefined && typeof width === 'number' && width < 0) {
+      throw new Error(errorInvalidDialogSize);
+    }
+    if (height !== undefined && typeof height === 'number' && height < 0) {
+      throw new Error(errorInvalidDialogSize);
+    }
+  }
+  const inContextStoreFilters =
+    dialogType === StoreDialogType.InContextStore
+      ? JSON.stringify({
+          appCapability: openStoreParams.appCapability,
+          appMetaCapabilities: openStoreParams.appMetaCapabilities,
+          installationScope: openStoreParams.installationScope,
+          filteredOutAppIds: openStoreParams.filteredOutAppIds,
+        })
+      : undefined;
   return callFunctionInHost(
     ApiName.Store_Open,
     [
       openStoreParams.dialogType,
       (openStoreParams as OpenAppDetailParams).appId,
       (openStoreParams as OpenSpecificStoreParams).collectionId,
+      JSON.stringify(openStoreParams.size),
+      inContextStoreFilters,
     ],
     getApiVersionTag(StoreVersionTagNum, ApiName.Store_Open),
   );
