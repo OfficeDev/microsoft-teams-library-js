@@ -117,7 +117,7 @@ export type OpenStoreParams = OpenFullStoreAndICSParams | OpenAppDetailParams | 
  * @internal
  * Limited to Microsoft-internal use
  */
-const errorInvalidDialogSize = 'Invalid store dialog size';
+export const errorInvalidDialogSize = 'Invalid store dialog size';
 
 /**
  * @beta
