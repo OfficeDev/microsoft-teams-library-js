@@ -78,6 +78,10 @@ interface IRuntimeV1 extends IBaseRuntime {
       readonly sharedFrame?: {};
     };
     readonly webStorage?: {};
+    readonly exampleFeature?: {
+      readonly basicCall?: {};
+      readonly events?: {};
+    };
   };
 }
 
@@ -142,6 +146,10 @@ interface IRuntimeV2 extends IBaseRuntime {
       readonly sharedFrame?: {};
     };
     readonly webStorage?: {};
+    readonly exampleFeature?: {
+      readonly basicCall?: {};
+      readonly events?: {};
+    };
   };
 }
 
@@ -214,6 +222,10 @@ interface IRuntimeV3 extends IBaseRuntime {
       readonly image?: {};
     };
     readonly webStorage?: {};
+    readonly exampleFeature?: {
+      readonly basicCall?: {};
+      readonly events?: {};
+    };
   };
 }
 
@@ -309,6 +321,10 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly image?: {};
     };
     readonly webStorage?: {};
+    readonly exampleFeature?: {
+      readonly basicCall?: {};
+      readonly events?: {};
+    };
   };
 }
 // Constant used to set the runtime configuration
@@ -365,7 +381,7 @@ export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
  * during initialization.
  */
 export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
-  apiVersion: 4,
+  apiVersion: latestRuntimeApiVersion,
   isNAAChannelRecommended: false,
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
@@ -384,6 +400,10 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
         parentCommunication: {},
       },
       update: {},
+    },
+    exampleFeature: {
+      basicCall: {},
+      events: {},
     },
     interactive: {},
     logs: {},

@@ -1,0 +1,56 @@
+{
+  "name": "Example Feature",
+  "checkIsSupported": {
+    "version": ">2.0.0-beta.3"
+  },
+  "featureTests": [
+    {
+      "feature": {
+        "id": "exampleFeature",
+        "version": 1
+      },
+      "testCases": [
+        {
+          "title": "Basic Call - Success",
+          "type": "callResponse",
+          "boxSelector": "#box_exampleFeature",
+          "inputValue": {
+            "input": "test input"
+          },
+          "expectedTestAppValue": "{\"status\":\"test successful - received: test input\"}"
+        },
+        {
+          "title": "Basic Call - Missing Input",
+          "type": "callResponse",
+          "boxSelector": "#box_exampleFeature",
+          "inputValue": {},
+          "expectedTestAppValue": "Error: Input is required"
+        },
+        {
+          "title": "Register and Raise Event",
+          "type": "callResponse",
+          "boxSelector": "#box_exampleFeatureEvent",
+          "inputValue": {
+            "data": "test data"
+          },
+          "expectedTestAppValue": "event received: test data"
+        },
+        {
+          "title": "Raise Direct Event",
+          "type": "callResponse",
+          "boxSelector": "#box_exampleDirectEvent",
+          "expectedTestAppValue": "Event raised"
+        },
+        {
+          "title": "Regular Test",
+          "type": "callResponse",
+          "boxSelector": "#box_regularTest",
+          "inputValue": {
+            "test": "test input"
+          },
+          "expectedTestAppValue": "regular test complete"
+        }
+      ]
+    }
+  ]
+}
