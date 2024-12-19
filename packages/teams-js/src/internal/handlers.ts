@@ -198,13 +198,13 @@ export function registerHostToAppPerformanceMetricsHandler(
  * Limited to Microsoft-internal use
  */
 export function handleHostToAppPerformanceMetrics(metrics: HostToAppPerformanceMetrics): void {
-  console.log('NOW IT WILL CHEKCK WHETHER THE HANDLER IS REGISTERED OR NOT');
+  console.log('NOW IT WILL CHECK WHETHER THE HANDLER IS REGISTERED OR NOT --> ' + metrics.actionName);
   // post the metrics to the parent window without using async/await. That will make sure the metric is posted asynchronously,
   // and does not stop the response to go to the calling app.
   // IF we don't want to post back everything, we can add a check here to see if the API name is copilot.eligibility
   callFunctionInHost(
     'reportTelemetryEvent',
-    [metrics.actionName, metrics.messageDelay, metrics.requestStartedAt],
+    [metrics.actionName, metrics.actionId, metrics.messageDelay, metrics.requestStartedAt],
     'v3_reportTelemetryEvent',
   );
   if (!HandlersPrivate.hostToAppPerformanceMetricsHandler) {

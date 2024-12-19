@@ -56,6 +56,7 @@ export default class HostToAppMessageDelayTelemetry {
     }
     handleHostToAppPerformanceMetrics({
       actionName: message.func,
+      actionId: message.uuid?.toString() || 'theUuidOfMessageIsNotAvailable',
       messageDelay: endTime - timestamp,
       requestStartedAt: timestamp,
     });
@@ -91,6 +92,7 @@ export default class HostToAppMessageDelayTelemetry {
     //the api call should always reach here regardless the handler is registered or not
     handleHostToAppPerformanceMetrics({
       actionName: callbackInformation.name,
+      actionId: callbackID.toString(),
       messageDelay: endTime - message.monotonicTimestamp,
       requestStartedAt: callbackInformation.calledAt,
     });
