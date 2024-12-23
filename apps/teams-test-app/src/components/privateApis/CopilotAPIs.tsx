@@ -1,7 +1,7 @@
-import { copilot } from '@microsoft/teams-js';
+import { copilot, UUID } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithoutInput } from '../utils';
+import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CopilotAPIs = (): ReactElement => {
@@ -23,11 +23,40 @@ const CopilotAPIs = (): ReactElement => {
       },
     });
 
+  const SendCustomTelemetryData = (): ReactElement =>
+    ApiWithTextInput<{
+      stageNameIdentifier: UUID;
+      timestamp: number;
+    }>({
+      name: 'sendCustomTelemetryData',
+      title: 'sendCustomTelemetryData',
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        validateInput: (_input) => {},
+        submit: async (input) => {
+          const result = await copilot.customTelemetry.sendCustomTelemetryData(
+            input.stageNameIdentifier,
+            input.timestamp,
+          );
+          return JSON.stringify(result);
+        },
+      },
+      defaultInput: JSON.stringify({
+        stageNameIdentifier: new UUID('805a4340-d5e0-4587-8f04-0ae88219699f'),
+        timestamp: Date.now(),
+      }),
+    });
+
   return (
-    <ModuleWrapper title="Copilot.Eligibility">
-      <CheckCopilotEligibilityCapability />
-      <GetEligibilityInfo />
-    </ModuleWrapper>
+    <>
+      <ModuleWrapper title="Copilot.Eligibility">
+        <CheckCopilotEligibilityCapability />
+        <GetEligibilityInfo />
+      </ModuleWrapper>
+      <ModuleWrapper title="Copilot.CustomTelemetry">
+        <SendCustomTelemetryData />
+      </ModuleWrapper>
+    </>
   );
 };
 
