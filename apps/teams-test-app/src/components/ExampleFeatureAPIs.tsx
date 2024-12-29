@@ -8,7 +8,7 @@ const CheckExampleFeatureCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkExampleFeatureCapability',
     title: 'Check Example Feature Capability',
-    onClick: async () => `Example Feature module ${exampleFeature.isSupported() ? 'is' : 'is not'} supported`,
+    onClick: async () => `ExampleFeature module ${exampleFeature.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const BasicCall = (): React.ReactElement =>
@@ -83,7 +83,7 @@ const RegularTest = (): React.ReactElement =>
   });
 
 const ExampleFeatureAPIs = (): React.ReactElement => (
-  <ModuleWrapper title="Example Feature">
+  <ModuleWrapper title="ExampleFeature">
     <CheckExampleFeatureCapability />
     <BasicCall />
     <RegisterAndRaiseEvent />

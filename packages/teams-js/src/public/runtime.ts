@@ -78,10 +78,7 @@ interface IRuntimeV1 extends IBaseRuntime {
       readonly sharedFrame?: {};
     };
     readonly webStorage?: {};
-    readonly exampleFeature?: {
-      readonly basicCall?: {};
-      readonly events?: {};
-    };
+    readonly exampleFeature?: {};
   };
 }
 
@@ -146,10 +143,7 @@ interface IRuntimeV2 extends IBaseRuntime {
       readonly sharedFrame?: {};
     };
     readonly webStorage?: {};
-    readonly exampleFeature?: {
-      readonly basicCall?: {};
-      readonly events?: {};
-    };
+    readonly exampleFeature?: {};
   };
 }
 
@@ -222,10 +216,7 @@ interface IRuntimeV3 extends IBaseRuntime {
       readonly image?: {};
     };
     readonly webStorage?: {};
-    readonly exampleFeature?: {
-      readonly basicCall?: {};
-      readonly events?: {};
-    };
+    readonly exampleFeature?: {};
   };
 }
 
@@ -321,10 +312,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly image?: {};
     };
     readonly webStorage?: {};
-    readonly exampleFeature?: {
-      readonly basicCall?: {};
-      readonly events?: {};
-    };
+    readonly exampleFeature?: {};
   };
 }
 // Constant used to set the runtime configuration
@@ -401,10 +389,7 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
       },
       update: {},
     },
-    exampleFeature: {
-      basicCall: {},
-      events: {},
-    },
+    exampleFeature: {},
     interactive: {},
     logs: {},
     meetingRoom: {},

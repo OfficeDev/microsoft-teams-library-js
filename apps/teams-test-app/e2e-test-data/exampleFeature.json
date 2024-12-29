@@ -1,13 +1,15 @@
 {
-  "name": "Example Feature",
+  "name": "ExampleFeature",
   "checkIsSupported": {
-    "version": ">2.0.0-beta.3"
+    "version": ">2.0.0-beta.3",
+    "toggleId": "exampleFeatureToggle",
+    "capabilityName": "ExampleFeature"
   },
   "featureTests": [
     {
       "feature": {
         "id": "exampleFeature",
-        "version": 1
+        "version": 2
       },
       "testCases": [
         {
@@ -17,14 +19,14 @@
           "inputValue": {
             "input": "test input"
           },
-          "expectedTestAppValue": "{\"status\":\"test successful - received: test input\"}"
+          "expectedTestAppValue": "test successful - received: test input"
         },
         {
           "title": "Basic Call - Missing Input",
           "type": "callResponse",
           "boxSelector": "#box_exampleFeature",
           "inputValue": {},
-          "expectedTestAppValue": "Error: Input is required"
+          "expectedTestAppValue": "Error: Error: Input is required"
         },
         {
           "title": "Register and Raise Event",

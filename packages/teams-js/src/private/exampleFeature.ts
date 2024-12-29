@@ -1,6 +1,4 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { errorNotSupportedOnPlatform } from '../public/constants';
-import { ErrorCode } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 /**
@@ -41,7 +39,7 @@ export interface ExampleEventData {
  * Limited to Microsoft-internal use
  */
 export function isSupported(): boolean {
-  return ensureInitialized(runtime) && runtime.supports.exampleFeature?.basicCall ? true : false;
+  return ensureInitialized(runtime) && runtime.supports.exampleFeature ? true : false;
 }
 
 /**
@@ -49,8 +47,9 @@ export function isSupported(): boolean {
  * Limited to Microsoft-internal use
  */
 export function basicCall(input: ExampleInput): Promise<ExampleResponse> {
-  if (!isSupported()) {
-    throw new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: ${errorNotSupportedOnPlatform}`);
+  ensureInitialized(runtime);
+  if (!input.input) {
+    throw new Error('Input is required');
   }
   return new Promise((resolve) => {
     resolve({ status: `test successful - received: ${input.input}` });
@@ -61,18 +60,8 @@ export function basicCall(input: ExampleInput): Promise<ExampleResponse> {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function isEventSupported(): boolean {
-  return ensureInitialized(runtime) && runtime.supports.exampleFeature?.events ? true : false;
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
 export function registerEventHandler(handler: (data: ExampleEventData) => void): void {
-  if (!isEventSupported()) {
-    throw new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: ${errorNotSupportedOnPlatform}`);
-  }
+  ensureInitialized(runtime);
   window.addEventListener('exampleEvent', ((event: CustomEvent<ExampleEventData>) => {
     handler(event.detail);
   }) as EventListener);
@@ -83,8 +72,6 @@ export function registerEventHandler(handler: (data: ExampleEventData) => void):
  * Limited to Microsoft-internal use
  */
 export function raiseEvent(eventData: string): void {
-  if (!isEventSupported()) {
-    throw new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: ${errorNotSupportedOnPlatform}`);
-  }
+  ensureInitialized(runtime);
   window.dispatchEvent(new CustomEvent('exampleDirectEvent', { detail: eventData }));
 }
