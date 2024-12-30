@@ -1,3 +1,24 @@
+name: Proof of Presence
+resource: repository
+where: 
+  - repository.isProduction
+
+configuration:
+  proofOfPresence:
+    allowedIdentity:
+    - Microsoft
+    - PME
+    identityConfiguration:
+    - tenantName: Microsoft
+      tenantId: 72f988bf-86f1-41af-91ab-2d7cd011db47
+      domainHint: microsoft.com
+    - tenantName: PME
+      tenantId: 975f013f-7f24-47e8-a7d3-abc4752bf346
+      domainHint: pme.gbl
+    - tenantName: Torus
+      tenantId: cdc5aeea-15c5-4db6-b079-fcadd2505dc2
+      domainHint: prdtrs01.onmicrosoft.com
+      
 id: 
 name: GitOps.PullRequestIssueManagement
 description: GitOps.PullRequestIssueManagement primitive
