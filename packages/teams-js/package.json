@@ -33,6 +33,7 @@
   "sideEffects": [
     "src/internal/communication.ts",
     "src/internal/nestedAppAuthUtils.ts",
+    "src/internal/prefetch.ts",
     "src/internal/utils.ts",
     "src/internal/videoEffectsUtils.ts",
     "src/private/constants.ts",

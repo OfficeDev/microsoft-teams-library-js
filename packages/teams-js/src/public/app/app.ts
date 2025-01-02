@@ -14,7 +14,6 @@ import * as Handlers from '../../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { inServerSideRenderingEnvironment } from '../../internal/utils';
-import { prefetchOriginsFromCDN } from '../../internal/validOrigins';
 import * as messageChannels from '../../private/messageChannels/messageChannels';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from '../constants';
 import {
@@ -26,8 +25,6 @@ import {
 } from '../interfaces';
 import { version } from '../version';
 import * as lifecycle from './lifecycle';
-
-prefetchOriginsFromCDN();
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
