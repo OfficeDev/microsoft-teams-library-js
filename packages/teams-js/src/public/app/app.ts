@@ -27,6 +27,8 @@ import {
 import { version } from '../version';
 import * as lifecycle from './lifecycle';
 
+prefetchOriginsFromCDN();
+
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
@@ -615,7 +617,6 @@ logWhereTeamsJsIsBeingUsed();
  * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
  */
 export function initialize(validMessageOrigins?: string[]): Promise<void> {
-  prefetchOriginsFromCDN();
   return appHelpers.appInitializeHelper(
     getApiVersionTag(appTelemetryVersionNumber, ApiName.App_Initialize),
     validMessageOrigins,
