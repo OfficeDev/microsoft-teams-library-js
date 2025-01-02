@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Moved prefetch of CDN resources out of initialization workflow and added in timeout based logic",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "patch"
+}
