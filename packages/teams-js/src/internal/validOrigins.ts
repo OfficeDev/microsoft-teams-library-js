@@ -5,6 +5,7 @@ import { inServerSideRenderingEnvironment, isValidHttpsURL } from './utils';
 
 let validOriginsCache: string[] = [];
 const validateOriginLogger = getLogger('validateOrigin');
+const ORIGIN_LIST_TIMEOUT = 1500;
 
 export async function prefetchOriginsFromCDN(): Promise<void> {
   await getValidOriginsListFromCDN();
@@ -19,7 +20,7 @@ async function getValidOriginsListFromCDN(): Promise<string[]> {
     return validOriginsCache;
   }
   if (!inServerSideRenderingEnvironment()) {
-    return fetch(validOriginsCdnEndpoint)
+    return fetch(validOriginsCdnEndpoint, { signal: AbortSignal.timeout(ORIGIN_LIST_TIMEOUT) })
       .then((response) => {
         if (!response.ok) {
           throw new Error('Invalid Response from Fetch Call');
@@ -34,7 +35,11 @@ async function getValidOriginsListFromCDN(): Promise<string[]> {
         });
       })
       .catch((e) => {
-        validateOriginLogger('validOrigins fetch call to CDN failed with error: %s. Defaulting to fallback list', e);
+        if (e.name === 'TimeoutError') {
+          validateOriginLogger('validOrigins fetch call to CDN failed due to Timeout. Defaulting to fallback list', e);
+        } else {
+          validateOriginLogger('validOrigins fetch call to CDN failed with error: %s. Defaulting to fallback list', e);
+        }
         validOriginsCache = validOriginsFallback;
         return validOriginsCache;
       });

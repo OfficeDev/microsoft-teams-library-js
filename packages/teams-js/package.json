@@ -39,7 +39,8 @@
     "src/private/interfaces.ts",
     "src/public/constants.ts",
     "src/public/handlers.ts",
-    "src/public/interfaces.ts"
+    "src/public/interfaces.ts",
+    "src/public/app/prefetch.ts"
   ],
   "license": "MIT",
   "files": [
