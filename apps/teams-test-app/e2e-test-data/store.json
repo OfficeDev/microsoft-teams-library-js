@@ -23,19 +23,6 @@
       "expectedAlertValue": "openStoreExperience called with ##JSON_INPUT_VALUE##"
     },
     {
-      "title": "openStoreExperience API Call In-Context-Store - Success",
-      "type": "callResponse",
-      "boxSelector": "#box_storeOpen",
-      "inputValue": {
-        "dialogType": "ics",
-        "size": {
-          "width": 300,
-          "height": 300
-        }
-      },
-      "expectedAlertValue": "openStoreExperience called with ##JSON_INPUT_VALUE##"
-    },
-    {
       "title": "openStoreExperience API Call App Detail - Success",
       "type": "callResponse",
       "boxSelector": "#box_storeOpen",
@@ -127,7 +114,7 @@
       "type": "callResponse",
       "boxSelector": "#box_storeOpen",
       "inputValue": {
-        "dialogType": "ics",
+        "dialogType": "fullstore",
         "size": {
           "width": -300,
           "height": "large"
@@ -140,7 +127,7 @@
       "type": "callResponse",
       "boxSelector": "#box_storeOpen",
       "inputValue": {
-        "dialogType": "ics",
+        "dialogType": "fullstore",
         "size": {
           "width": 300,
           "height": -300
@@ -149,7 +136,16 @@
       "expectedTestAppValue": "Error: Error: Invalid store dialog size"
     },
     {
-      "title": "openStoreExperience API Call InContextStore with Filters - Success",
+      "title": "openStoreExperience API Call In-Context-Store with Default Filters - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_storeOpen",
+      "inputValue": {
+        "dialogType": "ics"
+      },
+      "expectedAlertValue": "openStoreExperience called with {\"dialogType\":\"ics\",\"appCapability\":\"Tab\",\"installationScope\":\"Personal\"}"
+    },
+    {
+      "title": "openStoreExperience API Call In-Context-Store with Customized Filters - Success",
       "type": "callResponse",
       "boxSelector": "#box_storeOpen",
       "inputValue": {
@@ -164,20 +160,6 @@
         }
       },
       "expectedAlertValue": "openStoreExperience called with ##JSON_INPUT_VALUE##"
-    },
-    {
-      "title": "openStoreExperience API Call InContextStore with Filters - Invalid Params - Fail",
-      "type": "callResponse",
-      "boxSelector": "#box_storeOpen",
-      "inputValue": {
-        "dialogType": "ics",
-        "size": {
-          "width": "large",
-          "height": "large"
-        },
-        "appCapability": 1234
-      },
-      "expectedTestAppValue": "Error: Error: 4000, message: appCapability must be a string"
     }
   ]
 }

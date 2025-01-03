@@ -224,9 +224,9 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
   const inContextStoreFilters =
     dialogType === StoreDialogType.InContextStore
       ? JSON.stringify({
-          appCapability: openStoreParams.appCapability,
+          appCapability: openStoreParams.appCapability ?? 'Tab',
           appMetaCapabilities: openStoreParams.appMetaCapabilities,
-          installationScope: openStoreParams.installationScope,
+          installationScope: openStoreParams.installationScope ?? 'Personal',
           filteredOutAppIds: openStoreParams.filteredOutAppIds,
         })
       : undefined;
