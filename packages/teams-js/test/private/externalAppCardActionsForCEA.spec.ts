@@ -2,8 +2,8 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { ApiName } from '../../src/internal/telemetry';
 import { ExternalAppErrorCode } from '../../src/private/constants';
-import { externalAppCardActions } from '../../src/private/externalAppCardActions';
-import { externalAppCardActionsForCEA } from '../../src/private/externalAppCardActionsForCEA';
+import * as externalAppCardActions from '../../src/private/externalAppCardActions';
+import * as externalAppCardActionsForCEA from '../../src/private/externalAppCardActionsForCEA';
 import { AppId, FrameContexts } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
@@ -61,6 +61,23 @@ describe('externalAppCardActionsForCEA', () => {
 
     Object.values(FrameContexts).forEach((frameContext) => {
       if (allowedFrameContexts.includes(frameContext)) {
+        it(`should throw error if the appId is not an instance of AppId class - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForCEA: {} } });
+          try {
+            await externalAppCardActionsForCEA.processActionSubmit(
+              {} as unknown as AppId,
+              testConversationId,
+              testActionSubmitPayload,
+            );
+          } catch (e) {
+            expect(e).toEqual(
+              new Error('Potential app id ([object Object]) is invalid; it is not an instance of AppId class.'),
+            );
+          }
+        });
+
         it(`should resolve when called from context - ${frameContext}`, async () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
@@ -151,6 +168,23 @@ describe('externalAppCardActionsForCEA', () => {
 
     Object.values(FrameContexts).forEach((frameContext) => {
       if (allowedFrameContexts.includes(frameContext)) {
+        it(`should throw error if the appId is not an instance of AppId class - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForCEA: {} } });
+          try {
+            await externalAppCardActionsForCEA.processActionOpenUrl(
+              {} as unknown as AppId,
+              testConversationId,
+              testUrl,
+            );
+          } catch (e) {
+            expect(e).toEqual(
+              new Error('Potential app id ([object Object]) is invalid; it is not an instance of AppId class.'),
+            );
+          }
+        });
+
         it(`should resolve when called from context - ${frameContext}`, async () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);

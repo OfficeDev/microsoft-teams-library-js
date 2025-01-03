@@ -1,3 +1,13 @@
+/**
+ * @hidden
+ * Module to interact with the conversational subEntities inside the tab
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @module
+ */
+
 import { sendAndHandleStatusAndReason, sendAndUnwrap, sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -126,129 +136,120 @@ export interface ConversationResponse {
 
 /**
  * @hidden
- * Namespace to interact with the conversational subEntities inside the tab
+ * Hide from docs
+ * --------------
+ * Allows the user to start or continue a conversation with each subentity inside the tab
+ *
+ * @returns Promise resolved upon completion
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export namespace conversations {
-  /**
-   * @hidden
-   * Hide from docs
-   * --------------
-   * Allows the user to start or continue a conversation with each subentity inside the tab
-   *
-   * @returns Promise resolved upon completion
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export function openConversation(openConversationRequest: OpenConversationRequest): Promise<void> {
-    return new Promise<void>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.content);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      const sendPromise = sendAndHandleStatusAndReason(
-        getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_OpenConversation),
-        'conversations.openConversation',
-        {
-          title: openConversationRequest.title,
-          subEntityId: openConversationRequest.subEntityId,
-          conversationId: openConversationRequest.conversationId,
-          channelId: openConversationRequest.channelId,
-          entityId: openConversationRequest.entityId,
-        },
-      );
-      if (openConversationRequest.onStartConversation) {
-        registerHandler(
-          getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_RegisterStartConversationHandler),
-          'startConversation',
-          (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
-            openConversationRequest.onStartConversation?.({
-              subEntityId,
-              conversationId,
-              channelId,
-              entityId,
-            }),
-        );
-      }
-      if (openConversationRequest.onCloseConversation) {
-        registerHandler(
-          getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_RegisterCloseConversationHandler),
-          'closeConversation',
-          (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>
-            openConversationRequest.onCloseConversation?.({
-              subEntityId,
-              conversationId,
-              channelId,
-              entityId,
-            }),
-        );
-      }
-      resolve(sendPromise);
-    });
-  }
-
-  /**
-   * @hidden
-   *
-   * Allows the user to close the conversation in the right pane
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export function closeConversation(): void {
+export function openConversation(openConversationRequest: OpenConversationRequest): Promise<void> {
+  return new Promise<void>((resolve) => {
     ensureInitialized(runtime, FrameContexts.content);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent(
-      getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_CloseConversation),
-      'conversations.closeConversation',
+    const sendPromise = sendAndHandleStatusAndReason(
+      getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_OpenConversation),
+      'conversations.openConversation',
+      {
+        title: openConversationRequest.title,
+        subEntityId: openConversationRequest.subEntityId,
+        conversationId: openConversationRequest.conversationId,
+        channelId: openConversationRequest.channelId,
+        entityId: openConversationRequest.entityId,
+      },
     );
-    removeHandler('startConversation');
-    removeHandler('closeConversation');
-  }
-
-  /**
-   * @hidden
-   * Hide from docs
-   * ------
-   * Allows retrieval of information for all chat members.
-   * NOTE: This value should be used only as a hint as to who the members are
-   * and never as proof of membership in case your app is being hosted by a malicious party.
-   *
-   * @returns Promise resolved with information on all chat members
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export function getChatMembers(): Promise<ChatMembersInformation> {
-    return new Promise<ChatMembersInformation>((resolve) => {
-      ensureInitialized(runtime);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      resolve(
-        sendAndUnwrap(
-          getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_GetChatMember),
-          'getChatMembers',
-        ),
+    if (openConversationRequest.onStartConversation) {
+      registerHandler(
+        getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_RegisterStartConversationHandler),
+        'startConversation',
+        (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
+          openConversationRequest.onStartConversation?.({
+            subEntityId,
+            conversationId,
+            channelId,
+            entityId,
+          }),
       );
-    });
-  }
+    }
+    if (openConversationRequest.onCloseConversation) {
+      registerHandler(
+        getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_RegisterCloseConversationHandler),
+        'closeConversation',
+        (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>
+          openConversationRequest.onCloseConversation?.({
+            subEntityId,
+            conversationId,
+            channelId,
+            entityId,
+          }),
+      );
+    }
+    resolve(sendPromise);
+  });
+}
 
-  /**
-   * Checks if the conversations capability is supported by the host
-   * @returns boolean to represent whether conversations capability is supported
-   *
-   * @throws Error if {@linkcode app.initialize} has not successfully completed
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.conversations ? true : false;
+/**
+ * @hidden
+ *
+ * Allows the user to close the conversation in the right pane
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function closeConversation(): void {
+  ensureInitialized(runtime, FrameContexts.content);
+  if (!isSupported()) {
+    throw errorNotSupportedOnPlatform;
   }
+  sendMessageToParent(
+    getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_CloseConversation),
+    'conversations.closeConversation',
+  );
+  removeHandler('startConversation');
+  removeHandler('closeConversation');
+}
+
+/**
+ * @hidden
+ * Hide from docs
+ * ------
+ * Allows retrieval of information for all chat members.
+ * NOTE: This value should be used only as a hint as to who the members are
+ * and never as proof of membership in case your app is being hosted by a malicious party.
+ *
+ * @returns Promise resolved with information on all chat members
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function getChatMembers(): Promise<ChatMembersInformation> {
+  return new Promise<ChatMembersInformation>((resolve) => {
+    ensureInitialized(runtime);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    resolve(
+      sendAndUnwrap(
+        getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_GetChatMember),
+        'getChatMembers',
+      ),
+    );
+  });
+}
+
+/**
+ * Checks if the conversations capability is supported by the host
+ * @returns boolean to represent whether conversations capability is supported
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function isSupported(): boolean {
+  return ensureInitialized(runtime) && runtime.supports.conversations ? true : false;
 }

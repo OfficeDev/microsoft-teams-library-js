@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { copilot } from '../../src/private/copilot';
+import * as copilot from '../../src/private/copilot/copilot';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { Cohort, EduType, ErrorCode, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
@@ -16,6 +16,7 @@ const mockedAppEligibilityInformation = {
     persona: Persona.Student,
     eduType: EduType.HigherEducation,
   },
+  featureSet: { serverFeatures: ['feature1', 'feature2'], uxFeatures: ['feature3'] },
 };
 
 const mockedAppEligibilityInformationUserClassificationNull = {
@@ -188,6 +189,24 @@ describe('copilot', () => {
           return expect(promise).resolves.toEqual(mockedAppEligibilityInformation);
         });
 
+        it(`should not throw if featureSet in response is undefined - with context ${frameContext}`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+
+          const promise = copilot.eligibility.getEligibilityInfo();
+          const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+          const mockedAppEligibilityInformationWithUndefinedFeatureSet = {
+            ...mockedAppEligibilityInformation,
+            featureSet: undefined,
+          };
+          expect(message).not.toBeNull();
+          if (message) {
+            utils.respondToMessage(message, mockedAppEligibilityInformationWithUndefinedFeatureSet);
+          }
+
+          return expect(promise).resolves.toEqual(mockedAppEligibilityInformationWithUndefinedFeatureSet);
+        });
+
         it(`should throw error if host returns error - with context ${frameContext}`, async () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig(copilotRuntimeConfig);
@@ -315,6 +334,50 @@ describe('copilot', () => {
         expect(message).not.toBeNull();
         if (message) {
           utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.featureSet.serverFeatures is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformationWithInvalidUxFeatures = {
+          ...mockedAppEligibilityInformation,
+          featureSet: {
+            serverFeatures: undefined,
+            uxFeatures: [],
+          },
+        };
+
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformationWithInvalidUxFeatures);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.featureSet.uxFeatures is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformationWithInvalidUxFeatures = {
+          ...mockedAppEligibilityInformation,
+          featureSet: {
+            serverFeatures: [],
+            uxFeatures: undefined,
+          },
+        };
+
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformationWithInvalidUxFeatures);
         }
 
         await expect(promise).rejects.toThrowError('Error deserializing eligibility information');

@@ -20,7 +20,11 @@ resources:
     - repository: AppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk
-      ref: refs/heads/main
+      ref: $(AppHostLatestBranch)
+    - repository: AppHostingSdkV4
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: $(AppHostV4ReleaseBranch)
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
@@ -54,6 +58,7 @@ extends:
       sourceRepositoriesToScan:
         include:
           - repository: AppHostingSdk
+          - repository: AppHostingSdkV4
           - repository: AndroidAppHostingSdk
           - repository: IOSAppHostingSdk
     customBuildTags:
@@ -133,25 +138,15 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
+          - template: tools/yaml-templates/web-e2e-versions.yml@self
             parameters:
               AppHostingSdk: AppHostingSdk
-              hostingEnvironmentType: 'standardWeb'
-              teamsJsReferenceType: 'npm'
-              testPrefixPatternGroups: ['{[0-9],[A-D],[a-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
+              versionBranch: 'Latest'
 
-          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
+          - template: tools/yaml-templates/web-e2e-versions.yml@self
             parameters:
-              AppHostingSdk: AppHostingSdk
-              hostingEnvironmentType: 'standardWeb'
-              teamsJsReferenceType: 'scriptTag'
-              testPrefixPatternGroups: ['{[0-9],[A-D],[a-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
-
-          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdk
-              hostingEnvironmentType: 'electron'
-              teamsJsReferenceType: 'npm'
+              AppHostingSdk: AppHostingSdkV4
+              versionBranch: 'v4'
 
           - job: E2ETestCDN
             displayName: 'E2E Tests - CDN (only runs on release builds)'
@@ -192,22 +187,37 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-          - job: E2ETestAndroid
-            displayName: 'E2E Tests - Android'
+          - job: E2ETestAndroidA
+            displayName: 'E2E Tests - Android - Plan A'
             pool:
               name: Azure Pipelines
-              image: internal-macos12
+              image: macos-15
               os: macOS
             steps:
               - template: tools/yaml-templates/android-test.yml@self
                 parameters:
                   androidAppHostingSdkGitPath: AndroidAppHostingSdk
+                  shardNum: 2
+                  shardIndex: 0
+
+          - job: E2ETestAndroidB
+            displayName: 'E2E Tests - Android - Plan B'
+            pool:
+              name: Azure Pipelines
+              image: macos-15
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/android-test.yml@self
+                parameters:
+                  androidAppHostingSdkGitPath: AndroidAppHostingSdk
+                  shardNum: 2
+                  shardIndex: 1
 
           - job: E2ETestIOS
             displayName: 'E2E Tests - IOS - Plan A'
             pool:
               name: Azure Pipelines
-              image: internal-macos12
+              image: macos-latest-internal
               os: macOS
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
@@ -219,7 +229,7 @@ extends:
             displayName: 'E2E Tests - IOS - Plan B'
             pool:
               name: Azure Pipelines
-              image: internal-macos12
+              image: macos-latest-internal
               os: macOS
             steps:
               - template: tools/yaml-templates/ios-test.yml@self

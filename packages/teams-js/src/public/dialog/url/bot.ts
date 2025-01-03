@@ -1,3 +1,9 @@
+/**
+ * Module to open a dialog that sends results to the bot framework
+ *
+ * @module
+ */
+
 import { botUrlOpenHelper, dialogTelemetryVersionNumber } from '../../../internal/dialogHelpers';
 import { ensureInitialized } from '../../../internal/internalAPIs';
 import { ApiName, getApiVersionTag } from '../../../internal/telemetry';
@@ -6,11 +12,6 @@ import { runtime } from '../../runtime';
 import { DialogSubmitHandler, PostMessageChannel } from '../dialog';
 
 /**
- * Module to open a dialog that sends results to the bot framework
- *
- * @beta
- */
-/**
  * Allows an app to open a dialog that sends submitted data to a bot.
  *
  * @param botUrlDialogInfo - An object containing the parameters of the dialog module including completionBotId.
@@ -18,8 +19,6 @@ import { DialogSubmitHandler, PostMessageChannel } from '../dialog';
  * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
  *
  * @returns a function that can be used to send messages to the dialog.
- *
- * @beta
  */
 export function open(
   botUrlDialogInfo: BotUrlDialogInfo,
@@ -40,8 +39,6 @@ export function open(
  * @returns boolean to represent whether dialog.url.bot is supported
  *
  * @throws Error if {@linkcode app.initialize} has not successfully completed
- *
- * @beta
  */
 export function isSupported(): boolean {
   return (

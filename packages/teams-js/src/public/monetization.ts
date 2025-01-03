@@ -1,3 +1,12 @@
+/**
+ * @hidden
+ * Hidden from Docs
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -5,13 +14,6 @@ import { callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise, InputFu
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
-/**
- * @hidden
- * Hidden from Docs
- *
- * @internal
- * Limited to Microsoft-internal use
- */
 
 /**
  * Exceptional APIs telemetry versioning file: v1 and v2 APIs are mixed together in this file

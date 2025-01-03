@@ -7,8 +7,7 @@ import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import { readFileSync } from 'fs';
-import dts from 'rollup-plugin-dts';
-import nodePolyfills from 'rollup-plugin-polyfill-node';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
@@ -23,12 +22,6 @@ export default [
       entryFileNames: '[name].js',
       sourcemap: false,
       plugins: [terser()],
-      globals: {
-        buffer: 'Buffer',
-        tty: 'tty',
-        util: 'util',
-        os: 'os',
-      },
     },
     preserveEntrySignatures: 'strict',
     plugins: [
@@ -58,14 +51,5 @@ export default [
         'src/public/interfaces.ts',
       ],
     },
-  },
-  {
-    input: './dist/esm/packages/teams-js/dts/index.d.ts',
-    output: {
-      file: 'dist/umd/MicrosoftTeams.d.ts',
-      format: 'es',
-      sourcemap: false,
-    },
-    plugins: [dts()],
   },
 ];

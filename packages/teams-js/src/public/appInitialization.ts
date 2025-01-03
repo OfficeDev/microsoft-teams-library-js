@@ -1,15 +1,12 @@
-import {
-  notifyAppLoadedHelper,
-  notifyExpectedFailureHelper,
-  notifyFailureHelper,
-  notifySuccessHelper,
-} from '../internal/appHelpers';
+import { notifyAppLoadedHelper, notifyExpectedFailureHelper, notifyFailureHelper } from '../internal/appHelpers';
+import { sendMessageToParent } from '../internal/communication';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ExpectedFailureReason, FailedReason, IExpectedFailureRequest, IFailedRequest, Messages } from './app/app';
+import { version } from './version';
 
 /**
  * @deprecated
- * As of TeamsJS v2.0.0, please use {@link app} namespace instead.
+ * As of TeamsJS v2.0.0, please use {@link app} module instead.
  *
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
@@ -58,13 +55,15 @@ export function notifyAppLoaded(): void {
 
 /**
  * @deprecated
- * As of TeamsJS v2.0.0, please use {@link app.notifySuccess app.notifySuccess(): void} instead.
+ * As of TeamsJS v2.0.0, please use {@link app.notifySuccess app.notifySuccess(): Promise<NotifySuccessResponse>} instead.
  *
  * Notifies the frame that app initialization is successful and is ready for user interaction.
  */
 export function notifySuccess(): void {
-  notifySuccessHelper(
+  sendMessageToParent(
     getApiVersionTag(appInitializationTelemetryVersionNumber, ApiName.AppInitialization_NotifySuccess),
+    Messages.Success,
+    [version],
   );
 }
 

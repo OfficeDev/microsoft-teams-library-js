@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
-import { pages } from '../public/pages';
+import * as pages from '../public/pages/pages';
 
 /**
  * @internal
@@ -503,4 +503,66 @@ export function validateUuid(id: string | undefined | null): void {
   if (uuid.validate(id) === false) {
     throw new Error('id must be a valid UUID');
   }
+}
+
+/**
+ * Cache if performance timers are available to avoid redoing this on each function call.
+ */
+const supportsPerformanceTimers = !!performance && 'now' in performance;
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ * @returns current timestamp in milliseconds
+ */
+export function getCurrentTimestamp(): number | undefined {
+  return supportsPerformanceTimers ? performance.now() + performance.timeOrigin : undefined;
+}
+
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Function to check whether the data is a primitive type or a plain object.
+ * Recursion is limited to a maximum depth of 1000 to prevent excessive nesting and potential stack overflow.
+ *
+ * @param value The value to check
+ * @returns true if the value is a primitive type or a plain object, false otherwise
+ *
+ */
+export function isPrimitiveOrPlainObject(value: unknown, depth: number = 0): boolean {
+  if (depth > 1000) {
+    return false; // Limit recursion depth
+  }
+
+  // Check if the value is a primitive type or null
+  if (
+    typeof value === 'undefined' ||
+    typeof value === 'boolean' ||
+    typeof value === 'number' ||
+    typeof value === 'bigint' ||
+    typeof value === 'string' ||
+    value === null
+  ) {
+    return true;
+  }
+
+  if (Array.isArray(value)) {
+    // Check if all elements in the array are serializable
+    return value.every((element) => isPrimitiveOrPlainObject(element, depth + 1));
+  }
+
+  // Check if the value is a plain object
+  const isPlainObject =
+    typeof value === 'object' &&
+    Object.prototype.toString.call(value) === '[object Object]' &&
+    (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
+
+  if (!isPlainObject) {
+    return false;
+  }
+
+  // Check all properties of the object recursively
+  return Object.keys(value).every((key) => isPrimitiveOrPlainObject(value[key], depth + 1));
 }

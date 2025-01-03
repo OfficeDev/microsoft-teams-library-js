@@ -60,6 +60,7 @@ import SecondaryBrowserAPIs from '../components/SecondaryBrowserAPIs';
 import SharingAPIs from '../components/SharingAPIs';
 import StageViewAPIs from '../components/StageViewAPIs';
 import StageViewSelfAPIs from '../components/StageViewSelfAPIs';
+import StoreAPIs from '../components/StoreApis';
 import TeamsCoreAPIs from '../components/TeamsCoreAPIs';
 import ThirdPartyCloudStorageAPIs from '../components/ThirdPartyCloudStorageAPIs';
 import CookieAccessComponent from '../components/ThirdPatryCookies';
@@ -163,6 +164,7 @@ export const TestApp: React.FC = () => {
       { name: 'VideoAPIs', component: <VideoAPIs /> },
       { name: 'VideoExAPIs', component: <VideoExAPIs /> },
       { name: 'VisualMediaAPIs', component: <VisualMediaAPIs /> },
+      { name: 'StoreAPIs', component: <StoreAPIs /> },
     ],
     [],
   );

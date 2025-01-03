@@ -21,10 +21,12 @@ export {
   DeepLinkParameters,
   DialogInfo,
   DialogSize,
+  EduType,
   ErrorCode,
   FileOpenPreference,
   FrameContext,
   FrameInfo,
+  HostToAppPerformanceMetrics,
   LoadContext,
   LocaleInfo,
   M365ContentAction,
@@ -54,7 +56,7 @@ export * as dialog from './dialog/dialog';
 export * as nestedAppAuth from './nestedAppAuth';
 export * as geoLocation from './geoLocation/geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
-export { pages } from './pages';
+export * as pages from './pages/pages';
 export {
   addEventListnerFunctionType,
   ChildAppWindow,
@@ -66,20 +68,20 @@ export * as menus from './menus';
 export * as media from './media';
 export * as secondaryBrowser from './secondaryBrowser';
 export * as location from './location';
-export { meeting } from './meeting';
+export * as meeting from './meeting/meeting';
 export * as monetization from './monetization';
 export * as calendar from './calendar';
 export * as mail from './mail';
 export * as teamsCore from './teamsAPIs';
 export * as people from './people';
-export { profile } from './profile';
-export { videoEffects } from './videoEffects';
+export * as profile from './profile';
+export * as videoEffects from './videoEffects';
 export * as search from './search';
-export { sharing } from './sharing';
-export { stageView } from './stageView';
+export * as sharing from './sharing/sharing';
+export * as stageView from './stageView/stageView';
 export { version } from './version';
-export { visualMedia } from './visualMedia';
-export { webStorage } from './webStorage';
+export * as visualMedia from './visualMedia/visualMedia';
+export * as webStorage from './webStorage';
 export * as call from './call';
 export * as appInitialization from './appInitialization';
 export * as thirdPartyCloudStorage from './thirdPartyCloudStorage';

@@ -1,4 +1,5 @@
-import { debug as registerLogger, Debugger } from 'debug';
+// We are directly referencing the browser implementation of `debug` to resolve an issue with polyfilling. For a full write-up on the bug please see ADO Bug #9619161
+import { debug as registerLogger, Debugger } from 'debug/src/browser';
 
 import { UUID } from './uuidObject';
 
@@ -233,6 +234,7 @@ export const enum ApiName {
   Notifications_ShowNotification = 'notifications.showNotification',
   OtherAppStateChange_Install = 'otherApp.install',
   OtherAppStateChange_UnregisterInstall = 'otherApp.unregisterInstall',
+  OtherAppStateChange_NotifyInstallCompleted = 'otherApp.notifyInstallCompleted',
   Pages_AppButton_OnClick = 'pages.appButton.onClick',
   Pages_AppButton_OnHoverEnter = 'pages.appButton.onHoverEnter',
   Pages_AppButton_OnHoverLeave = 'pages.appButton.onHoverLeave',
@@ -322,6 +324,7 @@ export const enum ApiName {
   Sharing_ShareWebContent = 'sharing.shareWebContent',
   StageView_Open = 'stageView.open',
   StageView_Self_Close = 'stageView.self.close',
+  Store_Open = 'store.open',
   Tasks_StartTask = 'tasks.startTask',
   Tasks_SubmitTask = 'tasks.submitTask',
   Tasks_UpdateTask = 'tasks.updateTask',

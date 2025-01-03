@@ -1,8 +1,54 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Mon, 21 Oct 2024 18:11:30 GMT and should not be manually modified.
+This log was last generated on Fri, 13 Dec 2024 20:07:32 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.32.0
+
+Fri, 13 Dec 2024 20:07:32 GMT
+
+### Minor changes
+
+- Added optional `FeatureSet` field to `AppEligibilityInformation` interface
+- Added `store` capability that will enable user to open several types of app store dialogs.. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `nestedAppAuth` capability against a new client version `2.1.1` to support isNAAChannelRecommended for Teams Mobile
+
+### Patches
+
+- Added `ConversationResponse` to explicit named exports for back-compat
+- Resolved an issue with non-necessary polyfills being included
+- Backed out `Buffer` removal changes
+- Removed `@beta` tag from all functions on `dialog` capability (and all subcapabilities)
+
+## 2.31.1
+
+Wed, 20 Nov 2024 19:25:55 GMT
+
+### Patches
+
+- Fixed a bug causing `buffer` polyfill to stil be included
+- Fixed bugs regarding `EduType`not being exported, and enum typings
+
+## 2.31.0
+
+Wed, 13 Nov 2024 19:22:01 GMT
+
+### Minor changes
+
+- Made the library treeshakable.
+- Made `externalAppAuthenticationForCEA.ts` throw `Error` objects instead of `SdkErrors`.
+- Replaced `Buffer` with `uint8array-extras` to allow for `buffer` polyfill removal.
+- Added validation for AppId instance in CEA APIs.
+- Changed the `notifySuccess` function to indicate through a promise when the function finished processing in the host.
+- Added new timestamp and handler for analyzing latencies due to message delays between app and hub.
+
+### Patches
+
+- Add userClickTimeV2 to app `Context` to provide the timestamp when the user clicked the app using the performance timer API.
+- Increased the initialize response wait-timeout to 60 sec
+- Removed `type: module` from package.json to fix nextjs bug
+- Added validation for `IActionExecuteInvokeRequest.data` element in `ExternalAppAuthentication` and `ExternalAppAuthenticationForCEA` capabilities. The element can be of type primitive or plain object only
 
 ## 2.30.0
 

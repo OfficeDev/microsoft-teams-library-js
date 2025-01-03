@@ -81,9 +81,9 @@ const RegisterBeforeUnloadHandler = (): React.ReactElement =>
         withPromise: async (delay, setResult) => {
           teamsCore.registerBeforeUnloadHandler((readyToUnload): boolean => {
             setTimeout(() => {
+              setResult('beforeUnload received');
               readyToUnload();
             }, delay);
-            alert(`beforeUnload received; calling readyToUnload in ${delay / 1000} seconds`);
             setResult('Success');
             return true;
           });
@@ -93,9 +93,9 @@ const RegisterBeforeUnloadHandler = (): React.ReactElement =>
         withCallback: (delay, setResult) => {
           registerBeforeUnloadHandler((readyToUnload): boolean => {
             setTimeout(() => {
+              setResult('beforeUnload received');
               readyToUnload();
             }, delay);
-            alert(`beforeUnload received; calling readyToUnload in ${delay / 1000} seconds`);
             setResult('Success');
             return true;
           });

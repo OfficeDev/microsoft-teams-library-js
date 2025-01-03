@@ -1,3 +1,9 @@
+/**
+ * Module for interaction with adaptive card dialogs that need to communicate with the bot framework
+ *
+ * @module
+ */
+
 import { sendMessageToParent } from '../../../internal/communication';
 import {
   dialogTelemetryVersionNumber,
@@ -12,17 +18,10 @@ import { runtime } from '../../runtime';
 import { DialogSubmitHandler } from '../dialog';
 
 /**
- * Module for interaction with adaptive card dialogs that need to communicate with the bot framework
- *
- * @beta
- */
-/**
  * Allows an app to open an adaptive card-based dialog module using bot.
  *
  * @param botAdaptiveCardDialogInfo - An object containing the parameters of the dialog module including completionBotId.
  * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
- *
- * @beta
  */
 export function open(botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo, submitHandler?: DialogSubmitHandler): void {
   ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
@@ -48,8 +47,6 @@ export function open(botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo, submi
  * @returns boolean to represent whether dialog.adaptiveCard.bot is supported
  *
  * @throws Error if {@linkcode app.initialize} has not successfully completed
- *
- * @beta
  */
 export function isSupported(): boolean {
   const isAdaptiveCardVersionSupported =

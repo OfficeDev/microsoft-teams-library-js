@@ -223,6 +223,9 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly isNAAChannelRecommended?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
+    readonly app?: {
+      readonly notifySuccessResponse?: {};
+    };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
     readonly barCode?: {};
@@ -290,6 +293,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly stageView?: {
       readonly self?: {};
     };
+    readonly store?: {};
     readonly teams?: {
       readonly fullTrust?: {
         readonly joinedTeams?: {};
@@ -587,6 +591,12 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
     {
       capability: { sharing: {} },
       hostClientTypes: [HostClientType.android, HostClientType.ios],
+    },
+  ],
+  '2.1.1': [
+    {
+      capability: { nestedAppAuth: {} },
+      hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados],
     },
   ],
 };

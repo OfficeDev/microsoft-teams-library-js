@@ -3,6 +3,12 @@ import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
+import {
+  getMruTabInstancesHelper,
+  getTabInstancesHelper,
+  setCurrentFrameHelper,
+  shareDeepLinkHelper,
+} from '../internal/pagesHelpers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
@@ -14,8 +20,7 @@ import {
   TabInformation,
   TabInstanceParameters,
 } from './interfaces';
-import { getMruTabInstancesHelper, getTabInstancesHelper, setCurrentFrameHelper, shareDeepLinkHelper } from './pages';
-import { pages } from './pages';
+import * as pages from './pages/pages';
 import { runtime } from './runtime';
 import * as teamsCore from './teamsAPIs';
 
