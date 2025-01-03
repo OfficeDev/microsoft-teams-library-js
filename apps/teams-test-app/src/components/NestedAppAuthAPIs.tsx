@@ -135,7 +135,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
             window.addEventListener('message', listener);
             window.top.postMessage(input, targetOrigin);
 
-            setResult('Message sent to top window, awaiting response...');
+            // setResult('Message sent to top window, awaiting response...');
             return 'Message sent to top window';
           } catch (error) {
             console.error('Error sending message to top window:', error);
