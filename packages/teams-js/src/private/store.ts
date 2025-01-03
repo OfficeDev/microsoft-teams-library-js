@@ -82,7 +82,7 @@ export interface OpenInContextStoreParams extends StoreSizeInfo {
 
   /**
    * The application capability (e.g., "Tab", "Bot", "Messaging", "Connector", "CUSTOMBOT").
-   * Defaults to "Bot".
+   * Defaults to "Tab".
    */
   appCapability?: string;
 
