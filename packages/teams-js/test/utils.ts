@@ -1,4 +1,3 @@
-import { validOriginsFallback as validOrigins } from '../src/internal/constants';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
@@ -138,15 +137,6 @@ export class Utils {
       },
       closed: false,
     };
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        status: 200,
-        ok: true,
-        json: async () => {
-          return { validOrigins };
-        },
-      } as Response),
-    );
   }
 
   public processMessage: null | ((ev: MessageEvent) => Promise<void>);
