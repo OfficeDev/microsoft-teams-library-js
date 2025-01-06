@@ -7,7 +7,7 @@ import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import { readFileSync } from 'fs';
-import nodePolyfills from 'rollup-plugin-node-polyfills';
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 
 const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
