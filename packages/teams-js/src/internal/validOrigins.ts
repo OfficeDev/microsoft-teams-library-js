@@ -134,3 +134,5 @@ export function validateOrigin(messageOrigin: URL): Promise<boolean> {
     return false;
   });
 }
+
+prefetchOriginsFromCDN();
