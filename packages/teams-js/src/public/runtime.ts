@@ -423,7 +423,12 @@ const v1NonMobileHostClientTypes = [
   HostClientType.teamsDisplays,
 ];
 
-export const v1MobileHostClientTypes = [HostClientType.android, HostClientType.ios, HostClientType.ipados];
+export const v1MobileHostClientTypes = [
+  HostClientType.android,
+  HostClientType.ios,
+  HostClientType.ipados,
+  HostClientType.visionOS,
+];
 
 export const v1HostClientTypes = [...v1NonMobileHostClientTypes, ...v1MobileHostClientTypes];
 
@@ -596,7 +601,7 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
   '2.1.1': [
     {
       capability: { nestedAppAuth: {} },
-      hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados],
+      hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS],
     },
   ],
 };
