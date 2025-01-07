@@ -41,7 +41,6 @@ async function getValidOriginsListFromCDN(disableCache?: boolean): Promise<strin
         if (e.name === 'TimeoutError') {
           validateOriginLogger(
             `validOrigins fetch call to CDN failed due to Timeout of ${ORIGIN_LIST_FETCH_TIMEOUT_IN_MS} ms. Defaulting to fallback list`,
-            e,
           );
         } else {
           validateOriginLogger('validOrigins fetch call to CDN failed with error: %s. Defaulting to fallback list', e);
