@@ -5,7 +5,7 @@ import { inServerSideRenderingEnvironment, isValidHttpsURL } from './utils';
 
 let validOriginsCache: string[] = [];
 const validateOriginLogger = getLogger('validateOrigin');
-const ORIGIN_LIST_TIMEOUT = 1500;
+const ORIGIN_LIST_FETCH_TIMEOUT_IN_MS: number = 1500;
 
 export async function prefetchOriginsFromCDN(): Promise<void> {
   await getValidOriginsListFromCDN();
@@ -15,28 +15,40 @@ function isValidOriginsCacheEmpty(): boolean {
   return validOriginsCache.length === 0;
 }
 
-async function getValidOriginsListFromCDN(): Promise<string[]> {
-  if (!isValidOriginsCacheEmpty()) {
+async function getValidOriginsListFromCDN(disableCache?: boolean): Promise<string[]> {
+  if (!isValidOriginsCacheEmpty() && !disableCache) {
     return validOriginsCache;
   }
   if (!inServerSideRenderingEnvironment()) {
-    return fetch(validOriginsCdnEndpoint, { signal: AbortSignal.timeout(ORIGIN_LIST_TIMEOUT) })
+    validateOriginLogger('Initiating fetch call to acquire valid origins list from CDN');
+    if (disableCache) {
+      console.log('Starting fetch');
+    }
+    return fetch(validOriginsCdnEndpoint, { signal: AbortSignal.timeout(ORIGIN_LIST_FETCH_TIMEOUT_IN_MS) })
       .then((response) => {
+        if (disableCache) {
+          console.log('retrieved fetch');
+        }
         if (!response.ok) {
           throw new Error('Invalid Response from Fetch Call');
         }
+        validateOriginLogger('Fetch call completed and retrieved valid origins list from CDN');
         return response.json().then((validOriginsCDN) => {
           if (isValidOriginsJSONValid(JSON.stringify(validOriginsCDN))) {
             validOriginsCache = validOriginsCDN.validOrigins;
             return validOriginsCache;
           } else {
-            throw new Error('Valid Origins List Is Invalid');
+            console.log('Hi');
+            throw new Error('Valid origins list retrieved from CDN is invalid');
           }
         });
       })
       .catch((e) => {
         if (e.name === 'TimeoutError') {
-          validateOriginLogger('validOrigins fetch call to CDN failed due to Timeout. Defaulting to fallback list', e);
+          validateOriginLogger(
+            `validOrigins fetch call to CDN failed due to Timeout of ${ORIGIN_LIST_FETCH_TIMEOUT_IN_MS} ms. Defaulting to fallback list`,
+            e,
+          );
         } else {
           validateOriginLogger('validOrigins fetch call to CDN failed with error: %s. Defaulting to fallback list', e);
         }
@@ -102,8 +114,8 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function validateOrigin(messageOrigin: URL): Promise<boolean> {
-  return getValidOriginsListFromCDN().then((validOriginsList) => {
+export function validateOrigin(messageOrigin: URL, disableCache?: boolean): Promise<boolean> {
+  return getValidOriginsListFromCDN(disableCache).then((validOriginsList) => {
     // Check whether the url is in the pre-known allowlist or supplied by user
     if (!isValidHttpsURL(messageOrigin)) {
       validateOriginLogger(

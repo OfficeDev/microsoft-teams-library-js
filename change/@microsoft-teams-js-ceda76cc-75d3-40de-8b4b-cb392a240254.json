@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Decoupled prefetch of CDN resources from the initialization workflow and added timeout based fail and fallback path",
+  "comment": "Decoupled prefetch of CDN resources from the initialization workflow and added fallback when resources could not be fetched in 1.5 seconds",
   "packageName": "@microsoft/teams-js",
   "email": "jadahiya@microsoft.com",
   "dependentChangeType": "patch"
