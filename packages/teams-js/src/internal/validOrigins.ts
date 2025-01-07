@@ -21,14 +21,9 @@ async function getValidOriginsListFromCDN(disableCache?: boolean): Promise<strin
   }
   if (!inServerSideRenderingEnvironment()) {
     validateOriginLogger('Initiating fetch call to acquire valid origins list from CDN');
-    if (disableCache) {
-      console.log('Starting fetch');
-    }
+
     return fetch(validOriginsCdnEndpoint, { signal: AbortSignal.timeout(ORIGIN_LIST_FETCH_TIMEOUT_IN_MS) })
       .then((response) => {
-        if (disableCache) {
-          console.log('retrieved fetch');
-        }
         if (!response.ok) {
           throw new Error('Invalid Response from Fetch Call');
         }
@@ -38,7 +33,6 @@ async function getValidOriginsListFromCDN(disableCache?: boolean): Promise<strin
             validOriginsCache = validOriginsCDN.validOrigins;
             return validOriginsCache;
           } else {
-            console.log('Hi');
             throw new Error('Valid origins list retrieved from CDN is invalid');
           }
         });
