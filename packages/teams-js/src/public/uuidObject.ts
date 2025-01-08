@@ -1,4 +1,4 @@
-import { generateGUID, validateUuid } from './utils';
+import { generateGUID, validateUuid } from '../internal/utils';
 
 /**
  * @internal
