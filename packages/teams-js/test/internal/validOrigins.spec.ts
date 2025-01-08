@@ -510,4 +510,87 @@ describe('validOrigins', () => {
       expect(result).toBe(false);
     });
   });
+  describe('testing fetch timeout flow', () => {
+    let utils: Utils = new Utils();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let timeoutSpy;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let abortSpy;
+    beforeEach(() => {
+      // Set a mock window for testing
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      app._initialize(utils.mockWindow);
+      GlobalVars.isFramelessWindow = false;
+      jest.useFakeTimers();
+
+      global.AbortController.prototype.abort = jest.fn(() => {
+        throw new Error('AbortError');
+      });
+
+      timeoutSpy = jest.spyOn(global, 'setTimeout');
+      abortSpy = jest.spyOn(AbortController.prototype, 'abort');
+
+      global.fetch = jest.fn(
+        () =>
+          new Promise((resolve) => {
+            jest.advanceTimersByTime(1600);
+            resolve({
+              status: 200,
+              ok: true,
+              json: async () => {
+                return { validOrigins: ['example.com'] };
+              },
+            } as Response);
+          }),
+      );
+    });
+
+    afterAll(() => {
+      GlobalVars.isFramelessWindow = false;
+    });
+    afterEach(() => {
+      // Reset the object since it's a singleton
+      if (app._uninitialize) {
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        app._uninitialize();
+      }
+      jest.restoreAllMocks();
+      jest.clearAllTimers();
+    });
+    it('validateOrigin returns true if fetch call times out and domain is in fallback list', async () => {
+      const timedOutOrigin = new URL('https://example.com');
+      const timedOutResult = await validateOrigin(timedOutOrigin, disableCache);
+      expect(abortSpy).toBeCalledTimes(1);
+      expect(timedOutResult).toBe(false);
+      const messageOrigin = new URL('https://teams.microsoft.com');
+      const fallbackResult = await validateOrigin(messageOrigin, disableCache);
+      expect(fallbackResult).toBe(true);
+    });
+    it('validateOrigin returns true if fetch call does not time out', async () => {
+      global.fetch = jest.fn(
+        () =>
+          new Promise((resolve) => {
+            resolve({
+              status: 200,
+              ok: true,
+              json: async () => {
+                return { validOrigins: ['example.com'] };
+              },
+            } as Response);
+          }),
+      );
+
+      const messageOrigin = new URL('https://example.com');
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(abortSpy).toBeCalledTimes(0);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns false if fetch call times out and domain is not in fallback list', async () => {
+      const messageOrigin = new URL('https://example.com');
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(abortSpy).toBeCalledTimes(1);
+      expect(result).toBe(false);
+    });
+  });
 });

@@ -22,8 +22,12 @@ async function getValidOriginsListFromCDN(disableCache?: boolean): Promise<strin
   if (!inServerSideRenderingEnvironment()) {
     validateOriginLogger('Initiating fetch call to acquire valid origins list from CDN');
 
-    return fetch(validOriginsCdnEndpoint, { signal: AbortSignal.timeout(ORIGIN_LIST_FETCH_TIMEOUT_IN_MS) })
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), ORIGIN_LIST_FETCH_TIMEOUT_IN_MS);
+
+    return fetch(validOriginsCdnEndpoint, { signal: controller.signal })
       .then((response) => {
+        clearTimeout(timeoutId);
         if (!response.ok) {
           throw new Error('Invalid Response from Fetch Call');
         }
@@ -38,7 +42,7 @@ async function getValidOriginsListFromCDN(disableCache?: boolean): Promise<strin
         });
       })
       .catch((e) => {
-        if (e.name === 'TimeoutError') {
+        if (e.name === 'AbortError') {
           validateOriginLogger(
             `validOrigins fetch call to CDN failed due to Timeout of ${ORIGIN_LIST_FETCH_TIMEOUT_IN_MS} ms. Defaulting to fallback list`,
           );
