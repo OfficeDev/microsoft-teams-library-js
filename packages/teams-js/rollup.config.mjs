@@ -22,12 +22,6 @@ export default [
       entryFileNames: '[name].js',
       sourcemap: false,
       plugins: [terser()],
-      globals: {
-        buffer: 'Buffer',
-        tty: 'tty',
-        util: 'util',
-        os: 'os',
-      },
     },
     preserveEntrySignatures: 'strict',
     plugins: [

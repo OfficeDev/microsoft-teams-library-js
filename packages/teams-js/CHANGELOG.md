@@ -1,8 +1,25 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 20 Nov 2024 19:25:55 GMT and should not be manually modified.
+This log was last generated on Fri, 13 Dec 2024 20:07:32 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.32.0
+
+Fri, 13 Dec 2024 20:07:32 GMT
+
+### Minor changes
+
+- Added optional `FeatureSet` field to `AppEligibilityInformation` interface
+- Added `store` capability that will enable user to open several types of app store dialogs.. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `nestedAppAuth` capability against a new client version `2.1.1` to support isNAAChannelRecommended for Teams Mobile
+
+### Patches
+
+- Added `ConversationResponse` to explicit named exports for back-compat
+- Resolved an issue with non-necessary polyfills being included
+- Backed out `Buffer` removal changes
+- Removed `@beta` tag from all functions on `dialog` capability (and all subcapabilities)
 
 ## 2.31.1
 
