@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added `customTelemetry` capability under `copilot` to send app loading data to the host. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
+  "comment": "Added `customTelemetry` capability under `copilot` to send app loading data to the host.",
   "packageName": "@microsoft/teams-js",
   "email": "niharikad@microsoft.com",
   "dependentChangeType": "patch"
