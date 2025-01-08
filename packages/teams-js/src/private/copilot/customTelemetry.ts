@@ -22,8 +22,8 @@ const copilotLogger = getLogger('copilot');
  *
  * @param { UUID } stageNameIdentifier - The stageName UUID identifier for the telemetry data.
  * @param { number } [timestamp=getCurrentTimestamp() ?? Date.now()] - The timestamp of the telemetry data. Defaults to the current timestamp.
- * @returns { Promise<void> } - promise resolves when the hubsdk acknowledges that it has received the message.
- * @throws { Error } - Throws an error if the app has not been successfully initialized or the host-sdk returns an error as a response to this call
+ * @returns { Promise<void> } - promise resolves when the host SDK acknowledges that it has received the message.
+ * @throws { Error } - Throws an error if the app has not been successfully initialized or the host SDK returns an error as a response to this call
  *
  * @hidden
  * @internal
