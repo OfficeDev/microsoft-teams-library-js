@@ -2,7 +2,6 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { ensureInitialized } from '../../src/internal/internalAPIs';
-import { UUID } from '../../src/internal/uuidObject';
 import { authentication, dialog, menus, pages } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import {
@@ -30,6 +29,7 @@ import {
   runtime,
   versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../../src/public/runtime';
+import { UUID } from '../../src/public/uuidObject';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';
 

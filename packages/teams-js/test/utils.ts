@@ -3,10 +3,10 @@ import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { MessageRequest, SerializedMessageRequest, SerializedMessageResponse } from '../src/internal/messageObjects';
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
-import { UUID as MessageUUID } from '../src/internal/uuidObject';
 import { HostClientType } from '../src/public';
 import * as app from '../src/public/app/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
+import { UUID as MessageUUID } from '../src/public/uuidObject';
 
 function deserializeMessageRequest(serializedMessage: SerializedMessageRequest): MessageRequest {
   const message = {

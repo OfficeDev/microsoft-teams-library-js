@@ -7,6 +7,7 @@ import { FrameContexts } from '../public/constants';
 import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { ISerializable, isSerializable } from '../public/serializable.interface';
+import { UUID as MessageUUID } from '../public/uuidObject';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -33,7 +34,6 @@ import {
 import { ResponseHandler, SimpleType } from './responseHandler';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { getCurrentTimestamp, ssrSafeWindow } from './utils';
-import { UUID as MessageUUID } from './uuidObject';
 import { validateOrigin } from './validOrigins';
 
 const communicationLogger = getLogger('communication');
