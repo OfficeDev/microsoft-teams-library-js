@@ -1,11 +1,11 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ApiName } from '../../src/internal/telemetry';
-import { UUID } from '../../src/internal/uuidObject';
 import * as copilot from '../../src/private/copilot/copilot';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { Cohort, EduType, ErrorCode, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
+import { UUID } from '../../src/public/uuidObject';
 import { Utils } from '../utils';
 
 const mockedAppEligibilityInformation = {

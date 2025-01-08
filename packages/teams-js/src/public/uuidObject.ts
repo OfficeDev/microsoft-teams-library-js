@@ -28,5 +28,3 @@ export class UUID {
     return this.uuid;
   }
 }
-
-export default UUID;

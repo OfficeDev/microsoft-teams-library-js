@@ -11,8 +11,8 @@ import { callFunctionInHost } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { getCurrentTimestamp } from '../../internal/utils';
-import { UUID } from '../../internal/uuidObject';
 import { runtime } from '../../public/runtime';
+import { UUID } from '../../public/uuidObject';
 
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 const copilotLogger = getLogger('copilot');
