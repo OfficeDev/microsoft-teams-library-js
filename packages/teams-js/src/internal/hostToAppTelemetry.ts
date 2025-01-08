@@ -1,9 +1,9 @@
 import { Debugger } from 'debug';
 
+import { UUID as MessageUUID } from '../public/uuidObject';
 import { handleHostToAppPerformanceMetrics } from './handlers';
 import { CallbackInformation } from './interfaces';
 import { MessageRequest, MessageResponse } from './messageObjects';
-import { UUID as MessageUUID } from './uuidObject';
 
 /**
  * @internal
