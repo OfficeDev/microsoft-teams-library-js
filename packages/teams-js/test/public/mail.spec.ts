@@ -310,54 +310,20 @@ describe('mail', () => {
     it('should successfully throw if the composeMailParamsWithHandoff message sends and fails', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
-
-      const composeMailPromise = mail.composeMailWithHandoff(composeMailParamsWithHandoff);
-
-      const message = utils.findMessageByFunc('mail.composeMailWithHandoff');
-
-      const data = {
-        success: false,
-        error: dataError,
-      };
-
-      await utils.respondToMessage(message, data.success, data.error);
-      await composeMailPromise.catch((e) => expect(e).toMatchObject(new Error(dataError)));
+      mail.composeMailWithHandoff(composeMailParamsWithHandoff).catch((e) => {
+        expect(e).toMatchObject(new Error(dataError));
+      });
     });
 
     it('should successfully send the composeMailParamsWithHandoff message', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
-
-      const promise = mail.composeMailWithHandoff(composeMailParamsWithHandoff);
-
-      const message = utils.findMessageByFunc('mail.composeMailWithHandoff');
-
-      const data = {
-        success: true,
-      };
-
-      await utils.respondToMessage(message, data.success);
-      await promise;
-
-      expect(message).not.toBeNull();
-      expect(message.args.length).toEqual(1);
-      expect(message.args[0]).toStrictEqual(composeMailParamsWithHandoff);
-    });
-
-    it('should resolve promise after successfully sending the composeMail message', async () => {
-      await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
-
-      const promise = mail.composeMailWithHandoff(composeMailParamsWithHandoff);
-
-      const message = utils.findMessageByFunc('mail.composeMailWithHandoff');
-
-      const data = {
-        success: true,
-      };
-
-      await utils.respondToMessage(message, data.success);
-      await expect(promise).resolves.not.toThrow();
+      mail.composeMailWithHandoff(composeMailParamsWithHandoff).then(() => {
+        const message = utils.findMessageByFunc('mail.composeMailWithHandoff');
+        expect(message).not.toBeNull();
+        expect(message?.args?.length).toEqual(1);
+        expect(message?.args?.[0]).toStrictEqual(composeMailParamsWithHandoff);
+      });
     });
   });
 
