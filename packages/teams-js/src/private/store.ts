@@ -5,6 +5,7 @@ import { DialogSize } from '../public';
 import { AppId } from '../public/appId';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+
 /**
  * @beta
  * @hidden
@@ -13,7 +14,7 @@ import { runtime } from '../public/runtime';
  * @internal
  * Limited to Microsoft-internal use
  */
-const StoreVersionTagNum = ApiVersionNumber.V_2;
+
 /**
  * @beta
  * @hidden
@@ -55,6 +56,52 @@ export interface StoreSizeInfo {
 }
 
 /**
+ * enum for filter ICS app meta capabilities
+ */
+export enum IcsAppMetaCapability {
+  Bots = 'bots',
+  Connectors = 'connectors',
+  GalleryTabs = 'galleryTabs',
+  MessageExtensions = 'messageExtensions',
+  StaticTabs = 'staticTabs',
+  Activities = 'activities',
+  MeetingExtensionDefinition = 'meetingExtensionDefinition',
+  Extensions = 'extensions',
+  ExchangeAddIns = 'exchangeAddIns',
+  OfficeAddIns = 'officeAddIns',
+  CopilotPlugins = 'copilotPlugins',
+  CopilotExtensions = 'copilotExtensions',
+  PowerPlatform = 'powerPlatform',
+  DeclarativeCopilots = 'declarativeCopilots',
+  CustomEngineCopilots = 'customEngineCopilots',
+}
+
+/**
+ * interface for filter ICS sections parameters
+ */
+export interface InContextStoreFilters {
+  /**
+   * The application capability
+   */
+  appCapability?: 'Tab' | 'Bot' | 'Messaging' | 'Connector' | 'CUSTOMBOT';
+
+  /**
+   * The application meta capabilities, as defined lin {@link IcsAppMetaCapability}
+   */
+  appMetaCapabilities?: IcsAppMetaCapability[];
+
+  /**
+   * The installation scope
+   */
+  installationScope?: 'Personal' | 'Team';
+
+  /**
+   * A list of app IDs to be filtered out.
+   */
+  filteredOutAppIds?: AppId[];
+}
+
+/**
  * @beta
  * @hidden
  * Interface for opening the full store function parameters
@@ -67,6 +114,7 @@ export interface OpenFullStoreParams extends StoreSizeInfo {
    */
   dialogType: StoreDialogType.FullStore;
 }
+
 /**
  * @beta
  * @hidden
@@ -81,27 +129,11 @@ export interface OpenInContextStoreParams extends StoreSizeInfo {
   dialogType: StoreDialogType.InContextStore;
 
   /**
-   * The application capability (e.g., "Tab", "Bot", "Messaging", "Connector", "CUSTOMBOT").
-   * Defaults to "Tab".
+   * parameters to filter ICS sections, defined by {@link InContextStoreFilters}
    */
-  appCapability?: string;
-
-  /**
-   * The application meta capabilities (e.g., ["copilotPlugins", "copilotExtensions"]).
-   */
-  appMetaCapabilities?: string[];
-
-  /**
-   * The installation scope (e.g., "Personal" | "Team").
-   * Defaults to "Personal".
-   */
-  installationScope?: string;
-
-  /**
-   * A list of app IDs to be filtered out.
-   */
-  filteredOutAppIds?: string[];
+  inContextStoreFilters?: InContextStoreFilters;
 }
+
 /**
  * @beta
  * @hidden
@@ -119,6 +151,7 @@ export interface OpenAppDetailParams extends StoreSizeInfo {
    */
   appId: AppId;
 }
+
 /**
  * @beta
  * @hidden
@@ -136,6 +169,7 @@ export interface OpenSpecificStoreParams extends StoreSizeInfo {
    */
   collectionId: string;
 }
+
 /**
  * @beta
  * @hidden
@@ -153,40 +187,13 @@ export type OpenStoreParams =
   | OpenAppDetailParams
   | OpenSpecificStoreParams;
 
-/**
- * @beta
- * @hidden
- * error message when getting illegal store dialog size
- * @internal
- * Limited to Microsoft-internal use
- */
-export const errorInvalidDialogSize = 'Invalid store dialog size';
-
-/**
- * @beta
- * @hidden
- * error message when getting invalid store dialog type
- * @internal
- * Limited to Microsoft-internal use
- */
-export const errorInvalidDialogType = 'Invalid store dialog type, but type needed to specify store to open';
-/**
- * @beta
- * @hidden
- * error message when getting wrong app id or missing app id
- * @internal
- * Limited to Microsoft-internal use
- */
-export const errorMissingAppId = 'No App Id present, but AppId needed to open AppDetail store';
-/**
- * @beta
- * @hidden
- * error message when getting wrong collection id or missing collection id
- * @internal
- * Limited to Microsoft-internal use
- */
-export const errorMissingCollectionId =
+const StoreVersionTagNum = ApiVersionNumber.V_2;
+const errorInvalidDialogSize = 'Invalid store dialog size';
+const errorInvalidDialogType = 'Invalid store dialog type, but type needed to specify store to open';
+const errorMissingAppId = 'No App Id present, but AppId needed to open AppDetail store';
+const errorMissingCollectionId =
   'No Collection Id present, but CollectionId needed to open a store specific to a collection';
+
 /**
  * @beta
  * @hidden
@@ -221,15 +228,15 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
       throw new Error(errorInvalidDialogSize);
     }
   }
-  const inContextStoreFilters =
-    dialogType === StoreDialogType.InContextStore
-      ? JSON.stringify({
-          appCapability: openStoreParams.appCapability ?? 'Tab',
-          appMetaCapabilities: openStoreParams.appMetaCapabilities,
-          installationScope: openStoreParams.installationScope ?? 'Personal',
-          filteredOutAppIds: openStoreParams.filteredOutAppIds,
-        })
-      : undefined;
+  const inContextStoreFilters = JSON.stringify(
+    (openStoreParams as OpenInContextStoreParams).inContextStoreFilters,
+    (k, v) => {
+      if (k === 'filteredOutAppIds') {
+        return (v as AppId[]).map((id) => id.toString());
+      }
+      return v;
+    },
+  );
   return callFunctionInHost(
     ApiName.Store_Open,
     [
@@ -242,6 +249,7 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
     getApiVersionTag(StoreVersionTagNum, ApiName.Store_Open),
   );
 }
+
 /**
  * Checks if the store capability is supported by the host
  * @returns boolean to represent whether the store capability is supported

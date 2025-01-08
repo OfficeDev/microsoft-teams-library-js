@@ -105,7 +105,7 @@ describe('store', () => {
           utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
           // eslint-disable-next-line strict-null-checks/all
           store.openStoreExperience(paramInvalidStoreType as store.OpenAppDetailParams).catch((e) => {
-            expect(e).toEqual(new Error(store.errorInvalidDialogType));
+            expect(e).toEqual(new Error('Invalid store dialog type, but type needed to specify store to open'));
           });
         });
 
@@ -114,7 +114,9 @@ describe('store', () => {
           utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
           // eslint-disable-next-line strict-null-checks/all
           store.openStoreExperience(paramStoreNoId as store.OpenAppDetailParams).catch((e) => {
-            expect(e).toEqual(new Error(store.errorMissingCollectionId));
+            expect(e).toEqual(
+              new Error('No Collection Id present, but CollectionId needed to open a store specific to a collection'),
+            );
           });
         });
 
@@ -123,7 +125,7 @@ describe('store', () => {
           utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
           // eslint-disable-next-line strict-null-checks/all
           store.openStoreExperience(paramAppDetailNoId as store.OpenAppDetailParams).catch((e) => {
-            expect(e).toEqual(new Error(store.errorMissingAppId));
+            expect(e).toEqual(new Error('No App Id present, but AppId needed to open AppDetail store'));
           });
         });
 
@@ -131,7 +133,7 @@ describe('store', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { store: {} } });
           store.openStoreExperience(paramAppDetailWithInvalidSize as store.OpenAppDetailParams).catch((e) => {
-            expect(e).toEqual(new Error(store.errorInvalidDialogSize));
+            expect(e).toEqual(new Error('Invalid store dialog size'));
           });
         });
       }

@@ -136,13 +136,13 @@
       "expectedTestAppValue": "Error: Error: Invalid store dialog size"
     },
     {
-      "title": "openStoreExperience API Call In-Context-Store with Default Filters - Success",
+      "title": "openStoreExperience API Call In-Context-Store without Filters - Success",
       "type": "callResponse",
       "boxSelector": "#box_storeOpen",
       "inputValue": {
         "dialogType": "ics"
       },
-      "expectedAlertValue": "openStoreExperience called with {\"dialogType\":\"ics\",\"appCapability\":\"Tab\",\"installationScope\":\"Personal\"}"
+      "expectedAlertValue": "openStoreExperience called with {\"dialogType\":\"ics\"}"
     },
     {
       "title": "openStoreExperience API Call In-Context-Store with Customized Filters - Success",
@@ -150,13 +150,15 @@
       "boxSelector": "#box_storeOpen",
       "inputValue": {
         "dialogType": "ics",
-        "appCapability": "Bot",
-        "appMetaCapabilities": ["copilotplugins", "copilotExtensions"],
-        "installationScope": "Team",
-        "filteredOutAppIds": ["123"],
-        "size": {
-          "width": "large",
-          "height": "large"
+        "inContextStoreFilters": {
+          "appCapability": "Bot",
+          "appMetaCapabilities": ["copilotplugins", "copilotExtensions"],
+          "installationScope": "Team",
+          "filteredOutAppIds": ["1542629c-01b3-4a6d-8f76-1938b779e48d"],
+          "size": {
+            "width": "large",
+            "height": "large"
+          }
         }
       },
       "expectedAlertValue": "openStoreExperience called with ##JSON_INPUT_VALUE##"

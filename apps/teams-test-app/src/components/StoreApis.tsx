@@ -25,10 +25,12 @@ const StoreAPIs = (): ReactElement => {
       appId?: string;
       collectionId?: string;
       size?: DialogSize;
-      appCapability?: string;
-      appMetaCapabilities?: string[];
-      installationScope?: string;
-      filteredOutAppIds?: string[];
+      inContextStoreFilters?: {
+        appCapability?: string;
+        appMetaCapabilities?: string[];
+        installationScope?: string;
+        filteredOutAppIds?: string[];
+      };
     }>({
       name: 'storeOpen',
       title: 'Store Open',
@@ -40,15 +42,18 @@ const StoreAPIs = (): ReactElement => {
         },
         submit: async (input) => {
           const appId = input.appId === undefined ? undefined : new AppId(input.appId);
+          if (input.inContextStoreFilters !== undefined) {
+            input.inContextStoreFilters = {
+              ...input.inContextStoreFilters,
+              filteredOutAppIds: input.inContextStoreFilters.filteredOutAppIds?.map((id) => id.toString()),
+            };
+          }
           const openStoreParam = {
             dialogType: input.dialogType,
             appId: appId,
             collectionId: input.collectionId,
             size: input.size,
-            appCapability: input.appCapability,
-            appMetaCapabilities: input.appMetaCapabilities,
-            installationScope: input.installationScope,
-            filteredOutAppIds: input.filteredOutAppIds,
+            inContextStoreFilters: input.inContextStoreFilters,
           };
           // eslint-disable-next-line no-useless-catch
           try {
