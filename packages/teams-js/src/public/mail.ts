@@ -3,9 +3,8 @@
  * @module
  */
 
-import { callFunctionInHostAndHandleResponse, sendAndHandleStatusAndReason } from '../internal/communication';
+import { callFunctionInHost, sendAndHandleStatusAndReason } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { SimpleTypeResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -72,20 +71,16 @@ export function composeMail(composeMailParams: ComposeMailParams): Promise<void>
  *
  */
 export function composeMailWithHandoff(composeMailParamsWithHandoff: ComposeMailParamsWithHandoff): Promise<void> {
-  return new Promise<void>((resolve) => {
-    ensureInitialized(runtime, FrameContexts.content);
-    if (!isSupported()) {
-      throw new Error('Not supported');
-    }
+  ensureInitialized(runtime, FrameContexts.content);
+  if (!isSupported()) {
+    throw new Error('Not supported');
+  }
 
-    callFunctionInHostAndHandleResponse<boolean, boolean>(
-      ApiName.Mail_ComposeMailWithHandoff,
-      [new SerializableComposeMailParamsWithHandoff(composeMailParamsWithHandoff)],
-      new SimpleTypeResponseHandler(),
-      getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_ComposeMailWithHandoff),
-    );
-    resolve();
-  });
+  return callFunctionInHost(
+    ApiName.Mail_ComposeMailWithHandoff,
+    [new SerializableComposeMailParamsWithHandoff(composeMailParamsWithHandoff)],
+    getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_ComposeMailWithHandoff),
+  );
 }
 
 /**
