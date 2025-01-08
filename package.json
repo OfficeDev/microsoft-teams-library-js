@@ -100,7 +100,7 @@
     "webpack-assets-manifest": "^5.2.1",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.0",
+    "webpack-dev-server": "^5.1.0",
     "webpack-merge": "^6.0.1",
     "webpack-subresource-integrity": "^5.2.0-rc.1",
     "yargs": "^17.7.2"
