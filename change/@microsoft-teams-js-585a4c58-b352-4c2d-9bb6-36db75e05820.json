@@ -1,7 +1,7 @@
 {
   "type": "minor",
-  "comment": "Removed hidden tag on `{namespace}` capability as it is available on at least one host. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
+  "comment": "Add visionOS client type support for Teams SDK. This change will enable app developers to find out if app is running on visionOS",
   "packageName": "@microsoft/teams-js",
-  "email": "abhishek.webyog@gmail.com",
+  "email": "abhipandey@microsoft.com",
   "dependentChangeType": "patch"
 }
