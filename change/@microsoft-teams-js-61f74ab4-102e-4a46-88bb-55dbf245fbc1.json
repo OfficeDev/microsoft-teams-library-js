@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Removed Beta/Preview tag on `{namespace}` capability. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
+  "comment": "Add an additional parameter for Handoff ID in `composeMailWithHandoffId` API ",
   "packageName": "@microsoft/teams-js",
   "email": "maggiegong@microsoft.com",
   "dependentChangeType": "patch"

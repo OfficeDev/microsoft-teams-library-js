@@ -71,17 +71,21 @@ export function composeMail(composeMailParams: ComposeMailParams): Promise<void>
  * @param composeMailParamsWithHandoff - Object that specifies the type of mail item to compose and the details of the mail item.
  *
  */
-export function composeMailWithHandoff(composeMailParamsWithHandoff: ComposeMailParamsWithHandoff): Promise<boolean> {
-  ensureInitialized(runtime, FrameContexts.content);
-  if (!isSupported()) {
-    throw new Error('Not supported');
-  }
-  return callFunctionInHostAndHandleResponse<boolean, boolean>(
-    ApiName.Mail_ComposeMailWithHandoff,
-    [new SerializableComposeMailParamsWithHandoff(composeMailParamsWithHandoff)],
-    new SimpleTypeResponseHandler(),
-    getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_ComposeMailWithHandoff),
-  );
+export function composeMailWithHandoff(composeMailParamsWithHandoff: ComposeMailParamsWithHandoff): Promise<void> {
+  return new Promise<void>((resolve) => {
+    ensureInitialized(runtime, FrameContexts.content);
+    if (!isSupported()) {
+      throw new Error('Not supported');
+    }
+
+    callFunctionInHostAndHandleResponse<boolean, boolean>(
+      ApiName.Mail_ComposeMailWithHandoff,
+      [new SerializableComposeMailParamsWithHandoff(composeMailParamsWithHandoff)],
+      new SimpleTypeResponseHandler(),
+      getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_ComposeMailWithHandoff),
+    );
+    resolve();
+  });
 }
 
 /**
@@ -195,7 +199,7 @@ export interface ComposeMailParamsWithHandoff {
   /**
    * Use this endpoint to retrieve the handoff payload when BizChat creates an email draft for external handoff.
    */
-  handoffId?: string;
+  handoffId: string;
 }
 
 class SerializableComposeMailParamsWithHandoff implements ISerializable {
