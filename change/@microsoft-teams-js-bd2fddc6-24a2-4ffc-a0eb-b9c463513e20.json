@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Removed `@beta` tag from all functions on `dialog` capability (and all subcapabilities)",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
