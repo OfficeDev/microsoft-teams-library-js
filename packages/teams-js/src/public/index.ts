@@ -121,6 +121,7 @@ export {
   onCompleteHandlerFunctionType,
   returnFocus,
 } from './navigation';
+export { UUID } from './uuidObject';
 export * as settings from './settings';
 export * as tasks from './tasks';
 export * as liveShare from './liveShareHost';
