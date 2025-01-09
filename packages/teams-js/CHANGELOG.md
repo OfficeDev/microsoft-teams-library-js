@@ -1,8 +1,21 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 13 Dec 2024 20:07:32 GMT and should not be manually modified.
+This log was last generated on Thu, 09 Jan 2025 16:42:36 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.33.0
+
+Thu, 09 Jan 2025 16:42:36 GMT
+
+### Minor changes
+
+- Added `customTelemetry` capability under `copilot` to send app loading data to the host.
+
+### Patches
+
+- Explicitly use browser implementation of `debug` package to resolve polyfill issue.
+- Moved uuidObject.ts from internal to public folder in preparation for exporting it.
 
 ## 2.32.0
 

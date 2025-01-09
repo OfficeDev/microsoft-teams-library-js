@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `customTelemetry` capability under `copilot` to send app loading data to the host.",
-  "packageName": "@microsoft/teams-js",
-  "email": "niharikad@microsoft.com",
-  "dependentChangeType": "patch"
-}
