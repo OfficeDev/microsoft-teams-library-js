@@ -5,6 +5,17 @@
     "name": { "type": "string" },
     "version": { "type": "string" },
     "only": { "type": "boolean" },
+    "skip": { "type": "boolean" },
+    "cypressTopWindowReplacement": { "type": "boolean" },
+    "hostSdkVersion": {
+      "type": "object",
+      "properties": {
+        "web": { "type": "string" },
+        "android": { "type": "string" },
+        "ios": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
     "checkIsSupported": {
       "type": "object",
       "properties": {
@@ -30,6 +41,15 @@
             "properties": {
               "title": { "type": "string" },
               "version": { "type": "string" },
+              "hostSdkVersion": {
+                "type": "object",
+                "properties": {
+                  "web": { "type": "string" },
+                  "android": { "type": "string" },
+                  "ios": { "type": "string" }
+                },
+                "additionalProperties": false
+              },
               "platformsExcluded": {
                 "type": "array",
                 "items": { "type": "string" }
@@ -61,12 +81,19 @@
                   "skipJsonStringifyOnInputValue": { "type": "boolean" },
                   "checkboxState": { "type": "boolean" },
                   "expectedTestAppValue": { "type": "string" },
+                  "isRequestPermissionCall": {
+                    "type": "object",
+                    "properties": {
+                      "repeatRequestPermissionCall": { "type": "boolean" }
+                    }
+                  },
                   "requestPermissionBeforeThisCall": {
                     "type": "object",
                     "properties": {
                       "boxSelector": { "type": "string" },
                       "consentPermission": { "type": "boolean" }
-                    }
+                    },
+                    "required": ["boxSelector", "consentPermission"]
                   }
                 },
                 "required": ["boxSelector"]
@@ -99,9 +126,39 @@
         "unevaluatedProperties": false,
         "required": ["type"]
       }
+    },
+    "featureTests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "feature": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "version": { "type": "number" }
+            },
+            "required": ["id", "version"],
+            "additionalProperties": false
+          },
+          "testCases": {
+            "$ref": "#/properties/testCases"
+          }
+        },
+        "required": ["feature", "testCases"],
+        "additionalProperties": false
+      }
     }
   },
-  "required": ["name", "testCases"],
+  "anyOf": [
+    {
+      "required": ["name", "testCases"]
+    },
+    {
+      "required": ["name", "featureTests"]
+    }
+  ],
+  "required": ["name"],
   "additionalProperties": false,
   "$defs": {
     "testUrlParams": {
@@ -112,17 +169,6 @@
           { "enum": ["env", "appDefOverrides", "sessionId", "frameContext", "hostClientType", "hostView"] },
           { "type": "string" }
         ]
-      }
-    },
-    "appInteractionValidationProperties": {
-      "type": "object",
-      "properties": {
-        "expectedAlertValue": {
-          "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
-        },
-        "expectedTestAppValue": { "type": "string" },
-        "expectedWindowOpenTarget": { "type": "string" },
-        "expectedIFrameTarget": { "type": "string" }
       }
     }
   }
