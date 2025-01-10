@@ -91,7 +91,7 @@ export function isCurrentSDKVersionAtLeast(requiredVersion: string = defaultSDKV
 
 /**
  * @hidden
- * Helper function to identify if host client is either android, ios, ipados or visionOS
+ * Helper function to identify if host client is either android, ios, ipados, or visionOS
  *
  * @internal
  * Limited to Microsoft-internal use
