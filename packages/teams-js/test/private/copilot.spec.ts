@@ -1,9 +1,11 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { ApiName } from '../../src/internal/telemetry';
 import * as copilot from '../../src/private/copilot/copilot';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { Cohort, EduType, ErrorCode, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
+import { UUID } from '../../src/public/uuidObject';
 import { Utils } from '../utils';
 
 const mockedAppEligibilityInformation = {
@@ -51,6 +53,7 @@ const copilotRuntimeConfig: Runtime = {
   supports: {
     copilot: {
       eligibility: {},
+      customTelemetry: {},
     },
     pages: {
       appButton: {},
@@ -381,6 +384,26 @@ describe('copilot', () => {
         }
 
         await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+    });
+  });
+
+  describe('copilot.customTelemetry', () => {
+    describe('sendCustomTelemetryData', () => {
+      it('sendCustomTelemetryData should throw if called before initialization', async () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        await expect(copilot.customTelemetry.sendCustomTelemetryData(new UUID())).rejects.toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      it('sendCustomTelemetryData message should not be null', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(FrameContexts.content);
+        await expect(copilot.customTelemetry.sendCustomTelemetryData(new UUID('805a4340-d5e0-4587-8f04-0ae88219699f')));
+        const message = utils.findMessageByFunc(ApiName.Copilot_CustomTelemetry_SendCustomTelemetryData);
+        expect(message).not.toBeNull();
       });
     });
   });
