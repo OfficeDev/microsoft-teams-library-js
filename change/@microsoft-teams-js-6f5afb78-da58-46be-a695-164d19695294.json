@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Moved uuidObject.ts from internal to public folder in preparation for exporting it.",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
