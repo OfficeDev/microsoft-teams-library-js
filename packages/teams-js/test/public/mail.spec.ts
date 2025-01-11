@@ -1,8 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { FrameContexts } from '../../src/public';
+import { FrameContexts, mail } from '../../src/public';
 import * as app from '../../src/public/app/app';
-import * as mail from '../../src/public/mail';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -265,17 +264,17 @@ describe('mail', () => {
     });
   });
 
-  describe('composeMailWithHandoff', () => {
+  describe('sub-capability mail.handoff.composeMailWithHandoff', () => {
     const composeMailParams: mail.ComposeMailParams = {
       type: mail.ComposeMailType.New,
     };
-    const composeMailParamsWithHandoff: mail.ComposeMailParamsWithHandoff = {
+    const composeMailParamsWithHandoff: mail.handoff.ComposeMailParamsWithHandoff = {
       composeMailParams: composeMailParams,
       handoffId: 'mockHandoffId',
     };
 
     it('should not allow calls before initialization', () => {
-      return expect(() => mail.composeMailWithHandoff(composeMailParamsWithHandoff)).toThrowError(
+      return expect(() => mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff)).toThrowError(
         new Error(errorLibraryNotInitialized),
       );
     });
@@ -289,7 +288,7 @@ describe('mail', () => {
           }
           await utils.initializeWithContext(frameContext);
           expect.assertions(1);
-          expect(() => mail.composeMailWithHandoff(composeMailParamsWithHandoff)).toThrowError(
+          expect(() => mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff)).toThrowError(
             `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
           );
         });
@@ -301,7 +300,7 @@ describe('mail', () => {
       expect.assertions(1);
       const error = new Error('Not supported');
       try {
-        mail.composeMailWithHandoff(composeMailParamsWithHandoff);
+        mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff);
       } catch (e) {
         expect(e).toEqual(error);
       }
@@ -309,16 +308,16 @@ describe('mail', () => {
 
     it('should successfully throw if the composeMailParamsWithHandoff message sends and fails', async () => {
       await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
-      mail.composeMailWithHandoff(composeMailParamsWithHandoff).catch((e) => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: { handoff: {} } } });
+      mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff).catch((e) => {
         expect(e).toMatchObject(new Error(dataError));
       });
     });
 
     it('should successfully send the composeMailParamsWithHandoff message', async () => {
       await utils.initializeWithContext('content');
-      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
-      mail.composeMailWithHandoff(composeMailParamsWithHandoff).then(() => {
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: { handoff: {} } } });
+      mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff).then(() => {
         const message = utils.findMessageByFunc('mail.composeMailWithHandoff');
         expect(message).not.toBeNull();
         expect(message?.args?.length).toEqual(1);

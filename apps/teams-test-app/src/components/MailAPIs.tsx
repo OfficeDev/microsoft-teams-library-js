@@ -11,6 +11,13 @@ const CheckMailCapability = (): React.ReactElement =>
     onClick: async () => `Mail module ${mail.isSupported() ? 'is' : 'is not'} supported`,
   });
 
+const CheckMailWithHandoffCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkMailWithHandoffCapability',
+    title: 'Check Mail With Handoff Call',
+    onClick: async () => `MailWithHandoff module ${mail.handoff.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
 const ComposeMail = (): React.ReactElement =>
   ApiWithTextInput<mail.ComposeMailParams>({
     name: 'composeMail',
@@ -46,7 +53,7 @@ const ComposeMail = (): React.ReactElement =>
   });
 
 const ComposeMailWithHandoff = (): React.ReactElement =>
-  ApiWithTextInput<mail.ComposeMailParamsWithHandoff>({
+  ApiWithTextInput<mail.handoff.ComposeMailParamsWithHandoff>({
     name: 'composeMailWithHandoff',
     title: 'Compose Mail With Handoff ID',
     onClick: {
@@ -68,7 +75,7 @@ const ComposeMailWithHandoff = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        await mail.composeMailWithHandoff(input);
+        await mail.handoff.composeMailWithHandoff(input);
         return 'Completed';
       },
     },
@@ -109,6 +116,7 @@ const MailAPIs = (): ReactElement => (
     <ComposeMailWithHandoff />
     <OpenMailItem />
     <CheckMailCapability />
+    <CheckMailWithHandoffCapability />
   </ModuleWrapper>
 );
 
