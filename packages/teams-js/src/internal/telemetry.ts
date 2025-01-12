@@ -1,7 +1,7 @@
 // We are directly referencing the browser implementation of `debug` to resolve an issue with polyfilling. For a full write-up on the bug please see ADO Bug #9619161
 import { debug as registerLogger, Debugger } from 'debug/src/browser';
 
-import { UUID } from './uuidObject';
+import { UUID } from '../public/uuidObject';
 
 // Each teamsjs instance gets a unique identifier that will be prepended to every log statement
 export const teamsJsInstanceIdentifier = new UUID();
@@ -107,6 +107,7 @@ export const enum ApiName {
   Conversations_OpenConversation = 'conversations.openConversation',
   Conversations_RegisterCloseConversationHandler = 'conversations.registerCloseConversationHandler',
   Conversations_RegisterStartConversationHandler = 'conversations.registerStartConversationHandler',
+  Copilot_CustomTelemetry_SendCustomTelemetryData = 'copilot.customTelemetry.sendCustomTelemetryData',
   Copilot_Eligibility_GetEligibilityInfo = 'copilot.eligibility.getEligibilityInfo',
   Dialog_AdaptiveCard_Bot_Open = 'dialog.adaptiveCard.bot.open',
   Dialog_AdaptiveCard_Open = 'dialog.adaptiveCard.open',
