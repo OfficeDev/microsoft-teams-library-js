@@ -121,7 +121,7 @@ export async function openFullStore(params: OpenFullStoreParams): Promise<void> 
   const { size } = params;
   return callFunctionInHost(
     ApiName.Store_OpenFullStore,
-    [parseValidSize(size)],
+    [serializeValidSize(size)],
     getApiVersionTag(StoreVersionTagNum, ApiName.Store_OpenFullStore),
   );
 }
@@ -141,7 +141,7 @@ export async function openAppDetail(params: OpenAppDetailParams): Promise<void> 
   }
   return callFunctionInHost(
     ApiName.Store_OpenAppDetail,
-    [parseValidSize(size), appId],
+    [serializeValidSize(size), appId],
     getApiVersionTag(StoreVersionTagNum, ApiName.Store_OpenAppDetail),
   );
 }
@@ -159,7 +159,7 @@ export async function openInContextStore(params: OpenInContextStoreParams): Prom
   return callFunctionInHost(
     ApiName.Store_OpenInContextStore,
     [
-      parseValidSize(size),
+      serializeValidSize(size),
       appCapability,
       appMetaCapabilities,
       installationScope,
@@ -184,7 +184,7 @@ export async function openSpecificStore(params: OpenSpecificStoreParams): Promis
   }
   return callFunctionInHost(
     ApiName.Store_OpenSpecificStore,
-    [parseValidSize(size), collectionId],
+    [serializeValidSize(size), collectionId],
     getApiVersionTag(StoreVersionTagNum, ApiName.Store_OpenSpecificStore),
   );
 }
@@ -206,7 +206,7 @@ function ensureStoreReady(): void {
   }
 }
 
-function parseValidSize(size: DialogSize | undefined): string | undefined {
+function serializeValidSize(size: DialogSize | undefined): string | undefined {
   if (size === undefined) {
     return undefined;
   }
