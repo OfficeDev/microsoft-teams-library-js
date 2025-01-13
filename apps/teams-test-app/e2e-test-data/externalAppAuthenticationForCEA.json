@@ -4,7 +4,7 @@
   "hostSdkVersion": {
     "web": ">=4.3.0"
   },
-  "platform": "Web",
+  "platforms": "Web",
   "testCases": [
     {
       "title": "checkExternalAppAuthenticationForCEACapability API Call - Success",

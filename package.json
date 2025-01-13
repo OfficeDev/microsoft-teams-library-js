@@ -28,7 +28,8 @@
     "start-test-app": "pnpm --filter teams-test-app start",
     "start-test-app-CDN": "pnpm --filter teams-test-app start:CDN",
     "start-test-app-local": "pnpm --filter teams-test-app start:local",
-    "test": "lerna run test --stream"
+    "test": "lerna run test --stream",
+    "validate-test-schema": "ts-node tools/validateTestSchema.ts"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",
@@ -58,6 +59,7 @@
     "@types/webpack": "^4.41.40",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
+    "ajv": "^8.12.0",
     "babel-loader": "^9.2.1",
     "beachball": "^2.43.0",
     "copy-webpack-plugin": "12.0.2",
