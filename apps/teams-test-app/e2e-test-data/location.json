@@ -11,7 +11,8 @@
       "boxSelector": "#box_getLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
-        "consentPermission": true
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
       },
       "inputValue": { "allowChooseLocation": true },
       "expectedAlertValue": "location.map.chooseLocation is called.",
@@ -24,7 +25,8 @@
       "boxSelector": "#box_showLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
-        "consentPermission": true
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
       },
       "inputValue": {
         "latitude": 51.50735,
@@ -42,7 +44,8 @@
       "boxSelector": "#box_getLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
-        "consentPermission": true
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
       },
       "inputValue": { "allowChooseLocation": true },
       "expectedAlertValue": "location.map.chooseLocation is called.",
@@ -55,7 +58,8 @@
       "boxSelector": "#box_showLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
-        "consentPermission": true
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
       },
       "inputValue": {
         "latitude": 51.50735,

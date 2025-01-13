@@ -91,7 +91,10 @@
                     "type": "object",
                     "properties": {
                       "boxSelector": { "type": "string" },
-                      "consentPermission": { "type": "boolean" }
+                      "consentPermission": {
+                        "oneOf": [{ "type": "boolean" }, { "type": "string", "enum": ["Allow"] }]
+                      },
+                      "expectedOutput": { "type": "string" }
                     },
                     "required": ["boxSelector", "consentPermission"]
                   }
