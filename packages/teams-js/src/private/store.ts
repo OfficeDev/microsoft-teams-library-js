@@ -50,6 +50,7 @@ export interface OpenInContextStoreParams {
 
   /**
    * The application meta capabilities (e.g., ["copilotPlugins", "copilotExtensions"]).
+   * Defaults to "[]".
    */
   appMetaCapabilities?: string[];
 
@@ -116,9 +117,9 @@ const errorMissingCollectionId =
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function openFullStore(params: OpenFullStoreParams): Promise<void> {
+export async function openFullStore(params: OpenFullStoreParams | undefined): Promise<void> {
   ensureStoreReady();
-  const { size } = params;
+  const { size } = params ?? {};
   return callFunctionInHost(
     ApiName.Store_OpenFullStore,
     [serializeValidSize(size)],
@@ -153,9 +154,9 @@ export async function openAppDetail(params: OpenAppDetailParams): Promise<void> 
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function openInContextStore(params: OpenInContextStoreParams): Promise<void> {
+export async function openInContextStore(params: OpenInContextStoreParams | undefined): Promise<void> {
   ensureStoreReady();
-  const { size, appCapability, appMetaCapabilities, installationScope, filteredOutAppIds } = params;
+  const { size, appCapability, appMetaCapabilities, installationScope, filteredOutAppIds } = params ?? {};
   return callFunctionInHost(
     ApiName.Store_OpenInContextStore,
     [
