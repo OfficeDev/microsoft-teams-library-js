@@ -20,9 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
-    <PackageReference Include="Microsoft.Graph" Version="5.61.0" />
-    <PackageReference Include="Microsoft.Fast.Components.FluentUI" Version="3.7.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
+    <PackageReference Include="Microsoft.Graph" Version="5.68.0" />
+    <PackageReference Include="Microsoft.Fast.Components.FluentUI" Version="3.8.0" />
     <PackageReference Include="Microsoft.TeamsFx" Version="2.5.*" />
     <PackageReference Include="Microsoft.Bot.Connector" Version="4.22.9" />
   </ItemGroup>
