@@ -264,12 +264,20 @@ describe('mail', () => {
     });
   });
 
-  describe('sub-capability mail.handoff.composeMailWithHandoff', () => {
+  describe('sub-capability mail.handoff.composeMail', () => {
     const composeMailParams: mail.ComposeMailParams = {
       type: mail.ComposeMailType.New,
     };
     const composeMailParamsWithHandoff: mail.handoff.ComposeMailParamsWithHandoff = {
       composeMailParams: composeMailParams,
+      handoffId: 'mockHandoffId',
+    };
+    const composeMailParamsWithInvalidEmails: mail.ComposeMailParams = {
+      type: mail.ComposeMailType.New,
+      toRecipients: ['sam@example', 'sam1example.com'],
+    };
+    const paramHandoffWithInvalidEmails: mail.handoff.ComposeMailParamsWithHandoff = {
+      composeMailParams: composeMailParamsWithInvalidEmails,
       handoffId: 'mockHandoffId',
     };
 
@@ -313,6 +321,18 @@ describe('mail', () => {
       const error = new Error('Not supported');
       try {
         mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff);
+      } catch (e) {
+        expect(e).toEqual(error);
+      }
+    });
+
+    it('should not allow calls if invalid email(s) in the put', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: { handoff: {} } } });
+      expect.assertions(1);
+      const error = new Error('Invalid email inputs');
+      try {
+        mail.handoff.composeMailWithHandoff(paramHandoffWithInvalidEmails);
       } catch (e) {
         expect(e).toEqual(error);
       }

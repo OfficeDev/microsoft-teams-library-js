@@ -11,44 +11,12 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/tele
 import { FrameContexts } from '../constants';
 import { runtime } from '../runtime';
 import { ISerializable } from '../serializable.interface';
-import { ComposeMailParams } from './mail';
+import { ComposeMailParams, ComposeMailType } from './mail';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const mailTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Compose a new email in the user's mailbox, opening it in the drafts UX instead of the standard email.
- *
- * @param composeMailParamsWithHandoff - Object that specifies the type of mail item to compose and the details of the mail item.
- *
- * @beta
- */
-export function composeMailWithHandoff(composeMailParamsWithHandoff: ComposeMailParamsWithHandoff): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
-  if (!isSupported()) {
-    throw new Error('Not supported');
-  }
-
-  return callFunctionInHost(
-    ApiName.Mail_Handoff_ComposeMail,
-    [new SerializableComposeMailParamsWithHandoff(composeMailParamsWithHandoff)],
-    getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_Handoff_ComposeMail),
-  );
-}
-
-/**
- * Checks if the mail capability and handoff sub-capability is supported by the host
- * @returns boolean to represent whether the handoff sub-capability is supported
- *
- * @throws Error if {@linkcode app.initialize} has not successfully completed
- *
- * @beta
- */
-export function isSupported(): boolean {
-  return ensureInitialized(runtime) && runtime.supports.mail && runtime.supports.mail.handoff ? true : false;
-}
 
 /**
  * Extended parameters for {@link composeMail}, including support for external handoff.
@@ -71,6 +39,81 @@ export interface ComposeMailParamsWithHandoff {
    * Use this endpoint to retrieve the handoff payload when BizChat creates an email draft for external handoff.
    */
   handoffId: string;
+}
+
+/**
+ * Validates an array of email addresses.
+ *
+ * @param emails - An optional array of email addresses to validate.
+ * @returns `true` if all email addresses are valid or the array is empty/undefined, otherwise `false`.
+ *
+ * @beta
+ */
+function validateEmails(emails?: string[]): boolean {
+  if (!emails || emails.length === 0) {
+    return true; // If the array is undefined or empty, consider it valid
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Check if every email in the array matches the regex
+  return emails.every((email) => emailRegex.test(email));
+}
+
+/**
+ * Validates email addresses in the given ComposeMailParams object.
+ * Validates `toRecipients`, `ccRecipients`, and `bccRecipients` for `ComposeNewParams`.
+ *
+ * @param params - The incoming ComposeMailParams object.
+ * @returns `true` if all email addresses are valid, otherwise `false`.
+ *
+ * @beta
+ */
+function validateComposeMailParams(composeMailParams: ComposeMailParams): boolean {
+  if (composeMailParams.type === ComposeMailType.New) {
+    return (
+      validateEmails(composeMailParams.toRecipients) &&
+      validateEmails(composeMailParams.ccRecipients) &&
+      validateEmails(composeMailParams.bccRecipients)
+    );
+  }
+
+  // For Reply, ReplyAll, and Forward types, no validation needed
+  return true;
+}
+
+/**
+ * Compose a new email in the user's mailbox, opening it in the drafts UX instead of the standard email.
+ *
+ * @param composeMailParamsWithHandoff - Object that specifies the type of mail item to compose and the details of the mail item.
+ * @returns { Promise<void> } - promise resolves when the host SDK succeeds or rejects with error on failure
+ *
+ * @beta
+ */
+export function composeMailWithHandoff(composeMailParamsWithHandoff: ComposeMailParamsWithHandoff): Promise<void> {
+  ensureInitialized(runtime, FrameContexts.content);
+  if (!isSupported()) {
+    throw new Error('Not supported');
+  }
+  if (!validateComposeMailParams(composeMailParamsWithHandoff.composeMailParams)) {
+    console.log('Im here');
+    throw new Error('Invalid email inputs');
+  }
+  return callFunctionInHost(
+    ApiName.Mail_Handoff_ComposeMail,
+    [new SerializableComposeMailParamsWithHandoff(composeMailParamsWithHandoff)],
+    getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_Handoff_ComposeMail),
+  );
+}
+
+/**
+ * Checks if the mail capability and handoff sub-capability is supported by the host
+ * @returns boolean to represent whether the handoff sub-capability is supported
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @beta
+ */
+export function isSupported(): boolean {
+  return ensureInitialized(runtime) && runtime.supports.mail && runtime.supports.mail.handoff ? true : false;
 }
 
 class SerializableComposeMailParamsWithHandoff implements ISerializable {
