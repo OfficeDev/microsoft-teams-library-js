@@ -306,6 +306,18 @@ describe('mail', () => {
       }
     });
 
+    it('should not allow calls if runtime does not support mail.handoff.composeMail but support mail', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
+      expect.assertions(1);
+      const error = new Error('Not supported');
+      try {
+        mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff);
+      } catch (e) {
+        expect(e).toEqual(error);
+      }
+    });
+
     it('should successfully throw if the composeMailParamsWithHandoff message sends and fails', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: { handoff: {} } } });

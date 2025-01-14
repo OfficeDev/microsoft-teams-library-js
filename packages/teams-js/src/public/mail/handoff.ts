@@ -1,6 +1,8 @@
 /**
  * Used to interact with mail capability, including opening and composing mail.
  * @module
+ *
+ * @beta
  */
 
 import { callFunctionInHost } from '../../internal/communication';
@@ -21,6 +23,7 @@ const mailTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
  *
  * @param composeMailParamsWithHandoff - Object that specifies the type of mail item to compose and the details of the mail item.
  *
+ * @beta
  */
 export function composeMailWithHandoff(composeMailParamsWithHandoff: ComposeMailParamsWithHandoff): Promise<void> {
   ensureInitialized(runtime, FrameContexts.content);
@@ -29,9 +32,9 @@ export function composeMailWithHandoff(composeMailParamsWithHandoff: ComposeMail
   }
 
   return callFunctionInHost(
-    ApiName.Mail_Handoff_ComposeMailWithHandoff,
+    ApiName.Mail_Handoff_ComposeMail,
     [new SerializableComposeMailParamsWithHandoff(composeMailParamsWithHandoff)],
-    getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_Handoff_ComposeMailWithHandoff),
+    getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_Handoff_ComposeMail),
   );
 }
 
@@ -40,6 +43,8 @@ export function composeMailWithHandoff(composeMailParamsWithHandoff: ComposeMail
  * @returns boolean to represent whether the handoff sub-capability is supported
  *
  * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @beta
  */
 export function isSupported(): boolean {
   return ensureInitialized(runtime) && runtime.supports.mail && runtime.supports.mail.handoff ? true : false;
@@ -54,6 +59,8 @@ export function isSupported(): boolean {
  * @see {@link ComposeNewParams} for parameters when composing a new mail item.
  * @see {@link ComposeReplyOrForwardParams} for reply or forward-specific parameters.
  * @see {@link ComposeMailType} for supported mail operation types.
+ *
+ * @beta
  */
 export interface ComposeMailParamsWithHandoff {
   /**

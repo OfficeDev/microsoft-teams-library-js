@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Add an additional parameter for Handoff ID in `composeMailWithHandoffId` API ",
+  "comment": "Added the`mail.handoff.composeMailWithHandoffId` function that allows passing a handoff id to the compose mail window.",
   "packageName": "@microsoft/teams-js",
   "email": "maggiegong@microsoft.com",
   "dependentChangeType": "patch"
