@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "separate store service message handler for each type of store & add new handler for ics using filter parameters & add dialog size parameter & enable store service e2e tests",
+  "packageName": "@microsoft/teams-js",
+  "email": "yt6520143@163.com",
+  "dependentChangeType": "patch"
+}
