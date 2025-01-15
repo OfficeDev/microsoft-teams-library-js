@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Released 2.32.0",
+  "comment": "Updated dependency versions to address CG vulnerabilities",
   "packageName": "@microsoft/teams-js",
   "email": "jadahiya@microsoft.com",
   "dependentChangeType": "none"
