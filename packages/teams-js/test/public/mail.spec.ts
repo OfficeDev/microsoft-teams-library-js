@@ -280,6 +280,10 @@ describe('mail', () => {
       composeMailParams: composeMailParamsWithInvalidEmails,
       handoffId: 'mockHandoffId',
     };
+    const paramHandoffWithInvalidHandoffId: mail.handoff.ComposeMailParamsWithHandoff = {
+      composeMailParams: composeMailParams,
+      handoffId: '  ',
+    };
 
     it('should not allow calls before initialization', () => {
       return expect(() => mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff)).toThrowError(
@@ -326,11 +330,22 @@ describe('mail', () => {
       }
     });
 
+    it('should not allow calls if handoffId is empty string', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: { handoff: {} } } });
+      expect.assertions(1);
+      const error = new Error('handoffId should not be null or empty string.');
+      try {
+        mail.handoff.composeMailWithHandoff(paramHandoffWithInvalidHandoffId);
+      } catch (e) {
+        expect(e).toEqual(error);
+      }
+    });
     it('should not allow calls if invalid email(s) in the put', async () => {
       await utils.initializeWithContext('content');
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: { handoff: {} } } });
       expect.assertions(1);
-      const error = new Error('Invalid email inputs');
+      const error = new Error('Input email address does not have the correct format.');
       try {
         mail.handoff.composeMailWithHandoff(paramHandoffWithInvalidEmails);
       } catch (e) {

@@ -6,6 +6,7 @@
  */
 
 import { callFunctionInHost } from '../../internal/communication';
+import { validateEmailAddress } from '../../internal/emailAddressValidation';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
 import { FrameContexts } from '../constants';
@@ -45,7 +46,7 @@ export interface ComposeMailParamsWithHandoff {
  * Validates an array of email addresses.
  *
  * @param emails - An optional array of email addresses to validate.
- * @returns `true` if all email addresses are valid or the array is empty/undefined, otherwise `false`.
+ * @throws Error with a message describing if the email address is invalid.
  *
  * @beta
  */
@@ -53,9 +54,11 @@ function validateEmails(emails?: string[]): boolean {
   if (!emails || emails.length === 0) {
     return true; // If the array is undefined or empty, consider it valid
   }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  // Check if every email in the array matches the regex
-  return emails.every((email) => emailRegex.test(email));
+  // Use validateEmailAddress for each email in the param
+  emails.forEach((email) => {
+    validateEmailAddress(email); // This will throw an error if the email is invalid
+  });
+  return true;
 }
 
 /**
@@ -63,28 +66,29 @@ function validateEmails(emails?: string[]): boolean {
  * Validates `toRecipients`, `ccRecipients`, and `bccRecipients` for `ComposeNewParams`.
  *
  * @param params - The incoming ComposeMailParams object.
- * @returns `true` if all email addresses are valid, otherwise `false`.
+ * @throws Error with a message describing if the email address is invalid.
  *
  * @beta
  */
-function validateComposeMailParams(composeMailParams: ComposeMailParams): boolean {
-  if (composeMailParams.type === ComposeMailType.New) {
-    return (
-      validateEmails(composeMailParams.toRecipients) &&
-      validateEmails(composeMailParams.ccRecipients) &&
-      validateEmails(composeMailParams.bccRecipients)
-    );
+function validateHandoffComposeMailParams(param: ComposeMailParamsWithHandoff): void {
+  if (!param.handoffId || param.handoffId.trim().length == 0 || param.handoffId.trim() === '') {
+    throw new Error('handoffId should not be null or empty string.');
   }
-
+  const composeMailParams = param.composeMailParams;
+  if (composeMailParams.type === ComposeMailType.New) {
+    validateEmails(composeMailParams.toRecipients) &&
+      validateEmails(composeMailParams.ccRecipients) &&
+      validateEmails(composeMailParams.bccRecipients);
+  }
   // For Reply, ReplyAll, and Forward types, no validation needed
-  return true;
 }
 
 /**
  * Compose a new email in the user's mailbox, opening it in the drafts UX instead of the standard email.
  *
  * @param composeMailParamsWithHandoff - Object that specifies the type of mail item to compose and the details of the mail item.
- * @returns { Promise<void> } - promise resolves when the host SDK succeeds or rejects with error on failure
+ * @returns { Promise<void> } - promise resolves after the compose window has opened successfully in host SDK.
+ * @throws Error with a message describing whether the capability is not initialized or the input is invalid.
  *
  * @beta
  */
@@ -93,10 +97,7 @@ export function composeMailWithHandoff(composeMailParamsWithHandoff: ComposeMail
   if (!isSupported()) {
     throw new Error('Not supported');
   }
-  if (!validateComposeMailParams(composeMailParamsWithHandoff.composeMailParams)) {
-    console.log('Im here');
-    throw new Error('Invalid email inputs');
-  }
+  validateHandoffComposeMailParams(composeMailParamsWithHandoff);
   return callFunctionInHost(
     ApiName.Mail_Handoff_ComposeMail,
     [new SerializableComposeMailParamsWithHandoff(composeMailParamsWithHandoff)],

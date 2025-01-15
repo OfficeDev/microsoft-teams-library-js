@@ -13,7 +13,7 @@
       },
       "testCases": [
         {
-          "title": "mail.handoff.composeMail Feature Test - Version 3",
+          "title": "mail.handoff.composeMail Feature Test - Version 1",
           "type": "callResponse",
           "version": ">2.0.0-beta.0 && <=2.17.0",
           "boxSelector": "#box_composeMailWithHandoff",
