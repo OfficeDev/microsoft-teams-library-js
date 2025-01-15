@@ -5,6 +5,35 @@
   "checkIsSupported": {
     "domElementName": "checkCapabilityMail"
   },
+  "featureTests": [
+    {
+      "feature": {
+        "id": "mail.handoff.composeMail",
+        "version": 1
+      },
+      "testCases": [
+        {
+          "title": "mail.handoff.composeMail Feature Test - Version 3",
+          "type": "callResponse",
+          "version": ">2.0.0-beta.0 && <=2.17.0",
+          "boxSelector": "#box_composeMailWithHandoff",
+          "inputValue": {
+            "composeMailParams": {
+              "type": "new",
+              "subject": "Test Mail",
+              "toRecipients": ["sam@example.com", "sam1@example.com"],
+              "ccRecipients": ["sam2@example.com"],
+              "bccRecipients": ["sam3@example.com"],
+              "message": "This mail has been sent from the Teams Test App"
+            },
+            "handoffId": "abc123"
+          },
+          "expectedAlertValue": "composeMailParamsWithHandoff called with {\"type\":\"new\",\"subject\":\"Test Mail\",\"toRecipients\":[\"sam@example.com\",\"sam1@example.com\"],\"ccRecipients\":[\"sam2@example.com\"],\"bccRecipients\":[\"sam3@example.com\"],\"message\":\"This mail has been sent from the Teams Test App\"} and handoffId: abc123",
+          "expectedTestAppValue": "Completed"
+        }
+      ]
+    }
+  ],
   "testCases": [
     {
       "title": "openMailItem API Call - Success",
