@@ -23,10 +23,9 @@
       "type": "registerAndRaiseEvent",
       "boxSelector": "#box_otherAppStateChange_registerInstallHandler",
       "eventName": "otherApp.install",
-      "eventData":
-        {
-          "appIds": ["123", "456"]
-        },
+      "eventData": {
+        "appIds": ["123", "456"]
+      },
       "expectedTestAppValue": "received"
     },
     {
@@ -34,6 +33,12 @@
       "type": "callResponse",
       "boxSelector": "#box_otherAppStateChange_unregisterInstallHandler",
       "expectedTestAppValue": "received"
+    },
+    {
+      "title": "notifyInstallCompleted - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_otherAppStateChange_notifyInstallCompleted",
+      "expectedTestAppValue": "notified"
     }
   ]
 }

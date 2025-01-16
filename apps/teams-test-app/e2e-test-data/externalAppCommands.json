@@ -1,7 +1,7 @@
 {
   "name": "ExternalAppCommands",
   "version": ">2.21.0",
-  "platform": "Web",
+  "platforms": "Web",
   "testCases": [
     {
       "title": "checkExternalAppCommandsCapability API Call - Success",

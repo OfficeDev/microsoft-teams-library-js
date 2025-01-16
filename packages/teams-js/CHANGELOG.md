@@ -1,8 +1,38 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 20 Nov 2024 19:25:55 GMT and should not be manually modified.
+This log was last generated on Thu, 09 Jan 2025 16:42:36 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.33.0
+
+Thu, 09 Jan 2025 16:42:36 GMT
+
+### Minor changes
+
+- Added `customTelemetry` capability under `copilot` to send app loading data to the host.
+
+### Patches
+
+- Explicitly use browser implementation of `debug` package to resolve polyfill issue.
+- Moved uuidObject.ts from internal to public folder in preparation for exporting it.
+
+## 2.32.0
+
+Fri, 13 Dec 2024 20:07:32 GMT
+
+### Minor changes
+
+- Added optional `FeatureSet` field to `AppEligibilityInformation` interface
+- Added `store` capability that will enable user to open several types of app store dialogs.. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `nestedAppAuth` capability against a new client version `2.1.1` to support isNAAChannelRecommended for Teams Mobile
+
+### Patches
+
+- Added `ConversationResponse` to explicit named exports for back-compat
+- Resolved an issue with non-necessary polyfills being included
+- Backed out `Buffer` removal changes
+- Removed `@beta` tag from all functions on `dialog` capability (and all subcapabilities)
 
 ## 2.31.1
 

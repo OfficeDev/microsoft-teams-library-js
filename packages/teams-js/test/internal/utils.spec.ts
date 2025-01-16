@@ -9,9 +9,9 @@ import {
   validateUrl,
   validateUuid,
 } from '../../src/internal/utils';
-import { UUID } from '../../src/internal/uuidObject';
 import { AppId, pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
+import { UUID } from '../../src/public/uuidObject';
 
 describe('utils', () => {
   test('compareSDKVersions', () => {
