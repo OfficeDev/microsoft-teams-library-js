@@ -66,7 +66,7 @@ extends:
                   workingDir: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed
                   verbose: false
                   customCommand: publish  --tag beta
-              - task: M365CdnAssetsUpload@1
+              - task: M365CdnAssetsUpload@3
                 displayName: Push teams-js to M365 1CDN (SDF)
                 inputs:
                   SourcePath: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/CDNFeed/*
