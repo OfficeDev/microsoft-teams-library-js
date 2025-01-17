@@ -20,7 +20,8 @@
       },
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestVisualMediaPermission",
-        "consentPermission": true
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
       },
       "expectedAlertValue": "visualMedia.image.captureImages is called with ##JSON_INPUT_VALUE##",
       "expectedTestAppValue": "[content: \"content1\", size: 4, name: a_pic, mimeType: jpg],[content: \"content2\", size: 1, name: b_pic, mimeType: jpg],"
@@ -37,7 +38,8 @@
       },
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestVisualMediaPermission",
-        "consentPermission": true
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
       },
       "expectedAlertValue": "visualMedia.image.uploadImages is called with ##JSON_INPUT_VALUE##",
       "expectedTestAppValue": "[content: \"content1\", size: 4, name: a_pic, mimeType: jpg],[content: \"content2\", size: 1, name: b_pic, mimeType: jpg],"
