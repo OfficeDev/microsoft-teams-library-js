@@ -147,6 +147,8 @@ export interface ComposeReplyOrForwardParams<T extends ComposeMailType> extends 
 /**
  * Parameters supplied to {@link composeMail} when composing a new mail item
  *
+ * For ComposeMailType.New, it is valid to pass empty arrays for toRecipients, ccRecipients, and bccRecipients.
+ * This will result in a new email with (pre-populated) body content but no pre-populated recipients.
  * @see {@link ComposeNewParams}
  * @see {@link ComposeReplyOrForwardParams}
  * @see {@link ComposeMailType}

@@ -44,6 +44,8 @@ export interface ComposeMailParamsWithHandoff {
 
 /**
  * Validates an array of email addresses.
+ * For ComposeMailType.New, it is valid to pass empty arrays for toRecipients, ccRecipients, and bccRecipients.
+ * This will result in a new email with handed-off (pre-populated) body content but no pre-populated recipients.
  *
  * @param emails - An optional array of email addresses to validate.
  * @throws Error with a message describing if the email address is invalid.
