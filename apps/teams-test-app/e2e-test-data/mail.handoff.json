@@ -1,5 +1,5 @@
 {
-  "name": "Handoff ComposeMail",
+  "name": "Mail Handoff",
   "platforms": "*",
   "featureTests": [
     {
