@@ -1,5 +1,5 @@
 {
-  "type": "major",
+  "type": "minor",
   "comment": "Added functions for opening different types of stores along with ics filtering",
   "packageName": "@microsoft/teams-js",
   "email": "yt6520143@163.com",
