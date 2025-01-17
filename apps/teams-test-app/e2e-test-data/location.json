@@ -11,8 +11,7 @@
       "boxSelector": "#box_getLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
-        "consentPermission": "Allow",
-        "expectedOutput": "true"
+        "consentPermission": true
       },
       "inputValue": { "allowChooseLocation": true },
       "expectedAlertValue": "location.map.chooseLocation is called.",
@@ -21,12 +20,11 @@
     {
       "title": "showLocation API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["Web"],
+      "platformsExcluded": ["iOS"],
       "boxSelector": "#box_showLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
-        "consentPermission": "Allow",
-        "expectedOutput": "true"
+        "consentPermission": true
       },
       "inputValue": {
         "latitude": 51.50735,
@@ -40,7 +38,7 @@
     {
       "title": "getLocation API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["Web"],
       "boxSelector": "#box_getLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
