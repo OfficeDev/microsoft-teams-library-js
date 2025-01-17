@@ -21,7 +21,7 @@
     {
       "title": "showLocation API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["Web"],
       "boxSelector": "#box_showLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
@@ -40,7 +40,7 @@
     {
       "title": "getLocation API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["Web"],
+      "platformsExcluded": ["iOS"],
       "boxSelector": "#box_getLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
