@@ -1,65 +1,72 @@
 {
   "name": "Handoff ComposeMail",
   "platforms": "*",
-  "version": ">2.33.0",
-  "testCases": [
+  "featureTests": [
     {
-      "title": "checkMailWithHandoffCapability API Call - Success",
-      "type": "callResponse",
-      "boxSelector": "#box_checkMailWithHandoffCapability",
-      "expectedTestAppValue": "MailWithHandoff module is supported"
-    },
-    {
-      "title": "mail.handoff.composeMail Feature Test - Success",
-      "type": "callResponse",
-      "boxSelector": "#box_composeMailWithHandoff",
-      "inputValue": {
-        "composeMailParams": {
-          "type": "new",
-          "subject": "Test Mail",
-          "toRecipients": ["sam@example.com", "sam1@example.com"],
-          "ccRecipients": ["sam2@example.com"],
-          "bccRecipients": ["sam3@example.com"],
-          "message": "This mail has been sent from the Teams Test App"
-        },
-        "handoffId": "abc123"
+      "feature": {
+        "id": "mail.handoff",
+        "version": 1
       },
-      "expectedAlertValue": "composeMailParamsWithHandoff called with {\"type\":\"new\",\"subject\":\"Test Mail\",\"toRecipients\":[\"sam@example.com\",\"sam1@example.com\"],\"ccRecipients\":[\"sam2@example.com\"],\"bccRecipients\":[\"sam3@example.com\"],\"message\":\"This mail has been sent from the Teams Test App\"} and handoffId: abc123",
-      "expectedTestAppValue": "Completed"
-    },
-    {
-      "title": "mail.handoff.composeMail Feature Test with invalid handoffId- Failure",
-      "type": "callResponse",
-      "boxSelector": "#box_composeMailWithHandoff",
-      "inputValue": {
-        "composeMailParams": {
-          "type": "new",
-          "subject": "Test Mail",
-          "toRecipients": ["sam@example.com", "sam1@example.com"],
-          "ccRecipients": ["sam2@example.com"],
-          "bccRecipients": ["sam3@example.com"],
-          "message": "This mail has been sent from the Teams Test App"
+      "testCases": [
+        {
+          "title": "checkMailWithHandoffCapability API Call - Success",
+          "type": "callResponse",
+          "boxSelector": "#box_checkMailWithHandoffCapability",
+          "expectedTestAppValue": "MailWithHandoff module is supported"
         },
-        "handoffId": ""
-      },
-      "expectedTestAppValue": "Error: Error: handoffId should not be null or empty string."
-    },
-    {
-      "title": "mail.handoff.composeMail Feature Test with invalid email - Failure",
-      "type": "callResponse",
-      "boxSelector": "#box_composeMailWithHandoff",
-      "inputValue": {
-        "composeMailParams": {
-          "type": "new",
-          "subject": "Test Mail",
-          "toRecipients": ["mockEmail", "sam1@example.com"],
-          "ccRecipients": ["sam2@example.com"],
-          "bccRecipients": ["sam3@example.com"],
-          "message": "This mail has been sent from the Teams Test App"
+        {
+          "title": "mail.handoff.composeMail Feature Test - Success",
+          "type": "callResponse",
+          "boxSelector": "#box_composeMailWithHandoff",
+          "inputValue": {
+            "composeMailParams": {
+              "type": "new",
+              "subject": "Test Mail",
+              "toRecipients": ["sam@example.com", "sam1@example.com"],
+              "ccRecipients": ["sam2@example.com"],
+              "bccRecipients": ["sam3@example.com"],
+              "message": "This mail has been sent from the Teams Test App"
+            },
+            "handoffId": "abc123"
+          },
+          "expectedAlertValue": "composeMailParamsWithHandoff called with {\"type\":\"new\",\"subject\":\"Test Mail\",\"toRecipients\":[\"sam@example.com\",\"sam1@example.com\"],\"ccRecipients\":[\"sam2@example.com\"],\"bccRecipients\":[\"sam3@example.com\"],\"message\":\"This mail has been sent from the Teams Test App\"} and handoffId: abc123",
+          "expectedTestAppValue": "Completed"
         },
-        "handoffId": "mockId"
-      },
-      "expectedTestAppValue": "Error: Error: Input email address does not have the correct format."
+        {
+          "title": "mail.handoff.composeMail Feature Test with invalid handoffId- Failure",
+          "type": "callResponse",
+          "boxSelector": "#box_composeMailWithHandoff",
+          "inputValue": {
+            "composeMailParams": {
+              "type": "new",
+              "subject": "Test Mail",
+              "toRecipients": ["sam@example.com", "sam1@example.com"],
+              "ccRecipients": ["sam2@example.com"],
+              "bccRecipients": ["sam3@example.com"],
+              "message": "This mail has been sent from the Teams Test App"
+            },
+            "handoffId": ""
+          },
+          "expectedTestAppValue": "Error: Error: handoffId should not be null or empty string."
+        },
+        {
+          "title": "mail.handoff.composeMail Feature Test with invalid email - Failure",
+          "type": "callResponse",
+          "boxSelector": "#box_composeMailWithHandoff",
+          "inputValue": {
+            "composeMailParams": {
+              "type": "new",
+              "subject": "Test Mail",
+              "toRecipients": ["mockEmail", "sam1@example.com"],
+              "ccRecipients": ["sam2@example.com"],
+              "bccRecipients": ["sam3@example.com"],
+              "message": "This mail has been sent from the Teams Test App"
+            },
+            "handoffId": "mockId"
+          },
+          "expectedTestAppValue": "Error: Error: Input email address does not have the correct format."
+        }
+      ]
     }
   ]
 }
