@@ -177,6 +177,7 @@ export const enum ApiName {
   Logs_Receive = 'log.receive',
   Logs_RegisterLogRequestHandler = 'log.request',
   Mail_ComposeMail = 'mail.composeMail',
+  Mail_Handoff_ComposeMail = 'mail.handoff.composeMail',
   Mail_OpenMailItem = 'mail.openMailItem',
   Marketplace_AddOrUpdateCartItems = 'marketplace.addOrUpdateCartItems',
   Marketplace_GetCart = 'marketplace.getCart',
