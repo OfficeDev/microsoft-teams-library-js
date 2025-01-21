@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Updated `validateEmails` function to void type for `mail.handoff` sub-capability.",
+  "packageName": "@microsoft/teams-js",
+  "email": "maggiegong@microsoft.com",
+  "dependentChangeType": "patch"
+}
