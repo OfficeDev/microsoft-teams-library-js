@@ -3,7 +3,7 @@
   "private": true,
   "author": "Microsoft Teams",
   "engines": {
-    "npm": ">=9.0.6",
+    "pnpm": ">=9.0.6",
     "node": ">=18.0.0"
   },
   "scripts": {
