@@ -22,6 +22,7 @@
     "docs": "pnpm --filter @microsoft/teams-js docs",
     "docs:validate": "pnpm --filter @microsoft/teams-js docs:validate",
     "lint": "lerna run lint",
+    "size": "lerna run size",
     "start-blazor-app": "pnpm --filter blazor-test-app start",
     "start-perf-app": "pnpm --filter teams-perf-test-app start",
     "start-ssr-app": "pnpm --filter ssr-test-app start",
