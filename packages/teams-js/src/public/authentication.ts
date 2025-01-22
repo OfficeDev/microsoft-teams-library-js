@@ -464,9 +464,9 @@ function startAuthenticationWindowMonitor(): void {
  *
  * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
  * this value in its callback or via the `Promise` return value.
- * NOTE: this result should _never_ contain the token that was received from the identity provider. A rogue actor (rather than your own app)
+ * NOTE: this result should _never_ contain the token that was received from the identity provider. A rogue app (rather than your own app)
  * could have opened your authentication window. Passing the token in this parameter would leak it to them.
- * Potential secure ways to complete the authentication flow include:
+ * Secure ways to complete the authentication flow include:
  * - For a purely browser-based experience (e.g., a personal app/tab app), you can store the token in browser local storage and then have your
  * personal app retrieve it once this notifySuccess call is received
  * - For a server-based experience (e.g., a message extension), your authentication window should store the token on your service and then
