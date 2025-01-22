@@ -7,9 +7,8 @@
  * @module
  */
 
-import { callFunctionInHostAndHandleResponse } from '../../internal/communication';
+import { callFunctionInHost } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
-import { SimpleTypeResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { getCurrentTimestamp } from '../../internal/utils';
 import { runtime } from '../../public/runtime';
@@ -53,10 +52,9 @@ export async function sendCustomTelemetryData(
     stageNameIdentifier,
     timestamp,
   );
-  await callFunctionInHostAndHandleResponse(
+  return callFunctionInHost(
     ApiName.Copilot_CustomTelemetry_SendCustomTelemetryData,
     [stageNameIdentifier.toString(), timestamp],
-    new SimpleTypeResponseHandler<boolean>(),
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_CustomTelemetry_SendCustomTelemetryData),
   );
 }
