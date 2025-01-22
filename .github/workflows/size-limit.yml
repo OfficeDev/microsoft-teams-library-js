@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Setup pnpm
-        uses: pnpm/action-setup@3
+        uses: pnpm/action-setup@2
         with:
           version: 8
       - uses: andresz1/size-limit-action@v1
