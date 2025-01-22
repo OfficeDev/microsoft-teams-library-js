@@ -7,8 +7,9 @@
  * @module
  */
 
-import { callFunctionInHost } from '../../internal/communication';
+import { callFunctionInHostAndHandleResponse } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
+import { SimpleTypeResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { getCurrentTimestamp } from '../../internal/utils';
 import { runtime } from '../../public/runtime';
@@ -17,6 +18,18 @@ import { UUID } from '../../public/uuidObject';
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 const copilotLogger = getLogger('copilot');
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ * @beta
+ * @returns boolean to represent whether copilot.customTelemetry capability is supported
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ */
+export function isSupported(): boolean {
+  return ensureInitialized(runtime) && !!runtime.supports.copilot?.customTelemetry;
+}
 /**
  * Sends custom telemetry data to the host.
  *
@@ -40,9 +53,10 @@ export async function sendCustomTelemetryData(
     stageNameIdentifier,
     timestamp,
   );
-  return callFunctionInHost(
+  await callFunctionInHostAndHandleResponse(
     ApiName.Copilot_CustomTelemetry_SendCustomTelemetryData,
     [stageNameIdentifier.toString(), timestamp],
+    new SimpleTypeResponseHandler<boolean>(),
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_CustomTelemetry_SendCustomTelemetryData),
   );
 }
