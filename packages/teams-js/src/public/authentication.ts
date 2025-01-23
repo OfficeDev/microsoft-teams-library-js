@@ -82,7 +82,7 @@ export function registerAuthenticationHandlers(authenticateParameters: Authentic
  *
  * @remarks
  * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
- * The [Teams authentication flow](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab) starts and ends at an endpoint on
+ * The [authentication flow](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab) starts and ends at an endpoint on
  * your own service (with a redirect round-trip to the 3rd party identity provider in the middle).
  *
  * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow
@@ -454,16 +454,24 @@ function startAuthenticationWindowMonitor(): void {
 
 /**
  * When using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}, the
- * window that was opened to execute the authentication flow should call this method after authentiction to notify the caller of
+ * window that was opened to execute the authentication flow should call this method after authentication to notify the caller of
  * {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} that the
  * authentication request was successful.
  *
  * @remarks
- * This function is usable only from the authentication window.
+ * The `result` parameter should **never** contain the token that was received from the identity provider, because a malicious app (rather than your own app) might have opened
+ * the authentication window. If that was the case, passing the token in this parameter would leak it to them. More secure methods for completing the authentication flow include:
+ * - For a purely browser-based experience (e.g., a personal app/tab app), you could store the token in browser local storage and then have your personal app retrieve it once
+ * this `notifySuccess` call is received.
+ * - For a server-based experience (e.g., a message extension), your authentication window could store the token on your service and then generate a unique code passed via this
+ * `result` parameter. The caller can then use the unique code to retrieve the token from your service.
+ *
+ * This function is usable only from an authentication window opened with {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}.
  * This call causes the authentication window to be closed.
  *
  * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
- * this value in its callback or via the `Promise` return value
+ * this value in its callback or via the `Promise` return value.
+ *
  */
 export function notifySuccess(result?: string): void;
 /**
