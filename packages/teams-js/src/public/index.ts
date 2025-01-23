@@ -71,7 +71,7 @@ export * as location from './location';
 export * as meeting from './meeting/meeting';
 export * as monetization from './monetization';
 export * as calendar from './calendar';
-export * as mail from './mail';
+export * as mail from './mail/mail';
 export * as teamsCore from './teamsAPIs';
 export * as people from './people';
 export * as profile from './profile';
