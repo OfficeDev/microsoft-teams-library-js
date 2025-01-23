@@ -8,7 +8,7 @@ import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import { SecondRoute } from './pages/SecondRoute';
 import { appInitializationTestQueryParameter, TestApp } from './pages/TestApp';
 
-const urlParams = new URLSearchParams(window.location.search);
+export const urlParams = new URLSearchParams(window.location.search);
 
 // The search url parameter 'origins' is used to get the valid message origins which will be passed to
 // the initialize function and based on the hosts it will allow the origins or not.
