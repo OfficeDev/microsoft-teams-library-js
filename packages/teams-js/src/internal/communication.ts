@@ -894,7 +894,7 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
       handleIncomingMessageFromChildLogger(
-        'Returning message %s from child back to child, action: %s.',
+        'Handler called in response to message %s from child. Returning response from handler to child, action: %s.',
         getMessageIdsAsLogString(message),
         message.func,
       );
@@ -906,7 +906,7 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
       // No handler, proxy to parent
 
       handleIncomingMessageFromChildLogger(
-        'Relaying message %s from child to parent, action: %s. Relayed message will have a new id.',
+        'No handler for message %s from child found; relaying message on to parent, action: %s. Relayed message will have a new id.',
         getMessageIdsAsLogString(message),
         message.func,
       );
@@ -1054,6 +1054,12 @@ function sendMessageResponseToChild(
   const serializedResponse = serializeMessageResponse(response);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
+    handleIncomingMessageFromChildLogger(
+      'Sending message %s to %s via postMessage, args = %o',
+      getMessageIdsAsLogString(serializedResponse),
+      getTargetName(targetWindow),
+      serializedResponse.args,
+    );
     targetWindow.postMessage(serializedResponse, targetOrigin);
   }
 }
