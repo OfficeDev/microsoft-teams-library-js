@@ -6,7 +6,7 @@ module.exports = {
       category: 'Best Practices',
       recommended: true,
     },
-    fixable: true,
+    fixable: false,
     schema: [],
   },
 

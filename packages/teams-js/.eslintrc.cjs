@@ -12,7 +12,7 @@ module.exports = {
       { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
     'no-inner-declarations': 'off',
-    'strict-null-checks/all': 'warn',
     'recommend-no-namespaces/recommend-no-namespaces': 'warn',
+    'strict-null-checks/all': 'warn',
   },
 };
