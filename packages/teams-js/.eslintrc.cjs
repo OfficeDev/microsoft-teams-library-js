@@ -3,7 +3,7 @@ module.exports = {
   parserOptions: {
     project: './tsconfig.eslint.json',
   },
-  plugins: ['strict-null-checks'],
+  plugins: ['recommend-no-namespaces', 'strict-null-checks'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/no-namespace': 'off',
@@ -12,6 +12,7 @@ module.exports = {
       { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
     'no-inner-declarations': 'off',
+    'recommend-no-namespaces/recommend-no-namespaces': 'warn',
     'strict-null-checks/all': 'warn',
   },
 };
