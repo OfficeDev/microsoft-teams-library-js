@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added additional logging for child window (auth window) communication",
+  "packageName": "@microsoft/teams-js",
+  "email": "36546967+AE-MS@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}

@@ -1,9 +1,11 @@
 import { callFunctionInHost } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { DialogSize } from '../public';
 import { AppId } from '../public/appId';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+
 /**
  * @beta
  * @hidden
@@ -12,46 +14,58 @@ import { runtime } from '../public/runtime';
  * @internal
  * Limited to Microsoft-internal use
  */
-const StoreVersionTagNum = ApiVersionNumber.V_2;
+
 /**
  * @beta
  * @hidden
- * Enum of store dialog type
+ * Interface for opening the full store function parameters
  * @internal
  * Limited to Microsoft-internal use
  */
-export enum StoreDialogType {
+export interface OpenFullStoreParams {
   /**
-   * open a store without navigation
+   * the store dialog size, defined by {@link DialogSize}, if not present, the host will choose an appropriate size
    */
-  FullStore = 'fullstore',
-  /**
-   * open a store with navigation to a specific collection
-   */
-  SpecificStore = 'specificstore',
-  /**
-   * open in-context-store
-   */
-  InContextStore = 'ics',
-  /**
-   * open detail dialog (DD)
-   */
-  AppDetail = 'appdetail',
+  size?: DialogSize;
 }
 
 /**
  * @beta
  * @hidden
- * Interface of open full store, copilot store and in-context-store function parameter
+ * Interface for opening the in-context store function parameters
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface OpenFullStoreAndICSParams {
+export interface OpenInContextStoreParams {
   /**
-   * the store dialog type, defined by {@link StoreDialogType}
+   * the store dialog size, defined by {@link DialogSize}, if not present, the host will choose an appropriate size
    */
-  dialogType: StoreDialogType.FullStore | StoreDialogType.InContextStore;
+  size?: DialogSize;
+
+  /**
+   * The application capability (e.g., "Tab", "Bot", "Messaging", "Connector", "CUSTOMBOT").
+   * Defaults to "Tab".
+   */
+  appCapability?: string;
+
+  /**
+   * The application meta capabilities (e.g., ["copilotPlugins", "copilotExtensions"]).
+   * Defaults to "[]".
+   */
+  appMetaCapabilities?: string[];
+
+  /**
+   * The installation scope (e.g., "Personal" | "Team").
+   * Defaults to "Personal".
+   */
+  installationScope?: string;
+
+  /**
+   * A list of app IDs to be filtered out.
+   */
+  filteredOutAppIds?: AppId[];
 }
+
 /**
  * @beta
  * @hidden
@@ -61,14 +75,16 @@ export interface OpenFullStoreAndICSParams {
  */
 export interface OpenAppDetailParams {
   /**
-   * need to be app detail type, defined by {@link StoreDialogType}
-   */
-  dialogType: StoreDialogType.AppDetail;
-  /**
    * app id of the dialog to open
    */
   appId: AppId;
+
+  /**
+   * the store dialog size, defined by {@link DialogSize}, if not present, the host will choose an appropriate size
+   */
+  size?: DialogSize;
 }
+
 /**
  * @beta
  * @hidden
@@ -78,82 +94,102 @@ export interface OpenAppDetailParams {
  */
 export interface OpenSpecificStoreParams {
   /**
-   * need to be specific store type, defined by {@link StoreDialogType}
-   */
-  dialogType: StoreDialogType.SpecificStore;
-  /**
    * collection id of the plugin store to open
    */
   collectionId: string;
+
+  /**
+   * the store dialog size, defined by {@link DialogSize}, if not present, the host will choose an appropriate size
+   */
+  size?: DialogSize;
 }
-/**
- * @beta
- * @hidden
- * Interface of open store function parameters, including OpenFullStoreAndICSParams, OpenAppDetailParams, OpenSpecificStoreParams
- * @internal
- * Limited to Microsoft-internal use
- */
-export type OpenStoreParams = OpenFullStoreAndICSParams | OpenAppDetailParams | OpenSpecificStoreParams;
+
+const StoreVersionTagNum = ApiVersionNumber.V_2;
+const errorInvalidDialogSize = 'Invalid store dialog size';
+const errorMissingAppId = 'No App Id present, but AppId needed to open AppDetail store';
+const errorMissingCollectionId =
+  'No Collection Id present, but CollectionId needed to open a store specific to a collection';
 
 /**
  * @beta
  * @hidden
- * error message when getting invalid store dialog type
+ * Api to open a full store without navigation
  * @internal
  * Limited to Microsoft-internal use
  */
-export const errorInvalidDialogType = 'Invalid store dialog type, but type needed to specify store to open';
+export async function openFullStore(params: OpenFullStoreParams | undefined): Promise<void> {
+  ensureStoreReady();
+  const { size } = params ?? {};
+  return callFunctionInHost(
+    ApiName.Store_OpenFullStore,
+    [serializeValidSize(size)],
+    getApiVersionTag(StoreVersionTagNum, ApiName.Store_OpenFullStore),
+  );
+}
+
 /**
  * @beta
  * @hidden
- * error message when getting wrong app id or missing app id
+ * Api to open an app detail dialog
  * @internal
  * Limited to Microsoft-internal use
  */
-export const errorMissingAppId = 'No App Id present, but AppId needed to open AppDetail store';
-/**
- * @beta
- * @hidden
- * error message when getting wrong collection id or missing collection id
- * @internal
- * Limited to Microsoft-internal use
- */
-export const errorMissingCollectionId =
-  'No Collection Id present, but CollectionId needed to open a store specific to a collection';
-/**
- * @beta
- * @hidden
- * Api to open a store
- *
- * @param openStoreParams - params to call openStoreExperience
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export async function openStoreExperience(openStoreParams: OpenStoreParams): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-  if (!isSupported()) {
-    throw errorNotSupportedOnPlatform;
-  }
-  if (openStoreParams === undefined || !Object.values(StoreDialogType).includes(openStoreParams.dialogType)) {
-    throw new Error(errorInvalidDialogType);
-  }
-  if (openStoreParams.dialogType === StoreDialogType.AppDetail && !(openStoreParams.appId instanceof AppId)) {
+export async function openAppDetail(params: OpenAppDetailParams): Promise<void> {
+  ensureStoreReady();
+  const { size, appId } = params;
+  if (!(appId instanceof AppId)) {
     throw new Error(errorMissingAppId);
   }
-  if (openStoreParams.dialogType === StoreDialogType.SpecificStore && !openStoreParams.collectionId) {
+  return callFunctionInHost(
+    ApiName.Store_OpenAppDetail,
+    [serializeValidSize(size), appId],
+    getApiVersionTag(StoreVersionTagNum, ApiName.Store_OpenAppDetail),
+  );
+}
+
+/**
+ * @beta
+ * @hidden
+ * Api to open an in-context-store dialog
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export async function openInContextStore(params: OpenInContextStoreParams | undefined): Promise<void> {
+  ensureStoreReady();
+  const { size, appCapability, appMetaCapabilities, installationScope, filteredOutAppIds } = params ?? {};
+  return callFunctionInHost(
+    ApiName.Store_OpenInContextStore,
+    [
+      serializeValidSize(size),
+      appCapability,
+      appMetaCapabilities,
+      installationScope,
+      filteredOutAppIds?.map((id) => id.toString()),
+    ],
+    getApiVersionTag(StoreVersionTagNum, ApiName.Store_OpenInContextStore),
+  );
+}
+
+/**
+ * @beta
+ * @hidden
+ * Api to open an store with navigation to a specific collection
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export async function openSpecificStore(params: OpenSpecificStoreParams): Promise<void> {
+  ensureStoreReady();
+  const { size, collectionId } = params;
+  if (collectionId === undefined) {
     throw new Error(errorMissingCollectionId);
   }
   return callFunctionInHost(
-    ApiName.Store_Open,
-    [
-      openStoreParams.dialogType,
-      (openStoreParams as OpenAppDetailParams).appId,
-      (openStoreParams as OpenSpecificStoreParams).collectionId,
-    ],
-    getApiVersionTag(StoreVersionTagNum, ApiName.Store_Open),
+    ApiName.Store_OpenSpecificStore,
+    [serializeValidSize(size), collectionId],
+    getApiVersionTag(StoreVersionTagNum, ApiName.Store_OpenSpecificStore),
   );
 }
+
 /**
  * Checks if the store capability is supported by the host
  * @returns boolean to represent whether the store capability is supported
@@ -162,4 +198,26 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams): Pro
  */
 export function isSupported(): boolean {
   return ensureInitialized(runtime) && !!runtime.supports.store;
+}
+
+function ensureStoreReady(): void {
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+  if (!isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+}
+
+function serializeValidSize(size: DialogSize | undefined): string | undefined {
+  if (size === undefined) {
+    return undefined;
+  }
+  const { width, height } = size;
+  if (width !== undefined && typeof width === 'number' && width < 0) {
+    throw new Error(errorInvalidDialogSize);
+  }
+  if (height !== undefined && typeof height === 'number' && height < 0) {
+    throw new Error(errorInvalidDialogSize);
+  }
+
+  return JSON.stringify(size);
 }

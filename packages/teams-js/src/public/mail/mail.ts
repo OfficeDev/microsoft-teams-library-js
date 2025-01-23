@@ -3,11 +3,12 @@
  * @module
  */
 
-import { sendAndHandleStatusAndReason } from '../internal/communication';
-import { ensureInitialized } from '../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { FrameContexts } from './constants';
-import { runtime } from './runtime';
+import { sendAndHandleStatusAndReason } from '../../internal/communication';
+import { ensureInitialized } from '../../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
+import { FrameContexts } from '../constants';
+import { runtime } from '../runtime';
+import * as handoff from './handoff';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -146,6 +147,8 @@ export interface ComposeReplyOrForwardParams<T extends ComposeMailType> extends 
 /**
  * Parameters supplied to {@link composeMail} when composing a new mail item
  *
+ * For ComposeMailType.New, it is valid to pass empty arrays for toRecipients, ccRecipients, and bccRecipients.
+ * This will result in a new email with (pre-populated) body content but no pre-populated recipients.
  * @see {@link ComposeNewParams}
  * @see {@link ComposeReplyOrForwardParams}
  * @see {@link ComposeMailType}
@@ -155,3 +158,5 @@ export type ComposeMailParams =
   | ComposeReplyOrForwardParams<ComposeMailType.Reply>
   | ComposeReplyOrForwardParams<ComposeMailType.ReplyAll>
   | ComposeReplyOrForwardParams<ComposeMailType.Forward>;
+
+export { handoff };
