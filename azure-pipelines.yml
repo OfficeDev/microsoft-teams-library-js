@@ -40,6 +40,10 @@ extends:
       image: windows-2022
       os: windows
     sdl:
+      codeql: # Use this to disable CodeQL
+        compiled:
+          enabled: false
+          justificationForDisabling: 'CodeQL injection sometimes fail on ARM supported virtual machine'
       eslint:
         configuration: 'required'
         parser: '@typescript-eslint/parser'
