@@ -459,18 +459,18 @@ function startAuthenticationWindowMonitor(): void {
  * authentication request was successful.
  *
  * @remarks
- * This function is usable only from the authentication window.
+ * The `result` parameter should **never** contain the token that was received from the identity provider, because a malicious app (rather than your own app) might have opened
+ * the authentication window. If that was the case, passing the token in this parameter would leak it to them. More secure methods for completing the authentication flow include:
+ * - For a purely browser-based experience (e.g., a personal app/tab app), you could store the token in browser local storage and then have your personal app retrieve it once
+ * this `notifySuccess` call is received.
+ * - For a server-based experience (e.g., a message extension), your authentication window could store the token on your service and then generate a unique code passed via this
+ * `result` parameter. The caller can then use the unique code to retrieve the token from your service.
+ *
+ * This function is usable only from an authentication window opened with {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}.
  * This call causes the authentication window to be closed.
  *
  * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
  * this value in its callback or via the `Promise` return value.
- * NOTE: this result should _never_ contain the token that was received from the identity provider. A rogue app (rather than your own app)
- * could have opened your authentication window. Passing the token in this parameter would leak it to them.
- * Secure ways to complete the authentication flow include:
- * - For a purely browser-based experience (e.g., a personal app/tab app), you can store the token in browser local storage and then have your
- * personal app retrieve it once this notifySuccess call is received
- * - For a server-based experience (e.g., a message extension), your authentication window should store the token on your service and then
- * generate a unique code passed via this result parameter. The caller can then use the unique code to retrieve the token from your service.
  *
  */
 export function notifySuccess(result?: string): void;
