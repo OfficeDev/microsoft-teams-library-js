@@ -10,6 +10,7 @@ import {
 import React, { ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { urlParams } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
@@ -107,7 +108,9 @@ const RegisterOnResumeHandler = (): React.ReactElement => {
         const route = context.contentUrl;
         // navigate to the correct path based on URL
         navigate(route.pathname);
-        app.notifySuccess();
+        if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+          app.notifySuccess();
+        }
       });
 
       return 'registered';

@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated the sendCustomTelemetryData function in  `copilot.customTelemetry` capability.",
+  "packageName": "@microsoft/teams-js",
+  "email": "niharikad@microsoft.com",
+  "dependentChangeType": "patch"
+}
