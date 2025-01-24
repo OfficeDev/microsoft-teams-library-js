@@ -15,8 +15,8 @@ function isValidOriginsCacheEmpty(): boolean {
   return validOriginsCache.length === 0;
 }
 
-async function getValidOriginsListFromCDN(disableCache?: boolean): Promise<string[]> {
-  if (!isValidOriginsCacheEmpty() && !disableCache) {
+async function getValidOriginsListFromCDN(shouldDisableCache: boolean = false): Promise<string[]> {
+  if (!isValidOriginsCacheEmpty() && !shouldDisableCache) {
     return validOriginsCache;
   }
   if (!inServerSideRenderingEnvironment()) {
