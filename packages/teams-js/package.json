@@ -35,6 +35,7 @@
     "src/internal/communication.ts",
     "src/internal/nestedAppAuthUtils.ts",
     "src/internal/utils.ts",
+    "src/internal/validOrigins.ts",
     "src/internal/videoEffectsUtils.ts",
     "src/private/constants.ts",
     "src/private/interfaces.ts",

@@ -130,6 +130,15 @@ export const validOriginsFallback = validOriginsLocal.validOrigins;
 
 /**
  * @hidden
+ * Timeout length for Fetch Call for Valid Origins
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const ORIGIN_LIST_FETCH_TIMEOUT_IN_MS: number = 1500;
+
+/**
+ * @hidden
  * CDN endpoint of the list of valid origins
  *
  * @internal
