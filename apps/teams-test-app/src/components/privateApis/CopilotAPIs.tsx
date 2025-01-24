@@ -23,26 +23,35 @@ const CopilotAPIs = (): ReactElement => {
       },
     });
 
+  const CheckCopilotCustomTelemetryCapability = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCopilotCustomTelemetryCapability',
+      title: 'Check if Copilot.CustomTelemetry is supported',
+      onClick: async () =>
+        `Copilot.CustomTelemetry module ${copilot.customTelemetry.isSupported() ? 'is' : 'is not'} supported`,
+    });
+  interface InputType {
+    stageNameIdentifier: string;
+    timestamp?: number;
+  }
   const SendCustomTelemetryData = (): ReactElement =>
-    ApiWithTextInput<{
-      stageNameIdentifier: UUID;
-      timestamp: number;
-    }>({
+    ApiWithTextInput<InputType>({
       name: 'sendCustomTelemetryData',
       title: 'sendCustomTelemetryData',
       onClick: {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         validateInput: (_input) => {},
         submit: async (input) => {
-          const result = await copilot.customTelemetry.sendCustomTelemetryData(
-            input.stageNameIdentifier,
-            input.timestamp,
-          );
-          return JSON.stringify(result);
+          try {
+            await copilot.customTelemetry.sendCustomTelemetryData(new UUID(input.stageNameIdentifier), input.timestamp);
+            return 'copilot.customTelemetry.sendCustomTelemetryData() was called';
+          } catch (error) {
+            return `Error: ${error}`;
+          }
         },
       },
       defaultInput: JSON.stringify({
-        stageNameIdentifier: new UUID('805a4340-d5e0-4587-8f04-0ae88219699f'),
+        stageNameIdentifier: '805a4340-d5e0-4587-8f04-0ae88219699f',
         timestamp: Date.now(),
       }),
     });
@@ -54,6 +63,7 @@ const CopilotAPIs = (): ReactElement => {
         <GetEligibilityInfo />
       </ModuleWrapper>
       <ModuleWrapper title="Copilot.CustomTelemetry">
+        <CheckCopilotCustomTelemetryCapability />
         <SendCustomTelemetryData />
       </ModuleWrapper>
     </>

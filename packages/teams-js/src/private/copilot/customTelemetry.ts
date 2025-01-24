@@ -18,6 +18,18 @@ const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 const copilotLogger = getLogger('copilot');
 
 /**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ * @beta
+ * @returns boolean to represent whether copilot.customTelemetry capability is supported
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ */
+export function isSupported(): boolean {
+  return ensureInitialized(runtime) && !!runtime.supports.copilot?.customTelemetry;
+}
+/**
  * Sends custom telemetry data to the host.
  *
  * @param { UUID } stageNameIdentifier - The stageName UUID identifier for the telemetry data.
