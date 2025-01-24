@@ -1,0 +1,19 @@
+{
+  "name": "typed-dependency-tester",
+  "private": true,
+  "author": "Microsoft Teams",
+  "description": "A tester to check if types in the dependency array will cause errors",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "pnpm i && pnpm copy && cd ./types && pnpm tsc && cd ../ && pnpm clean",
+    "copy": "cp -R ./node_modules/@microsoft/teams-js/dist/esm/packages/teams-js/dts/* ./types || xcopy .\\node_modules\\@microsoft\\teams-js\\dist\\esm\\* .\\types /Y",
+    "clean": "rimraf node_modules && rimraf MicrosoftTeams.d.ts && rimraf ./types/*"
+  },
+  "dependencies": {
+    "debug": "^4.3.3"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@microsoft/teams-js": "workspace:*"
+  }
+}
