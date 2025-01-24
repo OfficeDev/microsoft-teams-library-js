@@ -816,6 +816,8 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
         ringId: legacyContext.ringId,
       },
       appLaunchId: legacyContext.appLaunchId,
+      appId: legacyContext.appId ? new AppId(legacyContext.appId) : undefined,
+      manifestVersion: legacyContext.manifestVersion,
     },
     page: {
       id: legacyContext.entityId,
