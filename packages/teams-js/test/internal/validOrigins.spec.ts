@@ -1,3 +1,4 @@
+import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { validateOrigin } from '../../src/internal/validOrigins';
 import * as app from '../../src/public/app/app';
@@ -534,7 +535,7 @@ describe('validOrigins', () => {
       global.fetch = jest.fn(
         () =>
           new Promise((resolve) => {
-            jest.advanceTimersByTime(1600);
+            jest.advanceTimersByTime(ORIGIN_LIST_FETCH_TIMEOUT_IN_MS);
             resolve({
               status: 200,
               ok: true,

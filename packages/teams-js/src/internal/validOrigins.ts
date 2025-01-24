@@ -1,11 +1,10 @@
-import { validOriginsCdnEndpoint, validOriginsFallback } from './constants';
+import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS, validOriginsCdnEndpoint, validOriginsFallback } from './constants';
 import { GlobalVars } from './globalVars';
 import { getLogger } from './telemetry';
 import { inServerSideRenderingEnvironment, isValidHttpsURL } from './utils';
 
 let validOriginsCache: string[] = [];
 const validateOriginLogger = getLogger('validateOrigin');
-const ORIGIN_LIST_FETCH_TIMEOUT_IN_MS: number = 1500;
 
 export async function prefetchOriginsFromCDN(): Promise<void> {
   await getValidOriginsListFromCDN();
