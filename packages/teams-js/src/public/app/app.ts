@@ -14,7 +14,6 @@ import * as Handlers from '../../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { inServerSideRenderingEnvironment } from '../../internal/utils';
-import { prefetchOriginsFromCDN } from '../../internal/validOrigins';
 import * as messageChannels from '../../private/messageChannels/messageChannels';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from '../constants';
 import {
@@ -615,7 +614,6 @@ logWhereTeamsJsIsBeingUsed();
  * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
  */
 export function initialize(validMessageOrigins?: string[]): Promise<void> {
-  prefetchOriginsFromCDN();
   return appHelpers.appInitializeHelper(
     getApiVersionTag(appTelemetryVersionNumber, ApiName.App_Initialize),
     validMessageOrigins,
