@@ -87,6 +87,13 @@ steps:
       script: 'nohup pnpm start-test-app --server-options-cert $(localhostSSLCertificate.secureFilePath) --server-options-key $(localhostSSLKey.secureFilePath) &'
       workingDirectory: '$(ClientSdkProjectDirectory)'
 
+  - task: CodeQL3000Init@0
+    inputs:
+      ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+        Enabled: true
+      ${{ else }}:
+        Enabled: false
+        
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
   - task: Xcode@5
@@ -100,7 +107,10 @@ steps:
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
       xcodeVersion: 'default'
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
-
+  
+  - task: CodeQL3000Finalize@0
+    condition: always()
+    
   - task: Bash@3
     displayName: 'Disable Slow Animation'
     inputs:

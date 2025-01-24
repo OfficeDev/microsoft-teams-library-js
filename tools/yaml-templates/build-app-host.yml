@@ -73,6 +73,13 @@ steps:
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
     condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
 
+  - task: CodeQL3000Init@0
+    inputs:
+      ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+        Enabled: true
+      ${{ else }}:
+        Enabled: false
+
   - script: |
       pnpm build
     displayName: 'Build app hosting sdk'
@@ -87,7 +94,7 @@ steps:
       pnpm build-force-blazor
     displayName: 'Build client sdk'
     workingDirectory: '$(ClientSdkProjectDirectory)'
-
+    
   - task: CmdLine@2
     displayName: 'Configure host machine'
     inputs:
@@ -95,3 +102,6 @@ steps:
         sudo chmod -R 755 ./ 
         pnpm run setup
       workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+  - task: CodeQL3000Finalize@0
+    condition: always()
