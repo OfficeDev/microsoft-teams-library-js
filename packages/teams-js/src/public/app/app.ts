@@ -65,10 +65,6 @@ export enum FailedReason {
   Other = 'Other',
 }
 
-export enum Test {
-  Test = 'test',
-}
-
 /**
  * Describes expected errors that occurred during an otherwise successful
  * app initialization
