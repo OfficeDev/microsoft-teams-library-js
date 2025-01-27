@@ -374,6 +374,9 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
+      eslint-plugin-recommend-no-namespaces:
+        specifier: file:./eslint-rules/eslint-plugin-recommend-no-namespaces
+        version: file:packages/teams-js/eslint-rules/eslint-plugin-recommend-no-namespaces(eslint@8.57.0)
       size-limit:
         specifier: ^11.1.6
         version: 11.1.6
@@ -3542,6 +3545,11 @@ packages:
     engines: {node: '>=4'}
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
+
+  eslint-plugin-recommend-no-namespaces@file:packages/teams-js/eslint-rules/eslint-plugin-recommend-no-namespaces:
+    resolution: {directory: packages/teams-js/eslint-rules/eslint-plugin-recommend-no-namespaces, type: directory}
+    peerDependencies:
+      eslint: '>=5.0.0'
 
   eslint-plugin-security@1.4.0:
     resolution: {integrity: sha512-xlS7P2PLMXeqfhyf3NpqbvbnW04kN8M9NtmhpR3XGyOvt/vNKS7XPXT5EDbwKW9vCjWH4PpfQvgD/+JgN0VJKA==}
@@ -11000,6 +11008,10 @@ snapshots:
       resolve: 2.0.0-next.5
       semver: 7.6.2
       string.prototype.matchall: 4.0.11
+
+  eslint-plugin-recommend-no-namespaces@file:packages/teams-js/eslint-rules/eslint-plugin-recommend-no-namespaces(eslint@8.57.0):
+    dependencies:
+      eslint: 8.57.0
 
   eslint-plugin-security@1.4.0:
     dependencies:

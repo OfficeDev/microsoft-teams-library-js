@@ -31,12 +31,14 @@
   "devDependencies": {
     "@size-limit/preset-big-lib": "^11.1.6",
     "@types/debug": "^4.1.7",
+    "eslint-plugin-recommend-no-namespaces": "file:./eslint-rules/eslint-plugin-recommend-no-namespaces",
     "size-limit": "^11.1.6"
   },
   "sideEffects": [
     "src/internal/communication.ts",
     "src/internal/nestedAppAuthUtils.ts",
     "src/internal/utils.ts",
+    "src/internal/validOrigins.ts",
     "src/internal/videoEffectsUtils.ts",
     "src/private/constants.ts",
     "src/private/interfaces.ts",

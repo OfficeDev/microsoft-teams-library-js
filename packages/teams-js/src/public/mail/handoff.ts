@@ -52,15 +52,14 @@ export interface ComposeMailParamsWithHandoff {
  *
  * @beta
  */
-function validateEmails(emails?: string[]): boolean {
+function validateEmails(emails?: string[]): void {
   if (!emails || emails.length === 0) {
-    return true; // If the array is undefined or empty, consider it valid
+    return; // If the array is undefined or empty, consider it valid
   }
   // Use validateEmailAddress for each email in the param
   emails.forEach((email) => {
     validateEmailAddress(email); // This will throw an error if the email is invalid
   });
-  return true;
 }
 
 /**
@@ -78,9 +77,9 @@ function validateHandoffComposeMailParams(param: ComposeMailParamsWithHandoff): 
   }
   const composeMailParams = param.composeMailParams;
   if (composeMailParams.type === ComposeMailType.New) {
-    validateEmails(composeMailParams.toRecipients) &&
-      validateEmails(composeMailParams.ccRecipients) &&
-      validateEmails(composeMailParams.bccRecipients);
+    validateEmails(composeMailParams.toRecipients);
+    validateEmails(composeMailParams.ccRecipients);
+    validateEmails(composeMailParams.bccRecipients);
   }
   // For Reply, ReplyAll, and Forward types, no validation needed
 }
