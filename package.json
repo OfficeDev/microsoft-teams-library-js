@@ -156,5 +156,12 @@
   "dependencies": {
     "skeleton-buffer": "file:./skeleton-buffer",
     "uuid": "^9.0.1"
-  }
+  },
+  "size-limit": [
+    {
+      "brotli": false,
+      "path": "./packages/teams-js/dist/esm/packages/teams-js/src/**/*.js",
+      "import": "*"
+    }
+  ]
 }
