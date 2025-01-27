@@ -17,7 +17,7 @@ jobs:
         with:
           version: 10
       - name: Install size-limit preset
-        run: pnpm add --save-dev @size-limit/preset-big-lib
+        run: pnpm add --save-dev @size-limit/preset-big-lib -w
       - uses: andresz1/size-limit-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
