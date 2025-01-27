@@ -1,4 +1,4 @@
-name: 'size'
+name: 'Size Change'
 on:
   pull_request:
     branches:
