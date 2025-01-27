@@ -21,6 +21,14 @@ resources:
       type: git
       name: ISS/metaos-hub-sdk
       ref: $(AppHostLatestBranch)
+    - repository: AppHostingSdkV2
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: $(AppHostV2ReleaseBranch)
+    - repository: AppHostingSdkV3
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: $(AppHostV3ReleaseBranch)
     - repository: AppHostingSdkV4
       type: git
       name: ISS/metaos-hub-sdk
@@ -58,6 +66,8 @@ extends:
       sourceRepositoriesToScan:
         include:
           - repository: AppHostingSdk
+          - repository: AppHostingSdkV2
+          - repository: AppHostingSdkV3
           - repository: AppHostingSdkV4
           - repository: AndroidAppHostingSdk
           - repository: IOSAppHostingSdk
@@ -142,6 +152,16 @@ extends:
             parameters:
               AppHostingSdk: AppHostingSdk
               versionBranch: 'Latest'
+
+          - template: tools/yaml-templates/web-e2e-versions.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdkV2
+              versionBranch: 'v2'
+
+          - template: tools/yaml-templates/web-e2e-versions.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdkV3
+              versionBranch: 'v3'
 
           - template: tools/yaml-templates/web-e2e-versions.yml@self
             parameters:
