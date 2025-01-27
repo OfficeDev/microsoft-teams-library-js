@@ -389,6 +389,38 @@ describe('copilot', () => {
   });
 
   describe('copilot.customTelemetry', () => {
+    describe('isSupported', () => {
+      it('isSupported should throw if called before initialization', () => {
+        utils.uninitializeRuntimeConfig();
+        expect(() => copilot.customTelemetry.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('isSupported should return false if custom telemetry is not on the runtimeConfig and copilot is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        expect(copilot.customTelemetry.isSupported()).toBeFalsy();
+      });
+
+      it('isSupported should return false if custom telemetry is not on the runtimeConfig and copilot.customTelemetry is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const minRuntimeConfigWithCopilot = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: {},
+          },
+        };
+        utils.setRuntimeConfig(minRuntimeConfigWithCopilot);
+        expect(copilot.customTelemetry.isSupported()).toBeFalsy();
+      });
+
+      it('isSupported should return true if copilot.telemetry is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+      });
+    });
+
     describe('sendCustomTelemetryData', () => {
       it('sendCustomTelemetryData should throw if called before initialization', async () => {
         expect.assertions(1);
