@@ -31,8 +31,7 @@
   "devDependencies": {
     "@size-limit/preset-big-lib": "^11.1.6",
     "@types/debug": "^4.1.7",
-    "eslint-plugin-recommend-no-namespaces": "file:./eslint-rules/eslint-plugin-recommend-no-namespaces",
-    "size-limit": "^11.1.6"
+    "eslint-plugin-recommend-no-namespaces": "file:./eslint-rules/eslint-plugin-recommend-no-namespaces"
   },
   "sideEffects": [
     "src/internal/communication.ts",
@@ -55,7 +54,8 @@
   "size-limit": [
     {
       "brotli": false,
-      "path": "./dist/esm/packages/teams-js/src/**/*.js"
+      "path": "./dist/esm/packages/teams-js/src/**/*.js",
+      "import": "*"
     }
   ]
 }

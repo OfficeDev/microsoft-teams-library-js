@@ -377,9 +377,6 @@ importers:
       eslint-plugin-recommend-no-namespaces:
         specifier: file:./eslint-rules/eslint-plugin-recommend-no-namespaces
         version: file:packages/teams-js/eslint-rules/eslint-plugin-recommend-no-namespaces(eslint@8.57.0)
-      size-limit:
-        specifier: ^11.1.6
-        version: 11.1.6
 
   tools/bundle-size-tools:
     dependencies:
