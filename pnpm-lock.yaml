@@ -374,6 +374,9 @@ importers:
         specifier: ^4.3.3
         version: 4.3.5
     devDependencies:
+      '@size-limit/preset-big-lib':
+        specifier: ^11.1.6
+        version: 11.1.6(size-limit@11.1.6)(webpack-cli@6.0.1)
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
