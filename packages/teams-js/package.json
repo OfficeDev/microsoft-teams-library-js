@@ -20,6 +20,7 @@
     "docs:validate": "pnpm typedoc --emit none",
     "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
+    "size": "pnpm build && size-limit",
     "test": "jest",
     "test:verbose": "pnpm test -- --verbose false --silent false"
   },
@@ -28,6 +29,7 @@
     "debug": "^4.3.3"
   },
   "devDependencies": {
+    "@size-limit/preset-big-lib": "^11.1.6",
     "@types/debug": "^4.1.7",
     "eslint-plugin-recommend-no-namespaces": "file:./eslint-rules/eslint-plugin-recommend-no-namespaces"
   },
@@ -48,5 +50,12 @@
     "dist/**",
     "LICENSE",
     "README.md"
+  ],
+  "size-limit": [
+    {
+      "brotli": false,
+      "path": "./dist/esm/packages/teams-js/src/**/*.js",
+      "import": "*"
+    }
   ]
 }
