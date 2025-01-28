@@ -415,7 +415,7 @@ export function sendMessageToParent(
   actionName: string,
   args: any[] | undefined,
   callback?: Function,
-  isMessagedProxiedFromChild?: boolean,
+  isProxiedFromChild?: boolean,
 ): void;
 
 /**
