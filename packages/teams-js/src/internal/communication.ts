@@ -415,6 +415,7 @@ export function sendMessageToParent(
   actionName: string,
   args: any[] | undefined,
   callback?: Function,
+  isMessagedProxiedFromChild?: boolean,
 ): void;
 
 /**
@@ -430,6 +431,7 @@ export function sendMessageToParent(
   actionName: string,
   argsOrCallback?: any[] | Function,
   callback?: Function,
+  isProxiedFromChild?: boolean,
 ): void {
   let args: any[] | undefined;
   if (argsOrCallback instanceof Function) {
@@ -444,7 +446,7 @@ export function sendMessageToParent(
     );
   }
 
-  const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
+  const request = sendMessageToParentHelper(apiVersionTag, actionName, args, isProxiedFromChild);
   if (callback) {
     CommunicationPrivate.callbacks.set(request.uuid, callback);
   }
@@ -518,10 +520,11 @@ function sendMessageToParentHelper(
   apiVersionTag: string,
   actionName: string,
   args: any[] | undefined,
+  isProxiedFromChild?: boolean,
 ): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
   const targetWindow = Communication.parentWindow;
-  const request = createMessageRequest(apiVersionTag, actionName, args);
+  const request = createMessageRequest(apiVersionTag, actionName, args, isProxiedFromChild);
   HostToAppMessageDelayTelemetry.storeCallbackInformation(request.uuid, {
     name: actionName,
     calledAt: request.timestamp,
@@ -927,6 +930,7 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
             sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
           }
         },
+        true,
       );
     }
   }
@@ -1095,6 +1099,7 @@ function createMessageRequest(
   apiVersionTag: string,
   func: string,
   args: any[] | undefined,
+  isProxiedFromChild?: boolean,
 ): MessageRequestWithRequiredProperties {
   const messageId: MessageID = CommunicationPrivate.nextMessageId++;
   const messageUuid: MessageUUID = new MessageUUID();
@@ -1107,6 +1112,7 @@ function createMessageRequest(
     monotonicTimestamp: getCurrentTimestamp(),
     args: args || [],
     apiVersionTag: apiVersionTag,
+    isProxiedFromChild: isProxiedFromChild ?? false,
   };
 }
 

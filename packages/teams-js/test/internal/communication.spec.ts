@@ -664,6 +664,21 @@ describe('Testing communication', () => {
       expect(sentMessage.args.length).toBe(1);
       expect(sentMessage.args[0]).toBe(arg1);
     });
+    it('messages sent from parent should not be tagged as proxied from child', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const arg1 = 'testArg1';
+      communication.sendMessageToParentAsync(testApiVersion, actionName, [arg1]);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+
+      expect(sentMessage.isProxiedFromChild).toBe(false);
+    });
     it('should not send postMessage until after initialization response received', async () => {
       communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
@@ -1006,6 +1021,36 @@ describe('Testing communication', () => {
       }
       expect(sentMessage.args.length).toBe(1);
       expect(sentMessage.args[0]).toBe(arg1);
+    });
+    it('messages sent from the parent are not tagged as proxied from child', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const arg1 = 'testArg1';
+      communication.sendMessageToParent(testApiVersion, actionName, [arg1], undefined);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+
+      expect(sentMessage.isProxiedFromChild).toBe(false);
+    });
+    it('messages proxied from child should be tagged as proxied from child', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const arg1 = 'testArg1';
+      communication.sendMessageToParent(testApiVersion, actionName, [arg1], undefined, true);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+
+      expect(sentMessage.isProxiedFromChild).toBe(true);
     });
     it('should not send postMessage until after initialization response received', async () => {
       communication.initializeCommunication(undefined, testApiVersion);
