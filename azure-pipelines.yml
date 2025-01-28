@@ -64,7 +64,7 @@ extends:
       codeql:
         compiled:
           enabled: false
-          justificationForDisabling: 'CodeQL has some know issues with arm64 macos. Disabling auto-injection and using manual task'
+          justificationForDisabling: 'CodeQL has some known issues with arm64 macos. Disabling auto-injection and using manual task instead'
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
