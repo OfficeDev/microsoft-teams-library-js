@@ -75,10 +75,7 @@ steps:
 
   - task: CodeQL3000Init@0
     inputs:
-      ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-        Enabled: true
-      ${{ else }}:
-        Enabled: false
+      Enabled: true
 
   - script: |
       pnpm build
