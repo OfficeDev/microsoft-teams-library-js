@@ -49,12 +49,5 @@
     "dist/**",
     "LICENSE",
     "README.md"
-  ],
-  "size-limit": [
-    {
-      "brotli": false,
-      "path": "./dist/esm/packages/teams-js/src/**/*.js",
-      "import": "*"
-    }
   ]
 }

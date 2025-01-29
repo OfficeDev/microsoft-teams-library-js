@@ -58,6 +58,10 @@ steps:
       script: 'nohup pnpm start-test-app &'
       workingDirectory: '$(ClientSdkProjectDirectory)'
 
+  - task: CodeQL3000Init@0
+    inputs:
+        Enabled: true
+        
   - task: Bash@3
     displayName: 'Install Emulator'
     # This task is flaky, but when it works it almost always completes in under 5 minutes.
@@ -88,6 +92,9 @@ steps:
       script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh ${{ parameters.shardNum }} ${{ parameters.shardIndex }}'
       workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
 
+  - task: CodeQL3000Finalize@0
+    condition: always()
+    
   - task: Bash@3
     displayName: 'Pull Test Artifacts'
     inputs:
