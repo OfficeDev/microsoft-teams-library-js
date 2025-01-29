@@ -415,7 +415,6 @@ export function sendMessageToParent(
   actionName: string,
   args: any[] | undefined,
   callback?: Function,
-  isProxiedFromChild?: boolean,
 ): void;
 
 /**
@@ -431,7 +430,6 @@ export function sendMessageToParent(
   actionName: string,
   argsOrCallback?: any[] | Function,
   callback?: Function,
-  isProxiedFromChild?: boolean,
 ): void {
   let args: any[] | undefined;
   if (argsOrCallback instanceof Function) {
@@ -446,7 +444,7 @@ export function sendMessageToParent(
     );
   }
 
-  const request = sendMessageToParentHelper(apiVersionTag, actionName, args, isProxiedFromChild);
+  const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
   if (callback) {
     CommunicationPrivate.callbacks.set(request.uuid, callback);
   }
@@ -914,24 +912,7 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
         message.func,
       );
 
-      sendMessageToParent(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
-        message.func,
-        message.args,
-        (...args: any[]): void => {
-          if (Communication.childWindow) {
-            const isPartialResponse = args.pop();
-            handleIncomingMessageFromChildLogger(
-              'Message from parent being relayed to child, id: %s',
-              getMessageIdsAsLogString(message),
-            );
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
-          }
-        },
-        true,
-      );
+      proxyChildMessageToParent(message);
     }
   }
 }
@@ -1192,4 +1173,29 @@ function getMessageIdsAsLogString(
   } else {
     return `legacy id: ${message.id} (no uuid)`;
   }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function proxyChildMessageToParent(message: MessageRequest): void {
+  const request = sendMessageToParentHelper(
+    getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
+    message.func,
+    message.args,
+    true, // Tags message as proxied from child
+  );
+  CommunicationPrivate.callbacks.set(request.uuid, (...args: any[]): void => {
+    if (Communication.childWindow) {
+      const isPartialResponse = args.pop();
+      handleIncomingMessageFromChildLogger(
+        'Message from parent being relayed to child, id: %s',
+        getMessageIdsAsLogString(message),
+      );
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
+    }
+  });
 }
