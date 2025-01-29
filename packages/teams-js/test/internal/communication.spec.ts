@@ -1028,7 +1028,7 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const arg1 = 'testArg1';
-      communication.sendMessageToParent(testApiVersion, actionName, [arg1], undefined);
+      communication.sendMessageToParent(testApiVersion, actionName, [arg1]);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -1043,7 +1043,11 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const arg1 = 'testArg1';
-      communication.sendMessageToParent(testApiVersion, actionName, [arg1], undefined, true);
+      communication.proxyChildMessageToParent({
+        apiVersionTag: testApiVersion,
+        func: actionName,
+        args: [arg1],
+      });
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {

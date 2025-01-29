@@ -1179,7 +1179,7 @@ function getMessageIdsAsLogString(
  * @internal
  * Limited to Microsoft-internal use
  */
-function proxyChildMessageToParent(message: MessageRequest): void {
+export function proxyChildMessageToParent(message: MessageRequest): void {
   const request = sendMessageToParentHelper(
     getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
     message.func,
