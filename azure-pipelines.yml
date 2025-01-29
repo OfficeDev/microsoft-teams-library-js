@@ -2,8 +2,6 @@ variables:
   - group: InfoSec-SecurityResults
   - name: products
     value: 6eff390d-80c0-4456-81b6-6abafa71e768
-  - name: tags
-    value: production
 
 trigger:
   branches:
@@ -61,6 +59,10 @@ extends:
           - repository: AppHostingSdkV4
           - repository: AndroidAppHostingSdk
           - repository: IOSAppHostingSdk
+      codeql:
+        compiled:
+          enabled: false
+          justificationForDisabling: 'CodeQL has some known issues with arm64 macos. Disabling auto-injection and using manual task instead'
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
