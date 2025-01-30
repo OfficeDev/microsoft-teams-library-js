@@ -1,0 +1,128 @@
+{
+  "name": "Store",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityStore"
+  },
+  "version": ">2.31.0",
+  "hostSdkVersion": {
+    "web": ">4.5.0"
+  },
+  "testCases": [
+    {
+      "title": "openFullStore - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_openFullStore",
+      "inputValue": {
+        "size": {
+          "width": "large",
+          "height": "large"
+        }
+      },
+      "expectedAlertValue": "openFullStore called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "openFullStore With Invalid Width Size - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_openFullStore",
+      "inputValue": {
+        "size": {
+          "width": -300,
+          "height": "large"
+        }
+      },
+      "expectedTestAppValue": "Error: Error: Invalid store dialog size"
+    },
+    {
+      "title": "openFullStore With Invalid Dialog Height Size - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_openFullStore",
+      "inputValue": {
+        "size": {
+          "width": 300,
+          "height": -300
+        }
+      },
+      "expectedTestAppValue": "Error: Error: Invalid store dialog size"
+    },
+    {
+      "title": "openFullStore API Call Without Permission - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_openFullStore",
+      "inputValue": {},
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false, \"isMicrosoftOwned\": false}"]],
+      "expectedTestAppValue": "Error: Error: 500, message: App does not have the required permissions for this operation"
+    },
+    {
+      "title": "openAppDetail - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_openAppDetail",
+      "inputValue": {
+        "appId": {
+          "appIdAsString": "1542629c-01b3-4a6d-8f76-1938b779e48d"
+        }
+      },
+      "expectedAlertValue": "openAppDetail called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "openAppDetail With Invalid AppId - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_openAppDetail",
+      "inputValue": {
+        "appId": {
+          "appIdAsString": "123"
+        }
+      },
+      "expectedTestAppValue": "Error: Error: Potential app id (123) is invalid; its length 3 is not within the length limits (4-256)."
+    },
+    {
+      "title": "openAppDetail Without AppId - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_openAppDetail",
+      "inputValue": {},
+      "expectedTestAppValue": "Error: Error: No App Id present, but AppId needed to open AppDetail store"
+    },
+    {
+      "title": "openSpecificStore - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_openSpecificStore",
+      "inputValue": {
+        "collectionId": "copilotplugins"
+      },
+      "expectedAlertValue": "openSpecificStore called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "openSpecificStore Without CollectionId - Fail",
+      "type": "callResponse",
+      "boxSelector": "#box_openSpecificStore",
+      "inputValue": {},
+      "expectedTestAppValue": "Error: Error: No Collection Id present, but CollectionId needed to open a store specific to a collection"
+    },
+    {
+      "title": "OpenInContextStore Without Filters - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_openInContextStore",
+      "inputValue": {},
+      "expectedAlertValue": "openInContextStore called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "OpenInContextStore With Filters - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_openInContextStore",
+      "inputValue": {
+        "appCapability": "Bot",
+        "appMetaCapabilities": ["copilotplugins", "copilotExtensions"],
+        "installationScope": "Team",
+        "filteredOutAppIds": [
+          { "appIdAsString": "1542629c-01b3-4a6d-8f76-1938b779e48d" },
+          { "appIdAsString": "1542629c-01b3-4a6d-8f76-940934572634" }
+        ],
+        "size": {
+          "width": "large",
+          "height": "large"
+        }
+      },
+      "expectedAlertValue": "openInContextStore called with ##JSON_INPUT_VALUE##"
+    }
+  ]
+}

@@ -20,6 +20,7 @@
     "docs:validate": "pnpm typedoc --emit none",
     "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
+    "size": "pnpm build && size-limit",
     "test": "jest",
     "test:verbose": "pnpm test -- --verbose false --silent false"
   },
@@ -28,12 +29,14 @@
     "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7"
+    "@types/debug": "^4.1.7",
+    "eslint-plugin-recommend-no-namespaces": "file:./eslint-rules/eslint-plugin-recommend-no-namespaces"
   },
   "sideEffects": [
     "src/internal/communication.ts",
     "src/internal/nestedAppAuthUtils.ts",
     "src/internal/utils.ts",
+    "src/internal/validOrigins.ts",
     "src/internal/videoEffectsUtils.ts",
     "src/private/constants.ts",
     "src/private/interfaces.ts",
