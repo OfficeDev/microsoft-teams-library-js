@@ -518,10 +518,11 @@ function sendMessageToParentHelper(
   apiVersionTag: string,
   actionName: string,
   args: any[] | undefined,
+  isProxiedFromChild?: boolean,
 ): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
   const targetWindow = Communication.parentWindow;
-  const request = createMessageRequest(apiVersionTag, actionName, args);
+  const request = createMessageRequest(apiVersionTag, actionName, args, isProxiedFromChild);
   HostToAppMessageDelayTelemetry.storeCallbackInformation(request.uuid, {
     name: actionName,
     calledAt: request.timestamp,
@@ -911,23 +912,7 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
         message.func,
       );
 
-      sendMessageToParent(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
-        message.func,
-        message.args,
-        (...args: any[]): void => {
-          if (Communication.childWindow) {
-            const isPartialResponse = args.pop();
-            handleIncomingMessageFromChildLogger(
-              'Message from parent being relayed to child, id: %s',
-              getMessageIdsAsLogString(message),
-            );
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
-          }
-        },
-      );
+      proxyChildMessageToParent(message);
     }
   }
 }
@@ -1095,6 +1080,7 @@ function createMessageRequest(
   apiVersionTag: string,
   func: string,
   args: any[] | undefined,
+  isProxiedFromChild?: boolean,
 ): MessageRequestWithRequiredProperties {
   const messageId: MessageID = CommunicationPrivate.nextMessageId++;
   const messageUuid: MessageUUID = new MessageUUID();
@@ -1107,6 +1093,7 @@ function createMessageRequest(
     monotonicTimestamp: getCurrentTimestamp(),
     args: args || [],
     apiVersionTag: apiVersionTag,
+    isProxiedFromChild: isProxiedFromChild ?? false,
   };
 }
 
@@ -1186,4 +1173,29 @@ function getMessageIdsAsLogString(
   } else {
     return `legacy id: ${message.id} (no uuid)`;
   }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function proxyChildMessageToParent(message: MessageRequest): void {
+  const request = sendMessageToParentHelper(
+    getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
+    message.func,
+    message.args,
+    true, // Tags message as proxied from child
+  );
+  CommunicationPrivate.callbacks.set(request.uuid, (...args: any[]): void => {
+    if (Communication.childWindow) {
+      const isPartialResponse = args.pop();
+      handleIncomingMessageFromChildLogger(
+        'Message from parent being relayed to child, id: %s',
+        getMessageIdsAsLogString(message),
+      );
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
+    }
+  });
 }
