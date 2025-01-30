@@ -11,7 +11,9 @@ import { UUID } from '../../src/public/uuidObject';
 import { Utils } from '../utils';
 
 jest.mock('../../src/internal/handlers', () => ({
-  callHandler: jest.fn(),
+  initializeHandlers: jest.fn(),
+  callHandler: jest.fn(() => [false, undefined]),
+  registerHandler: jest.fn(),
 }));
 
 const testApiVersion = getApiVersionTag(ApiVersionNumber.V_1, 'mockedApiName' as ApiName);
@@ -1037,25 +1039,6 @@ describe('Testing communication', () => {
 
       expect(sentMessage.isProxiedFromChild).toBe(false);
     });
-    it('messages proxied from child should be tagged as proxied from child', async () => {
-      communication.initializeCommunication(undefined, testApiVersion);
-      const initializeMessage = utils.findInitializeMessageOrThrow();
-      await utils.respondToMessage(initializeMessage);
-
-      const arg1 = 'testArg1';
-      communication.proxyChildMessageToParent({
-        apiVersionTag: testApiVersion,
-        func: actionName,
-        args: [arg1],
-      });
-
-      const sentMessage = utils.findMessageByFunc(actionName);
-      if (sentMessage === null) {
-        throw new Error('No sent message was found');
-      }
-
-      expect(sentMessage.isProxiedFromChild).toBe(true);
-    });
     it('should not send postMessage until after initialization response received', async () => {
       communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
@@ -1073,6 +1056,29 @@ describe('Testing communication', () => {
       if (sentMessage === null) {
         throw new Error('Did not find any message even after initialization response was received');
       }
+    });
+  });
+  describe('childProxyingCommunication', () => {
+    let utils: Utils = new Utils();
+    const actionName = 'test';
+
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+      app._initialize(utils.mockWindow);
+    });
+    afterEach(() => {
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.uninitializeCommunication();
+    });
+
+    it('messages proxied from child should be tagged as proxied from child', async () => {
+      expect.assertions(2);
+      await utils.initializeWithContext('context');
+      await utils.sendMessageFromChildToParentApp(actionName, ['testArg1']);
+      const sentMessage = utils.findMessageByFunc(actionName);
+      expect(sentMessage).not.toBeNull();
+      expect(sentMessage!.isProxiedFromChild).toBe(true);
     });
   });
   describe('sendNestedAuthRequestToTopWindow', () => {
