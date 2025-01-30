@@ -22,6 +22,7 @@ export interface MessageRequest {
   args?: any[];
   apiVersionTag?: string;
   isPartialResponse?: boolean;
+  isProxiedFromChild?: boolean;
 }
 
 /**
