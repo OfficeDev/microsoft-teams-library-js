@@ -70,6 +70,7 @@ describe('Testing authentication capability', () => {
     HostClientType.teamsDisplays,
     HostClientType.surfaceHub,
   ];
+
   describe('FRAMED - authentication tests', () => {
     let utils: Utils = new Utils();
     beforeEach(() => {
@@ -102,34 +103,34 @@ describe('Testing authentication capability', () => {
       });
 
       allowedContexts.forEach((context) => {
-          it(`authentication.authenticate should allow calls from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
+        it(`authentication.authenticate should allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
 
-            const authenticationParams: authentication.AuthenticatePopUpParameters = {
-              url: 'https://someurl/',
-              width: 100,
-              height: 200,
-            };
-            const promise = authentication.authenticate(authenticationParams);
+          const authenticationParams: authentication.AuthenticatePopUpParameters = {
+            url: 'https://someurl/',
+            width: 100,
+            height: 200,
+          };
+          const promise = authentication.authenticate(authenticationParams);
           const message = utils.findMessageByFunc('authentication.authenticate');
           expect(message).not.toBeNull();
           await utils.respondToMessage(message!, true, mockResult);
-            await expect(promise).resolves.toEqual(mockResult);
-          });
+          await expect(promise).resolves.toEqual(mockResult);
+        });
 
         allowedHostClientTypes.forEach((hostClientType) => {
           it(`authentication.authenticate should successfully send authenticate message to ${hostClientType} client in legacy flow from ${context} context`, async () => {
             await utils.initializeWithContext(context, hostClientType);
-              const authenticationParams = {
-                url: 'https://someUrl',
-                width: 100,
-                height: 200,
-                isExternal: true,
-              };
+            const authenticationParams = {
+              url: 'https://someUrl',
+              width: 100,
+              height: 200,
+              isExternal: true,
+            };
 
-              authentication.authenticate(authenticationParams);
-              const message = utils.findMessageByFunc('authentication.authenticate');
-              expect(message).not.toBeNull();
+            authentication.authenticate(authenticationParams);
+            const message = utils.findMessageByFunc('authentication.authenticate');
+            expect(message).not.toBeNull();
             expect(message!.args?.length).toBe(4);
             expect(message!.args?.[0]).toBe(authenticationParams.url.toLowerCase() + '/');
             expect(message!.args?.[1]).toBe(authenticationParams.width);
@@ -252,24 +253,24 @@ describe('Testing authentication capability', () => {
             await expect(promise).rejects.toThrowError(errorMessage);
           });
         });
-            });
+      });
 
       notAllowedContexts.forEach((context) => {
-          it(`authentication.authenticate should not allow calls from ${context} context`, async () => {
-            expect.assertions(1);
-            await utils.initializeWithContext(context);
-            const authenticationParams: authentication.AuthenticatePopUpParameters = {
-              url: 'https://localhost/hello%20world',
-              width: 100,
-              height: 200,
-            };
+        it(`authentication.authenticate should not allow calls from ${context} context`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(context);
+          const authenticationParams: authentication.AuthenticatePopUpParameters = {
+            url: 'https://localhost/hello%20world',
+            width: 100,
+            height: 200,
+          };
 
-            expect(() => authentication.authenticate(authenticationParams)).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
+          expect(() => authentication.authenticate(authenticationParams)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
       });
     });
 
@@ -295,7 +296,7 @@ describe('Testing authentication capability', () => {
         let message = utils.findMessageByFunc('authentication.getAuthToken');
         expect(message).toBeNull();
 
-        await utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage!, 'content');
 
         await initPromise;
 
@@ -324,12 +325,12 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(4);
-            expect(message.args[0]).toEqual([mockResource]);
-            expect(message.args[1]).toEqual([mockClaim]);
-            expect(message.args[2]).toEqual(false);
+            expect(message!.args?.length).toBe(4);
+            expect(message!.args?.[0]).toEqual([mockResource]);
+            expect(message!.args?.[1]).toEqual([mockClaim]);
+            expect(message!.args?.[2]).toEqual(false);
 
-            await utils.respondToMessage(message, true, 'token');
+            await utils.respondToMessage(message!, true, 'token');
           });
         });
 
@@ -351,12 +352,12 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(4);
-            expect(message.args[0]).toEqual([mockResource]);
-            expect(message.args[1]).toEqual(undefined);
-            expect(message.args[2]).toEqual(undefined);
+            expect(message!.args?.length).toBe(4);
+            expect(message!.args?.[0]).toEqual([mockResource]);
+            expect(message!.args?.[1]).toEqual(undefined);
+            expect(message!.args?.[2]).toEqual(undefined);
 
-            await utils.respondToMessage(message, false, errorMessage);
+            await utils.respondToMessage(message!, false, errorMessage);
           });
         });
 
@@ -373,12 +374,12 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(4);
-          expect(message.args[0]).toEqual([mockResource]);
-          expect(message.args[1]).toEqual([mockClaim]);
-          expect(message.args[2]).toEqual(false);
+          expect(message!.args?.length).toBe(4);
+          expect(message!.args?.[0]).toEqual([mockResource]);
+          expect(message!.args?.[1]).toEqual([mockClaim]);
+          expect(message!.args?.[2]).toEqual(false);
 
-          await utils.respondToMessage(message, true, 'token');
+          await utils.respondToMessage(message!, true, 'token');
           await expect(promise).resolves.toEqual('token');
         });
 
@@ -389,12 +390,12 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(4);
-          expect(message.args[0]).toEqual(undefined);
-          expect(message.args[1]).toEqual(undefined);
-          expect(message.args[2]).toEqual(undefined);
+          expect(message!.args?.length).toBe(4);
+          expect(message!.args?.[0]).toEqual(undefined);
+          expect(message!.args?.[1]).toEqual(undefined);
+          expect(message!.args?.[2]).toEqual(undefined);
 
-          await utils.respondToMessage(message, true, 'token');
+          await utils.respondToMessage(message!, true, 'token');
           await expect(promise).resolves.toEqual('token');
         });
 
@@ -412,13 +413,13 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(4);
-          expect(message.args[0]).toEqual([mockResource]);
-          expect(message.args[1]).toEqual([mockClaim]);
-          expect(message.args[2]).toEqual(false);
-          expect(message.args[3]).toEqual('tenantId');
+          expect(message!.args?.length).toBe(4);
+          expect(message!.args?.[0]).toEqual([mockResource]);
+          expect(message!.args?.[1]).toEqual([mockClaim]);
+          expect(message!.args?.[2]).toEqual(false);
+          expect(message!.args?.[3]).toEqual('tenantId');
 
-          utils.respondToMessage(message, true, 'token');
+          utils.respondToMessage(message!, true, 'token');
           await expect(promise).resolves.toEqual('token');
         });
 
@@ -433,12 +434,12 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(4);
-          expect(message.args[0]).toEqual([mockResource]);
-          expect(message.args[1]).toEqual(undefined);
-          expect(message.args[2]).toEqual(undefined);
+          expect(message!.args?.length).toBe(4);
+          expect(message!.args?.[0]).toEqual([mockResource]);
+          expect(message!.args?.[1]).toEqual(undefined);
+          expect(message!.args?.[2]).toEqual(undefined);
 
-          await utils.respondToMessage(message, false, errorMessage);
+          await utils.respondToMessage(message!, false, errorMessage);
           await expect(promise).rejects.toThrowError(errorMessage);
         });
 
@@ -449,12 +450,12 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(4);
-          expect(message.args[0]).toEqual(undefined);
-          expect(message.args[1]).toEqual(undefined);
-          expect(message.args[2]).toEqual(undefined);
+          expect(message!.args?.length).toBe(4);
+          expect(message!.args?.[0]).toEqual(undefined);
+          expect(message!.args?.[1]).toEqual(undefined);
+          expect(message!.args?.[2]).toEqual(undefined);
 
-          await utils.respondToMessage(message, false, errorMessage);
+          await utils.respondToMessage(message!, false, errorMessage);
           await expect(promise).rejects.toThrowError(errorMessage);
         });
       });
@@ -476,7 +477,7 @@ describe('Testing authentication capability', () => {
         let message = utils.findMessageByFunc('authentication.getUser');
         expect(message).toBeNull();
 
-        await utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage!, 'content');
 
         await initPromise;
 
@@ -501,9 +502,9 @@ describe('Testing authentication capability', () => {
             authentication.getUser(userRequest);
             const message = utils.findMessageByFunc('authentication.getUser');
             expect(message).not.toBeNull();
-            expect(message.id).toBe(1);
-            expect(message.args[0]).toBe(undefined);
-            await utils.respondToMessage(message, true, mockResult);
+            expect(message!.id).toBe(1);
+            expect(message!.args?.[0]).toBe(undefined);
+            await utils.respondToMessage(message!, true, mockResult);
           });
         });
 
@@ -523,9 +524,9 @@ describe('Testing authentication capability', () => {
             authentication.getUser(userRequest);
             const message = utils.findMessageByFunc('authentication.getUser');
             expect(message).not.toBeNull();
-            expect(message.id).toBe(1);
-            expect(message.args[0]).toBe(undefined);
-            await utils.respondToMessage(message, false, sdkError);
+            expect(message!.id).toBe(1);
+            expect(message!.args?.[0]).toBe(undefined);
+            await utils.respondToMessage(message!, false, sdkError);
           });
         });
 
@@ -535,9 +536,9 @@ describe('Testing authentication capability', () => {
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
-          expect(message.id).toBe(1);
-          expect(message.args[0]).toBe(undefined);
-          await utils.respondToMessage(message, false, sdkError);
+          expect(message!.id).toBe(1);
+          expect(message!.args?.[0]).toBe(undefined);
+          await utils.respondToMessage(message!, false, sdkError);
           await expect(promise).rejects.toThrowError(new RegExp(sdkError.message!));
         });
 
@@ -547,9 +548,9 @@ describe('Testing authentication capability', () => {
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
-          expect(message.id).toBe(1);
-          expect(message.args[0]).toBe(undefined);
-          await utils.respondToMessage(message, true, mockUser);
+          expect(message!.id).toBe(1);
+          expect(message!.args?.[0]).toBe(undefined);
+          await utils.respondToMessage(message!, true, mockUser);
           await expect(promise).resolves.toEqual(mockUser);
         });
 
@@ -559,9 +560,9 @@ describe('Testing authentication capability', () => {
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
-          expect(message.id).toBe(1);
-          expect(message.args[0]).toBe(undefined);
-          await utils.respondToMessage(message, true, mockUserWithDataResidency);
+          expect(message!.id).toBe(1);
+          expect(message!.args?.[0]).toBe(undefined);
+          await utils.respondToMessage(message!, true, mockUserWithDataResidency);
           await expect(promise).resolves.toEqual(mockUserWithDataResidency);
         });
       });
@@ -569,113 +570,76 @@ describe('Testing authentication capability', () => {
 
     describe('Testing authentication.notifySuccess function', () => {
       const allowedContexts = [FrameContexts.authentication];
+      const notAllowedContexts = getEnumElementsNotInArray(FrameContexts, allowedContexts);
 
       it('authentication.notifySuccess should not allow calls before initialization', () => {
-        expect(() => authentication.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
+        expect(authentication.notifySuccess).toThrowError(errorLibraryNotInitialized);
       });
 
-      it('authentication.notifySuccess should not close auth window before notify success message has been sent', async () => {
-        expect.assertions(3);
-        const closeWindowSpy = jest.spyOn(utils.mockWindow, 'close');
+      allowedContexts.forEach((context) => {
+        it(`authentication.notifySuccess should successfully notify auth success from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
 
-        await utils.initializeWithContext(FrameContexts.authentication);
-        expect(closeWindowSpy).not.toHaveBeenCalled();
-
-        authentication.notifySuccess();
-        const message = utils.findMessageByFunc('authentication.authenticate.success');
-        expect(message).not.toBeNull();
-
-        // Wait 450ms for the close delay
-        await new Promise<void>((resolve) =>
-          setTimeout(() => {
-            expect(closeWindowSpy).toHaveBeenCalled();
-            resolve();
-          }, 450),
-        );
+          authentication.notifySuccess(mockResult);
+          const message = utils.findMessageByFunc('authentication.authenticate.success');
+          expect(message).not.toBeNull();
+          expect(message!.args?.length).toBe(1);
+          expect(message!.args?.[0]).toBe(mockResult);
+        });
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
-          it(`authentication.notifySuccess should successfully notify auth success from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifySuccess(mockResult);
-            const message = utils.findMessageByFunc('authentication.authenticate.success');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(mockResult);
-          });
-        } else {
-          it(`authentication.notifySuccess should not allow calls from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-            expect(() => authentication.notifySuccess()).toThrow(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
+      notAllowedContexts.forEach((context) => {
+        it(`authentication.notifySuccess should not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          expect(authentication.notifySuccess).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
       });
     });
 
     describe('Testing authentication.notifyFailure', () => {
       const allowedContexts = [FrameContexts.authentication];
+      const notAllowedContexts = getEnumElementsNotInArray(FrameContexts, allowedContexts);
+
       it('authentication.notifyFailure should not allow calls before initialization', () => {
         expect(() => authentication.notifyFailure()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      it('should not close auth window before notify failure message has been sent', async () => {
-        expect.assertions(3);
-        const closeWindowSpy = jest.spyOn(utils.mockWindow, 'close');
+      allowedContexts.forEach((context) => {
+        it(`authentication.notifyFailure should successfully notify auth failure ${context} context`, async () => {
+          await utils.initializeWithContext('authentication');
 
-        await utils.initializeWithContext(FrameContexts.authentication);
-        expect(closeWindowSpy).not.toHaveBeenCalled();
+          authentication.notifyFailure(errorMessage);
 
-        authentication.notifyFailure(errorMessage);
-        const message = utils.findMessageByFunc('authentication.authenticate.failure');
-        expect(message).not.toBeNull();
+          const message = utils.findMessageByFunc('authentication.authenticate.failure');
+          expect(message).not.toBeNull();
+          expect(message!.args?.length).toBe(1);
+          expect(message!.args?.[0]).toBe(errorMessage);
+        });
 
-        // Wait 300ms for the close delay
-        await new Promise<void>((resolve) =>
-          setTimeout(() => {
-            expect(closeWindowSpy).toHaveBeenCalled();
-            resolve();
-          }, 350),
-        );
+        it(`authentication.notifyFailure should successfully notify auth failure if reason is empty from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          authentication.notifyFailure('');
+          const message = utils.findMessageByFunc('authentication.authenticate.failure');
+          expect(message).not.toBeNull();
+          expect(message!.args?.length).toBe(1);
+          expect(message!.args?.[0]).toBe('');
+        });
       });
 
-      Object.values(FrameContexts).forEach((context) => {
-        if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
-          it(`authentication.notifyFailure should successfully notify auth failure ${context} context`, async () => {
-            await utils.initializeWithContext('authentication');
-
-            authentication.notifyFailure(errorMessage);
-
-            const message = utils.findMessageByFunc('authentication.authenticate.failure');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(errorMessage);
-          });
-
-          it(`authentication.notifyFailure should successfully notify auth failure if reason is empty from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifyFailure('');
-            const message = utils.findMessageByFunc('authentication.authenticate.failure');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe('');
-          });
-        } else {
-          it(`authentication.notifyFailure should not allow calls from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-            expect(() => authentication.notifyFailure()).toThrow(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
+      notAllowedContexts.forEach((context) => {
+        it(`authentication.notifyFailure should not allow calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          expect(authentication.notifyFailure).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
       });
     });
   });
@@ -694,11 +658,11 @@ describe('Testing authentication capability', () => {
 
     describe('Testing authentication.authenticate function', () => {
       it('authentication.authenticate should not allow calls before initialization', () => {
-            const authenticationParams: authentication.AuthenticatePopUpParameters = {
-              url: 'https://someurl/',
-              width: 100,
-              height: 200,
-            };
+        const authenticationParams: authentication.AuthenticatePopUpParameters = {
+          url: 'https://someurl/',
+          width: 100,
+          height: 200,
+        };
         expect(() => authentication.authenticate(authenticationParams)).toThrowError(errorLibraryNotInitialized);
       });
 
@@ -706,12 +670,12 @@ describe('Testing authentication capability', () => {
         it(`authentication.authenticate should allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
-            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+          const authenticationParams: authentication.AuthenticatePopUpParameters = {
             url: 'https://someurl/',
-              width: 100,
-              height: 200,
-            };
-            const promise = authentication.authenticate(authenticationParams);
+            width: 100,
+            height: 200,
+          };
+          const promise = authentication.authenticate(authenticationParams);
           const message = utils.findMessageByFunc('authentication.authenticate');
           expect(message).not.toBeNull();
           await utils.respondToMessage(message!, true, mockResult);
@@ -759,11 +723,11 @@ describe('Testing authentication capability', () => {
               const message = utils.findMessageByFunc('authentication.authenticate');
               expect(message).not.toBeNull();
               utils.respondToFramelessMessage({
-              data: {
+                data: {
                   id: message!.id,
-                args: [true, mockResult],
-              },
-            } as DOMMessageEvent);
+                  args: [true, mockResult],
+                },
+              } as DOMMessageEvent);
             });
           });
 
@@ -957,7 +921,7 @@ describe('Testing authentication capability', () => {
 
     describe('Testing authentication.registerAuthenticationHandlers function', () => {
       allowedContexts.forEach((context) => {
-        allowedHostClientType.forEach((hostClientType) => {
+        allowedHostClientTypes.forEach((hostClientType) => {
           it(`authentication.registerAuthenticationHandlers should successfully ask parent window to open auth window with parameters in the ${hostClientType} client from ${context} context in legacy flow`, (done) => {
             utils.initializeWithContext(context, hostClientType).then(async () => {
               const authenticationParams: authentication.AuthenticateParameters = {
@@ -978,15 +942,15 @@ describe('Testing authentication capability', () => {
 
               const message = utils.findMessageByFunc('authentication.authenticate');
               expect(message).not.toBeNull();
-              expect(message.args.length).toBe(4);
-              expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
-              expect(message.args[1]).toBe(authenticationParams.width);
-              expect(message.args[2]).toBe(authenticationParams.height);
-              expect(message.args[3]).toBe(authenticationParams.isExternal);
+              expect(message!.args?.length).toBe(4);
+              expect(message!.args?.[0]).toBe(authenticationParams.url.toLowerCase() + '/');
+              expect(message!.args?.[1]).toBe(authenticationParams.width);
+              expect(message!.args?.[2]).toBe(authenticationParams.height);
+              expect(message!.args?.[3]).toBe(authenticationParams.isExternal);
 
               await utils.respondToFramelessMessage({
                 data: {
-                  id: message.id,
+                  id: message!.id,
                   args: [true, mockResult],
                 },
               } as DOMMessageEvent);
@@ -1014,7 +978,7 @@ describe('Testing authentication capability', () => {
               const message = utils.findMessageByFunc('authentication.authenticate');
               await utils.respondToFramelessMessage({
                 data: {
-                  id: message.id,
+                  id: message!.id,
                   args: [errorMessage],
                 },
               } as DOMMessageEvent);
@@ -1055,14 +1019,14 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(4);
-            expect(message.args[0]).toEqual([mockResource]);
-            expect(message.args[1]).toEqual([mockClaim]);
-            expect(message.args[2]).toEqual(false);
+            expect(message!.args?.length).toBe(4);
+            expect(message!.args?.[0]).toEqual([mockResource]);
+            expect(message!.args?.[1]).toEqual([mockClaim]);
+            expect(message!.args?.[2]).toEqual(false);
 
             await utils.respondToFramelessMessage({
               data: {
-                id: message.id,
+                id: message!.id,
                 args: [true, 'token'],
               },
             } as DOMMessageEvent);
@@ -1086,13 +1050,13 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(4);
-            expect(message.args[0]).toEqual([mockResource]);
-            expect(message.args[1]).toBeNull();
-            expect(message.args[2]).toBeNull();
+            expect(message!.args?.length).toBe(4);
+            expect(message!.args?.[0]).toEqual([mockResource]);
+            expect(message!.args?.[1]).toBeNull();
+            expect(message!.args?.[2]).toBeNull();
             await utils.respondToFramelessMessage({
               data: {
-                id: message.id,
+                id: message!.id,
                 args: [false, errorMessage],
               },
             } as DOMMessageEvent);
@@ -1112,13 +1076,13 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(4);
-          expect(message.args[0]).toEqual([mockResource]);
-          expect(message.args[1]).toEqual([mockClaim]);
-          expect(message.args[2]).toEqual(false);
+          expect(message!.args?.length).toBe(4);
+          expect(message!.args?.[0]).toEqual([mockResource]);
+          expect(message!.args?.[1]).toEqual([mockClaim]);
+          expect(message!.args?.[2]).toEqual(false);
           await utils.respondToFramelessMessage({
             data: {
-              id: message.id,
+              id: message!.id,
               args: [true, 'token'],
             },
           } as DOMMessageEvent);
@@ -1132,14 +1096,14 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(4);
-          expect(message.args[0]).toBeNull();
-          expect(message.args[1]).toBeNull();
-          expect(message.args[2]).toBeNull();
+          expect(message!.args?.length).toBe(4);
+          expect(message!.args?.[0]).toBeNull();
+          expect(message!.args?.[1]).toBeNull();
+          expect(message!.args?.[2]).toBeNull();
 
           await utils.respondToFramelessMessage({
             data: {
-              id: message.id,
+              id: message!.id,
               args: [true, 'token'],
             },
           } as DOMMessageEvent);
@@ -1157,13 +1121,13 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(4);
-          expect(message.args[0]).toEqual([mockResource]);
-          expect(message.args[1]).toBeNull();
-          expect(message.args[2]).toBeNull();
+          expect(message!.args?.length).toBe(4);
+          expect(message!.args?.[0]).toEqual([mockResource]);
+          expect(message!.args?.[1]).toBeNull();
+          expect(message!.args?.[2]).toBeNull();
           await utils.respondToFramelessMessage({
             data: {
-              id: message.id,
+              id: message!.id,
               args: [false, errorMessage],
             },
           } as DOMMessageEvent);
@@ -1177,14 +1141,14 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(4);
-          expect(message.args[0]).toBeNull();
-          expect(message.args[1]).toBeNull();
-          expect(message.args[2]).toBeNull();
+          expect(message!.args?.length).toBe(4);
+          expect(message!.args?.[0]).toBeNull();
+          expect(message!.args?.[1]).toBeNull();
+          expect(message!.args?.[2]).toBeNull();
 
           await utils.respondToFramelessMessage({
             data: {
-              id: message.id,
+              id: message!.id,
               args: [false, errorMessage],
             },
           } as DOMMessageEvent);
@@ -1215,11 +1179,11 @@ describe('Testing authentication capability', () => {
             authentication.getUser(userRequest);
             const message = utils.findMessageByFunc('authentication.getUser');
             expect(message).not.toBeNull();
-            expect(message.id).toBe(1);
-            expect(message.args[0]).toBe(undefined);
+            expect(message!.id).toBe(1);
+            expect(message!.args?.[0]).toBe(undefined);
             await utils.respondToFramelessMessage({
               data: {
-                id: message.id,
+                id: message!.id,
                 args: [true, mockResult],
               },
             } as DOMMessageEvent);
@@ -1242,11 +1206,11 @@ describe('Testing authentication capability', () => {
             authentication.getUser(userRequest);
             const message = utils.findMessageByFunc('authentication.getUser');
             expect(message).not.toBeNull();
-            expect(message.id).toBe(1);
-            expect(message.args[0]).toBe(undefined);
+            expect(message!.id).toBe(1);
+            expect(message!.args?.[0]).toBe(undefined);
             await utils.respondToFramelessMessage({
               data: {
-                id: message.id,
+                id: message!.id,
                 args: [false, sdkError],
               },
             } as DOMMessageEvent);
@@ -1259,11 +1223,11 @@ describe('Testing authentication capability', () => {
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
-          expect(message.id).toBe(1);
-          expect(message.args[0]).toBe(undefined);
+          expect(message!.id).toBe(1);
+          expect(message!.args?.[0]).toBe(undefined);
           await utils.respondToFramelessMessage({
             data: {
-              id: message.id,
+              id: message!.id,
               args: [false, sdkError],
             },
           } as DOMMessageEvent);
@@ -1276,11 +1240,11 @@ describe('Testing authentication capability', () => {
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
-          expect(message.id).toBe(1);
-          expect(message.args[0]).toBe(undefined);
+          expect(message!.id).toBe(1);
+          expect(message!.args?.[0]).toBe(undefined);
           await utils.respondToFramelessMessage({
             data: {
-              id: message.id,
+              id: message!.id,
               args: [true, mockUser],
             },
           } as DOMMessageEvent);
@@ -1293,11 +1257,11 @@ describe('Testing authentication capability', () => {
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
-          expect(message.id).toBe(1);
-          expect(message.args[0]).toBe(undefined);
+          expect(message!.id).toBe(1);
+          expect(message!.args?.[0]).toBe(undefined);
           await utils.respondToFramelessMessage({
             data: {
-              id: message.id,
+              id: message!.id,
               args: [true, mockUserWithDataResidency],
             },
           } as DOMMessageEvent);
@@ -1330,8 +1294,8 @@ describe('Testing authentication capability', () => {
             authentication.notifySuccess(mockResult);
             const message = utils.findMessageByFunc('authentication.authenticate.success');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(mockResult);
+            expect(message!.args?.length).toBe(1);
+            expect(message!.args?.[0]).toBe(mockResult);
           });
         }
       });
@@ -1360,8 +1324,8 @@ describe('Testing authentication capability', () => {
             authentication.notifyFailure(mockResult);
             const message = utils.findMessageByFunc('authentication.authenticate.failure');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(mockResult);
+            expect(message!.args?.length).toBe(1);
+            expect(message!.args?.[0]).toBe(mockResult);
           });
         }
       });
