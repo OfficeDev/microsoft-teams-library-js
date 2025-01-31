@@ -29,7 +29,6 @@
     "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@size-limit/preset-big-lib": "^11.1.6",
     "@types/debug": "^4.1.7",
     "eslint-plugin-recommend-no-namespaces": "file:./eslint-rules/eslint-plugin-recommend-no-namespaces"
   },
@@ -50,12 +49,5 @@
     "dist/**",
     "LICENSE",
     "README.md"
-  ],
-  "size-limit": [
-    {
-      "brotli": false,
-      "path": "./dist/esm/packages/teams-js/src/**/*.js",
-      "import": "*"
-    }
   ]
 }
