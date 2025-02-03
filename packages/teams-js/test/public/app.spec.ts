@@ -511,6 +511,8 @@ describe('Testing app capability', () => {
             },
           ];
 
+          const mockAppIdString = 'mock.m365testapp.test';
+          const mockManifestVersion = '1.13';
           const contextBridge: Context = {
             actionInfo: {
               actionId: 'actionId',
@@ -568,8 +570,8 @@ describe('Testing app capability', () => {
             appLaunchId: 'appLaunchId',
             userDisplayName: 'someTestUser',
             teamSiteId: 'someSiteId',
-            appId: 'mock.m365testapp.test',
-            manifestVersion: '1.13',
+            appId: mockAppIdString,
+            manifestVersion: mockManifestVersion,
           };
 
           const expectedContext: app.Context = {
@@ -591,8 +593,8 @@ describe('Testing app capability', () => {
                 ringId: 'someRingId',
                 sessionId: 'someSessionId',
               },
-              appId: new AppId('mock.m365testapp.test'),
-              manifestVersion: '1.13',
+              appId: new AppId(mockAppIdString),
+              manifestVersion: mockManifestVersion,
             },
             page: {
               id: 'someEntityId',
@@ -666,9 +668,9 @@ describe('Testing app capability', () => {
           expect(actualContext.actionInfo?.actionObjects.length).toBe(5);
           expect(firstActionItem.secondaryId?.name).toEqual(SecondaryM365ContentIdName.DriveId);
           expect(isM365ContentType(secondActionItem)).toBe(false);
-          const expectedAppId = new AppId('mock.m365testapp.test');
+          const expectedAppId = new AppId(mockAppIdString);
           expect(actualContext.app.appId).toEqual(expectedAppId);
-          expect(actualContext.app.manifestVersion).toBe('1.13');
+          expect(actualContext.app.manifestVersion).toBe(mockManifestVersion);
         });
       });
     });
