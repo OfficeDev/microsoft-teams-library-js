@@ -12,6 +12,8 @@ export enum HostClientType {
   ipados = 'ipados',
   /** The host is running on a macOS client, which runs on devices such as MacBooks. */
   macos = 'macos',
+  /** The host is running on a visionOS client, which runs on devices such as Apple Vision. */
+  visionOS = 'visionOS',
   /**
    * @deprecated
    * As of TeamsJS v2.0.0, please use {@link teamsRoomsWindows} instead.

@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Add visionOS client type support for Teams SDK. This change will enable app developers to find out if app is running on visionOS",
+  "packageName": "@microsoft/teams-js",
+  "email": "abhipandey@microsoft.com",
+  "dependentChangeType": "patch"
+}

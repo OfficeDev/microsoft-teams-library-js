@@ -780,6 +780,22 @@ export interface Context {
    * They help pre-fill the dialog with necessary information (`dialogParameters`) along with other details.
    */
   dialogParameters?: Record<string, string>;
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.appId | app.Context.app.appId} instead
+   *
+   * This ID is the unique identifier assigned to the app after deployment and is critical for ensuring the correct app instance is recognized across hosts.
+   */
+  appId?: string;
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.manifestVersion | app.Context.app.manifestVersion} instead
+   *
+   * The version of the manifest that the app is running.
+   */
+  manifestVersion?: string;
 }
 
 /** Represents the parameters used to share a deep link. */
