@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { ensureInitialized } from '../../src/internal/internalAPIs';
-import { authentication, dialog, menus, pages } from '../../src/public';
+import { AppId, authentication, dialog, menus, pages } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import {
   ChannelType,
@@ -511,6 +511,8 @@ describe('Testing app capability', () => {
             },
           ];
 
+          const mockAppIdString = 'mock.m365testapp.test';
+          const mockManifestVersion = '1.13';
           const contextBridge: Context = {
             actionInfo: {
               actionId: 'actionId',
@@ -568,6 +570,8 @@ describe('Testing app capability', () => {
             appLaunchId: 'appLaunchId',
             userDisplayName: 'someTestUser',
             teamSiteId: 'someSiteId',
+            appId: mockAppIdString,
+            manifestVersion: mockManifestVersion,
           };
 
           const expectedContext: app.Context = {
@@ -589,6 +593,8 @@ describe('Testing app capability', () => {
                 ringId: 'someRingId',
                 sessionId: 'someSessionId',
               },
+              appId: new AppId(mockAppIdString),
+              manifestVersion: mockManifestVersion,
             },
             page: {
               id: 'someEntityId',
@@ -662,6 +668,9 @@ describe('Testing app capability', () => {
           expect(actualContext.actionInfo?.actionObjects.length).toBe(5);
           expect(firstActionItem.secondaryId?.name).toEqual(SecondaryM365ContentIdName.DriveId);
           expect(isM365ContentType(secondActionItem)).toBe(false);
+          const expectedAppId = new AppId(mockAppIdString);
+          expect(actualContext.app.appId).toEqual(expectedAppId);
+          expect(actualContext.app.manifestVersion).toBe(mockManifestVersion);
         });
       });
     });
