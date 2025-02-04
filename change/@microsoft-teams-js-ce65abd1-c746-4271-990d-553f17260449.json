@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Unified authenticate workflow for all host types to avoid using child proxying.",
+  "comment": "Fixed security issue in `authenticate` function for web hosts to avoid using child proxying.",
   "packageName": "@microsoft/teams-js",
   "email": "jcardenasr123@gmail.com",
   "dependentChangeType": "patch"
