@@ -32,7 +32,8 @@ export async function isWebStorageClearedOnUserLogOut(): Promise<boolean> {
     runtime.isLegacyTeams &&
     (GlobalVars.hostClientType === HostClientType.android ||
       GlobalVars.hostClientType === HostClientType.ios ||
-      GlobalVars.hostClientType === HostClientType.ipados) &&
+      GlobalVars.hostClientType === HostClientType.ipados ||
+      GlobalVars.hostClientType === HostClientType.visionOS) &&
     (await getHostName()) === HostName.teams
   ) {
     // On Teams Mobile, they haven't yet implemented this capability. However, for compatibility reasons, we need

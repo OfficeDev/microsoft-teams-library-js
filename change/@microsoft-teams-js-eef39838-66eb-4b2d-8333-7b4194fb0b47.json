@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added field to tag child proxied messages.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jcardenasr123@gmail.com",
+  "dependentChangeType": "patch"
+}

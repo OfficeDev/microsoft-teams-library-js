@@ -20,6 +20,7 @@
     "docs:validate": "pnpm typedoc --emit none",
     "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
+    "size": "pnpm build && size-limit",
     "test": "jest",
     "test:verbose": "pnpm test -- --verbose false --silent false"
   },
