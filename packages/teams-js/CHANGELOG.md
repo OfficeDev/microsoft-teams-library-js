@@ -15,11 +15,11 @@ Wed, 05 Feb 2025 16:57:29 GMT
 - Added the`mail.handoff.composeMailWithHandoffId` function that allows passing a handoff id to the compose mail window.
 - Add visionOS client type support for Teams SDK. This change will enable app developers to find out if app is running on visionOS
 - Added the new parameters to `app.getContext` named `appId` and `manifestVersion`
-- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+- Bump `eslint-plugin-recommend-no-namespaces` to v0.1.0
 
 ### Patches
 
-- Updated the sendCustomTelemetryData function in  `copilot.customTelemetry` capability.
+- Updated the `sendCustomTelemetryData` function in `copilot.customTelemetry` capability.
 - Decoupled prefetch of CDN resources from the initialization workflow and added fallback when resources could not be fetched in 1.5 seconds
 - Added field to tag child proxied messages.
 - Added a `global` polyfill
