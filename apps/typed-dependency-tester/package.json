@@ -7,7 +7,7 @@
   "scripts": {
     "build": "pnpm i && pnpm copy && cd ./types && pnpm tsc && cd ../ && pnpm clean",
     "copy": "mkdir -p types && cp -R ./node_modules/@microsoft/teams-js/dist/esm/packages/teams-js/dts/* ./types || xcopy .\\node_modules\\@microsoft\\teams-js\\dist\\esm\\* .\\types /Y",
-    "clean": "rimraf node_modules && rimraf MicrosoftTeams.d.ts && rimraf ./types/*"
+    "clean": "rimraf node_modules && rimraf MicrosoftTeams.d.ts && rimraf ./types"
   },
   "dependencies": {
     "debug": "^4.3.3"
