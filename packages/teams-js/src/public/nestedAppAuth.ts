@@ -27,17 +27,18 @@ export function isNAAChannelRecommended(): boolean {
 
 function isNAAChannelRecommendedForLegacyTeamsMobile(): boolean {
   return ensureInitialized(runtime) &&
-    isHostAndroidOrIOSOrIPadOS() &&
+    isHostAndroidOrIOSOrIPadOSOrVisionOS() &&
     runtime.isLegacyTeams &&
     runtime.supports.nestedAppAuth
     ? true
     : false;
 }
 
-function isHostAndroidOrIOSOrIPadOS(): boolean {
+function isHostAndroidOrIOSOrIPadOSOrVisionOS(): boolean {
   return (
     GlobalVars.hostClientType === HostClientType.android ||
     GlobalVars.hostClientType === HostClientType.ios ||
-    GlobalVars.hostClientType === HostClientType.ipados
+    GlobalVars.hostClientType === HostClientType.ipados ||
+    GlobalVars.hostClientType === HostClientType.visionOS
   );
 }

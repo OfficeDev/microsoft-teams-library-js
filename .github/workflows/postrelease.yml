@@ -37,15 +37,6 @@ jobs:
           changelog="${changelog//$'\r'/'%0D'}"
           echo -e "::set-output name=changelog::$changelog"
 
-      - name: Create Github Release
-        uses: ncipollo/release-action@v1
-        with:
-          commit: '${{steps.extract_branch.outputs.branch}}'
-          tag: 'v${{steps.extract_version.outputs.version}}'
-          name: 'v${{steps.extract_version.outputs.version}}'
-          prerelease: false
-          body: '${{steps.extract_changelog.outputs.changelog}}'
-
       - name: Notify TeamsFx Repo
         uses: peter-evans/repository-dispatch@v2
         with:

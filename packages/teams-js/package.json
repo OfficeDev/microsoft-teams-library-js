@@ -1,7 +1,7 @@
 {
   "name": "@microsoft/teams-js",
   "author": "Microsoft Teams",
-  "version": "2.33.0",
+  "version": "2.34.0",
   "description": "Microsoft Client SDK for building app for Microsoft hosts",
   "repository": {
     "directory": "packages/teams-js",
@@ -20,6 +20,7 @@
     "docs:validate": "pnpm typedoc --emit none",
     "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
+    "size": "pnpm build && size-limit",
     "test": "jest",
     "test:verbose": "pnpm test -- --verbose false --silent false"
   },

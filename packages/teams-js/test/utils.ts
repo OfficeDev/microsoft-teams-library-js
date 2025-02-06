@@ -363,6 +363,24 @@ export class Utils {
     return this.sendMessageWithCustomOrigin(func, this.validOrigin, ...args);
   };
 
+  public async sendMessageFromChildToParentApp(func: string, ...args: unknown[]): Promise<void> {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
+      );
+    }
+
+    await this.processMessage({
+      origin: this.validOrigin,
+      source: this.childWindow,
+      data: {
+        id: 'id',
+        func: func,
+        args: args,
+      },
+    } as MessageEvent);
+  }
+
   public respondToFramelessMessage = (event: DOMMessageEvent): void => {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(event);
   };
