@@ -160,7 +160,7 @@
   "size-limit": [
     {
       "brotli": false,
-      "path": "./packages/teams-js/dist/esm/packages/teams-js/src/**/*.js",
+      "path": "./packages/teams-js/dist/esm/packages/teams-js/src/index.js",
       "import": "*"
     }
   ]
