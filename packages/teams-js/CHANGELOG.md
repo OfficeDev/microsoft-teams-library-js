@@ -1,8 +1,30 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 09 Jan 2025 16:42:36 GMT and should not be manually modified.
+This log was last generated on Wed, 05 Feb 2025 16:57:29 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.34.0
+
+Wed, 05 Feb 2025 16:57:29 GMT
+
+### Minor changes
+
+- Added functions for opening different types of stores along with ics filtering
+- Updated `validateEmails` function to `void` type for `mail.handoff` sub-capability.
+- Added the`mail.handoff.composeMailWithHandoffId` function that allows passing a handoff id to the compose mail window.
+- Add visionOS client type support for Teams SDK. This change will enable app developers to find out if app is running on visionOS
+- Added the new parameters to `app.getContext` named `appId` and `manifestVersion`
+- Bump `eslint-plugin-recommend-no-namespaces` to v0.1.0
+
+### Patches
+
+- Updated the `sendCustomTelemetryData` function in `copilot.customTelemetry` capability.
+- Decoupled prefetch of CDN resources from the initialization workflow and added fallback when resources could not be fetched in 1.5 seconds
+- Added field to tag child proxied messages.
+- Added a `global` polyfill
+- Updated `authentication.notifySuccess` documentation with security guidance
+- Added additional logging for child window (auth window) communication
 
 ## 2.33.0
 
