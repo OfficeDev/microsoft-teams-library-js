@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added the new parameters to `app.getContext` named `appId` and `manifestVersion`",
-  "packageName": "@microsoft/teams-js",
-  "email": "maggiegong@microsoft.com",
-  "dependentChangeType": "patch"
-}
