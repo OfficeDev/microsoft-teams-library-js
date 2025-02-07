@@ -16,7 +16,6 @@ import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import * as app from '../public/app/app';
-import * as authentication from '../public/authentication';
 import { FrameContexts } from '../public/constants';
 import * as dialog from '../public/dialog/dialog';
 import * as menus from '../public/menus';
@@ -201,7 +200,6 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
         },
       );
 
-      authentication.initialize();
       menus.initialize();
       pages.config.initialize();
       dialog.initialize();
