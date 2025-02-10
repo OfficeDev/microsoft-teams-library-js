@@ -5,7 +5,11 @@ import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const AddAndConfigure = (): React.ReactElement =>
-  ApiWithTextInput<{ hostEntityIds: hostEntity.HostEntityIds; appTypes?: hostEntity.AppTypes[] }>({
+  ApiWithTextInput<{
+    hostEntityIds: hostEntity.HostEntityIds;
+    appTypes?: hostEntity.AppTypes[];
+    extraMeetingInputs?: hostEntity.TeamsExtraMeetingInputs;
+  }>({
     name: 'addAndConfigure',
     title: 'Add a tab',
     onClick: {
@@ -15,7 +19,11 @@ const AddAndConfigure = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        const result = await hostEntity.tab.addAndConfigure(input.hostEntityIds, input.appTypes);
+        const result = await hostEntity.tab.addAndConfigure(
+          input.hostEntityIds,
+          input.appTypes,
+          input.extraMeetingInputs,
+        );
         return JSON.stringify(result);
       },
     },

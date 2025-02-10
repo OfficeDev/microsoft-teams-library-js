@@ -31,6 +31,14 @@ export interface TeamsChannelMeetingEntityIds extends TeamsEntityId {
 }
 
 /**
+ * Additional parameters associated with a meeting
+ */
+export interface TeamsExtraMeetingInputs {
+  isTownhall: boolean;
+  isStreamingThread: boolean;
+}
+
+/**
  * Id of the host entity
  */
 export type HostEntityIds = TeamsEntityId | TeamsChannelMeetingEntityIds;
