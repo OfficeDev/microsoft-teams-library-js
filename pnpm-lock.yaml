@@ -362,6 +362,19 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.2.0)(webpack@5.97.1)
 
+  apps/typed-dependency-tester:
+    dependencies:
+      debug:
+        specifier: ^4.3.3
+        version: 4.4.0
+    devDependencies:
+      '@microsoft/teams-js':
+        specifier: workspace:*
+        version: link:../../packages/teams-js
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.12
+
   packages/teams-js:
     dependencies:
       base64-js:
@@ -7156,7 +7169,7 @@ snapshots:
       '@babel/traverse': 7.24.7
       '@babel/types': 7.24.7
       convert-source-map: 2.0.0
-      debug: 4.3.5
+      debug: 4.4.0
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 7.6.2
@@ -9405,7 +9418,7 @@ snapshots:
       '@typescript-eslint/types': 7.14.1
       '@typescript-eslint/typescript-estree': 7.14.1(typescript@4.9.5)
       '@typescript-eslint/visitor-keys': 7.14.1
-      debug: 4.3.5
+      debug: 4.4.0
       eslint: 8.57.0
     optionalDependencies:
       typescript: 4.9.5
@@ -11067,7 +11080,7 @@ snapshots:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.3.5
+      debug: 4.4.0
       doctrine: 3.0.0
       escape-string-regexp: 4.0.0
       eslint-scope: 7.2.2
