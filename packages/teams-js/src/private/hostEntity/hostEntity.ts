@@ -17,6 +17,9 @@ export enum AppTypes {
 }
 
 /**
+ * @hidden
+ * @internal
+ * @beta
  * Id of the teams entity like channel, chat
  */
 interface TeamsEntityId {
