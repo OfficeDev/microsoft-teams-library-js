@@ -177,6 +177,7 @@
     "2. You made a change to either `app`, `authentication`, `pages`, or an internal folder file. These size changes are intentional and do not affect treeshaking. In this case, you need to determine the new size of the build and update the size-limit accordingly.",
     "3. You made changes to a file other than `app`, `authentication`, `pages`, or an internal folder file that justly requires the size of the build to increase. This can be due to other factors that do not affect treeshakability, but do result",
     "in a package size increase. An example of this may be adding references to another library that requires a polyfill. The inclusion of that polyfill may increase the library size.",
+    "Any time you increase the size-limit of the build, be sure to include an explanation of why it is necessary in the PR description.",
     "If you run into any problems or have questions, reach out to [Noah Darveau](noahdarveau-MSFT@microsoft.com) or file an issue on the [Teams-JS github page](https://github.com/OfficeDev/microsoft-teams-library-js).",
     "The second configration is there as a simple and easy way to determine the size of the entire library."
   ]
