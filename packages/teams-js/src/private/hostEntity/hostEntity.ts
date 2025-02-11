@@ -34,6 +34,9 @@ export interface TeamsChannelMeetingEntityIds extends TeamsEntityId {
 }
 
 /**
+ * @hidden
+ * @internal
+ * @beta
  * Additional parameters associated with a meeting
  */
 export interface TeamsExtraMeetingInputs {
