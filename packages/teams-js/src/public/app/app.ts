@@ -15,6 +15,7 @@ import { ensureInitializeCalled } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { inServerSideRenderingEnvironment } from '../../internal/utils';
 import * as messageChannels from '../../private/messageChannels/messageChannels';
+import { AppId } from '../appId';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from '../constants';
 import {
   ActionInfo,
@@ -185,6 +186,16 @@ export interface AppInfo {
    * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data.
    */
   appLaunchId?: string;
+
+  /**
+   * This ID is the unique identifier assigned to the app after deployment and is critical for ensuring the correct app instance is recognized across hosts.
+   */
+  appId?: AppId;
+
+  /**
+   * The version of the manifest that the app is running.
+   */
+  manifestVersion?: string;
 }
 
 /**
@@ -805,6 +816,8 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
         ringId: legacyContext.ringId,
       },
       appLaunchId: legacyContext.appLaunchId,
+      appId: legacyContext.appId ? new AppId(legacyContext.appId) : undefined,
+      manifestVersion: legacyContext.manifestVersion,
     },
     page: {
       id: legacyContext.entityId,

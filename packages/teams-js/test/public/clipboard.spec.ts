@@ -318,6 +318,7 @@ describe('clipboard', () => {
           HostClientType.desktop,
           HostClientType.ios,
           HostClientType.ipados,
+          HostClientType.visionOS,
           HostClientType.macos,
         ]).forEach((mobilePlatform) => {
           if (allowedContexts.some((allowedContext) => allowedContext === context)) {

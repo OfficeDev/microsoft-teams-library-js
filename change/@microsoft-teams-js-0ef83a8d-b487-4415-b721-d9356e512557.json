@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Added the size-limit plugin to be used to determine library size",
+  "comment": "Removed unused code from the library",
   "packageName": "@microsoft/teams-js",
   "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
   "dependentChangeType": "none"

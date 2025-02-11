@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Updated dependency versions to address CG vulnerabilities",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "none"
-}
