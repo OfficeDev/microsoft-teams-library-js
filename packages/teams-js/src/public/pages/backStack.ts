@@ -3,17 +3,22 @@
  * @module
  */
 
-import { Communication, sendMessageEventToChild, sendMessageToParent } from '../../internal/communication';
+import { sendMessageToParent } from '../../internal/communication';
 import { registerHandler } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
-import { backStackNavigateBackHelper, pagesTelemetryVersionNumber } from '../../internal/pagesHelpers';
+import {
+  backStackNavigateBackHelper,
+  handleBackButtonPress,
+  pagesTelemetryVersionNumber,
+  setBackButtonPressHandler,
+} from '../../internal/pagesHelpers';
 import { ApiName, getApiVersionTag } from '../../internal/telemetry';
 import { isNullOrUndefined } from '../../internal/typeCheckUtilities';
 import { errorNotSupportedOnPlatform } from '../constants';
 import { runtime } from '../runtime';
-import { backButtonHandlerFunctionType } from './pages';
 
-let backButtonPressHandler: (() => boolean) | undefined;
+/** Back button handler function */
+export type backButtonHandlerFunctionType = () => boolean;
 
 /**
  * @hidden
@@ -80,19 +85,8 @@ export function registerBackButtonHandlerHelper(
   if (versionSpecificHelper) {
     versionSpecificHelper();
   }
-  backButtonPressHandler = handler;
+  setBackButtonPressHandler(handler);
   !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['backButton']);
-}
-
-function handleBackButtonPress(): void {
-  if (!backButtonPressHandler || !backButtonPressHandler()) {
-    if (Communication.childWindow) {
-      // If the current window did not handle it let the child window
-      sendMessageEventToChild('backButtonPress', []);
-    } else {
-      navigateBack();
-    }
-  }
 }
 
 /**

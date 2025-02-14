@@ -11,7 +11,7 @@ import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../inte
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
-import { AppId } from '../public';
+import { AppId } from '../public/appId';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import * as externalAppAuthentication from './externalAppAuthentication';

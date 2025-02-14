@@ -11,7 +11,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isPrimitiveOrPlainObject, validateId, validateUrl } from '../internal/utils';
-import { AppId } from '../public';
+import { AppId } from '../public/appId';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ISerializable } from '../public/serializable.interface';

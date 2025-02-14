@@ -36,8 +36,6 @@ import * as tabs from './tabs';
 export type handlerFunctionType = () => void;
 /** Full screen function */
 export type fullScreenChangeFunctionType = (isFullScreen: boolean) => void;
-/** Back button handler function */
-export type backButtonHandlerFunctionType = () => boolean;
 /** Save event function */
 export type saveEventType = (evt: config.SaveEvent) => void;
 /** Remove event function */

@@ -10,9 +10,11 @@ import {
 import * as pages from '../public/pages/pages';
 import { runtime } from '../public/runtime';
 import {
+  Communication,
   sendAndHandleStatusAndReason,
   sendAndHandleStatusAndReasonWithDefaultError,
   sendAndUnwrap,
+  sendMessageEventToChild,
   sendMessageToParent,
 } from './communication';
 import { ensureInitialized } from './internalAPIs';
@@ -182,4 +184,21 @@ export function convertAppNavigationParametersToNavigateToAppParams(
     appId: params.appId.toString(),
     webUrl: params.webUrl ? params.webUrl.toString() : undefined,
   };
+}
+
+export let backButtonPressHandler: (() => boolean) | undefined;
+
+export function handleBackButtonPress(): void {
+  if (!backButtonPressHandler || !backButtonPressHandler()) {
+    if (Communication.childWindow) {
+      // If the current window did not handle it let the child window
+      sendMessageEventToChild('backButtonPress', []);
+    } else {
+      pages.backStack.navigateBack();
+    }
+  }
+}
+
+export function setBackButtonPressHandler(newBackButtonPressHandler: () => boolean): void {
+  backButtonPressHandler = newBackButtonPressHandler;
 }
