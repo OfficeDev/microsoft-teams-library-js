@@ -6,7 +6,7 @@ import { HostToAppPerformanceMetrics, LoadContext, ResumeContext } from '../publ
 import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 import { ensureInitialized } from './internalAPIs';
-import { handleBackButtonPress, pagesTelemetryVersionNumber } from './pagesHelpers';
+import { initializeBackstack } from './pagesHelpers';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';
 
@@ -43,13 +43,7 @@ class HandlersPrivate {
     HandlersPrivate.handlers['themeChange'] = handleThemeChange;
     HandlersPrivate.handlers['load'] = handleLoad;
     HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
-    //pages.backStack._initialize();
-    registerHandler(
-      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_BackStack_RegisterBackButtonPressHandler),
-      'backButtonPress',
-      handleBackButtonPress,
-      false,
-    );
+    initializeBackstack();
   }
 
   /**

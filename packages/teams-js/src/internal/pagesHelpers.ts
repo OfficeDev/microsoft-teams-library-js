@@ -17,8 +17,9 @@ import {
   sendMessageEventToChild,
   sendMessageToParent,
 } from './communication';
+import { registerHandler } from './handlers';
 import { ensureInitialized } from './internalAPIs';
-import { ApiVersionNumber } from './telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -184,6 +185,15 @@ export function convertAppNavigationParametersToNavigateToAppParams(
     appId: params.appId.toString(),
     webUrl: params.webUrl ? params.webUrl.toString() : undefined,
   };
+}
+
+export function initializeBackstack(): void {
+  registerHandler(
+    getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_BackStack_RegisterBackButtonPressHandler),
+    'backButtonPress',
+    handleBackButtonPress,
+    false,
+  );
 }
 
 export let backButtonPressHandler: (() => boolean) | undefined;

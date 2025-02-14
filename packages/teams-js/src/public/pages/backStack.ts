@@ -4,11 +4,9 @@
  */
 
 import { sendMessageToParent } from '../../internal/communication';
-import { registerHandler } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import {
   backStackNavigateBackHelper,
-  handleBackButtonPress,
   pagesTelemetryVersionNumber,
   setBackButtonPressHandler,
 } from '../../internal/pagesHelpers';
@@ -19,22 +17,6 @@ import { runtime } from '../runtime';
 
 /** Back button handler function */
 export type backButtonHandlerFunctionType = () => boolean;
-
-/**
- * @hidden
- * Register backButtonPress handler.
- *
- * @internal
- * Limited to Microsoft-internal use.
- */
-export function _initialize(): void {
-  registerHandler(
-    getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_BackStack_RegisterBackButtonPressHandler),
-    'backButtonPress',
-    handleBackButtonPress,
-    false,
-  );
-}
 
 /**
  * Navigates back in the hosted application. See {@link pages.backStack.registerBackButtonHandler} for notes on usage.
