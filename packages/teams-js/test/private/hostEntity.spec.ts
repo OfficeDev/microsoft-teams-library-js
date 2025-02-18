@@ -103,6 +103,25 @@ describe('hostEntity', () => {
 
           return expect(promise).resolves.toEqual(mockConfigurableTab);
         });
+
+        it(`hostEntity.tab.addAndConfigure should pass message with extraMeetingInputs and initialized with ${context} context`, async () => {
+          expect.assertions(3);
+          const extraMeetingInputs: hostEntity.TeamsExtraMeetingInputs = {
+            isTownhall: true,
+            isStreamingThread: false,
+          };
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
+          const promise = hostEntity.tab.addAndConfigure(mockHostEntity, undefined, extraMeetingInputs);
+          const message = utils.findMessageByFunc('hostEntity.tab.addAndConfigure');
+          expect(message).not.toBeNull();
+          expect(message?.args).toEqual([mockHostEntity, null, extraMeetingInputs]);
+          if (message) {
+            utils.respondToMessage(message, mockConfigurableTab);
+          }
+
+          return expect(promise).resolves.toEqual(mockConfigurableTab);
+        });
       });
     });
 
