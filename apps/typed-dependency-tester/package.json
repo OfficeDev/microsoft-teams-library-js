@@ -6,7 +6,7 @@
   "version": "0.0.1",
   "scripts": {
     "build": "pnpm i && pnpm copy && cd ./types && pnpm tsc && cd ../ && pnpm clean",
-    "copy": "mkdir -p types && cp -R ./node_modules/@microsoft/teams-js/dist/esm/packages/teams-js/dts/* ./types || xcopy .\\node_modules\\@microsoft\\teams-js\\dist\\esm\\* .\\types /Y",
+    "copy": "mkdir types && cp -R ./node_modules/@microsoft/teams-js/dist/esm/packages/teams-js/dts/* ./types || xcopy .\\node_modules\\@microsoft\\teams-js\\dist\\esm\\packages\\teams-js\\dts\\* .\\types /Y /E",
     "clean": "rimraf node_modules && rimraf ./types"
   },
   "dependencies": {
