@@ -1,24 +1,22 @@
+/**
+ * Module to interact with the authentication-specific part of the SDK.
+ *
+ * This object is used for starting or completing authentication flows.
+ * @module
+ */
+
 import {
   Communication,
-  sendMessageEventToChild,
   sendMessageToParent,
   sendMessageToParentAsync,
   waitForMessageQueue,
 } from '../internal/communication';
-import { GlobalVars } from '../internal/globalVars';
-import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { fullyQualifyUrlString, validateUrl } from '../internal/utils';
-import { FrameContexts, HostClientType } from './constants';
+import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
-
-/**
- * Namespace to interact with the authentication-specific part of the SDK.
- *
- * This object is used for starting or completing authentication flows.
- */
 
 /**
  * Exceptional APIs telemetry versioning file: v1 and v2 APIs are mixed together in this file
@@ -26,35 +24,11 @@ import { runtime } from './runtime';
 const authenticationTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
 const authenticationTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
 
-let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
-let authWindowMonitor: number | undefined;
-
 /**
  * @hidden
  * @internal
  * Limited to Microsoft-internal use; automatically called when library is initialized
  */
-export function initialize(): void {
-  registerHandler(
-    getApiVersionTag(
-      authenticationTelemetryVersionNumber_v1,
-      ApiName.Authentication_RegisterAuthenticateSuccessHandler,
-    ),
-    'authentication.authenticate.success',
-    handleSuccess,
-    false,
-  );
-  registerHandler(
-    getApiVersionTag(
-      authenticationTelemetryVersionNumber_v1,
-      ApiName.Authentication_RegisterAuthenticateFailureHandler,
-    ),
-    'authentication.authenticate.failure',
-    handleFailure,
-    false,
-  );
-}
-
 let authParams: AuthenticateParameters | undefined;
 /**
  * @deprecated
@@ -81,7 +55,7 @@ export function registerAuthenticationHandlers(authenticateParameters: Authentic
  *
  * @remarks
  * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
- * The [Teams authentication flow](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab) starts and ends at an endpoint on
+ * The [authentication flow](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab) starts and ends at an endpoint on
  * your own service (with a redirect round-trip to the 3rd party identity provider in the middle).
  *
  * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow
@@ -159,35 +133,25 @@ export function authenticate(authenticateParameters?: AuthenticateParameters): P
     });
 }
 
-function authenticateHelper(apiVersionTag: string, authenticateParameters: AuthenticateParameters): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    if (GlobalVars.hostClientType !== HostClientType.web) {
-      // Convert any relative URLs into absolute URLs before sending them over to the parent window.
-      const fullyQualifiedURL: URL = fullyQualifyUrlString(authenticateParameters.url);
-      validateUrl(fullyQualifiedURL);
+async function authenticateHelper(
+  apiVersionTag: string,
+  authenticateParameters: AuthenticateParameters,
+): Promise<string> {
+  // Convert any relative URLs into absolute URLs before sending them over to the parent window.
+  const fullyQualifiedURL: URL = fullyQualifyUrlString(authenticateParameters.url);
+  validateUrl(fullyQualifiedURL);
 
-      // Ask the parent window to open an authentication window with the parameters provided by the caller.
-      resolve(
-        sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
-          fullyQualifiedURL.href,
-          authenticateParameters.width,
-          authenticateParameters.height,
-          authenticateParameters.isExternal,
-        ]).then(([success, response]: [boolean, string]) => {
-          if (success) {
-            return response;
-          } else {
-            throw new Error(response);
-          }
-        }),
-      );
+  // Ask the parent window to open an authentication window with the parameters provided by the caller.
+  return sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
+    fullyQualifiedURL.href,
+    authenticateParameters.width,
+    authenticateParameters.height,
+    authenticateParameters.isExternal,
+  ]).then(([success, response]: [boolean, string]) => {
+    if (success) {
+      return response;
     } else {
-      // Open an authentication window with the parameters provided by the caller.
-      authHandlers = {
-        success: resolve,
-        fail: reject,
-      };
-      openAuthenticationWindow(authenticateParameters);
+      throw new Error(response);
     }
   });
 }
@@ -325,144 +289,26 @@ function getUserHelper(apiVersionTag: string): Promise<UserProfile> {
   });
 }
 
-function closeAuthenticationWindow(): void {
-  // Stop monitoring the authentication window
-  stopAuthenticationWindowMonitor();
-  // Try to close the authentication window and clear all properties associated with it
-  try {
-    if (Communication.childWindow) {
-      Communication.childWindow.close();
-    }
-  } finally {
-    Communication.childWindow = null;
-    Communication.childOrigin = null;
-  }
-}
-
-/**
- * Different browsers handle authentication flows in pop-up windows differently.
- * Firefox and Safari, which use Quantum and WebKit browser engines respectively, block the use of 'window.open' for pop-up windows.
- * Any chrome-based browser (Chrome, Edge, Brave, etc.) opens a new browser window without any user-prompts.
- * To ensure consistent behavior across all browsers, consider using the following function to create a new authentication window.
- *
- * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow.
- */
-function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
-  // Close the previously opened window if we have one
-  closeAuthenticationWindow();
-  // Start with a sensible default size
-  let width = authenticateParameters.width || 600;
-  let height = authenticateParameters.height || 400;
-  // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
-  width = Math.min(width, Communication.currentWindow.outerWidth - 400);
-  height = Math.min(height, Communication.currentWindow.outerHeight - 200);
-
-  // Convert any relative URLs into absolute URLs before sending them over to the parent window
-  const fullyQualifiedURL = fullyQualifyUrlString(authenticateParameters.url.replace('{oauthRedirectMethod}', 'web'));
-  validateUrl(fullyQualifiedURL);
-
-  // We are running in the browser, so we need to center the new window ourselves
-  let left: number =
-    typeof Communication.currentWindow.screenLeft !== 'undefined'
-      ? Communication.currentWindow.screenLeft
-      : Communication.currentWindow.screenX;
-  let top: number =
-    typeof Communication.currentWindow.screenTop !== 'undefined'
-      ? Communication.currentWindow.screenTop
-      : Communication.currentWindow.screenY;
-  left += Communication.currentWindow.outerWidth / 2 - width / 2;
-  top += Communication.currentWindow.outerHeight / 2 - height / 2;
-  // Open a child window with a desired set of standard browser features
-  Communication.childWindow = Communication.currentWindow.open(
-    fullyQualifiedURL.href,
-    '_blank',
-    'toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=' +
-      top +
-      ', left=' +
-      left +
-      ', width=' +
-      width +
-      ', height=' +
-      height,
-  );
-  if (Communication.childWindow) {
-    // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
-    startAuthenticationWindowMonitor();
-  } else {
-    // If we failed to open the window, fail the authentication flow
-    handleFailure('FailedToOpenWindow');
-  }
-}
-
-function stopAuthenticationWindowMonitor(): void {
-  if (authWindowMonitor) {
-    clearInterval(authWindowMonitor);
-    authWindowMonitor = 0;
-  }
-  removeHandler('initialize');
-  removeHandler('navigateCrossDomain');
-}
-
-function startAuthenticationWindowMonitor(): void {
-  // Stop the previous window monitor if one is running
-  stopAuthenticationWindowMonitor();
-  // Create an interval loop that
-  // - Notifies the caller of failure if it detects that the authentication window is closed
-  // - Keeps pinging the authentication window while it is open to re-establish
-  //   contact with any pages along the authentication flow that need to communicate
-  //   with us
-  authWindowMonitor = Communication.currentWindow.setInterval(() => {
-    if (!Communication.childWindow || Communication.childWindow.closed) {
-      handleFailure('CancelledByUser');
-    } else {
-      const savedChildOrigin = Communication.childOrigin;
-      try {
-        Communication.childOrigin = '*';
-        sendMessageEventToChild('ping');
-      } finally {
-        Communication.childOrigin = savedChildOrigin;
-      }
-    }
-  }, 100);
-  // Set up an initialize-message handler that gives the authentication window its frame context
-  registerHandler(
-    getApiVersionTag(
-      authenticationTelemetryVersionNumber_v1,
-      ApiName.Authentication_AuthenticationWindow_RegisterInitializeHandler,
-    ),
-    'initialize',
-    () => {
-      return [FrameContexts.authentication, GlobalVars.hostClientType];
-    },
-  );
-  // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
-  // in the authentication window. We could at some point choose to implement this method via a call to
-  // authenticationWindow.location.href = url; however, we would first need to figure out how to
-  // validate the URL against the tab's list of valid domains.
-  registerHandler(
-    getApiVersionTag(
-      authenticationTelemetryVersionNumber_v1,
-      ApiName.Authentication_AuthenticationWindow_RegisterNavigateCrossDomainHandler,
-    ),
-    'navigateCrossDomain',
-    () => {
-      return false;
-    },
-  );
-}
-
 /**
  * When using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}, the
- * window that was opened to execute the authentication flow should call this method after authentiction to notify the caller of
+ * window that was opened to execute the authentication flow should call this method after authentication to notify the caller of
  * {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} that the
  * authentication request was successful.
  *
  * @remarks
- * This function is usable only from the authentication window.
+ * The `result` parameter should **never** contain the token that was received from the identity provider, because a malicious app (rather than your own app) might have opened
+ * the authentication window. If that was the case, passing the token in this parameter would leak it to them. More secure methods for completing the authentication flow include:
+ * - For a purely browser-based experience (e.g., a personal app/tab app), you could store the token in browser local storage and then have your personal app retrieve it once
+ * this `notifySuccess` call is received.
+ * - For a server-based experience (e.g., a message extension), your authentication window could store the token on your service and then generate a unique code passed via this
+ * `result` parameter. The caller can then use the unique code to retrieve the token from your service.
+ *
+ * This function is usable only from an authentication window opened with {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}.
  * This call causes the authentication window to be closed.
  *
  * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
- * this value in its callback or via the `Promise` return value
+ * this value in its callback or via the `Promise` return value.
+ *
  */
 export function notifySuccess(result?: string): void;
 /**
@@ -509,28 +355,6 @@ export function notifyFailure(reason?: string, _callbackUrl?: string): void {
   sendMessageToParent(apiVersionTag, 'authentication.authenticate.failure', [reason]);
   // Wait for the message to be sent before closing the window
   waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
-}
-
-function handleSuccess(result?: string): void {
-  try {
-    if (authHandlers) {
-      authHandlers.success(result);
-    }
-  } finally {
-    authHandlers = undefined;
-    closeAuthenticationWindow();
-  }
-}
-
-function handleFailure(reason?: string): void {
-  try {
-    if (authHandlers) {
-      authHandlers.fail(new Error(reason));
-    }
-  } finally {
-    authHandlers = undefined;
-    closeAuthenticationWindow();
-  }
 }
 
 /**

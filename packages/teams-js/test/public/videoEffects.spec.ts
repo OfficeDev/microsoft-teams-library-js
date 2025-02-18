@@ -4,7 +4,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMonitor';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { videoEffects } from '../../src/public/videoEffects';
+import * as videoEffects from '../../src/public/videoEffects';
 import { Utils } from '../utils';
 
 /* eslint-disable */

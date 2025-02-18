@@ -11,6 +11,13 @@ const CheckMailCapability = (): React.ReactElement =>
     onClick: async () => `Mail module ${mail.isSupported() ? 'is' : 'is not'} supported`,
   });
 
+const CheckMailWithHandoffCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkMailWithHandoffCapability',
+    title: 'Check Mail With Handoff Call',
+    onClick: async () => `MailWithHandoff module ${mail.handoff.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
 const ComposeMail = (): React.ReactElement =>
   ApiWithTextInput<mail.ComposeMailParams>({
     name: 'composeMail',
@@ -45,6 +52,46 @@ const ComposeMail = (): React.ReactElement =>
     }),
   });
 
+const ComposeMailWithHandoff = (): React.ReactElement =>
+  ApiWithTextInput<mail.handoff.ComposeMailParamsWithHandoff>({
+    name: 'composeMailWithHandoff',
+    title: 'Compose Mail With Handoff ID',
+    onClick: {
+      validateInput: (input) => {
+        const composeMailTypeValues = Object.values(mail.ComposeMailType);
+        if (!input.composeMailParams) {
+          throw new Error('composeMailParams is required');
+        }
+        if (!input.composeMailParams.type || !composeMailTypeValues.includes(input.composeMailParams.type)) {
+          throw new Error(`type is required and has to be one of ${JSON.stringify(composeMailTypeValues)}`);
+        }
+        if (
+          (input.composeMailParams.type === mail.ComposeMailType.Forward ||
+            input.composeMailParams.type === mail.ComposeMailType.Reply ||
+            input.composeMailParams.type === mail.ComposeMailType.ReplyAll) &&
+          !input.composeMailParams.itemid
+        ) {
+          throw new Error('itemId is required for Forward, Reply, and ReplyAll');
+        }
+      },
+      submit: async (input) => {
+        await mail.handoff.composeMailWithHandoff(input);
+        return 'Completed';
+      },
+    },
+    defaultInput: JSON.stringify({
+      composeMailParams: {
+        type: mail.ComposeMailType.New,
+        subject: 'Test Mail',
+        toRecipients: ['sam@example.com', 'sam1@example.com'],
+        ccRecipients: ['sam2@example.com'],
+        bccRecipients: ['sam3@example.com'],
+        message: 'This mail has been sent from the Teams Test App',
+      },
+      handoffId: 'abc123',
+    }),
+  });
+
 const OpenMailItem = (): React.ReactElement =>
   ApiWithTextInput<mail.OpenMailItemParams>({
     name: 'openMailItem',
@@ -66,8 +113,10 @@ const OpenMailItem = (): React.ReactElement =>
 const MailAPIs = (): ReactElement => (
   <ModuleWrapper title="Mail">
     <ComposeMail />
+    <ComposeMailWithHandoff />
     <OpenMailItem />
     <CheckMailCapability />
+    <CheckMailWithHandoffCapability />
   </ModuleWrapper>
 );
 

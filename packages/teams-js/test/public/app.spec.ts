@@ -1,7 +1,8 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { authentication, dialog, menus, pages } from '../../src/public';
+import { ensureInitialized } from '../../src/internal/internalAPIs';
+import { AppId, dialog, menus, pages } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import {
   ChannelType,
@@ -21,12 +22,14 @@ import {
 } from '../../src/public/interfaces';
 import {
   _minRuntimeConfigToUninitialize,
+  applyRuntimeConfig,
   generateVersionBasedTeamsRuntimeConfig,
   latestRuntimeApiVersion,
   mapTeamsVersionToSupportedCapabilities,
   runtime,
   versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../../src/public/runtime';
+import { UUID } from '../../src/public/uuidObject';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';
 
@@ -58,6 +61,7 @@ describe('Testing app capability', () => {
       utils.childMessages = [];
       utils.childWindow.closed = false;
       utils.mockWindow.parent = utils.parentWindow;
+      utils.setRespondWithTimestamp(false);
 
       // Set a mock window for testing
       app._initialize(utils.mockWindow);
@@ -339,17 +343,6 @@ describe('Testing app capability', () => {
         });
       });
 
-      it('app.initialize should call authentication.initialize', async () => {
-        const spy = jest.spyOn(authentication, 'initialize');
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        await utils.respondToMessage(initMessage, FrameContexts.content);
-        await initPromise;
-
-        expect(spy).toHaveBeenCalled();
-      });
-
       it('app.initialize should call menus.initialize', async () => {
         const spy = jest.spyOn(menus, 'initialize');
 
@@ -507,6 +500,8 @@ describe('Testing app capability', () => {
             },
           ];
 
+          const mockAppIdString = 'mock.m365testapp.test';
+          const mockManifestVersion = '1.13';
           const contextBridge: Context = {
             actionInfo: {
               actionId: 'actionId',
@@ -564,6 +559,8 @@ describe('Testing app capability', () => {
             appLaunchId: 'appLaunchId',
             userDisplayName: 'someTestUser',
             teamSiteId: 'someSiteId',
+            appId: mockAppIdString,
+            manifestVersion: mockManifestVersion,
           };
 
           const expectedContext: app.Context = {
@@ -585,6 +582,8 @@ describe('Testing app capability', () => {
                 ringId: 'someRingId',
                 sessionId: 'someSessionId',
               },
+              appId: new AppId(mockAppIdString),
+              manifestVersion: mockManifestVersion,
             },
             page: {
               id: 'someEntityId',
@@ -658,6 +657,9 @@ describe('Testing app capability', () => {
           expect(actualContext.actionInfo?.actionObjects.length).toBe(5);
           expect(firstActionItem.secondaryId?.name).toEqual(SecondaryM365ContentIdName.DriveId);
           expect(isM365ContentType(secondActionItem)).toBe(false);
+          const expectedAppId = new AppId(mockAppIdString);
+          expect(actualContext.app.appId).toEqual(expectedAppId);
+          expect(actualContext.app.manifestVersion).toBe(mockManifestVersion);
         });
       });
     });
@@ -700,36 +702,82 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifySuccess function', () => {
       it('app.notifySuccess should not allow calls before initialization', () => {
-        expect(() => app.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
+        expect(app.notifySuccess).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('app.notifySuccess should allow calls after initialization called, but before it finished', async () => {
-        expect.assertions(3);
+        expect.assertions(2);
 
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
-        expect(initMessage).not.toBeNull();
+        if (!initMessage) {
+          return;
+        }
 
+        // Send notify success before response from host
         app.notifySuccess();
         let message = utils.findMessageByFunc('appInitialization.success');
         expect(message).toBeNull();
 
+        // Respond from host and then search message
         await utils.respondToMessage(initMessage, 'content');
-
         await initPromise;
-
         message = utils.findMessageByFunc('appInitialization.success');
         expect(message).not.toBeNull();
+      });
+
+      it('app.notifySuccess should resolve without response from host if default runtime', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext('context');
+
+        // Add app success message
+        const result = await app.notifySuccess();
+        expect(result.hasFinishedSuccessfully).toBe('unknown');
+      });
+
+      it('app.notifySuccess should resolve as soon as the host answers back', async () => {
+        expect.assertions(3);
+        await utils.initializeWithContext('context');
+        if (!ensureInitialized(runtime)) {
+          return;
+        }
+        applyRuntimeConfig({
+          ...runtime,
+          supports: {
+            ...runtime.supports,
+            app: {
+              notifySuccessResponse: true,
+            },
+          },
+        });
+
+        // Test that the promise hasn't resolved before host answers back
+        let hasPromisedResolved = false;
+        const notifySuccessPromise = app.notifySuccess().then((v) => {
+          hasPromisedResolved = true;
+          return v;
+        });
+        expect(hasPromisedResolved).toBe(false);
+
+        // Test the promise resolves successfully after host answers back
+        const notifySuccessMessage = utils.findMessageByFunc('appInitialization.success');
+        if (!notifySuccessMessage) {
+          return;
+        }
+        await utils.respondToMessage(notifySuccessMessage);
+        const result = await notifySuccessPromise;
+        expect(hasPromisedResolved).toBe(true);
+        expect(result.hasFinishedSuccessfully).toBe(true);
       });
 
       Object.values(FrameContexts).forEach((context) => {
         it(`app.notifySuccess should successfully notify success with no error from ${context} context`, async () => {
           await utils.initializeWithContext(context);
-          app.notifyAppLoaded();
-          const message = utils.findMessageByFunc(app.Messages.AppLoaded);
+          app.notifySuccess();
+          const message = utils.findMessageByFunc(app.Messages.Success);
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(1);
-          expect(message.args[0]).toEqual(version);
+          expect(message?.args?.length).toBe(1);
+          expect((message?.args ?? [])[0]).toEqual(version);
         });
       });
     });
@@ -794,6 +842,73 @@ describe('Testing app capability', () => {
           expect(message.args[0]).toEqual(app.ExpectedFailureReason.PermissionError);
           expect(message.args[1]).toEqual('Failed message');
         });
+      });
+    });
+
+    describe('Testing hostToAppPerformanceMetricsHandler', () => {
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should get called when api SDK call has timestamp', async () => {
+        await utils.initializeWithContext('content');
+        utils.setRespondWithTimestamp(true);
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handler).toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should not get called when api SDK call does not have timestamp', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handler).not.toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should not get called when api SDK call response has no info', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        await utils.respondToMessage({ uuid: new UUID(), func: 'weirdFunc' }, {});
+        expect(handler).not.toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler should replace previously registered handler', async () => {
+        await utils.initializeWithContext('content');
+        utils.setRespondWithTimestamp(true);
+
+        const handlerOne = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handlerOne);
+        const handlerTwo = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handlerTwo);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handlerTwo).toBeCalled();
+        expect(handlerOne).not.toBeCalled();
       });
     });
 
@@ -946,6 +1061,7 @@ describe('Testing app capability', () => {
       utils = new Utils();
       utils.mockWindow.parent = undefined;
       utils.messages = [];
+      utils.setRespondWithTimestamp(false);
       app._initialize(utils.mockWindow);
       GlobalVars.isFramelessWindow = false;
     });
@@ -1228,22 +1344,6 @@ describe('Testing app capability', () => {
 
           expect(GlobalVars.hostClientType).toBe(hostClientType);
         });
-      });
-
-      it('app.initialize should call authentication.initialize', async () => {
-        const spy = jest.spyOn(authentication, 'initialize');
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        await utils.respondToFramelessMessage({
-          data: {
-            id: initMessage.id,
-            args: [],
-          },
-        } as DOMMessageEvent);
-        await initPromise;
-
-        expect(spy).toHaveBeenCalled();
       });
 
       it('app.initialize should call menus.initialize', async () => {
@@ -1538,7 +1638,72 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifySuccess function', () => {
       it('app.notifySuccess should not allow calls before initialization', () => {
-        expect(() => app.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
+        expect(app.notifySuccess).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('app.notifySuccess should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(2);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        if (!initMessage) {
+          return;
+        }
+
+        // Send notify success before response from host
+        app.notifySuccess();
+        let message = utils.findMessageByFunc('appInitialization.success');
+        expect(message).toBeNull();
+
+        // Respond from host and then search message
+        await utils.respondToMessage(initMessage, 'content');
+        await initPromise;
+        message = utils.findMessageByFunc('appInitialization.success');
+        expect(message).not.toBeNull();
+      });
+
+      it('app.notifySuccess should resolve without response from host if default runtime', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext('context');
+
+        // Add app success message
+        const result = await app.notifySuccess();
+        expect(result.hasFinishedSuccessfully).toBe('unknown');
+      });
+
+      it('app.notifySuccess should resolve as soon as the host answers back', async () => {
+        expect.assertions(3);
+        await utils.initializeWithContext('context');
+        if (!ensureInitialized(runtime)) {
+          return;
+        }
+        applyRuntimeConfig({
+          ...runtime,
+          supports: {
+            ...runtime.supports,
+            app: {
+              notifySuccessResponse: true,
+            },
+          },
+        });
+
+        // Test that the promise hasn't resolved before host answers back
+        let hasPromisedResolved = false;
+        const notifySuccessPromise = app.notifySuccess().then((v) => {
+          hasPromisedResolved = true;
+          return v;
+        });
+        expect(hasPromisedResolved).toBe(false);
+
+        // Test the promise resolves successfully after host answers back
+        const notifySuccessMessage = utils.findMessageByFunc('appInitialization.success');
+        if (!notifySuccessMessage) {
+          return;
+        }
+        await utils.respondToMessage(notifySuccessMessage);
+        const result = await notifySuccessPromise;
+        expect(hasPromisedResolved).toBe(true);
+        expect(result.hasFinishedSuccessfully).toBe(true);
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1547,8 +1712,8 @@ describe('Testing app capability', () => {
           app.notifySuccess();
           const message = utils.findMessageByFunc(app.Messages.Success);
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(1);
-          expect(message.args[0]).toEqual(version);
+          expect(message?.args?.length).toBe(1);
+          expect((message?.args ?? [])[0]).toEqual(version);
         });
       });
     });
@@ -1591,6 +1756,73 @@ describe('Testing app capability', () => {
           expect(message.args[0]).toEqual(app.ExpectedFailureReason.PermissionError);
           expect(message.args[1]).toEqual('Failed message');
         });
+      });
+    });
+
+    describe('Testing hostToAppPerformanceMetricsHandler', () => {
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should get called when api SDK call has timestamp', async () => {
+        await utils.initializeWithContext('content');
+        utils.setRespondWithTimestamp(true);
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handler).toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should not get called when api SDK call does not have timestamp', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handler).not.toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should not get called when api SDK call response has no info', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        await utils.respondToMessage({ uuid: new UUID(), func: 'weirdFunc' }, {});
+        expect(handler).not.toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler should replace previously registered handler', async () => {
+        await utils.initializeWithContext('content');
+        utils.setRespondWithTimestamp(true);
+
+        const handlerOne = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handlerOne);
+        const handlerTwo = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handlerTwo);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handlerTwo).toBeCalled();
+        expect(handlerOne).not.toBeCalled();
       });
     });
 

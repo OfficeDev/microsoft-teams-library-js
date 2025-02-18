@@ -1,6 +1,7 @@
-import { debug as registerLogger, Debugger } from 'debug';
+// We are directly referencing the browser implementation of `debug` to resolve an issue with polyfilling. For a full write-up on the bug please see ADO Bug #9619161
+import { debug as registerLogger, Debugger } from 'debug/src/browser';
 
-import { UUID } from './uuidObject';
+import { UUID } from '../public/uuidObject';
 
 // Each teamsjs instance gets a unique identifier that will be prepended to every log statement
 export const teamsJsInstanceIdentifier = new UUID();
@@ -106,6 +107,7 @@ export const enum ApiName {
   Conversations_OpenConversation = 'conversations.openConversation',
   Conversations_RegisterCloseConversationHandler = 'conversations.registerCloseConversationHandler',
   Conversations_RegisterStartConversationHandler = 'conversations.registerStartConversationHandler',
+  Copilot_CustomTelemetry_SendCustomTelemetryData = 'copilot.customTelemetry.sendCustomTelemetryData',
   Copilot_Eligibility_GetEligibilityInfo = 'copilot.eligibility.getEligibilityInfo',
   Dialog_AdaptiveCard_Bot_Open = 'dialog.adaptiveCard.bot.open',
   Dialog_AdaptiveCard_Open = 'dialog.adaptiveCard.open',
@@ -175,6 +177,7 @@ export const enum ApiName {
   Logs_Receive = 'log.receive',
   Logs_RegisterLogRequestHandler = 'log.request',
   Mail_ComposeMail = 'mail.composeMail',
+  Mail_Handoff_ComposeMail = 'mail.handoff.composeMail',
   Mail_OpenMailItem = 'mail.openMailItem',
   Marketplace_AddOrUpdateCartItems = 'marketplace.addOrUpdateCartItems',
   Marketplace_GetCart = 'marketplace.getCart',
@@ -233,6 +236,7 @@ export const enum ApiName {
   Notifications_ShowNotification = 'notifications.showNotification',
   OtherAppStateChange_Install = 'otherApp.install',
   OtherAppStateChange_UnregisterInstall = 'otherApp.unregisterInstall',
+  OtherAppStateChange_NotifyInstallCompleted = 'otherApp.notifyInstallCompleted',
   Pages_AppButton_OnClick = 'pages.appButton.onClick',
   Pages_AppButton_OnHoverEnter = 'pages.appButton.onHoverEnter',
   Pages_AppButton_OnHoverLeave = 'pages.appButton.onHoverLeave',
@@ -322,6 +326,10 @@ export const enum ApiName {
   Sharing_ShareWebContent = 'sharing.shareWebContent',
   StageView_Open = 'stageView.open',
   StageView_Self_Close = 'stageView.self.close',
+  Store_OpenFullStore = 'store.openFullStore',
+  Store_OpenAppDetail = 'store.openAppDetail',
+  Store_OpenInContextStore = 'store.openInContextStore',
+  Store_OpenSpecificStore = 'store.openSpecificStore',
   Tasks_StartTask = 'tasks.startTask',
   Tasks_SubmitTask = 'tasks.submitTask',
   Tasks_UpdateTask = 'tasks.updateTask',

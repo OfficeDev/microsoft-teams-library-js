@@ -223,6 +223,9 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly isNAAChannelRecommended?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
+    readonly app?: {
+      readonly notifySuccessResponse?: {};
+    };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
     readonly barCode?: {};
@@ -232,6 +235,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly clipboard?: {};
     readonly conversations?: {};
     readonly copilot?: {
+      readonly customTelemetry?: {};
       readonly eligibility?: {};
     };
     readonly dialog?: {
@@ -259,7 +263,9 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly secondaryBrowser?: {};
     readonly location?: {};
     readonly logs?: {};
-    readonly mail?: {};
+    readonly mail?: {
+      readonly handoff?: {};
+    };
     readonly marketplace?: {};
     readonly meetingRoom?: {};
     readonly menus?: {};
@@ -290,6 +296,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly stageView?: {
       readonly self?: {};
     };
+    readonly store?: {};
     readonly teams?: {
       readonly fullTrust?: {
         readonly joinedTeams?: {};
@@ -419,7 +426,12 @@ const v1NonMobileHostClientTypes = [
   HostClientType.teamsDisplays,
 ];
 
-export const v1MobileHostClientTypes = [HostClientType.android, HostClientType.ios, HostClientType.ipados];
+export const v1MobileHostClientTypes = [
+  HostClientType.android,
+  HostClientType.ios,
+  HostClientType.ipados,
+  HostClientType.visionOS,
+];
 
 export const v1HostClientTypes = [...v1NonMobileHostClientTypes, ...v1MobileHostClientTypes];
 
@@ -587,6 +599,12 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
     {
       capability: { sharing: {} },
       hostClientTypes: [HostClientType.android, HostClientType.ios],
+    },
+  ],
+  '2.1.1': [
+    {
+      capability: { nestedAppAuth: {} },
+      hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS],
     },
   ],
 };

@@ -1,3 +1,10 @@
+/**
+ * Module to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
@@ -11,11 +18,6 @@ import * as map from './map';
  */
 const geoLocationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.
- *
- * @beta
- */
 /**
  * Data struture to represent the location information
  *

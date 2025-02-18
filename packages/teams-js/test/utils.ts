@@ -1,13 +1,12 @@
-import { validOriginsFallback as validOrigins } from '../src/internal/constants';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { MessageRequest, SerializedMessageRequest, SerializedMessageResponse } from '../src/internal/messageObjects';
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
-import { UUID as MessageUUID } from '../src/internal/uuidObject';
 import { HostClientType } from '../src/public';
 import * as app from '../src/public/app/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
+import { UUID as MessageUUID } from '../src/public/uuidObject';
 
 function deserializeMessageRequest(serializedMessage: SerializedMessageRequest): MessageRequest {
   const message = {
@@ -39,11 +38,14 @@ export class Utils {
   public parentWindow: Window;
   public topWindow: Window;
 
+  public respondWithTimestamp: boolean;
+
   private onMessageSent: null | ((messageRequest: MessageRequest) => void) = null;
 
   public constructor() {
     this.messages = [];
     this.childMessages = [];
+    this.respondWithTimestamp = false;
 
     this.parentWindow = {
       postMessage: (serializedMessage: SerializedMessageRequest, targetOrigin: string): void => {
@@ -135,18 +137,13 @@ export class Utils {
       },
       closed: false,
     };
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        status: 200,
-        ok: true,
-        json: async () => {
-          return { validOrigins };
-        },
-      } as Response),
-    );
   }
 
   public processMessage: null | ((ev: MessageEvent) => Promise<void>);
+
+  public setRespondWithTimestamp(respondWithTimestamp: boolean): void {
+    this.respondWithTimestamp = respondWithTimestamp;
+  }
 
   public initializeWithContext = async (
     frameContext: string,
@@ -263,9 +260,12 @@ export class Utils {
 
   public respondToMessageWithPorts = async (
     message: MessageRequest | NestedAppAuthRequest,
-    args: unknown[] = [],
+    args: unknown[],
     ports: MessagePort[] = [],
   ): Promise<void> => {
+    const timestamp = this.respondWithTimestamp
+      ? { monotonicTimestamp: performance.now() + performance.timeOrigin }
+      : {};
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
@@ -276,6 +276,7 @@ export class Utils {
           id: message.id,
           uuidAsString: getMessageUUIDString(message),
           args: args,
+          ...timestamp,
         } as SerializedMessageResponse,
         ports,
       } as DOMMessageEvent;
@@ -288,6 +289,7 @@ export class Utils {
           id: message.id,
           uuidAsString: getMessageUUIDString(message),
           args: args,
+          ...timestamp,
         } as SerializedMessageResponse,
         ports,
       } as unknown as MessageEvent);
@@ -360,6 +362,24 @@ export class Utils {
   public sendMessage = async (func: string, ...args: unknown[]): Promise<void> => {
     return this.sendMessageWithCustomOrigin(func, this.validOrigin, ...args);
   };
+
+  public async sendMessageFromChildToParentApp(func: string, ...args: unknown[]): Promise<void> {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
+      );
+    }
+
+    await this.processMessage({
+      origin: this.validOrigin,
+      source: this.childWindow,
+      data: {
+        id: 'id',
+        func: func,
+        args: args,
+      },
+    } as MessageEvent);
+  }
 
   public respondToFramelessMessage = (event: DOMMessageEvent): void => {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(event);

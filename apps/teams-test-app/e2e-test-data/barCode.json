@@ -46,7 +46,7 @@
       "boxSelector": "#box_scanBarCode",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestBarCodePermission",
-        "consentPermission": "false"
+        "consentPermission": false
       },
       "inputValue": {},
       "expectedTestAppValue": "Error: {\"errorCode\":1000,\"message\":\"user has explicitly not consented for device permission\"}"

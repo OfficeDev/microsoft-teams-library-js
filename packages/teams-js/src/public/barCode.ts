@@ -1,3 +1,10 @@
+/**
+ * Module to interact with the barcode scanning-specific part of the SDK.
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateScanBarCodeInput } from '../internal/mediaUtil';
@@ -11,11 +18,6 @@ import { runtime } from './runtime';
  */
 const barCodeTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * Namespace to interact with the barcode scanning-specific part of the SDK.
- *
- * @beta
- */
 /**
  * Data structure to customize the barcode scanning experience in scanBarCode API.
  * All properties in BarCodeConfig are optional and have default values in the platform

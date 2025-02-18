@@ -1,9 +1,11 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { copilot } from '../../src/private/copilot';
+import { ApiName } from '../../src/internal/telemetry';
+import * as copilot from '../../src/private/copilot/copilot';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { Cohort, EduType, ErrorCode, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
+import { UUID } from '../../src/public/uuidObject';
 import { Utils } from '../utils';
 
 const mockedAppEligibilityInformation = {
@@ -16,6 +18,7 @@ const mockedAppEligibilityInformation = {
     persona: Persona.Student,
     eduType: EduType.HigherEducation,
   },
+  featureSet: { serverFeatures: ['feature1', 'feature2'], uxFeatures: ['feature3'] },
 };
 
 const mockedAppEligibilityInformationUserClassificationNull = {
@@ -50,6 +53,7 @@ const copilotRuntimeConfig: Runtime = {
   supports: {
     copilot: {
       eligibility: {},
+      customTelemetry: {},
     },
     pages: {
       appButton: {},
@@ -188,6 +192,24 @@ describe('copilot', () => {
           return expect(promise).resolves.toEqual(mockedAppEligibilityInformation);
         });
 
+        it(`should not throw if featureSet in response is undefined - with context ${frameContext}`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+
+          const promise = copilot.eligibility.getEligibilityInfo();
+          const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+          const mockedAppEligibilityInformationWithUndefinedFeatureSet = {
+            ...mockedAppEligibilityInformation,
+            featureSet: undefined,
+          };
+          expect(message).not.toBeNull();
+          if (message) {
+            utils.respondToMessage(message, mockedAppEligibilityInformationWithUndefinedFeatureSet);
+          }
+
+          return expect(promise).resolves.toEqual(mockedAppEligibilityInformationWithUndefinedFeatureSet);
+        });
+
         it(`should throw error if host returns error - with context ${frameContext}`, async () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig(copilotRuntimeConfig);
@@ -318,6 +340,102 @@ describe('copilot', () => {
         }
 
         await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.featureSet.serverFeatures is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformationWithInvalidUxFeatures = {
+          ...mockedAppEligibilityInformation,
+          featureSet: {
+            serverFeatures: undefined,
+            uxFeatures: [],
+          },
+        };
+
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformationWithInvalidUxFeatures);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.featureSet.uxFeatures is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformationWithInvalidUxFeatures = {
+          ...mockedAppEligibilityInformation,
+          featureSet: {
+            serverFeatures: [],
+            uxFeatures: undefined,
+          },
+        };
+
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformationWithInvalidUxFeatures);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+    });
+  });
+
+  describe('copilot.customTelemetry', () => {
+    describe('isSupported', () => {
+      it('isSupported should throw if called before initialization', () => {
+        utils.uninitializeRuntimeConfig();
+        expect(() => copilot.customTelemetry.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('isSupported should return false if custom telemetry is not on the runtimeConfig and copilot is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        expect(copilot.customTelemetry.isSupported()).toBeFalsy();
+      });
+
+      it('isSupported should return false if custom telemetry is not on the runtimeConfig and copilot.customTelemetry is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const minRuntimeConfigWithCopilot = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: {},
+          },
+        };
+        utils.setRuntimeConfig(minRuntimeConfigWithCopilot);
+        expect(copilot.customTelemetry.isSupported()).toBeFalsy();
+      });
+
+      it('isSupported should return true if copilot.telemetry is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+      });
+    });
+
+    describe('sendCustomTelemetryData', () => {
+      it('sendCustomTelemetryData should throw if called before initialization', async () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        await expect(copilot.customTelemetry.sendCustomTelemetryData(new UUID())).rejects.toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      it('sendCustomTelemetryData message should not be null', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(FrameContexts.content);
+        await expect(copilot.customTelemetry.sendCustomTelemetryData(new UUID('805a4340-d5e0-4587-8f04-0ae88219699f')));
+        const message = utils.findMessageByFunc(ApiName.Copilot_CustomTelemetry_SendCustomTelemetryData);
+        expect(message).not.toBeNull();
       });
     });
   });

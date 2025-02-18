@@ -50,7 +50,7 @@ module.exports = {
       return [prompt.changeType, description];
     },
   },
-  disallowedChangeTypes: ['prerelease'],
+  disallowedChangeTypes: ['major', 'prerelease'],
   generateChangelog: true,
   hooks: { postbump },
   ignorePatterns: ['.*ignore', '*config.js', '*.md', '**/test/**'],

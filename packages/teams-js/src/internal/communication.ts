@@ -7,9 +7,11 @@ import { FrameContexts } from '../public/constants';
 import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { ISerializable, isSerializable } from '../public/serializable.interface';
+import { UUID as MessageUUID } from '../public/uuidObject';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
+import HostToAppMessageDelayTelemetry from './hostToAppTelemetry';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import {
   deserializeMessageRequest,
@@ -31,8 +33,7 @@ import {
 } from './nestedAppAuthUtils';
 import { ResponseHandler, SimpleType } from './responseHandler';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
-import { ssrSafeWindow } from './utils';
-import { UUID as MessageUUID } from './uuidObject';
+import { getCurrentTimestamp, ssrSafeWindow } from './utils';
 import { validateOrigin } from './validOrigins';
 
 const communicationLogger = getLogger('communication');
@@ -160,6 +161,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.promiseCallbacks.clear();
   CommunicationPrivate.portCallbacks.clear();
   CommunicationPrivate.legacyMessageIdsToUuidMap = {};
+  HostToAppMessageDelayTelemetry.clearMessages();
 }
 
 /**
@@ -516,11 +518,15 @@ function sendMessageToParentHelper(
   apiVersionTag: string,
   actionName: string,
   args: any[] | undefined,
+  isProxiedFromChild?: boolean,
 ): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
-
   const targetWindow = Communication.parentWindow;
-  const request = createMessageRequest(apiVersionTag, actionName, args);
+  const request = createMessageRequest(apiVersionTag, actionName, args, isProxiedFromChild);
+  HostToAppMessageDelayTelemetry.storeCallbackInformation(request.uuid, {
+    name: actionName,
+    calledAt: request.timestamp,
+  });
 
   logger('Message %s information: %o', getMessageIdsAsLogString(request), { actionName, args });
 
@@ -798,6 +804,7 @@ function removeMessageHandlers(message: MessageResponse, map: Map<MessageUUID, F
  */
 function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
   const logger = handleIncomingMessageFromParentLogger;
+  const timeWhenMessageArrived = getCurrentTimestamp();
 
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
@@ -807,6 +814,7 @@ function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
     if (callbackId) {
       const callback = CommunicationPrivate.callbacks.get(callbackId);
       logger('Received a response from parent for message %s', callbackId.toString());
+      HostToAppMessageDelayTelemetry.handlePerformanceMetrics(callbackId, message, logger, timeWhenMessageArrived);
       if (callback) {
         logger(
           'Invoking the registered callback for message %s with arguments %o',
@@ -858,6 +866,7 @@ function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
+    HostToAppMessageDelayTelemetry.handleOneWayPerformanceMetrics(message, logger, timeWhenMessageArrived);
     logger('Received a message from parent %s, action: "%s"', getMessageIdsAsLogString(message), message.func);
     callHandler(message.func, message.args);
   } else {
@@ -886,7 +895,7 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
       handleIncomingMessageFromChildLogger(
-        'Returning message %s from child back to child, action: %s.',
+        'Handler called in response to message %s from child. Returning response from handler to child, action: %s.',
         getMessageIdsAsLogString(message),
         message.func,
       );
@@ -898,28 +907,12 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
       // No handler, proxy to parent
 
       handleIncomingMessageFromChildLogger(
-        'Relaying message %s from child to parent, action: %s. Relayed message will have a new id.',
+        'No handler for message %s from child found; relaying message on to parent, action: %s. Relayed message will have a new id.',
         getMessageIdsAsLogString(message),
         message.func,
       );
 
-      sendMessageToParent(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
-        message.func,
-        message.args,
-        (...args: any[]): void => {
-          if (Communication.childWindow) {
-            const isPartialResponse = args.pop();
-            handleIncomingMessageFromChildLogger(
-              'Message from parent being relayed to child, id: %s',
-              getMessageIdsAsLogString(message),
-            );
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
-          }
-        },
-      );
+      proxyChildMessageToParent(message);
     }
   }
 }
@@ -1046,6 +1039,12 @@ function sendMessageResponseToChild(
   const serializedResponse = serializeMessageResponse(response);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
+    handleIncomingMessageFromChildLogger(
+      'Sending message %s to %s via postMessage, args = %o',
+      getMessageIdsAsLogString(serializedResponse),
+      getTargetName(targetWindow),
+      serializedResponse.args,
+    );
     targetWindow.postMessage(serializedResponse, targetOrigin);
   }
 }
@@ -1081,6 +1080,7 @@ function createMessageRequest(
   apiVersionTag: string,
   func: string,
   args: any[] | undefined,
+  isProxiedFromChild?: boolean,
 ): MessageRequestWithRequiredProperties {
   const messageId: MessageID = CommunicationPrivate.nextMessageId++;
   const messageUuid: MessageUUID = new MessageUUID();
@@ -1090,8 +1090,10 @@ function createMessageRequest(
     uuid: messageUuid,
     func: func,
     timestamp: Date.now(),
+    monotonicTimestamp: getCurrentTimestamp(),
     args: args || [],
     apiVersionTag: apiVersionTag,
+    isProxiedFromChild: isProxiedFromChild ?? false,
   };
 }
 
@@ -1115,6 +1117,7 @@ function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
     uuid: messageUuid,
     func: 'nestedAppAuth.execute',
     timestamp: Date.now(),
+    monotonicTimestamp: getCurrentTimestamp(),
     // Since this is a nested app auth request, we don't need to send any args.
     // We avoid overloading the args array with the message to avoid potential issues processing of these messages on the hubSDK.
     args: [],
@@ -1170,4 +1173,29 @@ function getMessageIdsAsLogString(
   } else {
     return `legacy id: ${message.id} (no uuid)`;
   }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function proxyChildMessageToParent(message: MessageRequest): void {
+  const request = sendMessageToParentHelper(
+    getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
+    message.func,
+    message.args,
+    true, // Tags message as proxied from child
+  );
+  CommunicationPrivate.callbacks.set(request.uuid, (...args: any[]): void => {
+    if (Communication.childWindow) {
+      const isPartialResponse = args.pop();
+      handleIncomingMessageFromChildLogger(
+        'Message from parent being relayed to child, id: %s',
+        getMessageIdsAsLogString(message),
+      );
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
+    }
+  });
 }

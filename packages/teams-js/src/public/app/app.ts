@@ -2,6 +2,11 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+/**
+ * Module to interact with app initialization and lifecycle.
+ * @module
+ */
+
 import * as appHelpers from '../../internal/appHelpers';
 import { Communication, sendAndUnwrap, uninitializeCommunication } from '../../internal/communication';
 import { GlobalVars } from '../../internal/globalVars';
@@ -9,10 +14,16 @@ import * as Handlers from '../../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { inServerSideRenderingEnvironment } from '../../internal/utils';
-import { prefetchOriginsFromCDN } from '../../internal/validOrigins';
-import { messageChannels } from '../../private/messageChannels';
+import * as messageChannels from '../../private/messageChannels/messageChannels';
+import { AppId } from '../appId';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from '../constants';
-import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from '../interfaces';
+import {
+  ActionInfo,
+  Context as LegacyContext,
+  FileOpenPreference,
+  HostToAppPerformanceMetrics,
+  LocaleInfo,
+} from '../interfaces';
 import { version } from '../version';
 import * as lifecycle from './lifecycle';
 
@@ -20,10 +31,6 @@ import * as lifecycle from './lifecycle';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const appTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Namespace to interact with app initialization and lifecycle.
- */
 
 const appLogger = getLogger('app');
 
@@ -179,6 +186,16 @@ export interface AppInfo {
    * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data.
    */
   appLaunchId?: string;
+
+  /**
+   * This ID is the unique identifier assigned to the app after deployment and is critical for ensuring the correct app instance is recognized across hosts.
+   */
+  appId?: AppId;
+
+  /**
+   * The version of the manifest that the app is running.
+   */
+  manifestVersion?: string;
 }
 
 /**
@@ -549,6 +566,11 @@ export interface Context {
 export type themeHandler = (theme: string) => void;
 
 /**
+ * This function is passed to registerHostToAppPerformanceMetricsHandler. It is called every time a response is received from the host with metrics for analyzing message delay. See {@link HostToAppPerformanceMetrics} to see which metrics are passed to the handler.
+ */
+export type HostToAppPerformanceMetricsHandler = (metrics: HostToAppPerformanceMetrics) => void;
+
+/**
  * Checks whether the Teams client SDK has been initialized.
  * @returns whether the Teams client SDK has been initialized.
  */
@@ -603,7 +625,6 @@ logWhereTeamsJsIsBeingUsed();
  * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
  */
 export function initialize(validMessageOrigins?: string[]): Promise<void> {
-  prefetchOriginsFromCDN();
   return appHelpers.appInitializeHelper(
     getApiVersionTag(appTelemetryVersionNumber, ApiName.App_Initialize),
     validMessageOrigins,
@@ -672,9 +693,8 @@ export function notifyAppLoaded(): void {
 /**
  * Notifies the frame that app initialization is successful and is ready for user interaction.
  */
-export function notifySuccess(): void {
-  ensureInitializeCalled();
-  appHelpers.notifySuccessHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess));
+export function notifySuccess(): Promise<appHelpers.NotifySuccessResponse> {
+  return appHelpers.notifySuccessHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess));
 }
 
 /**
@@ -720,6 +740,18 @@ export function registerOnThemeChangeHandler(handler: themeHandler): void {
 }
 
 /**
+ * Registers a function for handling data of host to app message delay.
+ *
+ * @remarks
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ *
+ * @param handler - The handler to invoke when the metrics are available on each function response.
+ */
+export function registerHostToAppPerformanceMetricsHandler(handler: HostToAppPerformanceMetricsHandler): void {
+  Handlers.registerHostToAppPerformanceMetricsHandler(handler);
+}
+
+/**
  * This function opens deep links to other modules in the host such as chats or channels or
  * general-purpose links (to external websites). It should not be used for navigating to your
  * own or other apps.
@@ -755,6 +787,7 @@ export function openLink(deepLink: string): Promise<void> {
 }
 
 export { lifecycle };
+export { NotifySuccessResponse } from '../../internal/appHelpers';
 
 /**
  * @hidden
@@ -783,6 +816,8 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
         ringId: legacyContext.ringId,
       },
       appLaunchId: legacyContext.appLaunchId,
+      appId: legacyContext.appId ? new AppId(legacyContext.appId) : undefined,
+      manifestVersion: legacyContext.manifestVersion,
     },
     page: {
       id: legacyContext.entityId,

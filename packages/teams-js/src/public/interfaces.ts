@@ -780,6 +780,22 @@ export interface Context {
    * They help pre-fill the dialog with necessary information (`dialogParameters`) along with other details.
    */
   dialogParameters?: Record<string, string>;
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.appId | app.Context.app.appId} instead
+   *
+   * This ID is the unique identifier assigned to the app after deployment and is critical for ensuring the correct app instance is recognized across hosts.
+   */
+  appId?: string;
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.manifestVersion | app.Context.app.manifestVersion} instead
+   *
+   * The version of the manifest that the app is running.
+   */
+  manifestVersion?: string;
 }
 
 /** Represents the parameters used to share a deep link. */
@@ -1133,6 +1149,11 @@ export interface AppEligibilityInformation {
    */
   cohort: Cohort | null;
   /**
+   * Feature Sets
+   * If this property is undefined, it indicates that the host is an older version that doesn't support this property.
+   */
+  featureSet?: FeatureSet;
+  /**
    * Indicates that the user is eligible for Microsoft Entra ID Authenticated Copilot experience.
    */
   isCopilotEligible: boolean;
@@ -1148,6 +1169,22 @@ export interface AppEligibilityInformation {
    * Education Eligibility Information for the app user
    */
   userClassification: UserClassification | null;
+}
+
+/**
+ * @hidden
+ * @beta
+ * Represents the feature set available to the user.
+ */
+export interface FeatureSet {
+  /**
+   * Server Feature set
+   */
+  serverFeatures: ReadonlyArray<string>;
+  /**
+   * UX Feature set
+   */
+  uxFeatures: ReadonlyArray<string>;
 }
 
 /**
@@ -1283,4 +1320,16 @@ export interface ClipboardParams {
   mimeType: ClipboardSupportedMimeType;
   /** Blob content in Base64 string format */
   content: string;
+}
+
+/**
+ * Meant for passing data to the app related to host-to-app message performance metrics.
+ */
+export interface HostToAppPerformanceMetrics {
+  /** The name of the action the host is responding to. */
+  actionName: string;
+  /** The delay the message took traveling from host to app */
+  messageDelay: number;
+  /** The time when the request was dispatched */
+  requestStartedAt: number;
 }
