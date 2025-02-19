@@ -387,33 +387,10 @@ describe('Testing communication', () => {
       expect(communication.Communication.parentOrigin).toBeNull();
     });
 
-    it('should set Communication.childWindow to null', () => {
-      app._initialize(utils.mockWindow);
-      communication.Communication.childWindow = utils.mockWindow;
-      /* eslint-disable-next-line strict-null-checks/all */
-      expect(communication.Communication.childWindow).not.toBeNull();
-      communication.uninitializeCommunication();
-      /* eslint-disable-next-line strict-null-checks/all */
-      expect(communication.Communication.childWindow).toBeNull();
-    });
-
-    it('should set Communication.childOrigin to null', () => {
-      app._initialize(utils.mockWindow);
-      communication.Communication.childOrigin = utils.mockWindow.origin;
-      /* eslint-disable-next-line strict-null-checks/all */
-      expect(communication.Communication.childOrigin).not.toBeNull();
-      communication.uninitializeCommunication();
-      /* eslint-disable-next-line strict-null-checks/all */
-      expect(communication.Communication.childOrigin).toBeNull();
-    });
-
     it('should empty the queue of messages for the current parent', () => {
       expect.assertions(1);
-      communication.Communication.childWindow = utils.mockWindow;
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.Communication.parentWindow = utils.mockWindow;
       // This function inserts a message into the parentMessageQueue
-      communication.sendMessageEventToChild('testMessage');
+      communication.sendMessageToParent(testApiVersion, 'testAction');
       communication.uninitializeCommunication();
 
       communication.Communication.parentWindow = utils.mockWindow;
@@ -422,27 +399,6 @@ describe('Testing communication', () => {
         fn();
       };
       communication.waitForMessageQueue(communication.Communication.parentWindow, () => {
-        // this callback only ever fires if the message queue associated with the passed in window is empty
-        expect(true).toBeTruthy();
-      });
-    });
-
-    it('should empty the queue of messages for the current child', () => {
-      expect.assertions(1);
-      communication.Communication.childWindow = utils.mockWindow;
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.Communication.parentWindow = utils.mockWindow.parent;
-      // This function inserts a message into the parentMessageQueue
-      communication.sendMessageEventToChild('testMessage');
-      communication.uninitializeCommunication();
-
-      communication.Communication.childWindow = utils.mockWindow;
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.Communication.currentWindow.setInterval = (fn) => {
-        fn();
-      };
-      /* eslint-disable-next-line strict-null-checks/all */
-      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
         // this callback only ever fires if the message queue associated with the passed in window is empty
         expect(true).toBeTruthy();
       });
@@ -1835,15 +1791,15 @@ describe('Testing communication', () => {
     });
     it('should never call callback if parent message queue is not empty', () => {
       expect.assertions(0);
-      communication.Communication.childWindow = utils.mockWindow;
+      // This function inserts a message into the parentMessageQueue
+      communication.sendMessageToParent(testApiVersion, 'testAction');
+
       communication.Communication.currentWindow = utils.mockWindow;
       communication.Communication.parentWindow = utils.mockWindow;
       communication.Communication.currentWindow.setInterval = (fn) => {
         fn();
       };
 
-      // This function inserts a message into the parentMessageQueue
-      communication.sendMessageEventToChild('testMessage');
       communication.waitForMessageQueue(communication.Communication.parentWindow, () => {
         // this callback only ever fires if the message queue associated with the passed in window is empty
         expect(false).toBeTruthy();
@@ -1851,7 +1807,6 @@ describe('Testing communication', () => {
     });
     it('should call callback once parent message queue is empty', () => {
       expect.assertions(1);
-      communication.Communication.childWindow = utils.mockWindow;
       communication.Communication.currentWindow = utils.mockWindow;
       communication.Communication.parentWindow = utils.mockWindow;
       communication.Communication.currentWindow.setInterval = (fn) => {
@@ -1864,7 +1819,7 @@ describe('Testing communication', () => {
       });
 
       // This function inserts a message into the parentMessageQueue
-      communication.sendMessageEventToChild('testMessage');
+      communication.sendMessageToParent(testApiVersion, 'testAction');
       communication.uninitializeCommunication();
     });
     it('should throw if Communication.currentWindow is undefined', () => {
@@ -1887,64 +1842,6 @@ describe('Testing communication', () => {
           expect(false).toBeTruthy();
         });
       }).toThrow(TypeError);
-    });
-  });
-  describe('sendMessageEventToChild', () => {
-    let utils: Utils = new Utils();
-    beforeEach(() => {
-      utils = new Utils();
-      communication.uninitializeCommunication();
-    });
-    afterAll(() => {
-      communication.uninitializeCommunication();
-    });
-    it('should post message to window if Communication.childWindow is set', () => {
-      communication.Communication.childWindow = utils.childWindow;
-      communication.Communication.childOrigin = utils.validOrigin;
-      expect(utils.childMessages.length).toBe(0);
-      communication.sendMessageEventToChild('testAction', ['arg zero']);
-      expect(utils.childMessages.length).toBe(1);
-      expect(utils.childMessages[0].func).toBe('testAction');
-      if (!utils.childMessages[0].args) {
-        throw new Error('No args found on message');
-      }
-      expect(utils.childMessages[0].args[0]).toBe('arg zero');
-    });
-
-    it('should add message to childWindow message queue if Communication.childOrigin is not set', () => {
-      expect.assertions(1);
-      communication.Communication.childWindow = utils.childWindow;
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.Communication.currentWindow.setInterval = (fn) => {
-        fn();
-      };
-      /* eslint-disable-next-line strict-null-checks/all */
-      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
-        expect(false).toBeFalsy();
-      });
-      communication.sendMessageEventToChild('testAction', ['arg zero']);
-      /* eslint-disable-next-line strict-null-checks/all */
-      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
-        expect(true).toBeFalsy();
-      });
-    });
-
-    it('should add message to childWindow message queue if Communication.childWindow is not set', () => {
-      expect.assertions(1);
-      communication.Communication.childOrigin = utils.validOrigin;
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.Communication.currentWindow.setInterval = (fn) => {
-        fn();
-      };
-      /* eslint-disable-next-line strict-null-checks/all */
-      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
-        expect(false).toBeFalsy();
-      });
-      communication.sendMessageEventToChild('testAction', ['arg zero']);
-      /* eslint-disable-next-line strict-null-checks/all */
-      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
-        expect(true).toBeFalsy();
-      });
     });
   });
 

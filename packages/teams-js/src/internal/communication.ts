@@ -2,19 +2,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable strict-null-checks/all */
 
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
 import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { ISerializable, isSerializable } from '../public/serializable.interface';
 import { UUID as MessageUUID } from '../public/uuidObject';
 import { version } from '../public/version';
+import {
+  proxyChildMessageToParent,
+  shouldMessageBeProxiedToParent,
+  uninitializeChildCommunication,
+} from './childCommunication';
+import { flushMessageQueue, getMessageIdsAsLogString } from './communicationUtils';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import HostToAppMessageDelayTelemetry from './hostToAppTelemetry';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import {
-  deserializeMessageRequest,
   deserializeMessageResponse,
   MessageID,
   MessageRequest,
@@ -23,7 +27,6 @@ import {
   SerializedMessageRequest,
   SerializedMessageResponse,
   serializeMessageRequest,
-  serializeMessageResponse,
 } from './messageObjects';
 import {
   NestedAppAuthMessageEventNames,
@@ -46,8 +49,6 @@ export class Communication {
   public static currentWindow: Window | any;
   public static parentOrigin: string | null;
   public static parentWindow: Window | any;
-  public static childWindow: Window | null;
-  public static childOrigin: string | null;
   public static topWindow: Window | any;
   public static topOrigin: string | null;
 }
@@ -58,7 +59,6 @@ export class Communication {
  */
 class CommunicationPrivate {
   public static parentMessageQueue: MessageRequest[] = [];
-  public static childMessageQueue: MessageRequest[] = [];
   public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
   public static callbacks: Map<MessageUUID, Function> = new Map();
@@ -152,16 +152,14 @@ export function uninitializeCommunication(): void {
   Communication.currentWindow = null;
   Communication.parentWindow = null;
   Communication.parentOrigin = null;
-  Communication.childWindow = null;
-  Communication.childOrigin = null;
   CommunicationPrivate.parentMessageQueue = [];
-  CommunicationPrivate.childMessageQueue = [];
   CommunicationPrivate.nextMessageId = 0;
   CommunicationPrivate.callbacks.clear();
   CommunicationPrivate.promiseCallbacks.clear();
   CommunicationPrivate.portCallbacks.clear();
   CommunicationPrivate.legacyMessageIdsToUuidMap = {};
   HostToAppMessageDelayTelemetry.clearMessages();
+  uninitializeChildCommunication();
 }
 
 /**
@@ -567,11 +565,21 @@ async function processIncomingMessage(evt: DOMMessageEvent): Promise<void> {
     }
     // Update our parent and child relationships based on this message
     updateRelationships(messageSource, messageOrigin);
-    // Handle the message
+
+    // Handle the message if the source is from the parent
     if (messageSource === Communication.parentWindow) {
       handleIncomingMessageFromParent(evt);
-    } else if (messageSource === Communication.childWindow) {
-      handleIncomingMessageFromChild(evt);
+      return;
+    }
+
+    // Message proxy from child to parent
+    if (shouldMessageBeProxiedToParent(messageSource, messageOrigin)) {
+      proxyChildMessageToParent(
+        evt,
+        messageSource,
+        sendMessageToParentHelper,
+        (uuid: MessageUUID, callback: Function) => CommunicationPrivate.callbacks.set(uuid, callback),
+      );
     }
   });
 }
@@ -646,7 +654,7 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
     Communication.topOrigin = null;
   }
 
-  flushMessageQueue(Communication.topWindow);
+  flushMessageQueue(Communication.topWindow, Communication.topOrigin, CommunicationPrivate.topMessageQueue, 'top');
 
   // Return the response to the registered callback
   onMessageReceived(message);
@@ -705,13 +713,6 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
   ) {
     Communication.parentWindow = messageSource;
     Communication.parentOrigin = messageOrigin;
-  } else if (
-    !Communication.childWindow ||
-    Communication.childWindow.closed ||
-    messageSource === Communication.childWindow
-  ) {
-    Communication.childWindow = messageSource;
-    Communication.childOrigin = messageOrigin;
   }
 
   // Clean up pointers to closed parent and child windows
@@ -719,14 +720,14 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
     Communication.parentWindow = null;
     Communication.parentOrigin = null;
   }
-  if (Communication.childWindow && Communication.childWindow.closed) {
-    Communication.childWindow = null;
-    Communication.childOrigin = null;
-  }
 
   // If we have any messages in our queue, send them now
-  flushMessageQueue(Communication.parentWindow);
-  flushMessageQueue(Communication.childWindow);
+  flushMessageQueue(
+    Communication.parentWindow,
+    Communication.parentOrigin,
+    CommunicationPrivate.parentMessageQueue,
+    'parent',
+  );
 }
 
 const handleIncomingMessageFromParentLogger = communicationLogger.extend('handleIncomingMessageFromParent');
@@ -882,41 +883,6 @@ function isPartialResponse(evt: DOMMessageEvent): boolean {
   return evt.data.isPartialResponse === true;
 }
 
-const handleIncomingMessageFromChildLogger = communicationLogger.extend('handleIncomingMessageFromChild');
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
-  if ('id' in evt.data && 'func' in evt.data) {
-    // Try to delegate the request to the proper handler, if defined
-    const message = deserializeMessageRequest(evt.data as SerializedMessageRequest);
-    const [called, result] = callHandler(message.func, message.args);
-    if (called && typeof result !== 'undefined') {
-      handleIncomingMessageFromChildLogger(
-        'Handler called in response to message %s from child. Returning response from handler to child, action: %s.',
-        getMessageIdsAsLogString(message),
-        message.func,
-      );
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      sendMessageResponseToChild(message.id, message.uuid, Array.isArray(result) ? result : [result]);
-    } else {
-      // No handler, proxy to parent
-
-      handleIncomingMessageFromChildLogger(
-        'No handler for message %s from child found; relaying message on to parent, action: %s. Relayed message will have a new id.',
-        getMessageIdsAsLogString(message),
-        message.func,
-      );
-
-      proxyChildMessageToParent(message);
-    }
-  }
-}
-
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -938,8 +904,6 @@ function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
     return CommunicationPrivate.topMessageQueue;
   } else if (targetWindow === Communication.parentWindow) {
     return CommunicationPrivate.parentMessageQueue;
-  } else if (targetWindow === Communication.childWindow) {
-    return CommunicationPrivate.childMessageQueue;
   } else {
     return [];
   }
@@ -954,8 +918,6 @@ function getTargetOrigin(targetWindow: Window | null): string | null {
     return Communication.topOrigin;
   } else if (targetWindow === Communication.parentWindow) {
     return Communication.parentOrigin;
-  } else if (targetWindow === Communication.childWindow) {
-    return Communication.childOrigin;
   } else {
     return null;
   }
@@ -970,37 +932,8 @@ function getTargetName(targetWindow: Window | null): string | null {
     return 'top';
   } else if (targetWindow === Communication.parentWindow) {
     return 'parent';
-  } else if (targetWindow === Communication.childWindow) {
-    return 'child';
   } else {
     return null;
-  }
-}
-
-const flushMessageQueueLogger = communicationLogger.extend('flushMessageQueue');
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function flushMessageQueue(targetWindow: Window | any): void {
-  const targetOrigin = getTargetOrigin(targetWindow);
-  const targetMessageQueue = getTargetMessageQueue(targetWindow);
-  const target = getTargetName(targetWindow);
-
-  while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
-    const messageRequest = targetMessageQueue.shift();
-    if (messageRequest) {
-      const request: SerializedMessageRequest = serializeMessageRequest(messageRequest);
-
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      flushMessageQueueLogger(
-        'Flushing message %s from %s message queue via postMessage.',
-        getMessageIdsAsLogString(request),
-        target,
-      );
-
-      targetWindow.postMessage(request, targetOrigin);
-    }
   }
 }
 
@@ -1019,57 +952,6 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
       callback();
     }
   }, 100);
-}
-
-/**
- * @hidden
- * Send a response to child for a message request that was from child
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-function sendMessageResponseToChild(
-  id: MessageID,
-  uuid?: MessageUUID,
-  args?: any[],
-  isPartialResponse?: boolean,
-): void {
-  const targetWindow = Communication.childWindow;
-  const response = createMessageResponse(id, uuid, args, isPartialResponse);
-  const serializedResponse = serializeMessageResponse(response);
-  const targetOrigin = getTargetOrigin(targetWindow);
-  if (targetWindow && targetOrigin) {
-    handleIncomingMessageFromChildLogger(
-      'Sending message %s to %s via postMessage, args = %o',
-      getMessageIdsAsLogString(serializedResponse),
-      getTargetName(targetWindow),
-      serializedResponse.args,
-    );
-    targetWindow.postMessage(serializedResponse, targetOrigin);
-  }
-}
-
-/**
- * @hidden
- * Send a custom message object that can be sent to child window,
- * instead of a response message to a child
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function sendMessageEventToChild(actionName: string, args?: any[]): void {
-  const targetWindow = Communication.childWindow;
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  const customEvent = createMessageEvent(actionName, args);
-  const targetOrigin = getTargetOrigin(targetWindow);
-
-  // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
-  // queue the message and send it after the origin is established
-  if (targetWindow && targetOrigin) {
-    targetWindow.postMessage(customEvent, targetOrigin);
-  } else {
-    getTargetMessageQueue(targetWindow).push(customEvent);
-  }
 }
 
 /**
@@ -1123,79 +1005,4 @@ function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
     args: [],
     data: message,
   };
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function createMessageResponse(
-  id: MessageID,
-  uuid?: MessageUUID,
-  args?: any[] | undefined,
-  isPartialResponse?: boolean,
-): MessageResponse {
-  return {
-    id: id,
-    uuid: uuid,
-    args: args || [],
-    isPartialResponse,
-  };
-}
-
-/**
- * @hidden
- * Creates a message object without any id and api version, used for custom actions being sent to child frame/window
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-function createMessageEvent(func: string, args?: any[]): MessageRequest {
-  return {
-    func: func,
-    args: args || [],
-  };
-}
-
-function getMessageIdsAsLogString(
-  message:
-    | SerializedMessageRequest
-    | SerializedMessageResponse
-    | MessageRequestWithRequiredProperties
-    | MessageRequest
-    | MessageResponse
-    | NestedAppAuthRequest,
-): string {
-  if ('uuidAsString' in message) {
-    return `${message.uuidAsString} (legacy id: ${message.id})`;
-  } else if ('uuid' in message && message.uuid !== undefined) {
-    return `${message.uuid.toString()} (legacy id: ${message.id})`;
-  } else {
-    return `legacy id: ${message.id} (no uuid)`;
-  }
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function proxyChildMessageToParent(message: MessageRequest): void {
-  const request = sendMessageToParentHelper(
-    getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
-    message.func,
-    message.args,
-    true, // Tags message as proxied from child
-  );
-  CommunicationPrivate.callbacks.set(request.uuid, (...args: any[]): void => {
-    if (Communication.childWindow) {
-      const isPartialResponse = args.pop();
-      handleIncomingMessageFromChildLogger(
-        'Message from parent being relayed to child, id: %s',
-        getMessageIdsAsLogString(message),
-      );
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
-    }
-  });
 }
