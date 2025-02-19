@@ -1328,6 +1328,8 @@ export interface ClipboardParams {
 export interface HostToAppPerformanceMetrics {
   /** The name of the action the host is responding to. */
   actionName: string;
+  /** The Id of the message from what the response was received */
+  actionId: string;
   /** The delay the message took traveling from host to app */
   messageDelay: number;
   /** The time when the request was dispatched */

@@ -4,7 +4,8 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { FrameContexts } from '../public/constants';
 import { HostToAppPerformanceMetrics, LoadContext, ResumeContext } from '../public/interfaces';
 import { runtime } from '../public/runtime';
-import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { callFunctionInHost, Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { reportTelemetryBackToHost } from './constants';
 import { ensureInitialized } from './internalAPIs';
 import { initializeBackStackHelper } from './pagesHelpers';
 import { getLogger } from './telemetry';
@@ -198,12 +199,36 @@ export function registerHostToAppPerformanceMetricsHandler(
  * Limited to Microsoft-internal use
  */
 export function handleHostToAppPerformanceMetrics(metrics: HostToAppPerformanceMetrics): void {
+  console.log('NOW IT WILL CHECK WHETHER THE HANDLER IS REGISTERED OR NOT --> ' + metrics.actionName);
+  // post the metrics to the parent window without using async/await. That will make sure the metric is posted asynchronously,
+  // and does not stop the response to go to the calling app.
+  // IF we don't want to post back everything, we can add a check here to see if the API name is copilot.eligibility
+  shouldSendTelemetryBack(metrics.actionName as ApiName) &&
+    callFunctionInHost(
+      'reportTelemetryEvent',
+      [metrics.actionName, metrics.actionId, metrics.messageDelay, metrics.requestStartedAt],
+      'v3_reportTelemetryEvent',
+    );
+
   if (!HandlersPrivate.hostToAppPerformanceMetricsHandler) {
     return;
   }
   HandlersPrivate.hostToAppPerformanceMetricsHandler(metrics);
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @hidden
+ */
+function shouldSendTelemetryBack(actionName: ApiName): boolean {
+  console.log('NOW IT WILL CHECK the action name --> ' + actionName);
+  console.log(
+    'NOW IT WILL decide whether to post it back to hub sdk --> ' + reportTelemetryBackToHost.includes(actionName),
+  );
+  return reportTelemetryBackToHost.includes(actionName);
+}
 /**
  * @internal
  * Limited to Microsoft-internal use

@@ -1,4 +1,5 @@
 import * as validOriginsJSON from '../artifactsForCDN/validDomains.json';
+import { ApiName } from './telemetry';
 
 /**
  * @hidden
@@ -186,3 +187,5 @@ export const errorRuntimeNotSupported = 'The runtime version is not supported';
 
 /** @hidden */
 export const errorCallNotStarted = 'The call was not properly started';
+
+export const reportTelemetryBackToHost = [ApiName.Copilot_Eligibility_GetEligibilityInfo];
