@@ -16,7 +16,7 @@ import { ErrorCode } from '../../public';
 import { TabInstance } from '../../public/interfaces';
 import { runtime } from '../../public/runtime';
 import { ISerializable } from '../../public/serializable.interface';
-import { AppTypes, HostEntityIds, isSupported as isHostEntitySupported } from './hostEntity';
+import { AppTypes, HostEntityIds, isSupported as isHostEntitySupported, TeamsExtraMeetingInputs } from './hostEntity';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -58,6 +58,13 @@ class SerializableHostEntityId implements ISerializable {
   public constructor(private hostEntityId: HostEntityIds) {}
   public serialize(): object {
     return this.hostEntityId;
+  }
+}
+
+class SerializableExtraMeetingInputs implements ISerializable {
+  public constructor(private extraMeetingInputs: TeamsExtraMeetingInputs) {}
+  public serialize(): object {
+    return this.extraMeetingInputs;
   }
 }
 
@@ -120,12 +127,18 @@ class HostEntityTabInstancesResponseHandler extends ResponseHandler<HostEntityTa
  * @param appTypes What type of applications to show the user. If EDU is passed as appType, only apps supported by EDU tenant are shown.
  * If no value is passed, all apps are shown.
  *
+ * @param extraMeetingInputs Additional parameters associated with a meeting. This allows Teams Townhalls to filter apps in the apps menu.
+ *
  * @returns The HostEntityTabInstance of the newly associated app
  *
  * @throws Error if host does not support this capability, library as not been initialized successfully, input parameters are invalid, user cancels operation or installing
  * or configuring or adding tab fails
  */
-export function addAndConfigure(hostEntityIds: HostEntityIds, appTypes?: AppTypes[]): Promise<HostEntityTabInstance> {
+export function addAndConfigure(
+  hostEntityIds: HostEntityIds,
+  appTypes?: AppTypes[],
+  extraMeetingInputs?: TeamsExtraMeetingInputs,
+): Promise<HostEntityTabInstance> {
   ensureInitialized(runtime);
 
   if (!isSupported()) {
@@ -140,7 +153,11 @@ export function addAndConfigure(hostEntityIds: HostEntityIds, appTypes?: AppType
 
   return callFunctionInHostAndHandleResponse<HostEntityTabInstance, HostEntityTabInstance>(
     'hostEntity.tab.addAndConfigure',
-    [new SerializableHostEntityId(hostEntityIds), appTypes],
+    [
+      new SerializableHostEntityId(hostEntityIds),
+      appTypes,
+      extraMeetingInputs ? new SerializableExtraMeetingInputs(extraMeetingInputs) : undefined,
+    ],
     new HostEntityTabInstanceResponseHandler(),
     getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
   );
