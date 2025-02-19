@@ -34,13 +34,18 @@ export interface TeamsChannelMeetingEntityIds extends TeamsEntityId {
  * @hidden
  * @internal
  * @beta
- * Additional parameters associated with a meeting
+ * Limited to Microsoft-internal use
  *
- * isTownhall: true if Apps will be installed to a Townhall meeting
- * isStreamingThread: True if apps will be installed to streaming thread
+ * Additional parameters associated with a meeting
  */
 export interface TeamsExtraMeetingInputs {
+  /**
+   * True if Apps will be installed to a Townhall meeting
+   */
   isTownhall: boolean;
+  /**
+   * True if apps will be installed to streaming thread
+   */
   isStreamingThread: boolean;
 }
 
