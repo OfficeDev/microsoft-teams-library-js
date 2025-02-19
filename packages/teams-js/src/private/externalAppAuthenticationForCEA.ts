@@ -169,6 +169,8 @@ export async function authenticateWithSSOAndResendRequest(
   conversationId: string,
   authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters,
   originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest,
+  authId: string,
+  connectionName: string,
 ): Promise<externalAppAuthentication.IActionExecuteResponse> {
   ensureInitialized(runtime, FrameContexts.content);
 
@@ -191,6 +193,8 @@ export async function authenticateWithSSOAndResendRequest(
       new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
       authTokenRequest.claims,
       authTokenRequest.silent,
+      authId,
+      connectionName,
     ],
     new externalAppAuthentication.ActionExecuteResponseHandler(),
     getApiVersionTag(

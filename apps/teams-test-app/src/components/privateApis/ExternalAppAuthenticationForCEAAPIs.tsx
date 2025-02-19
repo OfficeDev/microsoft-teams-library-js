@@ -161,6 +161,8 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
     conversationId: string;
     authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
     originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest;
+    authId: string;
+    connectionName: string;
   }>({
     name: 'authenticateWithSSOAndResendRequestForCEA',
     title: 'Authenticate With SSO And Resend Request',
@@ -178,6 +180,12 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
         if (!input.originalRequestInfo) {
           throw new Error('originalRequestInfo is required');
         }
+        if (!input.authId) {
+          throw new Error('authId is required');
+        }
+        if (!input.connectionName) {
+          throw new Error('connectionName is required');
+        }
       },
       submit: async (input) => {
         const result = await externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest(
@@ -185,6 +193,8 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
           input.conversationId,
           input.authTokenRequest,
           input.originalRequestInfo,
+          input.authId,
+          input.connectionName,
         );
         return JSON.stringify(result);
       },
@@ -203,6 +213,8 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
         verb: 'verb1',
         data: 'data1',
       },
+      authId: 'authId',
+      connectionName: 'connectionName',
     }),
   });
 
