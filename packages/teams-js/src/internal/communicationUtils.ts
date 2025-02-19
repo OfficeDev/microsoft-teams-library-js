@@ -26,6 +26,7 @@ export function getMessageIdsAsLogString(message: MessageWithUUIDOrID): string {
 const flushMessageQueueLogger = getLogger('flushMessageQueue');
 
 /**
+ * @hidden
  * @internal
  * Limited to Microsoft-internal use
  */
