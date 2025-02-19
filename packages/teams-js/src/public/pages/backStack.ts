@@ -3,17 +3,19 @@
  * @module
  */
 
-import { Communication, sendMessageEventToChild, sendMessageToParent } from '../../internal/communication';
-import { registerHandler } from '../../internal/handlers';
+import { sendMessageToParent } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
-import { backStackNavigateBackHelper, pagesTelemetryVersionNumber } from '../../internal/pagesHelpers';
+import {
+  backStackNavigateBackHelper,
+  initializeBackStackHelper,
+  pagesTelemetryVersionNumber,
+  setBackButtonPressHandler,
+} from '../../internal/pagesHelpers';
 import { ApiName, getApiVersionTag } from '../../internal/telemetry';
 import { isNullOrUndefined } from '../../internal/typeCheckUtilities';
 import { errorNotSupportedOnPlatform } from '../constants';
 import { runtime } from '../runtime';
 import { backButtonHandlerFunctionType } from './pages';
-
-let backButtonPressHandler: (() => boolean) | undefined;
 
 /**
  * @hidden
@@ -23,12 +25,7 @@ let backButtonPressHandler: (() => boolean) | undefined;
  * Limited to Microsoft-internal use.
  */
 export function _initialize(): void {
-  registerHandler(
-    getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_BackStack_RegisterBackButtonPressHandler),
-    'backButtonPress',
-    handleBackButtonPress,
-    false,
-  );
+  initializeBackStackHelper();
 }
 
 /**
@@ -80,19 +77,8 @@ export function registerBackButtonHandlerHelper(
   if (versionSpecificHelper) {
     versionSpecificHelper();
   }
-  backButtonPressHandler = handler;
+  setBackButtonPressHandler(handler);
   !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['backButton']);
-}
-
-function handleBackButtonPress(): void {
-  if (!backButtonPressHandler || !backButtonPressHandler()) {
-    if (Communication.childWindow) {
-      // If the current window did not handle it let the child window
-      sendMessageEventToChild('backButtonPress', []);
-    } else {
-      navigateBack();
-    }
-  }
 }
 
 /**
