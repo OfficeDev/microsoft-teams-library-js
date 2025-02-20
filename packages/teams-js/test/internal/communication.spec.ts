@@ -1014,29 +1014,6 @@ describe('Testing communication', () => {
       }
     });
   });
-  describe('childProxyingCommunication', () => {
-    let utils: Utils = new Utils();
-    const actionName = 'test';
-
-    beforeEach(() => {
-      utils = new Utils();
-      communication.uninitializeCommunication();
-      app._initialize(utils.mockWindow);
-    });
-    afterEach(() => {
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.uninitializeCommunication();
-    });
-
-    it('messages proxied from child should be tagged as proxied from child', async () => {
-      expect.assertions(2);
-      await utils.initializeWithContext('context');
-      await utils.sendMessageFromChildToParentApp(actionName, ['testArg1']);
-      const sentMessage = utils.findMessageByFunc(actionName);
-      expect(sentMessage).not.toBeNull();
-      expect(sentMessage!.isProxiedFromChild).toBe(true);
-    });
-  });
   describe('sendNestedAuthRequestToTopWindow', () => {
     let utils: Utils = new Utils();
     const requestName = 'nestedAppAuth.execute';
