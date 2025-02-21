@@ -62,7 +62,7 @@ type SetCallbackForRequest = (uuid: MessageUUID, callback: Function) => void;
  * @internal
  * Limited to Microsoft-internal use
  */
-export function shouldMessageBeProxiedToParent(messageSource: Window, messageOrigin: string): boolean {
+export function shouldProcessChildMessage(messageSource: Window, messageOrigin: string): boolean {
   if (!ChildCommunication.window || ChildCommunication.window.closed || messageSource === ChildCommunication.window) {
     ChildCommunication.window = messageSource;
     ChildCommunication.origin = messageOrigin;
@@ -83,7 +83,7 @@ export function shouldMessageBeProxiedToParent(messageSource: Window, messageOri
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function proxyChildMessageToParent(
+export async function handleIncomingMessageFromChild(
   evt: DOMMessageEvent,
   messageSource: Window,
   sendMessageToParentHelper: SendMessageToParentHelper,
@@ -98,7 +98,7 @@ export async function proxyChildMessageToParent(
   flushMessageQueue(ChildCommunication.window, ChildCommunication.origin, ChildCommunication.messageQueue, 'child');
 
   // Handle the message
-  handleIncomingMessageFromChild(evt, sendMessageToParentHelper, setCallbackForRequest);
+  handleIncomingMessage(evt, sendMessageToParentHelper, setCallbackForRequest);
 }
 
 const handleIncomingMessageFromChildLogger = communicationLogger.extend('handleIncomingMessageFromChild');
@@ -107,7 +107,7 @@ const handleIncomingMessageFromChildLogger = communicationLogger.extend('handleI
  * @internal
  * Limited to Microsoft-internal use
  */
-function handleIncomingMessageFromChild(
+function handleIncomingMessage(
   evt: DOMMessageEvent,
   sendMessageToParentHelper: SendMessageToParentHelper,
   setCallbackForRequest: SetCallbackForRequest,

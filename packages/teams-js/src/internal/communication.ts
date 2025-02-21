@@ -9,8 +9,8 @@ import { ISerializable, isSerializable } from '../public/serializable.interface'
 import { UUID as MessageUUID } from '../public/uuidObject';
 import { version } from '../public/version';
 import {
-  proxyChildMessageToParent,
-  shouldMessageBeProxiedToParent,
+  handleIncomingMessageFromChild,
+  shouldProcessChildMessage,
   uninitializeChildCommunication,
 } from './childCommunication';
 import { flushMessageQueue, getMessageIdsAsLogString } from './communicationUtils';
@@ -563,7 +563,7 @@ async function processIncomingMessage(evt: DOMMessageEvent): Promise<void> {
       );
       return;
     }
-    // Update our parent and child relationships based on this message
+    // Update our parent relationship based on this message
     updateRelationships(messageSource, messageOrigin);
 
     // Handle the message if the source is from the parent
@@ -573,8 +573,8 @@ async function processIncomingMessage(evt: DOMMessageEvent): Promise<void> {
     }
 
     // Message proxy from child to parent
-    if (shouldMessageBeProxiedToParent(messageSource, messageOrigin)) {
-      proxyChildMessageToParent(
+    if (shouldProcessChildMessage(messageSource, messageOrigin)) {
+      handleIncomingMessageFromChild(
         evt,
         messageSource,
         sendMessageToParentHelper,
@@ -648,7 +648,7 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
     Communication.topOrigin = messageOrigin;
   }
 
-  // Clean up pointers to closed parent and child windows
+  // Clean up pointers to closed parent
   if (Communication.topWindow && Communication.topWindow.closed) {
     Communication.topWindow = null;
     Communication.topOrigin = null;
@@ -704,9 +704,9 @@ async function shouldProcessIncomingMessage(messageSource: Window, messageOrigin
  * Limited to Microsoft-internal use
  */
 function updateRelationships(messageSource: Window, messageOrigin: string): void {
-  // Determine whether the source of the message is our parent or child and update our
+  // Determine whether the source of the message is our parent and update our
   // window and origin pointer accordingly
-  // For frameless windows (i.e mobile), there is no parent frame, so the message must be from the child.
+  // For frameless windows (i.e mobile), there is no parent frame
   if (
     !GlobalVars.isFramelessWindow &&
     (!Communication.parentWindow || Communication.parentWindow.closed || messageSource === Communication.parentWindow)

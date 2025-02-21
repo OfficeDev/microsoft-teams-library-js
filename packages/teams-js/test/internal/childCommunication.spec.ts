@@ -1,8 +1,8 @@
 import {
-  proxyChildMessageToParent,
+  handleIncomingMessageFromChild,
   sendMessageEventToChild,
   shouldEventBeRelayedToChild,
-  shouldMessageBeProxiedToParent,
+  shouldProcessChildMessage,
   uninitializeChildCommunication,
 } from '../../src/internal/childCommunication';
 import { uninitializeCommunication } from '../../src/internal/communication';
@@ -28,7 +28,7 @@ describe('childCommunication', () => {
   describe('uninitializeChildCommunication', () => {
     it('after un-initializing should avoid message event relaying to child apps', () => {
       // this will set the child window
-      shouldMessageBeProxiedToParent(utils.childWindow, childOrigin);
+      shouldProcessChildMessage(utils.childWindow, childOrigin);
       expect(shouldEventBeRelayedToChild()).toBe(true);
 
       uninitializeChildCommunication();
@@ -37,12 +37,12 @@ describe('childCommunication', () => {
     });
 
     it('after un-initializing new child messages will be proxied to a new window', () => {
-      expect(shouldMessageBeProxiedToParent(utils.childWindow, childOrigin)).toBe(true);
-      expect(shouldMessageBeProxiedToParent(utils.mockWindow, mockOrigin)).toBe(false);
+      expect(shouldProcessChildMessage(utils.childWindow, childOrigin)).toBe(true);
+      expect(shouldProcessChildMessage(utils.mockWindow, mockOrigin)).toBe(false);
 
       uninitializeChildCommunication();
 
-      expect(shouldMessageBeProxiedToParent(utils.mockWindow, mockOrigin)).toBe(true);
+      expect(shouldProcessChildMessage(utils.mockWindow, mockOrigin)).toBe(true);
     });
   });
 
@@ -52,40 +52,40 @@ describe('childCommunication', () => {
     });
 
     it('should return true if child window is initialized', () => {
-      shouldMessageBeProxiedToParent(utils.childWindow, childOrigin);
+      shouldProcessChildMessage(utils.childWindow, childOrigin);
       expect(shouldEventBeRelayedToChild()).toBe(true);
     });
   });
 
-  describe('shouldMessageBeProxiedToParent', () => {
+  describe('shouldProcessChildMessage', () => {
     it('should return true if its the first message from a child window', () => {
-      expect(shouldMessageBeProxiedToParent(utils.childWindow, childOrigin)).toBe(true);
+      expect(shouldProcessChildMessage(utils.childWindow, childOrigin)).toBe(true);
     });
 
     it('should return false if child window is closed', () => {
-      expect(shouldMessageBeProxiedToParent(utils.childWindow, childOrigin)).toBe(true);
+      expect(shouldProcessChildMessage(utils.childWindow, childOrigin)).toBe(true);
 
       utils.childWindow.closed = true;
-      expect(shouldMessageBeProxiedToParent(utils.childWindow, childOrigin)).toBe(false);
+      expect(shouldProcessChildMessage(utils.childWindow, childOrigin)).toBe(false);
     });
 
     it('should return false if child window is not the source of the message', () => {
-      expect(shouldMessageBeProxiedToParent(utils.childWindow, childOrigin)).toBe(true);
-      expect(shouldMessageBeProxiedToParent(utils.mockWindow, mockOrigin)).toBe(false);
+      expect(shouldProcessChildMessage(utils.childWindow, childOrigin)).toBe(true);
+      expect(shouldProcessChildMessage(utils.mockWindow, mockOrigin)).toBe(false);
     });
 
     it('should return true if previous child window is closed and new child message is received', () => {
-      expect(shouldMessageBeProxiedToParent(utils.childWindow, childOrigin)).toBe(true);
+      expect(shouldProcessChildMessage(utils.childWindow, childOrigin)).toBe(true);
 
       utils.childWindow.closed = true;
-      expect(shouldMessageBeProxiedToParent(utils.mockWindow, mockOrigin)).toBe(true);
+      expect(shouldProcessChildMessage(utils.mockWindow, mockOrigin)).toBe(true);
     });
   });
 
   describe('sendMessageEventToChild', () => {
     it('it should send message event to child window', () => {
       // Set child window
-      shouldMessageBeProxiedToParent(utils.childWindow, childOrigin);
+      shouldProcessChildMessage(utils.childWindow, childOrigin);
 
       // Send event
       sendMessageEventToChild('event1');
@@ -99,10 +99,10 @@ describe('childCommunication', () => {
       sendMessageEventToChild('test2');
 
       // Set child window
-      shouldMessageBeProxiedToParent(utils.childWindow, childOrigin);
+      shouldProcessChildMessage(utils.childWindow, childOrigin);
 
       // Trigger queue to be flushed
-      proxyChildMessageToParent({ data: {} } as DOMMessageEvent, utils.childWindow, jest.fn(), jest.fn());
+      handleIncomingMessageFromChild({ data: {} } as DOMMessageEvent, utils.childWindow, jest.fn(), jest.fn());
 
       // Should have received previous messages
       expect(utils.childMessages).toContainEqual({ func: 'test1', args: [] });
@@ -110,7 +110,7 @@ describe('childCommunication', () => {
     });
   });
 
-  describe('proxyChildMessageToParent', () => {
+  describe('handleIncomingMessageFromChild', () => {
     afterEach(() => {
       app._uninitialize();
     });
