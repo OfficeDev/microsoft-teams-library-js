@@ -136,6 +136,9 @@ export class Utils {
         return;
       },
       closed: false,
+      location: {
+        origin: this.validOrigin,
+      },
     };
   }
 
@@ -363,20 +366,24 @@ export class Utils {
     return this.sendMessageWithCustomOrigin(func, this.validOrigin, ...args);
   };
 
-  public async sendMessageFromChildToParentApp(func: string, ...args: unknown[]): Promise<void> {
+  public async sendMessageFromChild(func: string, ...args: unknown[]): Promise<void> {
+    await this.sendCustomMessage(this.childWindow.location.origin, this.childWindow, func, args);
+  }
+
+  public async sendCustomMessage(origin: string, window: unknown, func: string, ...args: unknown[]): Promise<void> {
     if (this.processMessage === null) {
       throw Error(
-        `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
+        `Cannot send message with function ${func} because processMessage function has not been set and is null`,
       );
     }
 
     await this.processMessage({
-      origin: this.validOrigin,
-      source: this.childWindow,
+      origin,
+      source: window,
       data: {
-        id: 'id',
-        func: func,
-        args: args,
+        id: 3,
+        func,
+        args,
       },
     } as MessageEvent);
   }
