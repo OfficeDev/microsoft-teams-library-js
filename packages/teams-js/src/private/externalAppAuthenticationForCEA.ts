@@ -161,6 +161,8 @@ export async function authenticateAndResendRequest(
  * @param conversationId ConversationId To tell the bot what conversation the calls are coming from
  * @param authTokenRequest Parameters for SSO authentication
  * @param originalRequestInfo Information about the original request that should be resent
+ * @param id Id to complete the request
+ * @param connectionName Connection name to complete the request
  * @throws InvokeError if the host encounters an error while authenticating or resending the request
  * @returns A promise that resolves to the IActionExecuteResponse from the application backend and rejects with InvokeError if the host encounters an error while authenticating or resending the request
  */
