@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added \"authId\" and \"connectionName\" parameters to `ExternalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest`",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "patch"
+}
