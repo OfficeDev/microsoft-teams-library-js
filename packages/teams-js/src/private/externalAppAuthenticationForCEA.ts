@@ -152,6 +152,24 @@ export async function authenticateAndResendRequest(
 }
 
 /**
+ * @hidden
+ * Parameters for SSO authentication. This interface is used exclusively with the externalAppAuthentication APIs
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export type AuthTokenRequestParametersForCEA = externalAppAuthentication.AuthTokenRequestParameters & {
+  /**
+   * Id to complete the request
+   */
+  authId: string;
+
+  /**
+   * Connection name to complete the request
+   */
+  connectionName: string;
+};
+
+/**
  * @beta
  * @hidden
  * Signals to the host to perform SSO authentication for the application specified by the app ID and then resend the request to the application backend with the authentication result and originalRequestInfo
@@ -161,18 +179,14 @@ export async function authenticateAndResendRequest(
  * @param conversationId ConversationId To tell the bot what conversation the calls are coming from
  * @param authTokenRequest Parameters for SSO authentication
  * @param originalRequestInfo Information about the original request that should be resent
- * @param id Id to complete the request
- * @param connectionName Connection name to complete the request
  * @throws InvokeError if the host encounters an error while authenticating or resending the request
  * @returns A promise that resolves to the IActionExecuteResponse from the application backend and rejects with InvokeError if the host encounters an error while authenticating or resending the request
  */
 export async function authenticateWithSSOAndResendRequest(
   appId: AppId,
   conversationId: string,
-  authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters,
+  authTokenRequest: AuthTokenRequestParametersForCEA,
   originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest,
-  authId: string,
-  connectionName: string,
 ): Promise<externalAppAuthentication.IActionExecuteResponse> {
   ensureInitialized(runtime, FrameContexts.content);
 
@@ -193,10 +207,10 @@ export async function authenticateWithSSOAndResendRequest(
       appId,
       conversationId,
       new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
+      authTokenRequest.authId,
+      authTokenRequest.connectionName,
       authTokenRequest.claims,
       authTokenRequest.silent,
-      authId,
-      connectionName,
     ],
     new externalAppAuthentication.ActionExecuteResponseHandler(),
     getApiVersionTag(

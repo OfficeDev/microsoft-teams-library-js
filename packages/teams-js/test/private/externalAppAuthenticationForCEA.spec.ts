@@ -377,9 +377,11 @@ describe('externalAppAuthenticationForCEA', () => {
   });
 
   describe('authenticateWithSSOAndResendRequest', () => {
-    const testAuthRequest = {
+    const testAuthRequest: externalAppAuthenticationForCEA.AuthTokenRequestParametersForCEA = {
       claims: ['claims'],
       silent: true,
+      authId: testAuthId,
+      connectionName: testConnectionName,
     };
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
@@ -390,8 +392,6 @@ describe('externalAppAuthenticationForCEA', () => {
           testConversationId,
           testAuthRequest,
           testOriginalRequest,
-          testAuthId,
-          testConnectionName,
         );
       } catch (e) {
         expect(e).toEqual(new Error(errorLibraryNotInitialized));
@@ -408,8 +408,6 @@ describe('externalAppAuthenticationForCEA', () => {
           testConversationId,
           testAuthRequest,
           testOriginalRequest,
-          testAuthId,
-          testConnectionName,
         );
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
@@ -428,8 +426,6 @@ describe('externalAppAuthenticationForCEA', () => {
               testConversationId,
               testAuthRequest,
               testOriginalRequest,
-              testAuthId,
-              testConnectionName,
             );
           } catch (e) {
             expect(e).toEqual(
@@ -451,8 +447,6 @@ describe('externalAppAuthenticationForCEA', () => {
             testConversationId,
             testAuthRequest,
             testOriginalRequest,
-            testAuthId,
-            testConnectionName,
           );
 
           const message = utils.findMessageByFunc(
@@ -464,10 +458,10 @@ describe('externalAppAuthenticationForCEA', () => {
               testAppId.toString(),
               testConversationId,
               testOriginalRequest,
-              testAuthRequest.claims,
-              testAuthRequest.silent,
               testAuthId,
               testConnectionName,
+              testAuthRequest.claims,
+              testAuthRequest.silent,
             ]);
             // eslint-disable-next-line strict-null-checks/all
             utils.respondToMessage(message, testError);
@@ -486,8 +480,6 @@ describe('externalAppAuthenticationForCEA', () => {
             testConversationId,
             testAuthRequest,
             testOriginalRequest,
-            testAuthId,
-            testConnectionName,
           );
 
           const message = utils.findMessageByFunc(
@@ -503,10 +495,10 @@ describe('externalAppAuthenticationForCEA', () => {
               testAppId.toString(),
               testConversationId,
               testOriginalRequest,
-              testAuthRequest.claims,
-              testAuthRequest.silent,
               testAuthId,
               testConnectionName,
+              testAuthRequest.claims,
+              testAuthRequest.silent,
             ]);
 
             // eslint-disable-next-line strict-null-checks/all
@@ -531,8 +523,6 @@ describe('externalAppAuthenticationForCEA', () => {
               testConversationId,
               testAuthRequest,
               invalidDataRequest,
-              testAuthId,
-              testConnectionName,
             );
           } catch (e) {
             expect(e).toEqual({
@@ -551,8 +541,6 @@ describe('externalAppAuthenticationForCEA', () => {
               testConversationId,
               testAuthRequest,
               testOriginalRequestWithInvalidType,
-              testAuthId,
-              testConnectionName,
             );
           } catch (e) {
             expect(e).toEqual({
@@ -577,8 +565,6 @@ describe('externalAppAuthenticationForCEA', () => {
             testConversationId,
             testAuthRequest,
             testOriginalRequest,
-            testAuthId,
-            testConnectionName,
           );
 
           const message = utils.findMessageByFunc(
@@ -590,10 +576,10 @@ describe('externalAppAuthenticationForCEA', () => {
               testAppId.toString(),
               testConversationId,
               testOriginalRequest,
-              testAuthRequest.claims,
-              testAuthRequest.silent,
               testAuthId,
               testConnectionName,
+              testAuthRequest.claims,
+              testAuthRequest.silent,
             ]);
             // eslint-disable-next-line strict-null-checks/all
             utils.respondToMessage(message, testResponse);
@@ -610,8 +596,6 @@ describe('externalAppAuthenticationForCEA', () => {
               testConversationId,
               testAuthRequest,
               testOriginalRequest,
-              testAuthId,
-              testConnectionName,
             ),
           ).rejects.toThrow(
             new Error(

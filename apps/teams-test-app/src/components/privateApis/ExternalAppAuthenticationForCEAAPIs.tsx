@@ -159,10 +159,8 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     conversationId: string;
-    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
+    authTokenRequest: externalAppAuthenticationForCEA.AuthTokenRequestParametersForCEA;
     originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest;
-    authId: string;
-    connectionName: string;
   }>({
     name: 'authenticateWithSSOAndResendRequestForCEA',
     title: 'Authenticate With SSO And Resend Request',
@@ -180,10 +178,10 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
         if (!input.originalRequestInfo) {
           throw new Error('originalRequestInfo is required');
         }
-        if (!input.authId) {
+        if (!input.authTokenRequest.authId) {
           throw new Error('authId is required');
         }
-        if (!input.connectionName) {
+        if (!input.authTokenRequest.connectionName) {
           throw new Error('connectionName is required');
         }
       },
@@ -193,8 +191,6 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
           input.conversationId,
           input.authTokenRequest,
           input.originalRequestInfo,
-          input.authId,
-          input.connectionName,
         );
         return JSON.stringify(result);
       },
@@ -205,6 +201,8 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
       authTokenRequest: {
         claims: ['https://graph.microsoft.com'],
         silent: true,
+        authId: 'authId',
+        connectionName: 'connectionName',
       },
       originalRequestInfo: {
         requestType: 'ActionExecuteInvokeRequest',
@@ -213,8 +211,6 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
         verb: 'verb1',
         data: 'data1',
       },
-      authId: 'authId',
-      connectionName: 'connectionName',
     }),
   });
 
