@@ -130,10 +130,10 @@ export function addAndConfigure(
  *
  * @param hostEntityIds Ids of the host entity like channel, chat or meeting
  *
+ * @param appTypesOrMeetingParams Overload parameter for either appTypes or meetingParams. Meeting Params allows Townhalls to filter apps in the apps menu.
+ *
  * @param appTypes What type of applications to show the user. If EDU is passed as appType, only apps supported by EDU tenant are shown.
  * If no value is passed, all apps are shown.
- *
- * @param meetingParams Additional parameters associated with a meeting. This allows Teams Townhalls to filter apps in the apps menu.
  *
  * @returns The HostEntityTabInstance of the newly associated app
  *
