@@ -8,7 +8,6 @@ const AddAndConfigure = (): React.ReactElement =>
   ApiWithTextInput<{
     hostEntityIds: hostEntity.HostEntityIds;
     appTypes?: hostEntity.AppTypes[];
-    extraMeetingInputs?: hostEntity.TeamsExtraMeetingInputs;
   }>({
     name: 'addAndConfigure',
     title: 'Add a tab',
@@ -19,11 +18,7 @@ const AddAndConfigure = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        const result = await hostEntity.tab.addAndConfigure(
-          input.hostEntityIds,
-          input.appTypes,
-          input.extraMeetingInputs,
-        );
+        const result = await hostEntity.tab.addAndConfigure(input.hostEntityIds, input.appTypes);
         return JSON.stringify(result);
       },
     },

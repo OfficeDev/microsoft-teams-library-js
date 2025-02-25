@@ -16,7 +16,7 @@ import { ErrorCode } from '../../public';
 import { TabInstance } from '../../public/interfaces';
 import { runtime } from '../../public/runtime';
 import { ISerializable } from '../../public/serializable.interface';
-import { AppTypes, HostEntityIds, isSupported as isHostEntitySupported, TeamsExtraMeetingInputs } from './hostEntity';
+import { AppTypes, HostEntityIds, isSupported as isHostEntitySupported, MeetingParams } from './hostEntity';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -61,10 +61,10 @@ class SerializableHostEntityId implements ISerializable {
   }
 }
 
-class SerializableExtraMeetingInputs implements ISerializable {
-  public constructor(private extraMeetingInputs: TeamsExtraMeetingInputs) {}
+class SerializableMeetingParams implements ISerializable {
+  public constructor(private meetingParams: MeetingParams) {}
   public serialize(): object {
-    return this.extraMeetingInputs;
+    return this.meetingParams;
   }
 }
 
@@ -112,6 +112,12 @@ class HostEntityTabInstancesResponseHandler extends ResponseHandler<HostEntityTa
     return response;
   }
 }
+export function addAndConfigure(hostEntityIds: HostEntityIds, appTypes?: AppTypes[]): Promise<HostEntityTabInstance>;
+export function addAndConfigure(
+  hostEntityIds: HostEntityIds,
+  meetingParams: MeetingParams,
+  appTypes?: AppTypes[],
+): Promise<HostEntityTabInstance>;
 
 /**
  * @hidden
@@ -127,7 +133,7 @@ class HostEntityTabInstancesResponseHandler extends ResponseHandler<HostEntityTa
  * @param appTypes What type of applications to show the user. If EDU is passed as appType, only apps supported by EDU tenant are shown.
  * If no value is passed, all apps are shown.
  *
- * @param extraMeetingInputs Additional parameters associated with a meeting. This allows Teams Townhalls to filter apps in the apps menu.
+ * @param meetingParams Additional parameters associated with a meeting. This allows Teams Townhalls to filter apps in the apps menu.
  *
  * @returns The HostEntityTabInstance of the newly associated app
  *
@@ -136,8 +142,8 @@ class HostEntityTabInstancesResponseHandler extends ResponseHandler<HostEntityTa
  */
 export function addAndConfigure(
   hostEntityIds: HostEntityIds,
+  appTypesOrMeetingParams?: AppTypes[] | MeetingParams,
   appTypes?: AppTypes[],
-  extraMeetingInputs?: TeamsExtraMeetingInputs,
 ): Promise<HostEntityTabInstance> {
   ensureInitialized(runtime);
 
@@ -147,17 +153,23 @@ export function addAndConfigure(
 
   validateThreadId(hostEntityIds.threadId);
 
-  if (appTypes && appTypes.length === 0) {
+  if (
+    (Array.isArray(appTypesOrMeetingParams) && appTypesOrMeetingParams.length === 0) ||
+    (Array.isArray(appTypes) && appTypes?.length === 0)
+  ) {
     throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: App types cannot be an empty array`);
+  } else if (appTypesOrMeetingParams !== undefined && !Array.isArray(appTypesOrMeetingParams)) {
+    // Second overload (with meetingParams)
+    return callFunctionInHostAndHandleResponse<HostEntityTabInstance, HostEntityTabInstance>(
+      'hostEntity.tab.addAndConfigure',
+      [new SerializableHostEntityId(hostEntityIds), new SerializableMeetingParams(appTypesOrMeetingParams), appTypes],
+      new HostEntityTabInstanceResponseHandler(),
+      getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
+    );
   }
-
   return callFunctionInHostAndHandleResponse<HostEntityTabInstance, HostEntityTabInstance>(
     'hostEntity.tab.addAndConfigure',
-    [
-      new SerializableHostEntityId(hostEntityIds),
-      appTypes,
-      extraMeetingInputs ? new SerializableExtraMeetingInputs(extraMeetingInputs) : undefined,
-    ],
+    [new SerializableHostEntityId(hostEntityIds), appTypesOrMeetingParams],
     new HostEntityTabInstanceResponseHandler(),
     getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
   );

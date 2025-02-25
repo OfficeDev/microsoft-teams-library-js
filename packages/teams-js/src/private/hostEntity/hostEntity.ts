@@ -36,9 +36,9 @@ export interface TeamsChannelMeetingEntityIds extends TeamsEntityId {
  * @beta
  * Limited to Microsoft-internal use
  *
- * Additional parameters associated with a meeting
+ * Meeting Parameters
  */
-export interface TeamsExtraMeetingInputs {
+export interface MeetingParams {
   /**
    * True if Apps will be installed to a Townhall meeting
    */
