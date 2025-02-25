@@ -18,12 +18,12 @@
         "hostEntityIds": {
           "threadId": "threadId"
         },
-        "extraMeetingInputs": {
+        "meetingParams": {
           "isTownhall": true,
           "isStreamingThread": true
         }
       },
-      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"} and {\"extraMeetingInputs\":{\"isTownhall\":true,\"isStreamingThread\":true}}",
+      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"} and {\"meetingParams\":{\"isTownhall\":true,\"isStreamingThread\":true}}",
       "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\",\"tabType\":\"ConfigurableTab\"}"
     },
     {
