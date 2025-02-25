@@ -10,7 +10,7 @@
 
 import { callFunctionInHostAndHandleResponse } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
-import { ResponseHandler, SimpleTypeResponseHandler } from '../../internal/responseHandler';
+import { ResponseHandler, SimpleType, SimpleTypeResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
 import { ErrorCode } from '../../public';
 import { TabInstance } from '../../public/interfaces';
@@ -158,18 +158,16 @@ export function addAndConfigure(
     (Array.isArray(appTypes) && appTypes?.length === 0)
   ) {
     throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: App types cannot be an empty array`);
-  } else if (appTypesOrMeetingParams !== undefined && !Array.isArray(appTypesOrMeetingParams)) {
-    // Second overload (with meetingParams)
-    return callFunctionInHostAndHandleResponse<HostEntityTabInstance, HostEntityTabInstance>(
-      'hostEntity.tab.addAndConfigure',
-      [new SerializableHostEntityId(hostEntityIds), new SerializableMeetingParams(appTypesOrMeetingParams), appTypes],
-      new HostEntityTabInstanceResponseHandler(),
-      getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
-    );
   }
   return callFunctionInHostAndHandleResponse<HostEntityTabInstance, HostEntityTabInstance>(
     'hostEntity.tab.addAndConfigure',
-    [new SerializableHostEntityId(hostEntityIds), appTypesOrMeetingParams],
+    [
+      new SerializableHostEntityId(hostEntityIds),
+      (Array.isArray(appTypesOrMeetingParams) || appTypesOrMeetingParams == undefined
+        ? appTypesOrMeetingParams
+        : new SerializableMeetingParams(appTypesOrMeetingParams)) as ISerializable | SimpleType,
+      appTypes,
+    ],
     new HostEntityTabInstanceResponseHandler(),
     getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
   );

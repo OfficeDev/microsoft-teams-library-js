@@ -96,7 +96,7 @@ describe('hostEntity', () => {
           const promise = hostEntity.tab.addAndConfigure(mockHostEntity);
           const message = utils.findMessageByFunc('hostEntity.tab.addAndConfigure');
           expect(message).not.toBeNull();
-          expect(message?.args).toEqual([mockHostEntity, null]);
+          expect(message?.args).toEqual([mockHostEntity, null, null]);
           if (message) {
             utils.respondToMessage(message, mockConfigurableTab);
           }
