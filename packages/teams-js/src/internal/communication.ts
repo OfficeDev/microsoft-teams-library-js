@@ -704,8 +704,8 @@ async function shouldProcessIncomingMessage(messageSource: Window, messageOrigin
  * Limited to Microsoft-internal use
  */
 function updateRelationships(messageSource: Window, messageOrigin: string): void {
-  // Determine whether the source of the message is our parent and update our
-  // window and origin pointer accordingly
+  // Determine if the source of the message is our parent and update our window and
+  // origin pointer accordingly.
   // For frameless windows (i.e mobile), there is no parent frame
   if (
     !GlobalVars.isFramelessWindow &&
@@ -715,7 +715,7 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
     Communication.parentOrigin = messageOrigin;
   }
 
-  // Clean up pointers to closed parent and child windows
+  // Clean up pointers to closed parent windows
   if (Communication.parentWindow && Communication.parentWindow.closed) {
     Communication.parentWindow = null;
     Communication.parentOrigin = null;
