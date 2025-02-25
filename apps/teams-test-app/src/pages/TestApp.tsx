@@ -18,6 +18,7 @@ import DialogUpdateAPIs from '../components/DialogUpdateAPIs';
 import DialogUrlAPIs from '../components/DialogUrlAPIs';
 import DialogUrlBotAPIs from '../components/DialogUrlBotAPIs';
 import DialogUrlParentCommunicationAPIs from '../components/DialogUrlParentCommunicationAPIs';
+import ExampleFeatureAPIs from '../components/ExampleFeatureAPIs';
 import GeoLocationAPIs from '../components/GeoLocationAPIs';
 import HostEntityTabAPIs from '../components/HostEntityTabAPIs';
 import Links from '../components/Links';
@@ -96,6 +97,7 @@ export const TestApp: React.FC = () => {
   // List of sections dynamically created from React elements
   const sections = useMemo(
     () => [
+      { name: 'ExampleFeatureAPIs', component: <ExampleFeatureAPIs /> },
       { name: 'AppAPIs', component: <AppAPIs /> },
       { name: 'AppInitializationAPIs', component: <AppInitializationAPIs /> },
       { name: 'AppInstallDialogAPIs', component: <AppInstallDialogAPIs /> },
