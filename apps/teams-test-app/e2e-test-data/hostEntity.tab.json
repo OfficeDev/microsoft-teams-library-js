@@ -17,13 +17,9 @@
       "inputValue": {
         "hostEntityIds": {
           "threadId": "threadId"
-        },
-        "meetingParams": {
-          "isTownhall": true,
-          "isStreamingThread": true
         }
       },
-      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"} and {\"meetingParams\":{\"isTownhall\":true,\"isStreamingThread\":true}}",
+      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"}",
       "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\",\"tabType\":\"ConfigurableTab\"}"
     },
     {
