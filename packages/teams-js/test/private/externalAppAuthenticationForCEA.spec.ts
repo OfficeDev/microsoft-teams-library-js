@@ -26,6 +26,8 @@ describe('externalAppAuthenticationForCEA', () => {
   const stringified = '01b92759-b43a-4085-ac22-7772d94bb7a9';
   const testAppId = new AppId(stringified);
   const testConversationId = '01b92759-b43a-4085-ac22-777777777777';
+  const testAuthId = 'testAuthId';
+  const testConnectionName = 'testConnectionName';
 
   const testOriginalRequest: externalAppAuthentication.IActionExecuteInvokeRequest = {
     requestType: externalAppAuthentication.OriginalRequestType.ActionExecuteInvokeRequest,
@@ -375,9 +377,11 @@ describe('externalAppAuthenticationForCEA', () => {
   });
 
   describe('authenticateWithSSOAndResendRequest', () => {
-    const testAuthRequest = {
+    const testAuthRequest: externalAppAuthenticationForCEA.AuthTokenRequestParametersForCEA = {
       claims: ['claims'],
       silent: true,
+      authId: testAuthId,
+      connectionName: testConnectionName,
     };
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
@@ -454,6 +458,8 @@ describe('externalAppAuthenticationForCEA', () => {
               testAppId.toString(),
               testConversationId,
               testOriginalRequest,
+              testAuthId,
+              testConnectionName,
               testAuthRequest.claims,
               testAuthRequest.silent,
             ]);
@@ -489,6 +495,8 @@ describe('externalAppAuthenticationForCEA', () => {
               testAppId.toString(),
               testConversationId,
               testOriginalRequest,
+              testAuthId,
+              testConnectionName,
               testAuthRequest.claims,
               testAuthRequest.silent,
             ]);
@@ -568,6 +576,8 @@ describe('externalAppAuthenticationForCEA', () => {
               testAppId.toString(),
               testConversationId,
               testOriginalRequest,
+              testAuthId,
+              testConnectionName,
               testAuthRequest.claims,
               testAuthRequest.silent,
             ]);

@@ -152,6 +152,24 @@ export async function authenticateAndResendRequest(
 }
 
 /**
+ * @hidden
+ * Parameters for SSO authentication. This interface is used exclusively with the externalAppAuthentication APIs
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export type AuthTokenRequestParametersForCEA = externalAppAuthentication.AuthTokenRequestParameters & {
+  /**
+   * Id to complete the request
+   */
+  authId: string;
+
+  /**
+   * Connection name to complete the request
+   */
+  connectionName: string;
+};
+
+/**
  * @beta
  * @hidden
  * Signals to the host to perform SSO authentication for the application specified by the app ID and then resend the request to the application backend with the authentication result and originalRequestInfo
@@ -167,7 +185,7 @@ export async function authenticateAndResendRequest(
 export async function authenticateWithSSOAndResendRequest(
   appId: AppId,
   conversationId: string,
-  authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters,
+  authTokenRequest: AuthTokenRequestParametersForCEA,
   originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest,
 ): Promise<externalAppAuthentication.IActionExecuteResponse> {
   ensureInitialized(runtime, FrameContexts.content);
@@ -189,6 +207,8 @@ export async function authenticateWithSSOAndResendRequest(
       appId,
       conversationId,
       new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
+      authTokenRequest.authId,
+      authTokenRequest.connectionName,
       authTokenRequest.claims,
       authTokenRequest.silent,
     ],
