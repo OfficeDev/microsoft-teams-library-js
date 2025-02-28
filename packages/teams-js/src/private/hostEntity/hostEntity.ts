@@ -31,6 +31,25 @@ export interface TeamsChannelMeetingEntityIds extends TeamsEntityId {
 }
 
 /**
+ * @hidden
+ * @internal
+ * @beta
+ * Limited to Microsoft-internal use
+ *
+ * Meeting Parameters
+ */
+export interface MeetingParams {
+  /**
+   * True if Apps will be installed to a Townhall meeting
+   */
+  isTownhall: boolean;
+  /**
+   * True if apps will be installed to streaming thread
+   */
+  isStreamingThread: boolean;
+}
+
+/**
  * Id of the host entity
  */
 export type HostEntityIds = TeamsEntityId | TeamsChannelMeetingEntityIds;

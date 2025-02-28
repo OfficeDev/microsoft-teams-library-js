@@ -5,7 +5,10 @@ import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const AddAndConfigure = (): React.ReactElement =>
-  ApiWithTextInput<{ hostEntityIds: hostEntity.HostEntityIds; appTypes?: hostEntity.AppTypes[] }>({
+  ApiWithTextInput<{
+    hostEntityIds: hostEntity.HostEntityIds;
+    appTypes?: hostEntity.AppTypes[];
+  }>({
     name: 'addAndConfigure',
     title: 'Add a tab',
     onClick: {
