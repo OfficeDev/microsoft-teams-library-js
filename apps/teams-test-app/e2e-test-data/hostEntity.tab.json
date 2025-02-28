@@ -23,6 +23,52 @@
       "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\",\"tabType\":\"ConfigurableTab\"}"
     },
     {
+      "title": "addAndConfigure API Call - Success with meetingParams",
+      "type": "callResponse",
+      "boxSelector": "#box_addAndConfigure",
+      "inputValue": {
+        "hostEntityIds": {
+          "threadId": "threadId"
+        },
+        "meetingParams": {
+          "isTownhall": true,
+          "isStreamingThread": true
+        }
+      },
+      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"} and {\"meetingParams\":{\"isTownhall\":true,\"isStreamingThread\":true}}",
+      "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\",\"tabType\":\"ConfigurableTab\"}"
+    },
+    {
+      "title": "addAndConfigure API Call - Success with meetingParams and appTypes",
+      "type": "callResponse",
+      "boxSelector": "#box_addAndConfigure",
+      "inputValue": {
+        "hostEntityIds": {
+          "threadId": "threadId"
+        },
+        "meetingParams": {
+          "isTownhall": true,
+          "isStreamingThread": true
+        },
+        "appTypes": ["web"]
+      },
+      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"} and {\"meetingParams\":{\"isTownhall\":true,\"isStreamingThread\":true}} and {\"appTypes\":[\"web\"]}",
+      "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\",\"tabType\":\"ConfigurableTab\"}"
+    },
+    {
+      "title": "addAndConfigure API Call - Success with appTypes",
+      "type": "callResponse",
+      "boxSelector": "#box_addAndConfigure",
+      "inputValue": {
+        "hostEntityIds": {
+          "threadId": "threadId"
+        },
+        "appTypes": ["web"]
+      },
+      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"} and {\"appTypes\":[\"web\"]}",
+      "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\",\"tabType\":\"ConfigurableTab\"}"
+    },
+    {
       "title": "getAll API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_getAll",
