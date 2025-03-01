@@ -35,8 +35,13 @@ const ProcessActionSubmitForCEA = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
+        console.log(`Potential app id (${input.appId}) prints like this`);
+        const objectAppId = new AppId(input.appId);
+        console.log(`objectAppId app id (${objectAppId}) prints like this`);
+
         await externalAppCardActionsForCEA.processActionSubmit(
-          new AppId(input.appId),
+          new AppId(objectAppId as unknown as string),
+
           input.conversationId,
           input.actionSubmitPayload,
         );

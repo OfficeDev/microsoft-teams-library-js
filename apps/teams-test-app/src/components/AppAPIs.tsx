@@ -21,6 +21,7 @@ const GetContext = (): ReactElement =>
     onClick: {
       withPromise: async () => {
         const context = await app.getContext();
+        console.log('This is the context: ' + context);
         return JSON.stringify(context);
       },
       withCallback: (setResult) => {
