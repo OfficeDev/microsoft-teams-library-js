@@ -112,7 +112,38 @@ class HostEntityTabInstancesResponseHandler extends ResponseHandler<HostEntityTa
     return response;
   }
 }
+
+/**
+ * @hidden
+ * @internal
+ * @beta
+ * Limited to Microsoft-internal use
+ *
+ * Launches host-owned UI that lets a user select an app, installs it if required,
+ * runs through app configuration if required, and then associates the app with the threadId provided
+ *
+ * @param hostEntityIds Ids of the host entity like channel, chat or meeting
+ * @param appTypes -  What type of applications to show the user. If EDU is passed as appType, only apps supported by EDU tenant are shown.
+ * If no value is passed, all apps are shown.
+ * @returns The HostEntityTabInstance of the newly associated app
+ */
 export function addAndConfigure(hostEntityIds: HostEntityIds, appTypes?: AppTypes[]): Promise<HostEntityTabInstance>;
+
+/**
+ * @hidden
+ * @internal
+ * @beta
+ * Limited to Microsoft-internal use
+ *
+ * Launches host-owned UI that lets a user select an app, installs it if required,
+ * runs through app configuration if required, and then associates the app with the threadId provided
+ *
+ * @param hostEntityIds Ids of the host entity like channel, chat or meeting
+ * @param meetingParams - Meeting Params allows Townhalls to filter apps in the apps menu.
+ * @param appTypes -  What type of applications to show the user. If EDU is passed as appType, only apps supported by EDU tenant are shown.
+ * If no value is passed, all apps are shown.
+ * @returns The HostEntityTabInstance of the newly associated app
+ */
 export function addAndConfigure(
   hostEntityIds: HostEntityIds,
   meetingParams: MeetingParams,
