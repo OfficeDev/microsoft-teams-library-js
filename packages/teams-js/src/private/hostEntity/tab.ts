@@ -194,10 +194,10 @@ export function addAndConfigure(
     'hostEntity.tab.addAndConfigure',
     [
       new SerializableHostEntityId(hostEntityIds),
+      appTypes,
       (Array.isArray(appTypesOrMeetingParams) || appTypesOrMeetingParams == undefined
         ? appTypesOrMeetingParams
         : new SerializableMeetingParams(appTypesOrMeetingParams)) as ISerializable | SimpleType,
-      appTypes,
     ],
     new HostEntityTabInstanceResponseHandler(),
     getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
