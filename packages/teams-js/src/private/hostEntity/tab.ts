@@ -10,7 +10,7 @@
 
 import { callFunctionInHostAndHandleResponse } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
-import { ResponseHandler, SimpleType, SimpleTypeResponseHandler } from '../../internal/responseHandler';
+import { ResponseHandler, SimpleTypeResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
 import { ErrorCode } from '../../public';
 import { TabInstance } from '../../public/interfaces';
