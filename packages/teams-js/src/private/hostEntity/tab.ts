@@ -135,6 +135,7 @@ export function addAndConfigure(hostEntityIds: HostEntityIds, appTypes?: AppType
  * @beta
  * Limited to Microsoft-internal use
  *
+ * Overloaded method that allows takes an additional parameter 'meetingParams'.
  * Launches host-owned UI that lets a user select an app, installs it if required,
  * runs through app configuration if required, and then associates the app with the threadId provided
  *
@@ -195,7 +196,7 @@ export function addAndConfigure(
     [
       new SerializableHostEntityId(hostEntityIds),
       appTypes ? appTypes : Array.isArray(appTypesOrMeetingParams) ? appTypesOrMeetingParams : undefined,
-      !Array.isArray(appTypesOrMeetingParams) && appTypesOrMeetingParams != undefined
+      !Array.isArray(appTypesOrMeetingParams) && appTypesOrMeetingParams !== undefined
         ? new SerializableMeetingParams(appTypesOrMeetingParams)
         : undefined,
     ],
