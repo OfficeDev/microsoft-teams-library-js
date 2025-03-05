@@ -4,7 +4,8 @@
  * @module
  */
 
-import { Communication, sendMessageEventToChild, sendMessageToParent } from '../../internal/communication';
+import { sendMessageEventToChild, shouldEventBeRelayedToChild } from '../../internal/childCommunication';
+import { sendMessageToParent } from '../../internal/communication';
 import { registerHandler, registerHandlerHelper } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import {
@@ -161,7 +162,7 @@ function handleSave(result?: SaveParameters): void {
   const saveEventType = new SaveEventImpl(result);
   if (saveHandler) {
     saveHandler(saveEventType);
-  } else if (Communication.childWindow) {
+  } else if (shouldEventBeRelayedToChild()) {
     sendMessageEventToChild('settings.save', [result]);
   } else {
     // If no handler is registered, we assume success.
@@ -271,7 +272,7 @@ function handleRemove(): void {
   const removeEventType = new RemoveEventImpl();
   if (removeHandler) {
     removeHandler(removeEventType);
-  } else if (Communication.childWindow) {
+  } else if (shouldEventBeRelayedToChild()) {
     sendMessageEventToChild('settings.remove', []);
   } else {
     // If no handler is registered, we assume success.

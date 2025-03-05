@@ -4,7 +4,8 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { FrameContexts } from '../public/constants';
 import { HostToAppPerformanceMetrics, LoadContext, ResumeContext } from '../public/interfaces';
 import { runtime } from '../public/runtime';
-import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { sendMessageEventToChild, shouldEventBeRelayedToChild } from './childCommunication';
+import { sendMessageToParent } from './communication';
 import { ensureInitialized } from './internalAPIs';
 import { initializeBackStackHelper } from './pagesHelpers';
 import { getLogger } from './telemetry';
@@ -87,7 +88,7 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
     callHandlerLogger('Invoking the registered handler for message %s with arguments %o', name, args);
     const result = handler.apply(this, args);
     return [true, result];
-  } else if (Communication.childWindow) {
+  } else if (shouldEventBeRelayedToChild()) {
     sendMessageEventToChild(name, args);
     return [false, undefined];
   } else {
@@ -178,7 +179,7 @@ export function handleThemeChange(theme: string): void {
     HandlersPrivate.themeChangeHandler(theme);
   }
 
-  if (Communication.childWindow) {
+  if (shouldEventBeRelayedToChild()) {
     sendMessageEventToChild('themeChange', [theme]);
   }
 }
@@ -223,12 +224,12 @@ function handleLoad(loadContext: LoadContext): void {
   const resumeContext = convertToResumeContext(loadContext);
   if (HandlersPrivate.resumeHandler) {
     HandlersPrivate.resumeHandler(resumeContext);
-    if (Communication.childWindow) {
+    if (shouldEventBeRelayedToChild()) {
       sendMessageEventToChild('load', [resumeContext]);
     }
   } else if (HandlersPrivate.loadHandler) {
     HandlersPrivate.loadHandler(loadContext);
-    if (Communication.childWindow) {
+    if (shouldEventBeRelayedToChild()) {
       sendMessageEventToChild('load', [loadContext]);
     }
   }
@@ -270,13 +271,13 @@ async function handleBeforeUnload(): Promise<void> {
 
   if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
     await HandlersPrivate.beforeSuspendOrTerminateHandler();
-    if (Communication.childWindow) {
+    if (shouldEventBeRelayedToChild()) {
       sendMessageEventToChild('beforeUnload');
     } else {
       readyToUnload();
     }
   } else if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
-    if (Communication.childWindow) {
+    if (shouldEventBeRelayedToChild()) {
       sendMessageEventToChild('beforeUnload');
     } else {
       readyToUnload();
