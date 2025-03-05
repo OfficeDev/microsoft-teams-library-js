@@ -61,7 +61,7 @@ describe('AppSDK-privateAPIs', () => {
 
   unSupportedDomains.forEach((unSupportedDomain) => {
     it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
-      await utils.initializeWithContext('content', null, ['http://invalid.origin.com']);
+      await utils.initializeWithContext('content', undefined, ['http://invalid.origin.com']);
       let callbackCalled = false;
       app.getContext().then(() => {
         callbackCalled = true;
@@ -71,11 +71,11 @@ describe('AppSDK-privateAPIs', () => {
       expect(getContextMessage).not.toBeNull();
 
       callbackCalled = false;
-      await utils.processMessage({
+      await utils.processMessage!({
         origin: unSupportedDomain,
         source: utils.mockWindow.parent,
         data: {
-          id: getContextMessage.id,
+          id: getContextMessage!.id,
           args: [
             {
               groupId: 'someMaliciousValue',
@@ -125,17 +125,17 @@ describe('AppSDK-privateAPIs', () => {
 
   supportedDomains.forEach((supportedDomain) => {
     it('should allow utils.messages from supported domain ' + supportedDomain, async () => {
-      await utils.initializeWithContext('content', null, ['https://tasks.office.com', 'https://www.example.com']);
+      await utils.initializeWithContext('content', undefined, ['https://tasks.office.com', 'https://www.example.com']);
       const contextPromise = app.getContext();
 
       const getContextMessage = utils.findMessageByFunc('getContext');
       expect(getContextMessage).not.toBeNull();
 
-      utils.processMessage({
+      utils.processMessage!({
         origin: supportedDomain,
         source: utils.mockWindow.parent,
         data: {
-          id: getContextMessage.id,
+          id: getContextMessage!.id,
           args: [
             {
               groupId: 'someMaliciousValue',
@@ -155,11 +155,11 @@ describe('AppSDK-privateAPIs', () => {
     const initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();
 
-    utils.processMessage({
+    utils.processMessage!({
       origin: 'https://some-malicious-site.com',
       source: utils.mockWindow.parent,
       data: {
-        id: initMessage.id,
+        id: initMessage!.id,
         args: ['content'],
       } as MessageResponse,
     } as MessageEvent);
@@ -171,11 +171,11 @@ describe('AppSDK-privateAPIs', () => {
       return;
     });
 
-    utils.processMessage({
+    utils.processMessage!({
       origin: 'http://some-invalid-origin.com',
       source: utils.mockWindow.parent,
       data: {
-        id: initMessage.id,
+        id: initMessage!.id,
         args: ['content'],
       } as MessageResponse,
     } as MessageEvent);
@@ -192,6 +192,7 @@ describe('AppSDK-privateAPIs', () => {
   });
 
   it('should successfully handle calls queued before init completes', async () => {
+    expect.assertions(4);
     const initPromise = app.initialize();
 
     // Another call made before the init response
@@ -199,8 +200,7 @@ describe('AppSDK-privateAPIs', () => {
 
     // Only the init call went out
     expect(utils.messages.length).toBe(1);
-    const initMessage = utils.findMessageByFunc('initialize');
-    expect(initMessage).not.toBeNull();
+    const initMessage = utils.findMessageByActionName('initialize');
     expect(utils.findMessageByFunc('getContext')).toBeNull();
 
     // init completes
@@ -336,6 +336,7 @@ describe('AppSDK-privateAPIs', () => {
   });
 
   it('should only call callbacks once', async () => {
+    expect.assertions(1);
     await utils.initializeWithContext('content');
 
     let callbackCalled = 0;
@@ -343,8 +344,7 @@ describe('AppSDK-privateAPIs', () => {
       callbackCalled++;
     });
 
-    const getContextMessage = utils.findMessageByFunc('getContext');
-    expect(getContextMessage).not.toBeNull();
+    const getContextMessage = utils.findMessageByActionName('getContext');
 
     const expectedContext: Context = {
       locale: 'someLocale',
@@ -393,7 +393,7 @@ describe('AppSDK-privateAPIs', () => {
     utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
-    await utils.processMessage({
+    await utils.processMessage!({
       origin: 'https://www.example.com',
       source: utils.childWindow,
       data: {
@@ -408,10 +408,11 @@ describe('AppSDK-privateAPIs', () => {
   });
 
   it('should properly pass partial responses to nested child frames ', async () => {
+    expect.assertions(5);
     utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
-    await utils.processMessage({
+    await utils.processMessage!({
       origin: 'https://www.example.com',
       source: utils.childWindow,
       data: {
@@ -422,8 +423,8 @@ describe('AppSDK-privateAPIs', () => {
     } as MessageEvent);
 
     // Send a partial response back
-    const parentMessage = utils.findMessageByFunc('testPartialFunc1');
-    await utils.respondToNativeMessage(parentMessage, true, {});
+    const parentMessage = utils.findMessageByActionName('testPartialFunc1');
+    utils.respondToNativeMessage(parentMessage, true, {});
 
     // The child window should properly receive the partial response plus
     // the original event
@@ -433,7 +434,7 @@ describe('AppSDK-privateAPIs', () => {
     expect(secondChildMessage.isPartialResponse).toBeTruthy();
 
     // Pass the final response (non partial)
-    await utils.respondToNativeMessage(parentMessage, false, {});
+    utils.respondToNativeMessage(parentMessage, false, {});
 
     // The child window should properly receive the non-partial response
     expect(utils.childMessages.length).toBe(3);
@@ -442,8 +443,8 @@ describe('AppSDK-privateAPIs', () => {
   });
 
   it('Proxy messages to child window', async () => {
-    await utils.initializeWithContext('content', null, ['https://teams.microsoft.com']);
-    await utils.processMessage({
+    await utils.initializeWithContext('content', undefined, ['https://teams.microsoft.com']);
+    await utils.processMessage!({
       origin: 'https://outlook.office.com',
       source: utils.childWindow,
       data: {
@@ -462,27 +463,26 @@ describe('AppSDK-privateAPIs', () => {
 
   describe('sendCustomMessage', () => {
     it('should successfully pass message and provided arguments', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext('content');
 
       sendCustomMessage('customMessage', ['arg1', 2, 3.0, true]);
 
-      const message = utils.findMessageByFunc('customMessage');
-      expect(message).not.toBeNull();
+      const message = utils.findMessageByActionName('customMessage');
       expect(message.args).toEqual(['arg1', 2, 3.0, true]);
     });
   });
 
   describe('sendCustomMessageToChild', () => {
     it('should successfully pass message and provided arguments', async () => {
-      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
+      await utils.initializeWithContext('content', undefined, ['https://tasks.office.com']);
 
       //trigger child window setup
       //trigger processing of message received from child
-      await utils.processMessage({
+      await utils.processMessage!({
         origin: 'https://tasks.office.com',
         source: utils.childWindow,
         data: {
-          id: null,
           func: 'customAction1',
           args: ['arg1', 123, 4.5, true],
         } as MessageRequest,
@@ -493,7 +493,7 @@ describe('AppSDK-privateAPIs', () => {
 
       const message = utils.findMessageInChildByFunc(customActionName);
       expect(message).not.toBeNull();
-      expect(message.args).toEqual(['arg1', 234, 12.3, true]);
+      expect(message!.args).toEqual(['arg1', 234, 12.3, true]);
     });
   });
 
@@ -502,8 +502,8 @@ describe('AppSDK-privateAPIs', () => {
       await utils.initializeWithContext('content');
 
       const customActionName = 'customAction1';
-      let callbackCalled = false,
-        callbackArgs: any[] = null;
+      let callbackCalled = false;
+      let callbackArgs: any[] | null = null;
       registerCustomHandler(customActionName, (...args) => {
         callbackCalled = true;
         callbackArgs = args;
@@ -516,11 +516,11 @@ describe('AppSDK-privateAPIs', () => {
     });
 
     it('should successfully pass message and provided arguments of customAction from child', async () => {
-      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
+      await utils.initializeWithContext('content', undefined, ['https://tasks.office.com']);
 
       const customActionName = 'customAction2';
-      let callbackCalled = false,
-        callbackArgs: any[] = null;
+      let callbackCalled = false;
+      let callbackArgs: any[] | null = null;
       registerCustomHandler(customActionName, (...args) => {
         callbackCalled = true;
         callbackArgs = args;
@@ -528,11 +528,11 @@ describe('AppSDK-privateAPIs', () => {
       });
 
       //trigger processing of message received from child
-      await utils.processMessage({
+      await utils.processMessage!({
         origin: 'https://tasks.office.com',
         source: utils.childWindow,
         data: {
-          id: null,
+          id: 3,
           func: customActionName,
           args: ['arg1', 123, 4.5, true],
         } as MessageRequest,
@@ -543,11 +543,11 @@ describe('AppSDK-privateAPIs', () => {
     });
 
     it('should not process be invoked due to invalid origin message from child window', async () => {
-      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
+      await utils.initializeWithContext('content', undefined, ['https://tasks.office.com']);
 
       const customActionName = 'customAction2';
-      let callbackCalled = false,
-        callbackArgs: any[] = null;
+      let callbackCalled = false;
+      let callbackArgs: any[] | null = null;
       registerCustomHandler(customActionName, (...args) => {
         callbackCalled = true;
         callbackArgs = args;
@@ -555,11 +555,10 @@ describe('AppSDK-privateAPIs', () => {
       });
 
       //trigger processing of message received from child
-      await utils.processMessage({
+      await utils.processMessage!({
         origin: 'https://tasks.office.net',
         source: utils.childWindow,
         data: {
-          id: null,
           func: customActionName,
           args: ['arg1', 123, 4.5, true],
         } as MessageRequest,
@@ -592,28 +591,28 @@ describe('AppSDK-privateAPIs', () => {
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it('should successfully open a file preview with content frameContext', async () => {
+          expect.assertions(16);
           await utils.initializeWithContext(context);
 
           openFilePreview(openFilePreviewParams);
 
-          const message = utils.findMessageByFunc('openFilePreview');
-          expect(message).not.toBeNull();
-          expect(message.args.length).toBe(15);
-          expect(message.args[0]).toBe('someEntityId');
-          expect(message.args[1]).toBe('someTitle');
-          expect(message.args[2]).toBe('someDescription');
-          expect(message.args[3]).toBe('someType');
-          expect(message.args[4]).toBe('someObjectUrl');
-          expect(message.args[5]).toBe('someDownloadUrl');
-          expect(message.args[6]).toBe('someWebPreviewUrl');
-          expect(message.args[7]).toBe('someWebEditUrl');
-          expect(message.args[8]).toBe('someBaseUrl');
-          expect(message.args[9]).toBe(true);
-          expect(message.args[10]).toBe('someSubEntityId');
-          expect(message.args[11]).toBe('view');
-          expect(message.args[12]).toBe(FileOpenPreference.Web);
-          expect(message.args[13]).toBe('someConversationId');
-          expect(message.args[14]).toBe(1024);
+          const message = utils.findMessageByActionName('openFilePreview');
+          expect(message.args?.length).toBe(15);
+          expect(message.args?.[0]).toBe('someEntityId');
+          expect(message.args?.[1]).toBe('someTitle');
+          expect(message.args?.[2]).toBe('someDescription');
+          expect(message.args?.[3]).toBe('someType');
+          expect(message.args?.[4]).toBe('someObjectUrl');
+          expect(message.args?.[5]).toBe('someDownloadUrl');
+          expect(message.args?.[6]).toBe('someWebPreviewUrl');
+          expect(message.args?.[7]).toBe('someWebEditUrl');
+          expect(message.args?.[8]).toBe('someBaseUrl');
+          expect(message.args?.[9]).toBe(true);
+          expect(message.args?.[10]).toBe('someSubEntityId');
+          expect(message.args?.[11]).toBe('view');
+          expect(message.args?.[12]).toBe(FileOpenPreference.Web);
+          expect(message.args?.[13]).toBe('someConversationId');
+          expect(message.args?.[14]).toBe(1024);
         });
       } else {
         it(`remoteCamera.registerOnCapableParticipantsChangeHandler should not allow calls when initialized with ${context} context`, async () => {
