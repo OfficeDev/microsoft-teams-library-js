@@ -9,12 +9,11 @@ import {
 } from '../public/interfaces';
 import * as pages from '../public/pages/pages';
 import { runtime } from '../public/runtime';
+import { sendMessageEventToChild, shouldEventBeRelayedToChild } from './childCommunication';
 import {
-  Communication,
   sendAndHandleStatusAndReason,
   sendAndHandleStatusAndReasonWithDefaultError,
   sendAndUnwrap,
-  sendMessageEventToChild,
   sendMessageToParent,
 } from './communication';
 import { registerHandler } from './handlers';
@@ -210,7 +209,7 @@ export function initializeBackStackHelper(): void {
 
 function handleBackButtonPress(): void {
   if (!backButtonPressHandler || !backButtonPressHandler()) {
-    if (Communication.childWindow) {
+    if (shouldEventBeRelayedToChild()) {
       // If the current window did not handle it let the child window
       sendMessageEventToChild('backButtonPress', []);
     } else {

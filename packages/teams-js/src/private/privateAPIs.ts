@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Communication, sendMessageEventToChild, sendMessageToParent } from '../internal/communication';
+import { sendMessageEventToChild, shouldEventBeRelayedToChild } from '../internal/childCommunication';
+import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -57,8 +58,7 @@ export function sendCustomMessage(actionName: string, args?: any[], callback?: (
 
 /**
  * @hidden
- * Sends a custom action MessageEvent to a child iframe/window, only if you are not using auth popup.
- * Otherwise it will go to the auth popup (which becomes the child)
+ * Sends a custom action MessageEvent to a child iframe/window.
  *
  * @param actionName - Specifies name of the custom action to be sent
  * @param args - Specifies additional arguments passed to the action
@@ -71,9 +71,10 @@ export function sendCustomEvent(actionName: string, args?: any[]): void {
   ensureInitialized(runtime);
 
   //validate childWindow
-  if (!Communication.childWindow) {
+  if (!shouldEventBeRelayedToChild()) {
     throw new Error('The child window has not yet been initialized or is not present');
   }
+
   sendMessageEventToChild(actionName, args);
 }
 
