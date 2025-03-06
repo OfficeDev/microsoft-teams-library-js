@@ -16,7 +16,7 @@ import { ErrorCode } from '../../public';
 import { TabInstance } from '../../public/interfaces';
 import { runtime } from '../../public/runtime';
 import { ISerializable } from '../../public/serializable.interface';
-import { AppTypes, HostEntityIds, isSupported as isHostEntitySupported } from './hostEntity';
+import { AppTypes, HostEntityIds, isSupported as isHostEntitySupported, MeetingParams } from './hostEntity';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -58,6 +58,13 @@ class SerializableHostEntityId implements ISerializable {
   public constructor(private hostEntityId: HostEntityIds) {}
   public serialize(): object {
     return this.hostEntityId;
+  }
+}
+
+class SerializableMeetingParams implements ISerializable {
+  public constructor(private meetingParams: MeetingParams) {}
+  public serialize(): object {
+    return this.meetingParams;
   }
 }
 
@@ -116,6 +123,46 @@ class HostEntityTabInstancesResponseHandler extends ResponseHandler<HostEntityTa
  * runs through app configuration if required, and then associates the app with the threadId provided
  *
  * @param hostEntityIds Ids of the host entity like channel, chat or meeting
+ * @param appTypes -  What type of applications to show the user. If EDU is passed as appType, only apps supported by EDU tenant are shown.
+ * If no value is passed, all apps are shown.
+ * @returns The HostEntityTabInstance of the newly associated app
+ */
+export function addAndConfigure(hostEntityIds: HostEntityIds, appTypes?: AppTypes[]): Promise<HostEntityTabInstance>;
+
+/**
+ * @hidden
+ * @internal
+ * @beta
+ * Limited to Microsoft-internal use
+ *
+ * Overloaded method that allows takes an additional parameter 'meetingParams'.
+ * Launches host-owned UI that lets a user select an app, installs it if required,
+ * runs through app configuration if required, and then associates the app with the threadId provided
+ *
+ * @param hostEntityIds Ids of the host entity like channel, chat or meeting
+ * @param meetingParams - Meeting Params allows Townhalls to filter apps in the apps menu.
+ * @param appTypes -  What type of applications to show the user. If EDU is passed as appType, only apps supported by EDU tenant are shown.
+ * If no value is passed, all apps are shown.
+ * @returns The HostEntityTabInstance of the newly associated app
+ */
+export function addAndConfigure(
+  hostEntityIds: HostEntityIds,
+  meetingParams: MeetingParams,
+  appTypes?: AppTypes[],
+): Promise<HostEntityTabInstance>;
+
+/**
+ * @hidden
+ * @internal
+ * @beta
+ * Limited to Microsoft-internal use
+ *
+ * Launches host-owned UI that lets a user select an app, installs it if required,
+ * runs through app configuration if required, and then associates the app with the threadId provided
+ *
+ * @param hostEntityIds Ids of the host entity like channel, chat or meeting
+ *
+ * @param appTypesOrMeetingParams Overload parameter for either appTypes or meetingParams. Meeting Params allows Townhalls to filter apps in the apps menu.
  *
  * @param appTypes What type of applications to show the user. If EDU is passed as appType, only apps supported by EDU tenant are shown.
  * If no value is passed, all apps are shown.
@@ -125,7 +172,11 @@ class HostEntityTabInstancesResponseHandler extends ResponseHandler<HostEntityTa
  * @throws Error if host does not support this capability, library as not been initialized successfully, input parameters are invalid, user cancels operation or installing
  * or configuring or adding tab fails
  */
-export function addAndConfigure(hostEntityIds: HostEntityIds, appTypes?: AppTypes[]): Promise<HostEntityTabInstance> {
+export function addAndConfigure(
+  hostEntityIds: HostEntityIds,
+  appTypesOrMeetingParams?: AppTypes[] | MeetingParams,
+  appTypes?: AppTypes[],
+): Promise<HostEntityTabInstance> {
   ensureInitialized(runtime);
 
   if (!isSupported()) {
@@ -134,13 +185,21 @@ export function addAndConfigure(hostEntityIds: HostEntityIds, appTypes?: AppType
 
   validateThreadId(hostEntityIds.threadId);
 
-  if (appTypes && appTypes.length === 0) {
+  if (
+    (Array.isArray(appTypesOrMeetingParams) && appTypesOrMeetingParams.length === 0) ||
+    (Array.isArray(appTypes) && appTypes?.length === 0)
+  ) {
     throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: App types cannot be an empty array`);
   }
-
   return callFunctionInHostAndHandleResponse<HostEntityTabInstance, HostEntityTabInstance>(
     'hostEntity.tab.addAndConfigure',
-    [new SerializableHostEntityId(hostEntityIds), appTypes],
+    [
+      new SerializableHostEntityId(hostEntityIds),
+      appTypes ? appTypes : Array.isArray(appTypesOrMeetingParams) ? appTypesOrMeetingParams : undefined,
+      !Array.isArray(appTypesOrMeetingParams) && appTypesOrMeetingParams !== undefined
+        ? new SerializableMeetingParams(appTypesOrMeetingParams)
+        : undefined,
+    ],
     new HostEntityTabInstanceResponseHandler(),
     getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
   );

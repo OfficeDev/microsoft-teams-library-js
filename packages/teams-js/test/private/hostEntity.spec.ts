@@ -93,10 +93,29 @@ describe('hostEntity', () => {
           expect.assertions(3);
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
-          const promise = hostEntity.tab.addAndConfigure(mockHostEntity);
+          const promise = hostEntity.tab.addAndConfigure(mockHostEntity, [hostEntity.AppTypes.edu]);
           const message = utils.findMessageByFunc('hostEntity.tab.addAndConfigure');
           expect(message).not.toBeNull();
-          expect(message?.args).toEqual([mockHostEntity, null]);
+          expect(message?.args).toEqual([mockHostEntity, [hostEntity.AppTypes.edu], null]);
+          if (message) {
+            utils.respondToMessage(message, mockConfigurableTab);
+          }
+
+          return expect(promise).resolves.toEqual(mockConfigurableTab);
+        });
+
+        it(`hostEntity.tab.addAndConfigure should pass message with meetingParams and initialized with ${context} context`, async () => {
+          expect.assertions(3);
+          const meetingParams: hostEntity.MeetingParams = {
+            isTownhall: true,
+            isStreamingThread: false,
+          };
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
+          const promise = hostEntity.tab.addAndConfigure(mockHostEntity, meetingParams, undefined);
+          const message = utils.findMessageByFunc('hostEntity.tab.addAndConfigure');
+          expect(message).not.toBeNull();
+          expect(message?.args).toEqual([mockHostEntity, null, meetingParams]);
           if (message) {
             utils.respondToMessage(message, mockConfigurableTab);
           }

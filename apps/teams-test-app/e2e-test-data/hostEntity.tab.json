@@ -11,15 +11,20 @@
   },
   "testCases": [
     {
-      "title": "addAndConfigure API Call - Success",
+      "title": "addAndConfigure API Call - Success with meetingParams and appTypes",
       "type": "callResponse",
       "boxSelector": "#box_addAndConfigure",
       "inputValue": {
         "hostEntityIds": {
           "threadId": "threadId"
-        }
+        },
+        "appTypesOrMeetingParams": {
+          "isTownhall": true,
+          "isStreamingThread": true
+        },
+        "appTypes": ["web"]
       },
-      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"}",
+      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"} and {\"meetingParams\":{\"isTownhall\":true,\"isStreamingThread\":true}} and {\"appTypes\":[\"web\"]}",
       "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\",\"tabType\":\"ConfigurableTab\"}"
     },
     {

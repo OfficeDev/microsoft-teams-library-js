@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added two optional internal parameters to `hostEntity.tab.addAndConfigure` method for the purpose of filtering apps for Townhalls",
+  "packageName": "@microsoft/teams-js",
+  "email": "cmachart@microsoft.com",
+  "dependentChangeType": "patch"
+}
