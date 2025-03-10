@@ -1,7 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import * as hostEntity from '../../src/private/hostEntity/hostEntity';
-import { AppTypes } from '../../src/private/hostEntity/hostEntity';
 import { ErrorCode, FrameContexts } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
