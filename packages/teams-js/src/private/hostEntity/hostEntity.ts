@@ -14,6 +14,8 @@ import * as tab from './tab';
 
 export enum AppTypes {
   edu = 'EDU',
+  baseTownhall = 'BASE_TOWNHALL',
+  streamingTownhall = 'STREAMING_TOWNHALL',
 }
 
 /**
