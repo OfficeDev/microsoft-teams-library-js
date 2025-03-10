@@ -7,6 +7,7 @@ import {
   sendCustomEvent,
   sendCustomMessage,
 } from '../../src/private/privateAPIs';
+import { activateChildProxyingCommunication, resetBuildFeatureFlags } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
@@ -27,6 +28,7 @@ describe('AppSDK-privateAPIs', () => {
     utils.childMessages = [];
     utils.childWindow.closed = false;
     utils.mockWindow.parent = utils.parentWindow;
+    activateChildProxyingCommunication();
 
     // Set a mock window for testing
     app._initialize(utils.mockWindow);
@@ -37,6 +39,7 @@ describe('AppSDK-privateAPIs', () => {
     if (app._uninitialize) {
       app._uninitialize();
     }
+    resetBuildFeatureFlags();
   });
 
   it('should exist in the global namespace', () => {

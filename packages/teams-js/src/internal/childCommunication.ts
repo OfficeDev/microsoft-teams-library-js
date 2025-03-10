@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { isChildProxyingEnabled } from '../public/featureFlags';
 import { UUID as MessageUUID } from '../public/uuidObject';
 import { flushMessageQueue, getMessageIdsAsLogString } from './communicationUtils';
 import { callHandler } from './handlers';
@@ -45,6 +46,9 @@ export function uninitializeChildCommunication(): void {
  * Limited to Microsoft-internal use
  */
 export function shouldEventBeRelayedToChild(): boolean {
+  if (!isChildProxyingEnabled()) {
+    return false;
+  }
   return !!ChildCommunication.window;
 }
 
@@ -63,6 +67,10 @@ type SetCallbackForRequest = (uuid: MessageUUID, callback: Function) => void;
  * Limited to Microsoft-internal use
  */
 export function shouldProcessChildMessage(messageSource: Window, messageOrigin: string): boolean {
+  if (!isChildProxyingEnabled()) {
+    return false;
+  }
+
   if (!ChildCommunication.window || ChildCommunication.window.closed || messageSource === ChildCommunication.window) {
     ChildCommunication.window = messageSource;
     ChildCommunication.origin = messageOrigin;
