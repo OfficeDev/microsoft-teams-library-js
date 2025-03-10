@@ -39,3 +39,4 @@ export * as teams from './teams/teams';
 export * as videoEffectsEx from './videoEffectsEx';
 export * as hostEntity from './hostEntity/hostEntity';
 export * as store from './store';
+export * as exampleFeature from './exampleFeature';
