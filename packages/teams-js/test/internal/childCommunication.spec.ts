@@ -9,7 +9,7 @@ import { uninitializeCommunication } from '../../src/internal/communication';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { activateChildProxyingCommunication, overwriteFeatureFlagsState, setFeatureFlagsState } from '../../src/public';
 import * as app from '../../src/public/app/app';
-import { defaultFeatureFlags, resetBuildFeatureFlags } from '../../src/public/featureFlags';
+import { resetBuildFeatureFlags } from '../../src/public/featureFlags';
 import { Utils } from '../utils';
 
 describe('childCommunication', () => {
@@ -223,7 +223,7 @@ describe('childCommunication', () => {
         });
 
         afterEach(() => {
-          setFeatureFlagsState(defaultFeatureFlags);
+          overwriteFeatureFlagsState({ disableEnforceOriginMatchForChildResponses: false });
         });
 
         it('the child window that sent the message receives the response back', async () => {

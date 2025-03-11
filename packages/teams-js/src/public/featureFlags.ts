@@ -43,7 +43,7 @@ export interface RuntimeFeatureFlags {
 }
 
 // Default runtime feature flags
-export const defaultFeatureFlags: RuntimeFeatureFlags = {
+const defaultFeatureFlags: RuntimeFeatureFlags = {
   disableEnforceOriginMatchForChildResponses: false,
 } as const;
 
