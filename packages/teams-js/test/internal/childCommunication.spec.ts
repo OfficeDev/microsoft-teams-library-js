@@ -7,7 +7,7 @@ import {
 } from '../../src/internal/childCommunication';
 import { uninitializeCommunication } from '../../src/internal/communication';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { activateChildProxyingCommunication, overwriteFeatureFlagsState, setFeatureFlagsState } from '../../src/public';
+import { activateChildProxyingCommunication, overwriteFeatureFlagsState } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { resetBuildFeatureFlags } from '../../src/public/featureFlags';
 import { Utils } from '../utils';
