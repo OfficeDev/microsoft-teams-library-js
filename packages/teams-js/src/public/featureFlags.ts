@@ -30,7 +30,9 @@ export function resetBuildFeatureFlags(): void {
   buildFeatureFlags.childProxyingCommunication = false;
 }
 
-// Runtime feature flags.
+/**
+ * Feature flags to activate or deactivate certain features at runtime for an app.
+ */
 export interface RuntimeFeatureFlags {
   /**
    * Disables origin validation for responses to child windows. When enabled, this flag bypasses security checks that verify the origin of child window that receives the response.
