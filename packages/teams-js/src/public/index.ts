@@ -57,6 +57,7 @@ export {
   activateChildProxyingCommunication,
   getCurrentFeatureFlagsState,
   overwriteFeatureFlagsState,
+  RuntimeFeatureFlags,
   setFeatureFlagsState,
 } from './featureFlags';
 export * as nestedAppAuth from './nestedAppAuth';

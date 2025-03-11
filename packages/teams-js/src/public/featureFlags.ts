@@ -31,7 +31,7 @@ export function resetBuildFeatureFlags(): void {
 }
 
 // Runtime feature flags.
-interface RuntimeFeatureFlags {
+export interface RuntimeFeatureFlags {
   /**
    * Disables origin validation for responses to child windows. When enabled, this flag bypasses security checks that verify the origin of child window that receives the response.
    *
@@ -55,6 +55,10 @@ export function getCurrentFeatureFlagsState(): RuntimeFeatureFlags {
   return runtimeFeatureFlags;
 }
 
+/**
+ * It sets the runtime feature flags to the new feature flags provided.
+ * @param featureFlags The new feature flags to set.
+ */
 export function setFeatureFlagsState(featureFlags: RuntimeFeatureFlags): void {
   runtimeFeatureFlags = featureFlags;
 }
