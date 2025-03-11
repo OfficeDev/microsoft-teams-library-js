@@ -7,9 +7,10 @@ import {
   sendCustomEvent,
   sendCustomMessage,
 } from '../../src/private/privateAPIs';
-import { activateChildProxyingCommunication, resetBuildFeatureFlags } from '../../src/public';
+import { activateChildProxyingCommunication } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
+import { resetBuildFeatureFlags } from '../../src/public/featureFlags';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 
