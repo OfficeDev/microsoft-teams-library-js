@@ -7,8 +7,9 @@ import {
 } from '../../src/internal/childCommunication';
 import { uninitializeCommunication } from '../../src/internal/communication';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { activateChildProxyingCommunication, resetBuildFeatureFlags } from '../../src/public';
+import { activateChildProxyingCommunication, overwriteFeatureFlagsState, setFeatureFlagsState } from '../../src/public';
 import * as app from '../../src/public/app/app';
+import { defaultFeatureFlags, resetBuildFeatureFlags } from '../../src/public/featureFlags';
 import { Utils } from '../utils';
 
 describe('childCommunication', () => {
@@ -28,7 +29,7 @@ describe('childCommunication', () => {
 
   describe('childProxyingFeatureFlag off', () => {
     beforeEach(() => {
-    resetBuildFeatureFlags();
+      resetBuildFeatureFlags();
     });
 
     describe('shouldEventBeRelayedToChild', () => {
@@ -181,6 +182,87 @@ describe('childCommunication', () => {
         );
         const secondMessage = utils.findMessageByFunc('test2');
         expect(secondMessage).toBeNull();
+      });
+
+      it('the child window that sent the message receives the response back', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext('context');
+        const requestID = await utils.sendMessageFromChild('test1', ['testArg1']);
+        const sentMessage = utils.findMessageByActionName('test1');
+        await utils.respondToMessage(sentMessage, 'testResponse');
+        const response = utils.findMessageResponseInChildById(requestID);
+        expect(response).not.toBeNull();
+      });
+
+      it('if a child window changes origin, it does not receive the response initiated by another child window', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext('context');
+
+        // Send custom message from custom child window
+        const mockedInitialChildWindow = {
+          postMessage: jest.fn(),
+          close: jest.fn(),
+          closed: false,
+        };
+        const requestID = await utils.sendCustomMessage(utils.tabOrigin, mockedInitialChildWindow, 'test1', 'testArg1');
+
+        // Close the initial child window and set the current child window
+        mockedInitialChildWindow.closed = true;
+        shouldProcessChildMessage(utils.childWindow, childOrigin);
+
+        // Respond to the message from the initial child window
+        const sentMessage = utils.findMessageByActionName('test1');
+        await utils.respondToMessage(sentMessage, 'testResponse');
+        const response = utils.findMessageResponseInChildById(requestID);
+        expect(response).toBeNull();
+      });
+
+      describe('disableEnforceOriginMatchForChildResponses on', () => {
+        beforeEach(() => {
+          overwriteFeatureFlagsState({ disableEnforceOriginMatchForChildResponses: true });
+        });
+
+        afterEach(() => {
+          setFeatureFlagsState(defaultFeatureFlags);
+        });
+
+        it('the child window that sent the message receives the response back', async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext('context');
+          const requestID = await utils.sendMessageFromChild('test1', ['testArg1']);
+          const sentMessage = utils.findMessageByActionName('test1');
+          await utils.respondToMessage(sentMessage, 'testResponse');
+          const response = utils.findMessageResponseInChildById(requestID);
+          expect(response).not.toBeNull();
+        });
+
+        it('if a child window changes origin it still receives response for request', async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext('context');
+
+          // Send custom message from custom child window
+          const mockedInitialChildWindow = {
+            postMessage: jest.fn(),
+            close: jest.fn(),
+            closed: false,
+          };
+          const requestID = await utils.sendCustomMessage(
+            utils.tabOrigin,
+            mockedInitialChildWindow,
+            'test1',
+            'testArg1',
+          );
+
+          // Close the initial child window and set the current child window
+          mockedInitialChildWindow.closed = true;
+          shouldProcessChildMessage(utils.childWindow, childOrigin);
+
+          // Respond to the message from the initial child window
+          const sentMessage = utils.findMessageByActionName('test1');
+          await utils.respondToMessage(sentMessage, 'testResponse');
+          const response = utils.findMessageResponseInChildById(requestID);
+          expect(response).not.toBeNull();
+        });
       });
     });
   });

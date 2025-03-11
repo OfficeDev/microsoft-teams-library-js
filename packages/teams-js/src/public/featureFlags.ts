@@ -30,3 +30,42 @@ export function isChildProxyingEnabled(): boolean {
 export function resetBuildFeatureFlags(): void {
   buildFeatureFlags = defaultBuildFeatureFlags;
 }
+
+// Runtime feature flags.
+interface RuntimeFeatureFlags {
+  /**
+   * Disables origin validation for responses to child windows. When enabled, this flag bypasses security checks that verify the origin of child window that receives the response.
+   *
+   * Default: false
+   */
+  disableEnforceOriginMatchForChildResponses: boolean;
+}
+
+// Default runtime feature flags
+export const defaultFeatureFlags: RuntimeFeatureFlags = {
+  disableEnforceOriginMatchForChildResponses: false,
+} as const;
+
+// Object that stores the current runtime feature flag state
+let runtimeFeatureFlags = defaultFeatureFlags;
+
+/**
+ * @returns The current state of the runtime feature flags.
+ */
+export function getCurrentFeatureFlagsState(): RuntimeFeatureFlags {
+  return runtimeFeatureFlags;
+}
+
+export function setFeatureFlagsState(featureFlags: RuntimeFeatureFlags): void {
+  runtimeFeatureFlags = featureFlags;
+}
+
+/**
+ * It overwrites all the feature flags in the runtime feature flags object with the new feature flags provided.
+ * @param newFeatureFlags The new feature flags to set.
+ * @returns The current state of the runtime feature flags.
+ */
+export function overwriteFeatureFlagsState(newFeatureFlags: Partial<RuntimeFeatureFlags>): RuntimeFeatureFlags {
+  setFeatureFlagsState({ ...runtimeFeatureFlags, ...newFeatureFlags });
+  return getCurrentFeatureFlagsState();
+}

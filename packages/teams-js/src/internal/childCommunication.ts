@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { isChildProxyingEnabled } from '../public/featureFlags';
+import { getCurrentFeatureFlagsState, isChildProxyingEnabled } from '../public/featureFlags';
 import { UUID as MessageUUID } from '../public/uuidObject';
 import { flushMessageQueue, getMessageIdsAsLogString } from './communicationUtils';
 import { callHandler } from './handlers';
@@ -165,17 +165,32 @@ function sendChildMessageToParent(
     message.args,
     true, // Tags message as proxied from child
   );
+
+  // Copy variable to new pointer
+  const requestChildWindowOrigin = ChildCommunication.origin;
   setCallbackForRequest(request.uuid, (...args: any[]): void => {
-    if (ChildCommunication.window) {
-      const isPartialResponse = args.pop();
-      handleIncomingMessageFromChildLogger(
-        'Message from parent being relayed to child, id: %s',
-        getMessageIdsAsLogString(message),
-      );
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
+    if (!ChildCommunication.window) {
+      return;
     }
+
+    if (
+      !getCurrentFeatureFlagsState().disableEnforceOriginMatchForChildResponses &&
+      requestChildWindowOrigin !== ChildCommunication.origin
+    ) {
+      handleIncomingMessageFromChildLogger(
+        'Origin of child window has changed, not sending response back to child window',
+      );
+      return;
+    }
+
+    const isPartialResponse = args.pop();
+    handleIncomingMessageFromChildLogger(
+      'Message from parent being relayed to child, id: %s',
+      getMessageIdsAsLogString(message),
+    );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
   });
 }
 
