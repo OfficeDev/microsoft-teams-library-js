@@ -263,7 +263,12 @@ describe('externalAppAuthenticationForCEA', () => {
   });
 
   describe('authenticateWithSSO', () => {
+    const testAuthId = 'testAuthId';
+    const testConnectionName = 'testConnectionName';
+
     const testRequest = {
+      authId: testAuthId,
+      connectionName: testConnectionName,
       claims: ['claims'],
       silent: true,
     };
@@ -273,7 +278,10 @@ describe('externalAppAuthenticationForCEA', () => {
       expect.assertions(1);
 
       try {
-        await externalAppAuthenticationForCEA.authenticateWithSSO(testAppId, testConversationId, {});
+        await externalAppAuthenticationForCEA.authenticateWithSSO(testAppId, testConversationId, {
+          authId: testAuthId,
+          connectionName: testConnectionName,
+        });
       } catch (e) {
         expect(e).toEqual(new Error(errorLibraryNotInitialized));
       }
@@ -284,7 +292,10 @@ describe('externalAppAuthenticationForCEA', () => {
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
       expect.assertions(1);
       try {
-        await externalAppAuthenticationForCEA.authenticateWithSSO(testAppId, testConversationId, {});
+        await externalAppAuthenticationForCEA.authenticateWithSSO(testAppId, testConversationId, {
+          authId: testAuthId,
+          connectionName: testConnectionName,
+        });
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -327,6 +338,8 @@ describe('externalAppAuthenticationForCEA', () => {
             expect(message.args).toEqual([
               testAppId.toString(),
               testConversationId,
+              testRequest.authId,
+              testRequest.connectionName,
               testRequest.claims,
               testRequest.silent,
             ]);
@@ -351,6 +364,8 @@ describe('externalAppAuthenticationForCEA', () => {
             expect(message.args).toEqual([
               testAppId.toString(),
               testConversationId,
+              testRequest.authId,
+              testRequest.connectionName,
               testRequest.claims,
               testRequest.silent,
             ]);
