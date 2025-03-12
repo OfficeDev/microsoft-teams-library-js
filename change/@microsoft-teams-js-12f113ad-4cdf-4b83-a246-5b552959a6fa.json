@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Updated `externalAppAuthenticationForCEA.authenticateWithSSO` to take `authId` and `connectionName` parameters.",
+  "packageName": "@microsoft/teams-js",
+  "email": "email not defined",
+  "dependentChangeType": "patch"
+}
