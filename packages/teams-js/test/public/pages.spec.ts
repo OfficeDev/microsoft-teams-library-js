@@ -8,8 +8,10 @@ import {
   isAppNavigationParametersObject,
 } from '../../src/internal/pagesHelpers';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
+import { activateChildProxyingCommunication } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { resetBuildFeatureFlags } from '../../src/public/featureFlags';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import * as pages from '../../src/public/pages/pages';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
@@ -33,9 +35,11 @@ describe('Testing pages module', () => {
     beforeEach(() => {
       utils = new Utils();
       utils.messages = [];
+      activateChildProxyingCommunication();
     });
     afterEach(() => {
       app._uninitialize();
+      resetBuildFeatureFlags();
     });
 
     describe('Testing pages.returnFocus function', () => {
