@@ -9,14 +9,16 @@ import {
 } from '../public/interfaces';
 import * as pages from '../public/pages/pages';
 import { runtime } from '../public/runtime';
+import { sendMessageEventToChild, shouldEventBeRelayedToChild } from './childCommunication';
 import {
   sendAndHandleStatusAndReason,
   sendAndHandleStatusAndReasonWithDefaultError,
   sendAndUnwrap,
   sendMessageToParent,
 } from './communication';
+import { registerHandler } from './handlers';
 import { ensureInitialized } from './internalAPIs';
-import { ApiVersionNumber } from './telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -182,4 +184,36 @@ export function convertAppNavigationParametersToNavigateToAppParams(
     appId: params.appId.toString(),
     webUrl: params.webUrl ? params.webUrl.toString() : undefined,
   };
+}
+
+//Back Stack Helpers
+
+let backButtonPressHandler: (() => boolean) | undefined;
+
+export function getBackButtonPressHandler(): (() => boolean) | undefined {
+  return backButtonPressHandler;
+}
+
+export function setBackButtonPressHandler(handler: () => boolean): void {
+  backButtonPressHandler = handler;
+}
+
+export function initializeBackStackHelper(): void {
+  registerHandler(
+    getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_BackStack_RegisterBackButtonPressHandler),
+    'backButtonPress',
+    handleBackButtonPress,
+    false,
+  );
+}
+
+function handleBackButtonPress(): void {
+  if (!backButtonPressHandler || !backButtonPressHandler()) {
+    if (shouldEventBeRelayedToChild()) {
+      // If the current window did not handle it let the child window
+      sendMessageEventToChild('backButtonPress', []);
+    } else {
+      pages.backStack.navigateBack();
+    }
+  }
 }

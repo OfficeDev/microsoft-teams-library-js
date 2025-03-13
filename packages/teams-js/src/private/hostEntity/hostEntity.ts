@@ -14,6 +14,14 @@ import * as tab from './tab';
 
 export enum AppTypes {
   edu = 'EDU',
+  /**
+   * Enum to indicate apps should be filtered for base Townhall.
+   */
+  baseTownhall = 'BASE_TOWNHALL',
+  /**
+   * Enum to indicate apps should be filtered for streaming Townhall.
+   */
+  streamingTownhall = 'STREAMING_TOWNHALL',
 }
 
 /**

@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added new `AppTypes` enum values to filter base and streaming townhalls.",
+  "packageName": "@microsoft/teams-js",
+  "email": "cmachart@microsoft.com",
+  "dependentChangeType": "patch"
+}
