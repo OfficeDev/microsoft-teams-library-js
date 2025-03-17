@@ -29,7 +29,6 @@ describe('AppSDK-privateAPIs', () => {
     utils.childMessages = [];
     utils.childWindow.closed = false;
     utils.mockWindow.parent = utils.parentWindow;
-    activateChildProxyingCommunication();
 
     // Set a mock window for testing
     app._initialize(utils.mockWindow);
@@ -40,7 +39,243 @@ describe('AppSDK-privateAPIs', () => {
     if (app._uninitialize) {
       app._uninitialize();
     }
-    resetBuildFeatureFlags();
+  });
+
+  describe('childProxyingCommunication on', () => {
+    beforeEach(() => {
+      activateChildProxyingCommunication();
+    });
+
+    afterEach(() => {
+      resetBuildFeatureFlags();
+    });
+
+    it('should treat messages to frameless windows as coming from the child', async () => {
+      utils.initializeAsFrameless(['https://www.example.com']);
+
+      // Simulate recieving a child message as a frameless window
+      await utils.processMessage!({
+        origin: 'https://www.example.com',
+        source: utils.childWindow,
+        data: {
+          id: 0,
+          func: 'themeChange',
+          args: ['testTheme'],
+        } as MessageResponse,
+      } as MessageEvent);
+
+      // The frameless window should send a response back to the child window
+      expect(utils.childMessages.length).toBe(1);
+    });
+
+    it('should properly pass partial responses to nested child frames ', async () => {
+      expect.assertions(5);
+      utils.initializeAsFrameless(['https://www.example.com']);
+
+      // Simulate recieving a child message as a frameless window
+      await utils.processMessage!({
+        origin: 'https://www.example.com',
+        source: utils.childWindow,
+        data: {
+          id: 100,
+          func: 'testPartialFunc1',
+          args: ['testArgs'],
+        } as MessageResponse,
+      } as MessageEvent);
+
+      // Send a partial response back
+      const parentMessage = utils.findMessageByActionName('testPartialFunc1');
+      utils.respondToNativeMessage(parentMessage, true, {});
+
+      // The child window should properly receive the partial response plus
+      // the original event
+      expect(utils.childMessages.length).toBe(2);
+      const secondChildMessage = utils.childMessages[1];
+      expect(utils.childMessages[0].func).toBe('testPartialFunc1');
+      expect(secondChildMessage.isPartialResponse).toBeTruthy();
+
+      // Pass the final response (non partial)
+      utils.respondToNativeMessage(parentMessage, false, {});
+
+      // The child window should properly receive the non-partial response
+      expect(utils.childMessages.length).toBe(3);
+      const thirdChildMessage = utils.childMessages[2];
+      expect(thirdChildMessage.isPartialResponse).toBeFalsy();
+    });
+
+    it('Proxy messages to child window', async () => {
+      await utils.initializeWithContext('content', undefined, ['https://teams.microsoft.com']);
+      await utils.processMessage!({
+        origin: 'https://outlook.office.com',
+        source: utils.childWindow,
+        data: {
+          id: 100,
+          func: 'backButtonClick',
+          args: [],
+        } as MessageResponse,
+      } as MessageEvent);
+
+      const message = utils.findMessageByFunc('backButtonClick');
+      expect(message).not.toBeNull();
+      expect(utils.childMessages.length).toBe(1);
+      const childMessage = utils.findMessageInChildByFunc('backButtonClick');
+      expect(childMessage).not.toBeNull();
+    });
+
+    describe('sendCustomMessageToChild', () => {
+      it('should successfully pass message and provided arguments', async () => {
+        await utils.initializeWithContext('content', undefined, ['https://tasks.office.com']);
+
+        //trigger child window setup
+        //trigger processing of message received from child
+        await utils.processMessage!({
+          origin: 'https://tasks.office.com',
+          source: utils.childWindow,
+          data: {
+            func: 'customAction1',
+            args: ['arg1', 123, 4.5, true],
+          } as MessageRequest,
+        } as MessageEvent);
+
+        const customActionName = 'customMessageToChild1';
+        sendCustomEvent(customActionName, ['arg1', 234, 12.3, true]);
+
+        const message = utils.findMessageInChildByFunc(customActionName);
+        expect(message).not.toBeNull();
+        expect(message!.args).toEqual(['arg1', 234, 12.3, true]);
+      });
+    });
+
+    describe('addCustomHandler', () => {
+      it('should successfully pass message and provided arguments of customAction from child', async () => {
+        await utils.initializeWithContext('content', undefined, ['https://tasks.office.com']);
+
+        const customActionName = 'customAction2';
+        let callbackCalled = false;
+        let callbackArgs: any[] | null = null;
+        registerCustomHandler(customActionName, (...args) => {
+          callbackCalled = true;
+          callbackArgs = args;
+          return [];
+        });
+
+        //trigger processing of message received from child
+        await utils.processMessage!({
+          origin: 'https://tasks.office.com',
+          source: utils.childWindow,
+          data: {
+            id: 3,
+            func: customActionName,
+            args: ['arg1', 123, 4.5, true],
+          } as MessageRequest,
+        } as MessageEvent);
+
+        expect(callbackCalled).toBe(true);
+        expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
+      });
+
+      it('should not process be invoked due to invalid origin message from child window', async () => {
+        await utils.initializeWithContext('content', undefined, ['https://tasks.office.com']);
+
+        const customActionName = 'customAction2';
+        let callbackCalled = false;
+        let callbackArgs: any[] | null = null;
+        registerCustomHandler(customActionName, (...args) => {
+          callbackCalled = true;
+          callbackArgs = args;
+          return [];
+        });
+
+        //trigger processing of message received from child
+        await utils.processMessage!({
+          origin: 'https://tasks.office.net',
+          source: utils.childWindow,
+          data: {
+            func: customActionName,
+            args: ['arg1', 123, 4.5, true],
+          } as MessageRequest,
+        } as MessageEvent);
+
+        expect(callbackCalled).toBe(false);
+        expect(callbackArgs).toBeNull();
+      });
+    });
+  });
+
+  it('should treat messages to frameless windows as coming from the child and not proxy them', async () => {
+    utils.initializeAsFrameless(['https://www.example.com']);
+
+    // Simulate recieving a child message as a frameless window
+    await utils.processMessage!({
+      origin: 'https://www.example.com',
+      source: utils.childWindow,
+      data: {
+        id: 0,
+        func: 'themeChange',
+        args: ['testTheme'],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    // The frameless window should send a response back to the child window
+    expect(utils.childMessages.length).toBe(0);
+  });
+
+  it('should not pass partial responses to nested child frames ', async () => {
+    expect.assertions(2);
+    utils.initializeAsFrameless(['https://www.example.com']);
+
+    // Simulate recieving a child message as a frameless window
+    await utils.processMessage!({
+      origin: 'https://www.example.com',
+      source: utils.childWindow,
+      data: {
+        id: 100,
+        func: 'testPartialFunc1',
+        args: ['testArgs'],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    // Send a partial response back
+    const parentMessage = utils.findMessageByFunc('testPartialFunc1');
+    expect(parentMessage).toBeNull();
+    expect(utils.childMessages.length).toBe(0);
+  });
+
+  it('Messages are not proxied to child window', async () => {
+    await utils.initializeWithContext('content', undefined, ['https://teams.microsoft.com']);
+    await utils.processMessage!({
+      origin: 'https://outlook.office.com',
+      source: utils.childWindow,
+      data: {
+        id: 100,
+        func: 'backButtonClick',
+        args: [],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    const message = utils.findMessageByFunc('backButtonClick');
+    expect(message).toBeNull();
+    expect(utils.childMessages.length).toBe(0);
+  });
+
+  describe('sendCustomMessageToChild', () => {
+    it('should not pass message and provided arguments to child', async () => {
+      await utils.initializeWithContext('content', undefined, ['https://tasks.office.com']);
+
+      //trigger child window setup
+      //trigger processing of message received from child
+      await utils.processMessage!({
+        origin: 'https://tasks.office.com',
+        source: utils.childWindow,
+        data: {
+          func: 'customAction1',
+          args: ['arg1', 123, 4.5, true],
+        } as MessageRequest,
+      } as MessageEvent);
+
+      const customActionName = 'customMessageToChild1';
+      expect(() => sendCustomEvent(customActionName, ['arg1', 234, 12.3, true])).toThrow();
+    });
   });
 
   it('should exist in the global namespace', () => {
@@ -393,78 +628,6 @@ describe('AppSDK-privateAPIs', () => {
     expect(changedUserSettingValue).toBe('value');
   });
 
-  it('should treat messages to frameless windows as coming from the child', async () => {
-    utils.initializeAsFrameless(['https://www.example.com']);
-
-    // Simulate recieving a child message as a frameless window
-    await utils.processMessage!({
-      origin: 'https://www.example.com',
-      source: utils.childWindow,
-      data: {
-        id: 0,
-        func: 'themeChange',
-        args: ['testTheme'],
-      } as MessageResponse,
-    } as MessageEvent);
-
-    // The frameless window should send a response back to the child window
-    expect(utils.childMessages.length).toBe(1);
-  });
-
-  it('should properly pass partial responses to nested child frames ', async () => {
-    expect.assertions(5);
-    utils.initializeAsFrameless(['https://www.example.com']);
-
-    // Simulate recieving a child message as a frameless window
-    await utils.processMessage!({
-      origin: 'https://www.example.com',
-      source: utils.childWindow,
-      data: {
-        id: 100,
-        func: 'testPartialFunc1',
-        args: ['testArgs'],
-      } as MessageResponse,
-    } as MessageEvent);
-
-    // Send a partial response back
-    const parentMessage = utils.findMessageByActionName('testPartialFunc1');
-    utils.respondToNativeMessage(parentMessage, true, {});
-
-    // The child window should properly receive the partial response plus
-    // the original event
-    expect(utils.childMessages.length).toBe(2);
-    const secondChildMessage = utils.childMessages[1];
-    expect(utils.childMessages[0].func).toBe('testPartialFunc1');
-    expect(secondChildMessage.isPartialResponse).toBeTruthy();
-
-    // Pass the final response (non partial)
-    utils.respondToNativeMessage(parentMessage, false, {});
-
-    // The child window should properly receive the non-partial response
-    expect(utils.childMessages.length).toBe(3);
-    const thirdChildMessage = utils.childMessages[2];
-    expect(thirdChildMessage.isPartialResponse).toBeFalsy();
-  });
-
-  it('Proxy messages to child window', async () => {
-    await utils.initializeWithContext('content', undefined, ['https://teams.microsoft.com']);
-    await utils.processMessage!({
-      origin: 'https://outlook.office.com',
-      source: utils.childWindow,
-      data: {
-        id: 100,
-        func: 'backButtonClick',
-        args: [],
-      } as MessageResponse,
-    } as MessageEvent);
-
-    const message = utils.findMessageByFunc('backButtonClick');
-    expect(message).not.toBeNull();
-    expect(utils.childMessages.length).toBe(1);
-    const childMessage = utils.findMessageInChildByFunc('backButtonClick');
-    expect(childMessage).not.toBeNull();
-  });
-
   describe('sendCustomMessage', () => {
     it('should successfully pass message and provided arguments', async () => {
       expect.assertions(1);
@@ -474,30 +637,6 @@ describe('AppSDK-privateAPIs', () => {
 
       const message = utils.findMessageByActionName('customMessage');
       expect(message.args).toEqual(['arg1', 2, 3.0, true]);
-    });
-  });
-
-  describe('sendCustomMessageToChild', () => {
-    it('should successfully pass message and provided arguments', async () => {
-      await utils.initializeWithContext('content', undefined, ['https://tasks.office.com']);
-
-      //trigger child window setup
-      //trigger processing of message received from child
-      await utils.processMessage!({
-        origin: 'https://tasks.office.com',
-        source: utils.childWindow,
-        data: {
-          func: 'customAction1',
-          args: ['arg1', 123, 4.5, true],
-        } as MessageRequest,
-      } as MessageEvent);
-
-      const customActionName = 'customMessageToChild1';
-      sendCustomEvent(customActionName, ['arg1', 234, 12.3, true]);
-
-      const message = utils.findMessageInChildByFunc(customActionName);
-      expect(message).not.toBeNull();
-      expect(message!.args).toEqual(['arg1', 234, 12.3, true]);
     });
   });
 
@@ -519,8 +658,8 @@ describe('AppSDK-privateAPIs', () => {
       expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
     });
 
-    it('should successfully pass message and provided arguments of customAction from child', async () => {
-      await utils.initializeWithContext('content', undefined, ['https://tasks.office.com']);
+    it('should not process handler from any child window', async () => {
+      await utils.initializeWithContext('content', undefined, ['https://example.com']);
 
       const customActionName = 'customAction2';
       let callbackCalled = false;
@@ -531,34 +670,7 @@ describe('AppSDK-privateAPIs', () => {
         return [];
       });
 
-      //trigger processing of message received from child
-      await utils.processMessage!({
-        origin: 'https://tasks.office.com',
-        source: utils.childWindow,
-        data: {
-          id: 3,
-          func: customActionName,
-          args: ['arg1', 123, 4.5, true],
-        } as MessageRequest,
-      } as MessageEvent);
-
-      expect(callbackCalled).toBe(true);
-      expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
-    });
-
-    it('should not process be invoked due to invalid origin message from child window', async () => {
-      await utils.initializeWithContext('content', undefined, ['https://tasks.office.com']);
-
-      const customActionName = 'customAction2';
-      let callbackCalled = false;
-      let callbackArgs: any[] | null = null;
-      registerCustomHandler(customActionName, (...args) => {
-        callbackCalled = true;
-        callbackArgs = args;
-        return [];
-      });
-
-      //trigger processing of message received from child
+      // trigger processing of message received from child
       await utils.processMessage!({
         origin: 'https://tasks.office.net',
         source: utils.childWindow,
