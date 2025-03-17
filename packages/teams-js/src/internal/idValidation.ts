@@ -1,4 +1,5 @@
 import { AppId } from '../public/appId';
+import { ValidatedStringId } from '../public/validatedStringId';
 import { hasScriptTags } from './utils';
 
 /**
@@ -12,17 +13,18 @@ import { hasScriptTags } from './utils';
  * @param potentialAppId A string to check if it's a "valid" app id
  * @throws Error with a message describing the exact validation violation
  */
-export function validateStringAsAppId(potentialAppId: string): void {
-  if (hasScriptTags(potentialAppId)) {
-    throw new Error(`Potential app id (${potentialAppId}) is invalid; it contains script tags.`);
-  }
-
+export function validateStringLength(potentialAppId: string): void {
   if (!isStringWithinAppIdLengthLimits(potentialAppId)) {
     throw new Error(
       `Potential app id (${potentialAppId}) is invalid; its length ${potentialAppId.length} is not within the length limits (${minimumValidAppIdLength}-${maximumValidAppIdLength}).`,
     );
   }
+}
 
+export function validateSafeContent(potentialAppId: string): void {
+  if (hasScriptTags(potentialAppId)) {
+    throw new Error(`Potential app id (${potentialAppId}) is invalid; it contains script tags.`);
+  }
   if (doesStringContainNonPrintableCharacters(potentialAppId)) {
     throw new Error(`Potential app id (${potentialAppId}) is invalid; it contains non-printable characters.`);
   }
@@ -53,5 +55,19 @@ export function doesStringContainNonPrintableCharacters(str: string): boolean {
 export function validateAppIdInstance(potentialAppId: AppId): void {
   if (!(potentialAppId instanceof AppId)) {
     throw new Error(`Potential app id (${potentialAppId}) is invalid; it is not an instance of AppId class.`);
+  }
+}
+
+/**
+ * @hidden
+ * Checks if the incoming id is an instance of ValidatedStringId
+ * @param id An object to check if it's an instance of ValidatedStringId
+ * @throws Error with a message describing the violation
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateStringIdInstance(id: ValidatedStringId): void {
+  if (!(id instanceof ValidatedStringId)) {
+    throw new Error(`Potential id (${id}) is invalid; it is not an instance of ValidatedStringId class.`);
   }
 }

@@ -4,8 +4,9 @@ import {
   maximumValidAppIdLength,
   minimumValidAppIdLength,
   validateAppIdInstance,
-  validateStringAsAppId,
-} from '../../src/internal/appIdValidation';
+  validateSafeContent,
+  validateStringLength,
+} from '../../src/internal/idValidation';
 import { AppId } from '../../src/public/appId';
 
 describe('doesStringContainNonPrintableCharacters', () => {
@@ -61,23 +62,23 @@ describe('isStringWithinAppIdLengthLimits', () => {
 
 // Since there are plenty of tests validating the individual validation functions, these tests are intentionally not as
 // comprehensive as those. It executes a few basic tests and also validates that the error messages thrown are as expected.
-describe('validateStringAsAppId', () => {
+describe('validateSafeContent', () => {
   test('should not throw for "valid" app ids', () => {
-    expect(() => validateStringAsAppId('8e6523aa-97f9-49ad-8614-75cae22f6597')).not.toThrow();
-    expect(() => validateStringAsAppId('com.microsoft.teamspace.tab.youtube')).not.toThrow();
+    expect(() => validateSafeContent('8e6523aa-97f9-49ad-8614-75cae22f6597')).not.toThrow();
+    expect(() => validateSafeContent('com.microsoft.teamspace.tab.youtube')).not.toThrow();
   });
 
   test('should throw error with "script" in message for app id containing script tag', () => {
-    expect(() => validateStringAsAppId('<script>alert("Hello")</script>')).toThrowError(/script/i);
+    expect(() => validateSafeContent('<script>alert("Hello")</script>')).toThrowError(/script/i);
   });
 
   test('should throw error with "length" in message for app id too long or too short', () => {
-    expect(() => validateStringAsAppId('a')).toThrowError(/length/i);
-    expect(() => validateStringAsAppId('a'.repeat(maximumValidAppIdLength))).toThrowError(/length/i);
+    expect(() => validateStringLength('a')).toThrowError(/length/i);
+    expect(() => validateStringLength('a'.repeat(maximumValidAppIdLength))).toThrowError(/length/i);
   });
 
   test('should throw error with "printable" in message for app id containing non-printable characters', () => {
-    expect(() => validateStringAsAppId('hello\u0080world')).toThrowError(/printable/i);
+    expect(() => validateSafeContent('hello\u0080world')).toThrowError(/printable/i);
   });
 });
 
