@@ -62,7 +62,7 @@ const AuthenticateWithSSOForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     conversationId: string;
-    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
+    authTokenRequest: externalAppAuthenticationForCEA.AuthTokenRequestParametersForCEA;
   }>({
     name: 'authenticateWithSSOForCEA',
     title: 'Authenticate With SSO',
@@ -76,6 +76,12 @@ const AuthenticateWithSSOForCEA = (): React.ReactElement =>
         }
         if (!input.authTokenRequest) {
           throw new Error('authTokenRequest is required');
+        }
+        if (!input.authTokenRequest.authId) {
+          throw new Error('authId is required');
+        }
+        if (!input.authTokenRequest.connectionName) {
+          throw new Error('connectionName is required');
         }
       },
       submit: async (input) => {
