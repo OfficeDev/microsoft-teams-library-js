@@ -33,7 +33,7 @@ const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVer
 export async function authenticateWithSSO(
   appId: AppId,
   conversationId: string,
-  authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters,
+  authTokenRequest: AuthTokenRequestParametersForCEA,
 ): Promise<void> {
   ensureInitialized(runtime, FrameContexts.content);
 
@@ -45,7 +45,14 @@ export async function authenticateWithSSO(
 
   return callFunctionInHost(
     ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-    [appId, conversationId, authTokenRequest.claims, authTokenRequest.silent],
+    [
+      appId,
+      conversationId,
+      authTokenRequest.authId,
+      authTokenRequest.connectionName,
+      authTokenRequest.claims,
+      authTokenRequest.silent,
+    ],
     getApiVersionTag(
       externalAppAuthenticationTelemetryVersionNumber,
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
