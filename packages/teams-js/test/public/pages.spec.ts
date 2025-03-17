@@ -1455,7 +1455,7 @@ describe('Testing pages module', () => {
               validateRequestWithoutArguments(message, 'settings.save.success');
             });
 
-            it('pages.config.registerOnSaveHandler should proxy to childWindow', async () => {
+            it('pages.config.registerOnSaveHandler should not proxy to childWindow', async () => {
               await utils.initializeWithContext(context, undefined, ['https://teams.microsoft.com']);
               pages.config.registerOnSaveHandler(jest.fn());
               await utils.processMessage!({
