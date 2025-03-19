@@ -19,8 +19,18 @@ export class AppId extends ValidatedStringId {
    * @param appIdAsString An app id represented as a string
    * @throws Error with a message describing the exact validation violation
    */
-  public constructor(private readonly appIdAsString: string) {
-    super(appIdAsString); // Calls base validation
+  public constructor(appIdAsString: string) {
+    super(appIdAsString);
     validateStringLength(appIdAsString);
+  }
+
+  /**
+   * Returns a JSON representation of the AppId object
+   * @returns A JSON representation of the AppId object
+   *
+   * note: this method maintains backward compatibility for JSON serialization
+   */
+  public toJSON(): object {
+    return { appIdAsString: this.toString() };
   }
 }

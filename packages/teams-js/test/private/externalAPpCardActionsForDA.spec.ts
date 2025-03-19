@@ -40,12 +40,10 @@ describe('externalAppCardActionsForDA', () => {
     };
     const serializedInput = [
       testAppId.serialize(),
-      testActionOpenUrlDialogInfo.url.href,
-      testActionOpenUrlDialogInfo.title,
-      testActionOpenUrlDialogInfo.size.height,
-      testActionOpenUrlDialogInfo.size.width,
+      new externalAppCardActionsForDA.SerializableActionOpenUrlDialogInfo(testActionOpenUrlDialogInfo).serialize(),
       testTraceId.serialize(),
     ];
+
     const testError = {
       errorCode: ExternalAppErrorCode.INTERNAL_ERROR,
       message: 'testMessage',

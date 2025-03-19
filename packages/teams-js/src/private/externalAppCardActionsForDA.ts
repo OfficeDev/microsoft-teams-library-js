@@ -14,6 +14,7 @@ import { DialogSize } from '../public';
 import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { ISerializable } from '../public/serializable.interface';
 import { ValidatedStringId } from '../public/validatedStringId';
 import { isExternalAppError } from './externalAppErrorHandling';
 
@@ -75,14 +76,7 @@ export async function processActionOpenUrlDialog(
 
   return callFunctionInHost(
     ApiName.ExternalAppCardActionsForDA_ProcessActionOpenUrlDialog,
-    [
-      appId,
-      actionOpenUrlDialogInfo.url.href,
-      actionOpenUrlDialogInfo.title,
-      actionOpenUrlDialogInfo.size.height,
-      actionOpenUrlDialogInfo.size.width,
-      traceId,
-    ],
+    [appId, new SerializableActionOpenUrlDialogInfo(actionOpenUrlDialogInfo), traceId],
     getApiVersionTag(
       externalAppCardActionsForDATelemetryVersionNumber,
       ApiName.ExternalAppCardActionsForDA_ProcessActionOpenUrlDialog,
@@ -118,4 +112,17 @@ export function isSupported(): boolean {
 function validateInput(appId: AppId, traceId: ValidatedStringId): void {
   validateAppIdInstance(appId);
   validateStringIdInstance(traceId);
+}
+
+export class SerializableActionOpenUrlDialogInfo implements ISerializable {
+  public constructor(private info: IActionOpenUrlDialogInfo) {}
+
+  public serialize(): object {
+    const { url, title, size } = this.info;
+    return {
+      url: url.href,
+      title,
+      size,
+    };
+  }
 }
