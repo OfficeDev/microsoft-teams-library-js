@@ -27,6 +27,7 @@ export * as externalAppAuthentication from './externalAppAuthentication';
 export * as externalAppAuthenticationForCEA from './externalAppAuthenticationForCEA';
 export * as externalAppCardActions from './externalAppCardActions';
 export * as externalAppCardActionsForCEA from './externalAppCardActionsForCEA';
+export * as externalAppCardActionsForDA from './externalAppCardActionsForDA';
 export * as externalAppCommands from './externalAppCommands';
 export * as files from './files';
 export * as meetingRoom from './meetingRoom';
