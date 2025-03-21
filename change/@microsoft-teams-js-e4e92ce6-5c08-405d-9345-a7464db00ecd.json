@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Removed child messaging proxying by default to avoid security issues. If an app still needs this pattern, it can be activated through the feature flag function `activateChildProxyingCommunication` which enables child proxying for that app.",
+  "packageName": "@microsoft/teams-js",
+  "email": "31258166+juanscr@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
