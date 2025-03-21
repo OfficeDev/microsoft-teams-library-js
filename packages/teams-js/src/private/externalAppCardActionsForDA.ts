@@ -1,6 +1,7 @@
 /**
+ * @beta
  * @hidden
- * Module to delegate adaptive card action execution to the host
+ * Module to delegate adaptive card action for Declarative Agents execution to the host
  * @internal
  * Limited to Microsoft-internal use
  * @module
@@ -86,6 +87,7 @@ export async function processActionOpenUrlDialog(
 }
 
 /**
+ * @beta
  * @hidden
  * Checks if the externalAppCardActions capability is supported by the host
  * @returns boolean to represent whether externalAppCardActions capability is supported
@@ -100,6 +102,7 @@ export function isSupported(): boolean {
 }
 
 /**
+ * @beta
  * @hidden
  * Checks if the externalAppCardActions capability is supported by the host
  * @returns boolean to represent whether externalAppCardActions capability is supported
@@ -114,6 +117,14 @@ function validateInput(appId: AppId, traceId: ValidatedStringId): void {
   validateStringIdInstance(traceId);
 }
 
+/**
+ * @beta
+ * @hidden
+ * Serializable class for ActionOpenUrlDialogInfo to send info to the host
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export class SerializableActionOpenUrlDialogInfo implements ISerializable {
   public constructor(private info: IActionOpenUrlDialogInfo) {}
 
