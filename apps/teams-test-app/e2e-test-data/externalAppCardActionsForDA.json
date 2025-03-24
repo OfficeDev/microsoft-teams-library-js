@@ -1,8 +1,8 @@
 {
   "name": "ExternalAppCardActionsForDA",
-  "version": ">=2.34.0",
+  "version": ">2.34.0",
   "hostSdkVersion": {
-    "web": ">=7.2.0"
+    "web": ">7.2.0"
   },
   "platforms": "Web",
   "testCases": [
