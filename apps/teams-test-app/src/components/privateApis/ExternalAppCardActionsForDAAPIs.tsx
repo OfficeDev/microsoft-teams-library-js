@@ -1,4 +1,4 @@
-import { AppId, externalAppCardActionsForDA, ValidatedStringId } from '@microsoft/teams-js';
+import { AppId, externalAppCardActionsForDA, UUID } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
@@ -38,13 +38,13 @@ const ProcessActionOpenUrlDialog = (): React.ReactElement =>
         await externalAppCardActionsForDA.processActionOpenUrlDialog(
           new AppId(input.appId),
           input.actionOpenUrlDialogInfo,
-          new ValidatedStringId(input.traceId),
+          new UUID(input.traceId),
         );
         return 'Completed';
       },
     },
     defaultInput: JSON.stringify({
-      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3testAppId',
+      appId: '01b92759-b43a-4085-ac22-7772d94bb7a9',
       actionOpenUrlDialogInfo: {
         title: 'Test Dialog',
         size: {
@@ -53,7 +53,7 @@ const ProcessActionOpenUrlDialog = (): React.ReactElement =>
         },
         url: new URL('https://localhost:4000'),
       },
-      traceId: 'b7f8c0a0-6c1d-4a9a-9c0a-testConversationId',
+      traceId: '123e4567-e89b-12d3-a456-426614174000',
     }),
   });
 

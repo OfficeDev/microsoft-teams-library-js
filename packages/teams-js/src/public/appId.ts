@@ -1,5 +1,5 @@
 import { validateStringLength } from '../internal/idValidation';
-import { ValidatedStringId } from './validatedStringId';
+import { ValidatedSafeString } from './validatedStringId';
 
 /**
  * A strongly-typed class used to represent a "valid" app id.
@@ -12,7 +12,7 @@ import { ValidatedStringId } from './validatedStringId';
  * for script tags, length, and non-printable characters. Validation will be updated in the future to ensure
  * the app id is a valid UUID as legacy apps update.
  */
-export class AppId extends ValidatedStringId {
+export class AppId extends ValidatedSafeString {
   /**
    * Creates a strongly-typed AppId from a string
    *

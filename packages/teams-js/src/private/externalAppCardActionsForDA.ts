@@ -8,7 +8,7 @@
  */
 
 import { callFunctionInHost } from '../internal/communication';
-import { validateAppIdInstance, validateStringIdInstance } from '../internal/idValidation';
+import { validateAppIdInstance } from '../internal/idValidation';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { DialogSize } from '../public';
@@ -16,7 +16,7 @@ import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ISerializable } from '../public/serializable.interface';
-import { ValidatedStringId } from '../public/validatedStringId';
+import { UUID, validateUuidInstance } from '../public/uuidObject';
 import { isExternalAppError } from './externalAppErrorHandling';
 
 /**
@@ -66,7 +66,7 @@ export interface IActionOpenUrlDialogInfo extends IDialogActionBase {
 export async function processActionOpenUrlDialog(
   appId: AppId,
   actionOpenUrlDialogInfo: IActionOpenUrlDialogInfo,
-  traceId: ValidatedStringId,
+  traceId: UUID,
 ): Promise<void> {
   ensureInitialized(runtime, FrameContexts.content);
 
@@ -112,9 +112,9 @@ export function isSupported(): boolean {
  * @internal
  * Limited to Microsoft-internal use
  */
-function validateInput(appId: AppId, traceId: ValidatedStringId): void {
+function validateInput(appId: AppId, traceId: UUID): void {
   validateAppIdInstance(appId);
-  validateStringIdInstance(traceId);
+  validateUuidInstance(traceId);
 }
 
 /**

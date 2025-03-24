@@ -4,7 +4,7 @@ import { ISerializable } from './serializable.interface';
 /**
  * A strongly typed class used to represent a "valid" string id.
  */
-export class ValidatedStringId implements ISerializable {
+export class ValidatedSafeString implements ISerializable {
   /**
    * Creates a strongly-typed Id from a string
    *

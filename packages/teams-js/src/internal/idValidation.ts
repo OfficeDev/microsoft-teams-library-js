@@ -1,5 +1,5 @@
 import { AppId } from '../public/appId';
-import { ValidatedStringId } from '../public/validatedStringId';
+import { ValidatedSafeString } from '../public/validatedStringId';
 import { hasScriptTags } from './utils';
 
 /**
@@ -60,14 +60,14 @@ export function validateAppIdInstance(potentialAppId: AppId): void {
 
 /**
  * @hidden
- * Checks if the incoming id is an instance of ValidatedStringId
- * @param id An object to check if it's an instance of ValidatedStringId
+ * Checks if the incoming id is an instance of ValidatedSafeString
+ * @param id An object to check if it's an instance of ValidatedSafeString
  * @throws Error with a message describing the violation
  * @internal
  * Limited to Microsoft-internal use
  */
-export function validateStringIdInstance(id: ValidatedStringId): void {
-  if (!(id instanceof ValidatedStringId)) {
-    throw new Error(`Potential id (${id}) is invalid; it is not an instance of ValidatedStringId class.`);
+export function validateSafeStringInstance(id: ValidatedSafeString): void {
+  if (!(id instanceof ValidatedSafeString)) {
+    throw new Error(`Potential id (${id}) is invalid; it is not an instance of ValidatedSafeString class.`);
   }
 }

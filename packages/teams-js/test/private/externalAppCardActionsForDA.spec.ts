@@ -3,16 +3,15 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { ApiName } from '../../src/internal/telemetry';
 import { ExternalAppErrorCode } from '../../src/private/constants';
 import * as externalAppCardActionsForDA from '../../src/private/externalAppCardActionsForDA';
-import { AppId, FrameContexts } from '../../src/public';
+import { AppId, FrameContexts, UUID } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { DialogDimension, errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { ValidatedStringId } from '../../src/public/validatedStringId';
 import { Utils } from '../utils';
 describe('externalAppCardActionsForDA', () => {
   let utils = new Utils();
-  // This ID was randomly generated for the purpose of these tests
+  // These ID were randomly generated for the purpose of these tests
   const testAppId = new AppId('01b92759-b43a-4085-ac22-7772d94bb7a9');
-  const testTraceId = new ValidatedStringId('61f7f08d-477b-42b8-9c36-44eabb58eb92');
+  const testTraceId = new UUID('123e4567-e89b-12d3-a456-426614174000');
   beforeEach(() => {
     utils = new Utils();
     utils.mockWindow.parent = undefined;
