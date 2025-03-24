@@ -85,6 +85,20 @@ describe('externalAppCardActionsForDA', () => {
             );
           }
         });
+        it(`should throw error if the traceId is not an instance of UUID class - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForDA: {} } });
+          try {
+            await externalAppCardActionsForDA.processActionOpenUrlDialog(
+              testAppId,
+              testActionOpenUrlDialogInfo,
+              {} as unknown as UUID,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('Potential id ({}) is invalid; it is not an instance of UUID class.'));
+          }
+        });
         it(`should resolve when called from context - ${frameContext}`, async () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);

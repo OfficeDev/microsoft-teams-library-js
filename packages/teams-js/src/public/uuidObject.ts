@@ -47,6 +47,6 @@ export class UUID implements ISerializable {
  */
 export function validateUuidInstance(id: UUID): void {
   if (!(id instanceof UUID)) {
-    throw new Error(`Potential id (${id}) is invalid; it is not an instance of UUID class.`);
+    throw new Error(`Potential id (${JSON.stringify(id)}) is invalid; it is not an instance of UUID class.`);
   }
 }
