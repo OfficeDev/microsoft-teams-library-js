@@ -1,5 +1,5 @@
 import { AppId } from '../public/appId';
-import { ValidatedSafeString } from '../public/validatedStringId';
+import { ValidatedSafeString } from '../public/validatedSafeString';
 import { hasScriptTags } from './utils';
 
 /**

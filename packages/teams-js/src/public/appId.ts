@@ -1,5 +1,5 @@
 import { validateStringLength } from '../internal/idValidation';
-import { ValidatedSafeString } from './validatedStringId';
+import { ValidatedSafeString } from './validatedSafeString';
 
 /**
  * A strongly-typed class used to represent a "valid" app id.
