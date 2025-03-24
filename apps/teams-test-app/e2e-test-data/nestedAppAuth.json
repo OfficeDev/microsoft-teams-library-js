@@ -17,9 +17,8 @@
       "expectedTestAppValue": "https://local.teams.office.com:8080"
     },
     {
-      "title": "nestedAppAuth isisDeeplyNestedAuthSupported API Call - Success",
+      "title": "nestedAppAuth isDeeplyNestedAuthSupported API Call - Success",
       "type": "callResponse",
-      "version": ">2.35.0",
       "boxSelector": "#box_checkIsDeeplyNestedAuthSupported",
       "hostSdkVersion": {
         "web": ">=7.1.0",
