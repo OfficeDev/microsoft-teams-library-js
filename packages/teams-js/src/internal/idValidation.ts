@@ -60,14 +60,14 @@ export function validateAppIdInstance(potentialAppId: AppId): void {
 
 /**
  * @hidden
- * Checks if the incoming id is an instance of ValidatedSafeString
- * @param id An object to check if it's an instance of ValidatedSafeString
+ * Checks if the incoming string is an instance of ValidatedSafeString
+ * @param incomingString An object to check if it's an instance of ValidatedSafeString
  * @throws Error with a message describing the violation
  * @internal
  * Limited to Microsoft-internal use
  */
-export function validateSafeStringInstance(id: ValidatedSafeString): void {
-  if (!(id instanceof ValidatedSafeString)) {
-    throw new Error(`Potential id (${id}) is invalid; it is not an instance of ValidatedSafeString class.`);
+export function validateSafeStringInstance(incomingString: ValidatedSafeString): void {
+  if (!(incomingString instanceof ValidatedSafeString)) {
+    throw new Error(`The string (${incomingString}) is invalid; it is not an instance of ValidatedSafeString class.`);
   }
 }
