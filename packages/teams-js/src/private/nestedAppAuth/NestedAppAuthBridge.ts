@@ -2,6 +2,8 @@ import { v4 as generateUUID } from 'uuid';
 
 /**
  * Interface representing a request structure.
+ *
+ * @see {@link https://github.com/OfficeDev/microsoft-teams-library-js/blob/main/packages/teams-js/src/internal/nestedAppAuthUtils.ts | NestedAppAuthRequest}
  */
 interface NestedAppAuthRequest {
   id: string;
@@ -15,6 +17,8 @@ interface NestedAppAuthRequest {
 
 /**
  * Interface representing a response structure.
+ *
+ * @see {@link https://github.com/OfficeDev/microsoft-teams-library-js/blob/main/packages/teams-js/src/internal/messageObjects.ts | SerializedMessageResponse}
  */
 interface SerializedMessageResponse {
   id: number;
@@ -34,6 +38,8 @@ interface ParsedNestedAppAuthMessageData {
 
 /**
  * Interface representing the bridge used for message passing.
+ *
+ * @see {@link https://github.com/OfficeDev/microsoft-teams-library-js/blob/main/packages/teams-js/src/internal/nestedAppAuthUtils.ts | NestedAppAuthBridge}
  */
 interface NestedAppAuthBridge {
   addEventListener: (eventName: 'message', callback: (response: string) => void) => void;
@@ -57,6 +63,8 @@ type NestedAppAuthBridgeHandlers = {
 
 /**
  * Enum defining possible event names for NestedAppAuth messages.
+ *
+ * @see {@link https://github.com/OfficeDev/microsoft-teams-library-js/blob/main/packages/teams-js/src/internal/nestedAppAuthUtils.ts | NestedAppAuthMessageEventNames}
  */
 const enum NestedAppAuthMessageEventNames {
   Request = 'NestedAppAuthRequest',
