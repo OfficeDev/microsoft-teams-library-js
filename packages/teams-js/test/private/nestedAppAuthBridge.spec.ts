@@ -203,6 +203,7 @@ describe('NestedAppAuthBridge', () => {
 
     // Fire the event with a valid structure but non-HTTPS origin
     const msg = {
+      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
       origin: 'http://contoso.com',
       source: mockWindow.top,
       data: {
