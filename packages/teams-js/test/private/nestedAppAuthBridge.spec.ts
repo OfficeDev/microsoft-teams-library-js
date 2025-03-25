@@ -204,7 +204,7 @@ describe('NestedAppAuthBridge', () => {
     // Fire the event with a valid structure but non-HTTPS origin
     const msg = {
       origin: 'http://contoso.com',
-      source: mockWindow.top, // typically the same as top
+      source: mockWindow.top,
       data: {
         args: [null, JSON.stringify({ messageType: 'NestedAppAuthResponse' })],
       },
@@ -228,12 +228,9 @@ describe('NestedAppAuthBridge', () => {
     nestedAppAuthBridge.initialize(mockWindow as unknown as Window, mockOrigin, true);
     const bridge = mockWindow.nestedAppAuthBridge as NestedAppAuthBridge;
 
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    bridge.postMessage(JSON.stringify({ messageType: 'NestedAppAuthRequest' }));
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith('window.top is not available for posting messages');
-    consoleErrorSpy.mockRestore();
+    expect(() => {
+      bridge.postMessage(JSON.stringify({ messageType: 'NestedAppAuthRequest' }));
+    }).toThrow('window.top is not available for posting messages');
   });
 
   it('should ignore message if evt.data is not an object', () => {
