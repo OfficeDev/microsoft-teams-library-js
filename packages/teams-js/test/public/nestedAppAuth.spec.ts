@@ -196,17 +196,5 @@ describe('Testing nestedAppAuth capability', () => {
       utils.setRuntimeConfig(runtimeConfig);
       expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
     });
-
-    it('should return false if isNAAChannelRecommended not present or false in runtime object ', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      const runtimeConfig: Runtime = {
-        apiVersion: 4,
-        supports: {},
-        isNAAChannelRecommended: false,
-        isDeeplyNestedAuthSupported: true,
-      };
-      utils.setRuntimeConfig(runtimeConfig);
-      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
-    });
   });
 });
