@@ -976,6 +976,7 @@ function createMessageRequest(
     args: args || [],
     apiVersionTag: apiVersionTag,
     isProxiedFromChild: isProxiedFromChild ?? false,
+    teamsJsUniqueBundleId: GlobalVars.instanceBundleId,
   };
 }
 

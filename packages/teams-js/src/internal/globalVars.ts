@@ -1,4 +1,5 @@
 import { FrameContexts } from '../public/constants';
+import { UUID } from '../public/uuidObject';
 export class GlobalVars {
   public static initializeCalled = false;
   public static initializeCompleted = false;
@@ -9,4 +10,5 @@ export class GlobalVars {
   public static hostClientType: string | undefined = undefined;
   public static clientSupportedSDKVersion: string;
   public static printCapabilityEnabled = false;
+  public static readonly instanceBundleId: string = new UUID().toString();
 }
