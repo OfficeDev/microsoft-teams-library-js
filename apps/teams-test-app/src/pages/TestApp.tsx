@@ -43,6 +43,7 @@ import ExternalAppAuthenticationAPIs from '../components/privateApis/ExternalApp
 import ExternalAppAuthenticationForCEAAPIs from '../components/privateApis/ExternalAppAuthenticationForCEAAPIs';
 import ExternalAppCardActionsAPIs from '../components/privateApis/ExternalAppCardActionsAPIs';
 import ExternalAppCardActionsForCEAAPIs from '../components/privateApis/ExternalAppCardActionsForCEAAPIs';
+import ExternalAppCardActionsForDAAPIs from '../components/privateApis/ExternalAppCardActionsForDAAPIs';
 import ExternalAppCommandsAPIs from '../components/privateApis/ExternalAppCommandsAPIs';
 import FilesAPIs from '../components/privateApis/FilesAPIs';
 import FullTrustAPIs from '../components/privateApis/FullTrustAPIs';
@@ -123,6 +124,7 @@ export const TestApp: React.FC = () => {
       { name: 'ExternalAppAuthenticationForCEAAPIs', component: <ExternalAppAuthenticationForCEAAPIs /> },
       { name: 'ExternalAppCardActionsAPIs', component: <ExternalAppCardActionsAPIs /> },
       { name: 'ExternalAppCardActionsForCEAAPIs', component: <ExternalAppCardActionsForCEAAPIs /> },
+      { name: 'ExternalAppCardActionsForDAAPIs', component: <ExternalAppCardActionsForDAAPIs /> },
       { name: 'ExternalAppCommandsAPIs', component: <ExternalAppCommandsAPIs /> },
       { name: 'FilesAPIs', component: <FilesAPIs /> },
       { name: 'FullTrustAPIs', component: <FullTrustAPIs /> },

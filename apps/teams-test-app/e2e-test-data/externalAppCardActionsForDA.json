@@ -1,0 +1,16 @@
+{
+  "name": "ExternalAppCardActionsForDA",
+  "version": ">2.34.0",
+  "hostSdkVersion": {
+    "web": ">7.2.0"
+  },
+  "platforms": "Web",
+  "testCases": [
+    {
+      "title": "checkExternalAppCardActionsForDACapability API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_checkExternalAppCardActionsForDACapability",
+      "expectedTestAppValue": "External App Card Actions For DA module is supported"
+    }
+  ]
+}

@@ -86,6 +86,7 @@ export * as videoEffects from './videoEffects';
 export * as search from './search';
 export * as sharing from './sharing/sharing';
 export * as stageView from './stageView/stageView';
+export { ValidatedSafeString } from './validatedSafeString';
 export { version } from './version';
 export * as visualMedia from './visualMedia/visualMedia';
 export * as webStorage from './webStorage';
