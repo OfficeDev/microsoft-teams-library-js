@@ -221,6 +221,7 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly apiVersion: 4;
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isNAAChannelRecommended?: boolean;
+  readonly canParentManageNAATrustedOrigins?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly app?: {

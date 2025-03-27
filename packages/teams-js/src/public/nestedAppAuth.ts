@@ -42,6 +42,20 @@ export function getParentOrigin(): string | null {
   return Communication.parentOrigin;
 }
 
+/**
+ * Checks if the parent has the capability to manage its list of trusted child origins
+ * for Nested App Auth (NAA).
+ *
+ * @returns true if parent can manage NAA TrustedOrigins, false otherwise
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @beta
+ */
+export function canParentManageNAATrustedOrigins(): boolean {
+  return (ensureInitialized(runtime) && runtime.canParentManageNAATrustedOrigins) ?? false;
+}
+
 function isNAAChannelRecommendedForLegacyTeamsMobile(): boolean {
   return ensureInitialized(runtime) &&
     isHostAndroidOrIOSOrIPadOSOrVisionOS() &&

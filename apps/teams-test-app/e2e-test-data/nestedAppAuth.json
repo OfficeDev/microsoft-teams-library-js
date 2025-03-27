@@ -15,6 +15,13 @@
       "boxSelector": "#box_getParentOrigin",
       "platformsExcluded": ["iOS", "Android"],
       "expectedTestAppValue": "https://local.teams.office.com:8080"
+    },
+    {
+      "title": "nestedAppAuth canParentManageNAATrustedOrigins API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_canParentManageNAATrustedOrigins",
+      "platformsExcluded": ["iOS", "Android"],
+      "expectedTestAppValue": "true"
     }
   ]
 }

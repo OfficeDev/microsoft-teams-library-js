@@ -79,6 +79,13 @@ const NestedAppAuthAPIs = (): ReactElement => {
       onClick: async () => `${nestedAppAuth.getParentOrigin()}`,
     });
 
+  const CanParentManageNAATrustedOrigins = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'canParentManageNAATrustedOrigins',
+      title: 'Can Parent Manage NAA TrustedOrigins list',
+      onClick: async () => `${nestedAppAuth.canParentManageNAATrustedOrigins()}`,
+    });
+
   const SendMessageToNestedAppAuthBridge = (): React.ReactElement =>
     ApiWithTextInput({
       name: 'sendMessageToNestedAppAuthBridge',
@@ -231,6 +238,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
   return (
     <ModuleWrapper title="NestedAppAuth">
       <CheckIsNAAChannelRecommended />
+      <CanParentManageNAATrustedOrigins />
       <GetParentOrigin />
       <SendMessageToNestedAppAuthBridge />
       <SendMessageToTopWindow />
