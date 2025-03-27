@@ -53,6 +53,13 @@ export * as chat from './chat';
 export { OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export * as clipboard from './clipboard';
 export * as dialog from './dialog/dialog';
+export {
+  activateChildProxyingCommunication,
+  getCurrentFeatureFlagsState,
+  overwriteFeatureFlagsState,
+  RuntimeFeatureFlags,
+  setFeatureFlagsState,
+} from './featureFlags';
 export * as nestedAppAuth from './nestedAppAuth';
 export * as geoLocation from './geoLocation/geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
@@ -79,6 +86,7 @@ export * as videoEffects from './videoEffects';
 export * as search from './search';
 export * as sharing from './sharing/sharing';
 export * as stageView from './stageView/stageView';
+export { ValidatedSafeString } from './validatedSafeString';
 export { version } from './version';
 export * as visualMedia from './visualMedia/visualMedia';
 export * as webStorage from './webStorage';

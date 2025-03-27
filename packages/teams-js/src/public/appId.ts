@@ -1,5 +1,5 @@
-import { validateStringAsAppId } from '../internal/appIdValidation';
-import { ISerializable } from './serializable.interface';
+import { validateStringLength } from '../internal/idValidation';
+import { ValidatedSafeString } from './validatedSafeString';
 
 /**
  * A strongly-typed class used to represent a "valid" app id.
@@ -12,31 +12,25 @@ import { ISerializable } from './serializable.interface';
  * for script tags, length, and non-printable characters. Validation will be updated in the future to ensure
  * the app id is a valid UUID as legacy apps update.
  */
-export class AppId implements ISerializable {
+export class AppId extends ValidatedSafeString {
   /**
    * Creates a strongly-typed AppId from a string
    *
    * @param appIdAsString An app id represented as a string
    * @throws Error with a message describing the exact validation violation
    */
-  public constructor(private readonly appIdAsString: string) {
-    validateStringAsAppId(appIdAsString);
+  public constructor(appIdAsString: string) {
+    super(appIdAsString);
+    validateStringLength(appIdAsString);
   }
 
   /**
-   * @hidden
-   * @internal
+   * Returns a JSON representation of the AppId object
+   * @returns A JSON representation of the AppId object
    *
-   * @returns A serializable representation of an AppId, used for passing AppIds to the host.
+   * note: this method maintains backward compatibility for JSON serialization
    */
-  public serialize(): object | string {
-    return this.toString();
-  }
-
-  /**
-   * Returns the app id as a string
-   */
-  public toString(): string {
-    return this.appIdAsString;
+  public toJSON(): object {
+    return { appIdAsString: this.toString() };
   }
 }
