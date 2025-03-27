@@ -8,6 +8,14 @@
       "type": "callResponse",
       "boxSelector": "#box_checkIsNAAChannelRecommended",
       "expectedTestAppValue": "NAA channel is recommended"
+    },
+    {
+      "title": "nestedAppAuth get parent origin",
+      "type": "callResponse",
+      "version": ">2.35.0",
+      "boxSelector": "#box_getParentOrigin",
+      "platformsExcluded": ["iOS", "Android"],
+      "expectedTestAppValue": "https://local.teams.office.com:8080"
     }
   ]
 }

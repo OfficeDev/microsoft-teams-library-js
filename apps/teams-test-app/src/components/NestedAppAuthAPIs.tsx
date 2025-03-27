@@ -72,6 +72,13 @@ const NestedAppAuthAPIs = (): ReactElement => {
       onClick: async () => `NAA channel ${nestedAppAuth.isNAAChannelRecommended() ? 'is' : 'is not'} recommended`,
     });
 
+  const GetParentOrigin = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'getParentOrigin',
+      title: 'Get Parent Origin',
+      onClick: async () => `${nestedAppAuth.getParentOrigin()}`,
+    });
+
   const SendMessageToNestedAppAuthBridge = (): React.ReactElement =>
     ApiWithTextInput({
       name: 'sendMessageToNestedAppAuthBridge',
@@ -224,6 +231,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
   return (
     <ModuleWrapper title="NestedAppAuth">
       <CheckIsNAAChannelRecommended />
+      <GetParentOrigin />
       <SendMessageToNestedAppAuthBridge />
       <SendMessageToTopWindow />
       <AddChildIframeSection />
