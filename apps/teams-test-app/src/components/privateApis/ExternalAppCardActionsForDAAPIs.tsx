@@ -35,9 +35,13 @@ const ProcessActionOpenUrlDialog = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
+        const actionOpenUrlDialogInfo: externalAppCardActionsForDA.IActionOpenUrlDialogInfo = {
+          ...input.actionOpenUrlDialogInfo,
+          url: new URL(input.actionOpenUrlDialogInfo.url),
+        };
         await externalAppCardActionsForDA.processActionOpenUrlDialog(
           new AppId(input.appId),
-          input.actionOpenUrlDialogInfo,
+          actionOpenUrlDialogInfo,
           new UUID(input.traceId),
         );
         return 'Completed';
