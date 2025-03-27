@@ -130,6 +130,12 @@ export function tryPolyfillWithNestedAppAuthBridge(
     return;
   }
 
+  // Skip injection if this is a nested iframe (i.e., not the top-most app)
+  if (window.parent !== window.top) {
+    logger('Default NAA bridge injection not supported in nested iframe. Use standalone NAA bridge instead.');
+    return;
+  }
+
   const parsedClientSupportedSDKVersion = (() => {
     try {
       return JSON.parse(clientSupportedSDKVersion);

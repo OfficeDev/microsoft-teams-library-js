@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Disabled default nested app auth bridge injection for nested child app",
+  "packageName": "@microsoft/teams-js",
+  "email": "baljesingh@microsoft.com",
+  "dependentChangeType": "patch"
+}
