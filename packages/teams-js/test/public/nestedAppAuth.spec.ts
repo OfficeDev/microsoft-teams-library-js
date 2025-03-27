@@ -10,7 +10,7 @@ import { Utils } from '../utils';
 /**
  * Test cases for nested app auth APIs
  */
-describe('Testing nestedAppAuth capability', () => {
+describe('nestedAppAuth', () => {
   const utils = new Utils();
   beforeEach(() => {
     utils.processMessage = null;
@@ -26,7 +26,7 @@ describe('Testing nestedAppAuth capability', () => {
     }
   });
 
-  describe('nestedAppAuth.isNAAChannelRecommended', () => {
+  describe('isNAAChannelRecommended', () => {
     it('should throw if called before initialization', () => {
       utils.uninitializeRuntimeConfig();
       expect(() => nestedAppAuth.isNAAChannelRecommended()).toThrowError(new Error(errorLibraryNotInitialized));
@@ -64,37 +64,21 @@ describe('Testing nestedAppAuth capability', () => {
       expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
     });
 
-    it('should return false if isNAAChannelRecommended is false in runtimeConfig for macos client', async () => {
-      await utils.initializeWithContext(FrameContexts.content, HostClientType.macos);
-      const runtimeConfig: Runtime = {
-        apiVersion: 4,
-        supports: {},
-        isNAAChannelRecommended: false,
-      };
-      utils.setRuntimeConfig(runtimeConfig);
-      expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
-    });
+    describe('should return false when isNAAChannelRecommended is false across different host clients', () => {
+      const hostClients = [HostClientType.macos, HostClientType.desktop, HostClientType.web];
 
-    it('should return false if isNAAChannelRecommended is false in runtimeConfig for desktop client', async () => {
-      await utils.initializeWithContext(FrameContexts.content, HostClientType.desktop);
-      const runtimeConfig: Runtime = {
-        apiVersion: 4,
-        supports: {},
-        isNAAChannelRecommended: false,
-      };
-      utils.setRuntimeConfig(runtimeConfig);
-      expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
-    });
-
-    it('should return false if isNAAChannelRecommended is false in runtimeConfig for web client', async () => {
-      await utils.initializeWithContext(FrameContexts.content, HostClientType.web);
-      const runtimeConfig: Runtime = {
-        apiVersion: 4,
-        supports: {},
-        isNAAChannelRecommended: false,
-      };
-      utils.setRuntimeConfig(runtimeConfig);
-      expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
+      hostClients.forEach((hostClient) => {
+        it(`${hostClient} client`, async () => {
+          await utils.initializeWithContext(FrameContexts.content, hostClient);
+          const runtimeConfig: Runtime = {
+            apiVersion: 4,
+            supports: {},
+            isNAAChannelRecommended: false,
+          };
+          utils.setRuntimeConfig(runtimeConfig);
+          expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
+        });
+      });
     });
 
     it('should return false if isNAAChannelRecommended is false and isLegacyTeams is false in runtimeConfig', async () => {
@@ -121,40 +105,22 @@ describe('Testing nestedAppAuth capability', () => {
       expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
     });
 
-    it('should return true if isNAAChannelRecommended is false and isLegacyTeams is true in runtimeConfig for android client that supports nestedAppAuth', async () => {
-      await utils.initializeWithContext(FrameContexts.content, HostClientType.android);
-      const runtimeConfig: Runtime = {
-        apiVersion: 4,
-        supports: { nestedAppAuth },
-        isNAAChannelRecommended: false,
-        isLegacyTeams: true,
-      };
-      utils.setRuntimeConfig(runtimeConfig);
-      expect(nestedAppAuth.isNAAChannelRecommended()).toBeTruthy();
-    });
+    describe('should return true if isNAAChannelRecommended is false and isLegacyTeams is true in runtimeConfig for following clients that supports nestedAppAuth', () => {
+      const hostClients = [HostClientType.ipados, HostClientType.ios, HostClientType.android];
 
-    it('should return true if isNAAChannelRecommended is false and isLegacyTeams is true in runtimeConfig for ios client that supports nestedAppAuth', async () => {
-      await utils.initializeWithContext(FrameContexts.content, HostClientType.ios);
-      const runtimeConfig: Runtime = {
-        apiVersion: 4,
-        supports: { nestedAppAuth },
-        isNAAChannelRecommended: false,
-        isLegacyTeams: true,
-      };
-      utils.setRuntimeConfig(runtimeConfig);
-      expect(nestedAppAuth.isNAAChannelRecommended()).toBeTruthy();
-    });
-
-    it('should return true if isNAAChannelRecommended is false and isLegacyTeams is true in runtimeConfig for ipados client that supports nestedAppAuth', async () => {
-      await utils.initializeWithContext(FrameContexts.content, HostClientType.ipados);
-      const runtimeConfig: Runtime = {
-        apiVersion: 4,
-        supports: { nestedAppAuth },
-        isNAAChannelRecommended: false,
-        isLegacyTeams: true,
-      };
-      utils.setRuntimeConfig(runtimeConfig);
-      expect(nestedAppAuth.isNAAChannelRecommended()).toBeTruthy();
+      hostClients.forEach((hostClient) => {
+        it(`for ${hostClient} client`, async () => {
+          await utils.initializeWithContext(FrameContexts.content, hostClient);
+          const runtimeConfig: Runtime = {
+            apiVersion: 4,
+            supports: { nestedAppAuth },
+            isNAAChannelRecommended: false,
+            isLegacyTeams: true,
+          };
+          utils.setRuntimeConfig(runtimeConfig);
+          expect(nestedAppAuth.isNAAChannelRecommended()).toBeTruthy();
+        });
+      });
     });
   });
   describe('nestedAppAuth.isDeeplyNestedAuthSupported', () => {
@@ -195,6 +161,17 @@ describe('Testing nestedAppAuth capability', () => {
       };
       utils.setRuntimeConfig(runtimeConfig);
       expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
+    });
+  });
+  describe('getParentOrigin', () => {
+    it('should throw if called before initialization', () => {
+      utils.uninitializeRuntimeConfig();
+      expect(() => nestedAppAuth.getParentOrigin()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('should return parentOrigin if initialized and set', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      expect(nestedAppAuth.getParentOrigin()).toBe(utils.validOrigin);
     });
   });
 });
