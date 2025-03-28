@@ -221,6 +221,7 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly apiVersion: 4;
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isNAAChannelRecommended?: boolean;
+  readonly isDeeplyNestedAuthSupported?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly app?: {
@@ -371,6 +372,7 @@ export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   apiVersion: 4,
   isNAAChannelRecommended: false,
+  isDeeplyNestedAuthSupported: false,
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {

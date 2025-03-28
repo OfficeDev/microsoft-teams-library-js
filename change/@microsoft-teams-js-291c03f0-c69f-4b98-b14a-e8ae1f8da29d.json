@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added support for `isDeeplyNestedAuthSupported` to check if deeply nested auth is supported.",
+  "packageName": "@microsoft/teams-js",
+  "email": "baljesingh@microsoft.com",
+  "dependentChangeType": "patch"
+}

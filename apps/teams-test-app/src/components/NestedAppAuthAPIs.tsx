@@ -79,6 +79,14 @@ const NestedAppAuthAPIs = (): ReactElement => {
       onClick: async () => `${nestedAppAuth.getParentOrigin()}`,
     });
 
+  const CheckIsDeeplyNestedAuthSupported = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkIsDeeplyNestedAuthSupported',
+      title: 'Check Deeply Nested Auth Supported',
+      onClick: async () =>
+        `NAA deeply nested auth ${nestedAppAuth.isDeeplyNestedAuthSupported() ? 'is' : 'is not'} supported`,
+    });
+
   const SendMessageToNestedAppAuthBridge = (): React.ReactElement =>
     ApiWithTextInput({
       name: 'sendMessageToNestedAppAuthBridge',
@@ -232,6 +240,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
     <ModuleWrapper title="NestedAppAuth">
       <CheckIsNAAChannelRecommended />
       <GetParentOrigin />
+      <CheckIsDeeplyNestedAuthSupported />
       <SendMessageToNestedAppAuthBridge />
       <SendMessageToTopWindow />
       <AddChildIframeSection />
