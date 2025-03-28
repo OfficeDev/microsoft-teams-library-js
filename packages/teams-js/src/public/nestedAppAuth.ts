@@ -43,6 +43,20 @@ export function getParentOrigin(): string | null {
 }
 
 /**
+ * Checks if the parent has the capability to manage its list of trusted child origins
+ * for Nested App Auth (NAA).
+ *
+ * @returns true if parent can manage NAA TrustedOrigins, false otherwise
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @beta
+ */
+export function canParentManageNAATrustedOrigins(): boolean {
+  return (ensureInitialized(runtime) && runtime.canParentManageNAATrustedOrigins) ?? false;
+}
+
+/**
  * Checks if NAA deeply nested scenario supported by the host
  * @returns true if host supports
  *
