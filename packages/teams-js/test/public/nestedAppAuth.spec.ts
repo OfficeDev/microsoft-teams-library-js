@@ -123,6 +123,46 @@ describe('nestedAppAuth', () => {
       });
     });
   });
+  describe('nestedAppAuth.isDeeplyNestedAuthSupported', () => {
+    it('should throw if called before initialization', () => {
+      utils.uninitializeRuntimeConfig();
+      expect(() => nestedAppAuth.isDeeplyNestedAuthSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('should return true if isDeeplyNestedAuthSupported set to true in runtime object', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      const runtimeConfig: Runtime = {
+        apiVersion: 4,
+        supports: {},
+        isNAAChannelRecommended: true,
+        isDeeplyNestedAuthSupported: true,
+      };
+      utils.setRuntimeConfig(runtimeConfig);
+      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeTruthy();
+    });
+
+    it('should return false if isDeeplyNestedAuthSupported set to false in runtime object ', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      const runtimeConfig: Runtime = {
+        apiVersion: 4,
+        supports: {},
+        isNAAChannelRecommended: false,
+      };
+      utils.setRuntimeConfig(runtimeConfig);
+      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
+    });
+
+    it('should return false if isDeeplyNestedAuthSupported not present in runtime object ', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      const runtimeConfig: Runtime = {
+        apiVersion: 4,
+        supports: {},
+        isNAAChannelRecommended: true,
+      };
+      utils.setRuntimeConfig(runtimeConfig);
+      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
+    });
+  });
   describe('getParentOrigin', () => {
     it('should throw if called before initialization', () => {
       utils.uninitializeRuntimeConfig();
