@@ -234,6 +234,8 @@ export const enum ApiName {
   Navigation_NavigateCrossDomain = 'navigation.navigateCrossDomain',
   Navigation_NavigateToTab = 'navigation.navigateToTab',
   Navigation_ReturnFocus = 'navigation.returnFocus',
+  NestedAppAuth_Execute = 'nestedAppAuth.execute',
+  NestedAppAuth_ManageNAATrustedOrigins = 'nestedAppAuth.manageNAATrustedOrigins',
   Notifications_ShowNotification = 'notifications.showNotification',
   OtherAppStateChange_Install = 'otherApp.install',
   OtherAppStateChange_UnregisterInstall = 'otherApp.unregisterInstall',

@@ -1,5 +1,7 @@
+import * as communication from '../../src/internal/communication';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app, FrameContexts, HostClientType, nestedAppAuth } from '../../src/public';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -212,6 +214,141 @@ describe('nestedAppAuth', () => {
     it('should return parentOrigin if initialized and set', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       expect(nestedAppAuth.getParentOrigin()).toBe(utils.validOrigin);
+    });
+  });
+
+  describe('addNAATrustedOrigins and deleteNAATrustedOrigins', () => {
+    const validOrigins = ['https://microsoft.com', 'https://contoso.com'];
+    const runtimeConfig: Runtime = {
+      apiVersion: 4,
+      supports: {},
+      canParentManageNAATrustedOrigins: true,
+    };
+    let callFunctionSpy: jest.SpyInstance;
+
+    beforeEach(async () => {
+      callFunctionSpy = jest.spyOn(communication, 'callFunctionInHostAndHandleResponse').mockResolvedValue('success');
+    });
+
+    afterEach(() => {
+      callFunctionSpy.mockRestore();
+    });
+
+    it('should throw if called before initialization', async () => {
+      utils.uninitializeRuntimeConfig();
+      await expect(nestedAppAuth.addNAATrustedOrigins(validOrigins)).rejects.toThrow(errorLibraryNotInitialized);
+    });
+
+    it('should throw exception when canParentManageNAATrustedOrigins is false', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+
+      const runtimeConfig: Runtime = {
+        apiVersion: 4,
+        supports: {},
+        canParentManageNAATrustedOrigins: false,
+      };
+      utils.setRuntimeConfig(runtimeConfig);
+
+      expect(nestedAppAuth.canParentManageNAATrustedOrigins()).toBeFalsy();
+
+      try {
+        await nestedAppAuth.addNAATrustedOrigins(validOrigins);
+        fail('Expected error was not thrown');
+      } catch (e) {
+        expect(e).toBe(errorNotSupportedOnPlatform);
+      }
+
+      try {
+        await nestedAppAuth.deleteNAATrustedOrigins(validOrigins);
+        fail('Expected error was not thrown');
+      } catch (e) {
+        expect(e).toBe(errorNotSupportedOnPlatform);
+      }
+    });
+
+    it('should throw if passed invalid origin strings', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig(runtimeConfig);
+
+      const invalidOrigins = ['invalid-url'];
+
+      await expect(nestedAppAuth.addNAATrustedOrigins(invalidOrigins)).rejects.toThrow(/Invalid origin provided/);
+    });
+
+    it('should throw if passed empty array', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig(runtimeConfig);
+
+      await expect(nestedAppAuth.addNAATrustedOrigins([])).rejects.toThrow(
+        /parameter is required and must be a non-empty array/,
+      );
+      await expect(nestedAppAuth.deleteNAATrustedOrigins([])).rejects.toThrow(
+        /parameter is required and must be a non-empty array/,
+      );
+    });
+
+    it('should successfully call host function to add trusted origins', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig(runtimeConfig);
+
+      const result = await nestedAppAuth.addNAATrustedOrigins(validOrigins);
+      expect(result).toEqual('success');
+      expect(callFunctionSpy).toHaveBeenCalledWith(
+        'nestedAppAuth.manageNAATrustedOrigins',
+        expect.any(Array),
+        expect.any(Object),
+        expect.any(String),
+      );
+    });
+
+    it('should successfully call host function to delete trusted origins', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig(runtimeConfig);
+
+      const result = await nestedAppAuth.deleteNAATrustedOrigins(validOrigins);
+      expect(result).toEqual('success');
+      expect(callFunctionSpy).toHaveBeenCalledWith(
+        'nestedAppAuth.manageNAATrustedOrigins',
+        expect.any(Array),
+        expect.any(Object),
+        expect.any(String),
+      );
+    });
+
+    it('should throw error if not called from top-level window - ADD functionality', async () => {
+      const originalParent = window.parent;
+      Object.defineProperty(window, 'parent', { value: {}, configurable: true });
+
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig(runtimeConfig);
+
+      try {
+        await nestedAppAuth.addNAATrustedOrigins(validOrigins);
+        fail('Expected error was not thrown');
+      } catch (e) {
+        expect(e).toBeInstanceOf(Error);
+        expect(e.message).toBe('This API is only available in the top-level parent.');
+      }
+
+      Object.defineProperty(window, 'parent', { value: originalParent });
+    });
+
+    it('should throw error if not called from top-level window - Delete functionality', async () => {
+      const originalParent = window.parent;
+      Object.defineProperty(window, 'parent', { value: {}, configurable: true });
+
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig(runtimeConfig);
+
+      try {
+        await nestedAppAuth.deleteNAATrustedOrigins(validOrigins);
+        fail('Expected error was not thrown');
+      } catch (e) {
+        expect(e).toBeInstanceOf(Error);
+        expect(e.message).toBe('This API is only available in the top-level parent.');
+      }
+
+      Object.defineProperty(window, 'parent', { value: originalParent });
     });
   });
 });
