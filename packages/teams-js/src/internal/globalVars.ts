@@ -10,5 +10,5 @@ export class GlobalVars {
   public static hostClientType: string | undefined = undefined;
   public static clientSupportedSDKVersion: string;
   public static printCapabilityEnabled = false;
-  public static readonly instanceBundleId: string = new UUID().toString();
+  public static readonly teamsJsInstanceId: string = new UUID().toString();
 }

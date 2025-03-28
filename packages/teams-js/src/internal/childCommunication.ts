@@ -57,6 +57,7 @@ type SendMessageToParentHelper = (
   func: string,
   args?: any[],
   isProxiedFromChild?: boolean,
+  teamsJsInstanceId?: string,
 ) => MessageRequestWithRequiredProperties;
 
 type SetCallbackForRequest = (uuid: MessageUUID, callback: Function) => void;
@@ -164,8 +165,8 @@ function sendChildMessageToParent(
     message.func,
     message.args,
     true, // Tags message as proxied from child
+    message.teamsJsInstanceId,
   );
-
   // Copy variable to new pointer
   const requestChildWindowOrigin = ChildCommunication.origin;
   setCallbackForRequest(request.uuid, (...args: any[]): void => {
