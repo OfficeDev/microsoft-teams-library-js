@@ -32,6 +32,7 @@ export * as externalAppCommands from './externalAppCommands';
 export * as files from './files';
 export * as meetingRoom from './meetingRoom';
 export * as messageChannels from './messageChannels/messageChannels';
+export * as nestedAppAuthBridge from './nestedAppAuth/nestedAppAuthBridge';
 export * as notifications from './notifications';
 export * as otherAppStateChange from './otherAppStateChange';
 export * as remoteCamera from './remoteCamera';

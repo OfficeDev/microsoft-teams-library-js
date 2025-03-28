@@ -167,6 +167,12 @@
     {
       "brotli": false,
       "path": "./packages/teams-js/dist/esm/packages/teams-js/src/index.js",
+      "import": "{ nestedAppAuthBridge }",
+      "limit": "4 KB"
+    },
+    {
+      "brotli": false,
+      "path": "./packages/teams-js/dist/esm/packages/teams-js/src/index.js",
       "import": "*"
     }
   ],
