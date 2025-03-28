@@ -1117,6 +1117,10 @@ export enum EventActionSource {
    */
   M365CalendarFormJoinTeamsMeetingButton = 'm365_calendar_form_join_teams_meeting_button',
   /**
+   * Source is calendar join with id.
+   */
+  M365CalendarJoinWithId = 'm365_calendar_join_with_id',
+  /**
    * Other sources.
    */
   Other = 'other',
