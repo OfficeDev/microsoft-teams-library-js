@@ -56,6 +56,18 @@ export function canParentManageNAATrustedOrigins(): boolean {
   return (ensureInitialized(runtime) && runtime.canParentManageNAATrustedOrigins) ?? false;
 }
 
+/**
+ * Checks if NAA deeply nested scenario supported by the host
+ * @returns true if host supports
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @beta
+ */
+export function isDeeplyNestedAuthSupported(): boolean {
+  return (ensureInitialized(runtime) && isNAAChannelRecommended() && runtime.isDeeplyNestedAuthSupported) ?? false;
+}
+
 function isNAAChannelRecommendedForLegacyTeamsMobile(): boolean {
   return ensureInitialized(runtime) &&
     isHostAndroidOrIOSOrIPadOSOrVisionOS() &&
