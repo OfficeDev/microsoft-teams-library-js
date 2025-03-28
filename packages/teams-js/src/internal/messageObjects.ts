@@ -23,7 +23,7 @@ export interface MessageRequest {
   apiVersionTag?: string;
   isPartialResponse?: boolean;
   isProxiedFromChild?: boolean;
-  teamsJsUniqueBundleId?: string;
+  teamsJsInstanceId?: string;
 }
 
 /**
