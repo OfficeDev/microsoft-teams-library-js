@@ -1,8 +1,25 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 05 Feb 2025 16:57:29 GMT and should not be manually modified.
+This log was last generated on Thu, 13 Mar 2025 17:02:30 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.35.0
+
+Thu, 13 Mar 2025 17:02:30 GMT
+
+### Minor changes
+
+- Updated `externalAppAuthenticationForCEA.authenticateWithSSO` to take `authId` and `connectionName` parameters.
+- Added "authId" and "connectionName" parameters to `authTokenRequest` in `ExternalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest`
+- Added new `AppTypes` enum values to filter base and streaming townhalls.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Refactored `backstack` initialization to resolve a `pages` bug when dynamically importing teams-js
+- Refactored child communication to an isolated module, no functionality change. This will allow apps to tree shake this module.
+- Fixed security issue in `authenticate` function for web hosts to avoid using child proxying.
 
 ## 2.34.0
 
