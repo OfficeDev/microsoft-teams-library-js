@@ -260,7 +260,7 @@ describe('childCommunication', () => {
         );
       });
 
-      it("if parent app receives a message request from child app without teamsJs isntance id and 'handleIncomingmessageFromChild' function gets called, the teamsJs instance id be relayed by parent app would be the same as the one from child when passed it to 'sendMessageToParentHelper'", async () => {
+      it("if parent app receives a message request from child app without teamsJs isntance id and 'handleIncomingmessageFromChild' function gets called, the teamsJs instance id be relayed by parent app would be undefined", async () => {
         expect.assertions(1);
         const expectedTeamsJsInstanceId = undefined;
         const mockUUID = { toString: jest.fn(() => 'uuid') } as unknown as UUID;
