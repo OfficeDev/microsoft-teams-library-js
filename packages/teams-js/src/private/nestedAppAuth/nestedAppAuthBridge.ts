@@ -264,7 +264,7 @@ function createNestedAppAuthRequest(data: string): NestedAppAuthRequest {
     uuid: generateUUID(),
     func: 'nestedAppAuth.execute',
     timestamp: timestamp,
-    apiVersionTag: 'v2_nestedAppAuth.execute',
+    apiVersionTag: 'v2_nestedAppAuth.execute', // Hardcoded to avoid coupling with the `ApiName` enum from the TeamsJS core module.
     monotonicTimestamp: timestamp,
     args: [],
     data,
