@@ -517,10 +517,11 @@ function sendMessageToParentHelper(
   actionName: string,
   args: any[] | undefined,
   isProxiedFromChild?: boolean,
+  teamsJsInstanceId?: string,
 ): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
   const targetWindow = Communication.parentWindow;
-  const request = createMessageRequest(apiVersionTag, actionName, args, isProxiedFromChild);
+  const request = createMessageRequest(apiVersionTag, actionName, args, isProxiedFromChild, teamsJsInstanceId);
   HostToAppMessageDelayTelemetry.storeCallbackInformation(request.uuid, {
     name: actionName,
     calledAt: request.timestamp,
@@ -963,10 +964,17 @@ function createMessageRequest(
   func: string,
   args: any[] | undefined,
   isProxiedFromChild?: boolean,
+  teamsJsInstanceId?: string,
 ): MessageRequestWithRequiredProperties {
   const messageId: MessageID = CommunicationPrivate.nextMessageId++;
   const messageUuid: MessageUUID = new MessageUUID();
   CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
+  /**
+   * Only when `isProxiedFromChild` is explicitly set to be true, the message request is created and relayed for child app
+   * Parent app needs to create and relay message request with whatever child app sent to it,
+   * and parent app's TeamsJS instance ID can NOT be used in this case.
+   */
+  const tjsInstanceIdToAttach = isProxiedFromChild === true ? teamsJsInstanceId : GlobalVars.teamsJsInstanceId;
   return {
     id: messageId,
     uuid: messageUuid,
@@ -976,6 +984,7 @@ function createMessageRequest(
     args: args || [],
     apiVersionTag: apiVersionTag,
     isProxiedFromChild: isProxiedFromChild ?? false,
+    teamsJsInstanceId: tjsInstanceIdToAttach,
   };
 }
 

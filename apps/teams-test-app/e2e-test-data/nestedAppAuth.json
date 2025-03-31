@@ -12,9 +12,22 @@
     {
       "title": "nestedAppAuth get parent origin",
       "type": "callResponse",
+      "version": ">2.35.0",
       "boxSelector": "#box_getParentOrigin",
       "platformsExcluded": ["iOS", "Android"],
       "expectedTestAppValue": "https://local.teams.office.com:8080"
+    },
+    {
+      "title": "nestedAppAuth isDeeplyNestedAuthSupported API Call - Success",
+      "type": "callResponse",
+      "version": ">2.35.0",
+      "boxSelector": "#box_checkIsDeeplyNestedAuthSupported",
+      "hostSdkVersion": {
+        "web": ">=7.1.0",
+        "android": ">=6.0.0",
+        "ios": ">=6.0.0"
+      },
+      "expectedTestAppValue": "NAA deeply nested auth is supported"
     }
   ]
 }

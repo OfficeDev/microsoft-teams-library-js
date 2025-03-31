@@ -1866,18 +1866,18 @@ describe('Testing communication', () => {
 
     describe('postMessage', () => {
       it('should post a message when called with a valid NestedAppAuthRequest', async () => {
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(validMessage);
 
-        expect(utils.topMessages.length).toBe(1);
-        expect(utils.topMessages[0].func).toBe(requestName);
-        expect((utils.topMessages[0] as NestedAppAuthRequest).data).toEqual(validMessage);
+        expect(utils.messages.length).toBe(2);
+        expect(utils.messages[1].func).toBe(requestName);
+        expect((utils.messages[1] as NestedAppAuthRequest).data).toEqual(validMessage);
       });
 
       it('should not post a message when called with an invalid message', async () => {
         const invalidMessage = 'Invalid message';
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(invalidMessage);
 
@@ -1886,7 +1886,7 @@ describe('Testing communication', () => {
 
       it('should not post a message when called with a valid JSON that is not a NestedAppAuthRequest', async () => {
         const nonRequestMessage = JSON.stringify({ messageType: 'NonRequestMessage' });
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(nonRequestMessage);
 
@@ -1898,7 +1898,7 @@ describe('Testing communication', () => {
       test('should respond to a valid nestedAppAuthRequest with a nestedAppAuthResponse', async () => {
         const onMessageReceivedCb = jest.fn();
 
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
@@ -1918,7 +1918,7 @@ describe('Testing communication', () => {
       test('should ignore invalid nestedAppAuthResponse', async () => {
         const onMessageReceivedCb = jest.fn();
 
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
@@ -1938,7 +1938,7 @@ describe('Testing communication', () => {
       test('should ignore other SDK messages', async () => {
         const onMessageReceivedCb = jest.fn();
 
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 

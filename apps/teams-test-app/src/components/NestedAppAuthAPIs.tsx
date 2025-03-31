@@ -79,6 +79,21 @@ const NestedAppAuthAPIs = (): ReactElement => {
       onClick: async () => `${nestedAppAuth.getParentOrigin()}`,
     });
 
+  const CanParentManageNAATrustedOrigins = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'canParentManageNAATrustedOrigins',
+      title: 'Can Parent Manage NAA TrustedOrigins list',
+      onClick: async () => `${nestedAppAuth.canParentManageNAATrustedOrigins()}`,
+    });
+
+  const CheckIsDeeplyNestedAuthSupported = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkIsDeeplyNestedAuthSupported',
+      title: 'Check Deeply Nested Auth Supported',
+      onClick: async () =>
+        `NAA deeply nested auth ${nestedAppAuth.isDeeplyNestedAuthSupported() ? 'is' : 'is not'} supported`,
+    });
+
   const SendMessageToNestedAppAuthBridge = (): React.ReactElement =>
     ApiWithTextInput({
       name: 'sendMessageToNestedAppAuthBridge',
@@ -228,13 +243,53 @@ const NestedAppAuthAPIs = (): ReactElement => {
       </div>
     );
   };
+  const AddTrustedOrigin = (): React.ReactElement =>
+    ApiWithTextInput<string[]>({
+      name: 'NAAAddTrustedOrigin',
+      title: 'Add Trusted Origin',
+      onClick: {
+        validateInput: (input) => {
+          if (!Array.isArray(input) || input.length === 0) {
+            throw new Error('At least one origin is required to delete.');
+          }
+        },
+        submit: async (input) => {
+          const result = await nestedAppAuth.addNAATrustedOrigins(input);
+          return JSON.stringify(result);
+        },
+      },
+      defaultInput: JSON.stringify(['https://contoso.com']),
+    });
+
+  const DeleteTrustedOrigin = (): React.ReactElement =>
+    ApiWithTextInput<string[]>({
+      name: 'NAADeleteTrustedOrigin',
+      title: 'Delete Trusted Origin',
+      onClick: {
+        validateInput: (input) => {
+          if (!Array.isArray(input) || input.length === 0) {
+            throw new Error('At least one origin is required to delete.');
+          }
+        },
+        submit: async (input) => {
+          const result = await nestedAppAuth.deleteNAATrustedOrigins(input);
+          return JSON.stringify(result);
+        },
+      },
+      defaultInput: JSON.stringify(['https://contoso.com']),
+    });
+
   return (
     <ModuleWrapper title="NestedAppAuth">
       <CheckIsNAAChannelRecommended />
+      <CanParentManageNAATrustedOrigins />
       <GetParentOrigin />
+      <CheckIsDeeplyNestedAuthSupported />
       <SendMessageToNestedAppAuthBridge />
       <SendMessageToTopWindow />
       <AddChildIframeSection />
+      <AddTrustedOrigin />
+      <DeleteTrustedOrigin />
     </ModuleWrapper>
   );
 };

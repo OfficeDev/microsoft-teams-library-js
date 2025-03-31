@@ -7,7 +7,7 @@ import {
 } from '../../src/internal/childCommunication';
 import { uninitializeCommunication } from '../../src/internal/communication';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { activateChildProxyingCommunication, overwriteFeatureFlagsState } from '../../src/public';
+import { activateChildProxyingCommunication, overwriteFeatureFlagsState, UUID } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { resetBuildFeatureFlags } from '../../src/public/featureFlags';
 import { Utils } from '../utils';
@@ -215,6 +215,91 @@ describe('childCommunication', () => {
         await utils.respondToMessage(sentMessage, 'testResponse');
         const response = utils.findMessageResponseInChildById(requestID);
         expect(response).toBeNull();
+      });
+
+      it("if parent app receives a message request from child app with teamsJs isntance id and 'handleIncomingmessageFromChild' function gets called, the teamsJs instance id be relayed by parent app would be the same as the one from child when passed it to 'sendMessageToParentHelper'", async () => {
+        expect.assertions(1);
+        const expectedTeamsJsInstanceId = 'test-instance-id';
+        const mockUUID = { toString: jest.fn(() => 'uuid') } as unknown as UUID;
+        const evt: DOMMessageEvent = {
+          data: {
+            id: 'test-id',
+            uuid: mockUUID,
+            func: 'test-func',
+            teamsJsInstanceId: expectedTeamsJsInstanceId,
+          },
+        } as DOMMessageEvent;
+
+        // Set child window
+        shouldProcessChildMessage(utils.childWindow, childOrigin);
+
+        const sendMessageToParentHelper = jest
+          .fn()
+          .mockImplementation((apiVersionTag, actionName, args, isProxiedFromChild, teamsJsInstanceId) => {
+            return {
+              id: 'test-id',
+              uuid: mockUUID,
+              func: actionName,
+              args: args,
+              apiVersionTag: apiVersionTag,
+              isProxiedFromChild: isProxiedFromChild,
+              teamsJsInstanceId: teamsJsInstanceId,
+            };
+          });
+        const setCallbackForRequest = jest.fn();
+
+        await handleIncomingMessageFromChild(evt, utils.childWindow, sendMessageToParentHelper, setCallbackForRequest);
+
+        // Check if sendMessageToParentHelper was called with the correct teamsJs instance id
+        expect(sendMessageToParentHelper).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.anything(),
+          undefined,
+          true,
+          expectedTeamsJsInstanceId,
+        );
+      });
+
+      it("if parent app receives a message request from child app without teamsJs isntance id and 'handleIncomingmessageFromChild' function gets called, the teamsJs instance id be relayed by parent app would be undefined", async () => {
+        expect.assertions(1);
+        const expectedTeamsJsInstanceId = undefined;
+        const mockUUID = { toString: jest.fn(() => 'uuid') } as unknown as UUID;
+        const evt: DOMMessageEvent = {
+          data: {
+            id: 'test-id',
+            uuid: mockUUID,
+            func: 'test-func',
+          },
+        } as DOMMessageEvent;
+
+        // Set child window
+        shouldProcessChildMessage(utils.childWindow, childOrigin);
+
+        const sendMessageToParentHelper = jest
+          .fn()
+          .mockImplementation((apiVersionTag, actionName, args, isProxiedFromChild, teamsJsInstanceId) => {
+            return {
+              id: 'test-id',
+              uuid: mockUUID,
+              func: actionName,
+              args: args,
+              apiVersionTag: apiVersionTag,
+              isProxiedFromChild: isProxiedFromChild,
+              teamsJsInstanceId: teamsJsInstanceId,
+            };
+          });
+        const setCallbackForRequest = jest.fn();
+
+        await handleIncomingMessageFromChild(evt, utils.childWindow, sendMessageToParentHelper, setCallbackForRequest);
+
+        // Check if sendMessageToParentHelper was called with the correct teamsJs instance id
+        expect(sendMessageToParentHelper).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.anything(),
+          undefined,
+          true,
+          expectedTeamsJsInstanceId,
+        );
       });
 
       describe('disableEnforceOriginMatchForChildResponses on', () => {
