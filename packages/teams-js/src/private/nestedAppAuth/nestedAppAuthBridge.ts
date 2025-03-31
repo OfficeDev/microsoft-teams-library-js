@@ -1,6 +1,8 @@
 import { v4 as generateUUID } from 'uuid';
 
 /**
+ * @beta
+ * @hidden
  * Local version of the Nested App Auth Bridge module.
  *
  * This version is specific to this standalone module and is not tied to the overall TeamsJS SDK version.
@@ -13,6 +15,9 @@ import { v4 as generateUUID } from 'uuid';
  *   if (nestedAppAuthBridge.version.startsWith('1.')) {
  *     // Safe to use with current logic
  *   }
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export const version = '1.0.0';
 
@@ -99,10 +104,15 @@ let topOriginForNAA: string | null = null;
 let isNAALoggerEnabled = false;
 
 /**
+ * @beta
+ * @hidden
  * Initializes the Nested App Auth Bridge.
  * @param window The window object where the bridge will be attached.
  * @param topOrigin The origin of the top-level frame.
  * @param enableLogging - Optional flag to enable internal debug and error logging. Defaults to false.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export function initialize(window: Window | null, topOrigin: string, enableLogging = false): void {
   isNAALoggerEnabled = enableLogging;
