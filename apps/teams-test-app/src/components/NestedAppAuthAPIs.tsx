@@ -243,6 +243,42 @@ const NestedAppAuthAPIs = (): ReactElement => {
       </div>
     );
   };
+  const AddTrustedOrigin = (): React.ReactElement =>
+    ApiWithTextInput<string[]>({
+      name: 'NAAAddTrustedOrigin',
+      title: 'Add Trusted Origin',
+      onClick: {
+        validateInput: (input) => {
+          if (!Array.isArray(input) || input.length === 0) {
+            throw new Error('At least one origin is required to delete.');
+          }
+        },
+        submit: async (input) => {
+          const result = await nestedAppAuth.addNAATrustedOrigins(input);
+          return JSON.stringify(result);
+        },
+      },
+      defaultInput: JSON.stringify(['https://contoso.com']),
+    });
+
+  const DeleteTrustedOrigin = (): React.ReactElement =>
+    ApiWithTextInput<string[]>({
+      name: 'NAADeleteTrustedOrigin',
+      title: 'Delete Trusted Origin',
+      onClick: {
+        validateInput: (input) => {
+          if (!Array.isArray(input) || input.length === 0) {
+            throw new Error('At least one origin is required to delete.');
+          }
+        },
+        submit: async (input) => {
+          const result = await nestedAppAuth.deleteNAATrustedOrigins(input);
+          return JSON.stringify(result);
+        },
+      },
+      defaultInput: JSON.stringify(['https://contoso.com']),
+    });
+
   return (
     <ModuleWrapper title="NestedAppAuth">
       <CheckIsNAAChannelRecommended />
@@ -252,6 +288,8 @@ const NestedAppAuthAPIs = (): ReactElement => {
       <SendMessageToNestedAppAuthBridge />
       <SendMessageToTopWindow />
       <AddChildIframeSection />
+      <AddTrustedOrigin />
+      <DeleteTrustedOrigin />
     </ModuleWrapper>
   );
 };
