@@ -1,5 +1,8 @@
 import { v4 as generateUUID } from 'uuid';
 
+// Initial version of standalone nested app auth bridge
+export const version = '1.0.0';
+
 /**
  * Interface representing a request structure.
  *
@@ -11,6 +14,7 @@ interface NestedAppAuthRequest {
   func: 'nestedAppAuth.execute';
   timestamp: number;
   monotonicTimestamp: number;
+  apiVersionTag?: string;
   args: [];
   data: string;
 }
@@ -260,6 +264,7 @@ function createNestedAppAuthRequest(data: string): NestedAppAuthRequest {
     uuid: generateUUID(),
     func: 'nestedAppAuth.execute',
     timestamp: timestamp,
+    apiVersionTag: 'v2_nestedAppAuth.execute',
     monotonicTimestamp: timestamp,
     args: [],
     data,

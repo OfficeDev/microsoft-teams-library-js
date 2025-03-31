@@ -1,9 +1,10 @@
 import { GlobalVars } from './globalVars';
 import { MessageRequestWithRequiredProperties } from './messageObjects';
-import { getLogger } from './telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from './telemetry';
 
 const nestedAppAuthLogger = getLogger('nestedAppAuthUtils');
 const tryPolyfillWithNestedAppAuthBridgeLogger = nestedAppAuthLogger.extend('tryPolyfillWithNestedAppAuthBridge');
+export const nestedAppAuthTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * @hidden
@@ -103,7 +104,7 @@ export interface NestedAuthExtendedWindow extends Window {
  */
 type NestedAppAuthBridgeHandlers = {
   onMessage: (evt: MessageEvent, onMessageReceived: (response: string) => void) => void;
-  sendPostMessage: (message: string) => void;
+  sendPostMessage: (message: string, apiVersionTag: string) => void;
 };
 
 /**
@@ -219,8 +220,10 @@ function createNestedAppAuthBridge(
         return;
       }
 
+      const apiVersionTag = getApiVersionTag(nestedAppAuthTelemetryVersionNumber, ApiName.NestedAppAuth_Execute);
+
       // Post the message to the top window
-      sendPostMessage(message);
+      sendPostMessage(message, apiVersionTag);
     },
     removeEventListener: (eventName: string, callback): void => {
       window.removeEventListener(eventName, nestedAppAuthBridgeHandler(callback));
