@@ -1036,7 +1036,7 @@ describe('Testing communication', () => {
       communication.Communication.topWindow = utils.mockWindow.parent;
       communication.Communication.topOrigin = utils.validOrigin;
 
-      communication.sendNestedAuthRequestToTopWindow(message);
+      communication.sendNestedAuthRequestToTopWindow(message, testApiVersion);
 
       expect(utils.messages.length).toBe(1);
       expect(utils.messages[0].id).toBe(0);
@@ -1049,7 +1049,7 @@ describe('Testing communication', () => {
       communication.Communication.topWindow = utils.topWindow;
       communication.Communication.topOrigin = utils.validOrigin;
 
-      communication.sendNestedAuthRequestToTopWindow(message);
+      communication.sendNestedAuthRequestToTopWindow(message, testApiVersion);
 
       expect(utils.topMessages.length).toBe(1);
       expect(utils.topMessages[0].id).toBe(0);

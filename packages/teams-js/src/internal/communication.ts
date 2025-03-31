@@ -454,11 +454,11 @@ const sendNestedAuthRequestToTopWindowLogger = communicationLogger.extend('sendN
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuthRequest {
+export function sendNestedAuthRequestToTopWindow(message: string, apiVersionTag: string): NestedAppAuthRequest {
   const logger = sendNestedAuthRequestToTopWindowLogger;
 
   const targetWindow = Communication.topWindow;
-  const request = createNestedAppAuthRequest(message);
+  const request = createNestedAppAuthRequest(message, apiVersionTag);
 
   logger('Message %s information: %o', getMessageIdsAsLogString(request), {
     actionName: request.func,
@@ -999,7 +999,7 @@ function createMessageRequest(
  *
  * @returns {NestedAppAuthRequest} Returns a NestedAppAuthRequest object with a unique id, the function name set to 'nestedAppAuthRequest', the current timestamp, an empty args array, and the provided message as data.
  */
-function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
+function createNestedAppAuthRequest(message: string, apiVersionTag: string): NestedAppAuthRequest {
   const messageId: MessageID = CommunicationPrivate.nextMessageId++;
   const messageUuid: MessageUUID = new MessageUUID();
   CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
@@ -1009,6 +1009,7 @@ function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
     func: 'nestedAppAuth.execute',
     timestamp: Date.now(),
     monotonicTimestamp: getCurrentTimestamp(),
+    apiVersionTag: apiVersionTag,
     // Since this is a nested app auth request, we don't need to send any args.
     // We avoid overloading the args array with the message to avoid potential issues processing of these messages on the hubSDK.
     args: [],

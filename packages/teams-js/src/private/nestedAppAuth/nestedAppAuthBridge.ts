@@ -1,6 +1,27 @@
 import { v4 as generateUUID } from 'uuid';
 
 /**
+ * @beta
+ * @hidden
+ * Local version of the Nested App Auth Bridge module.
+ *
+ * This version is specific to this standalone module and is not tied to the overall TeamsJS SDK version.
+ * It allows developers to track changes within this module and handle version-based compatibility if needed.
+ *
+ * While not strictly required today, having a version provides flexibility for future updates,
+ * especially if breaking changes are introduced later.
+ *
+ * Example:
+ *   if (nestedAppAuthBridge.version.startsWith('1.')) {
+ *     // Safe to use with current logic
+ *   }
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const version = '1.0.0';
+
+/**
  * Interface representing a request structure.
  *
  * @see {@link https://github.com/OfficeDev/microsoft-teams-library-js/blob/main/packages/teams-js/src/internal/nestedAppAuthUtils.ts | NestedAppAuthRequest}
@@ -11,6 +32,7 @@ interface NestedAppAuthRequest {
   func: 'nestedAppAuth.execute';
   timestamp: number;
   monotonicTimestamp: number;
+  apiVersionTag?: string;
   args: [];
   data: string;
 }
@@ -82,10 +104,15 @@ let topOriginForNAA: string | null = null;
 let isNAALoggerEnabled = false;
 
 /**
+ * @beta
+ * @hidden
  * Initializes the Nested App Auth Bridge.
  * @param window The window object where the bridge will be attached.
  * @param topOrigin The origin of the top-level frame.
  * @param enableLogging - Optional flag to enable internal debug and error logging. Defaults to false.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export function initialize(window: Window | null, topOrigin: string, enableLogging = false): void {
   isNAALoggerEnabled = enableLogging;
@@ -260,6 +287,7 @@ function createNestedAppAuthRequest(data: string): NestedAppAuthRequest {
     uuid: generateUUID(),
     func: 'nestedAppAuth.execute',
     timestamp: timestamp,
+    apiVersionTag: 'v2_nestedAppAuth.execute', // Hardcoded to avoid coupling with the `ApiName` enum from the TeamsJS core module.
     monotonicTimestamp: timestamp,
     args: [],
     data,
