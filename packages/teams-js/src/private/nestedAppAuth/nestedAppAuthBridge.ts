@@ -1,6 +1,19 @@
 import { v4 as generateUUID } from 'uuid';
 
-// Initial version of standalone nested app auth bridge
+/**
+ * Local version of the Nested App Auth Bridge module.
+ *
+ * This version is specific to this standalone module and is not tied to the overall TeamsJS SDK version.
+ * It allows developers to track changes within this module and handle version-based compatibility if needed.
+ *
+ * While not strictly required today, having a version provides flexibility for future updates,
+ * especially if breaking changes are introduced later.
+ *
+ * Example:
+ *   if (nestedAppAuthBridge.version.startsWith('1.')) {
+ *     // Safe to use with current logic
+ *   }
+ */
 export const version = '1.0.0';
 
 /**
