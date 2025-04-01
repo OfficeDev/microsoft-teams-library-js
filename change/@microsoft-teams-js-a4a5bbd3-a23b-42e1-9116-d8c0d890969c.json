@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `manageNAATrustedOrigins` capability which allows the top-level parent app to register its child app's origin as trusted for nested app auth. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
-  "packageName": "@microsoft/teams-js",
-  "email": "baljesingh@microsoft.com",
-  "dependentChangeType": "patch"
-}
