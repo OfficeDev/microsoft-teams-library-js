@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added `apiVersion` tag in NAA request and removed `isNAAChannelRecommended` check in `isDeeplyNestedAuthSupported` api",
-  "packageName": "@microsoft/teams-js",
-  "email": "baljesingh@microsoft.com",
-  "dependentChangeType": "patch"
-}

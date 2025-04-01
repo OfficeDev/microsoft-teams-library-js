@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Set a unique Teams-JS instance id when Teams-JS library is used and appended this unique id to message request sent to host sdk.",
-  "packageName": "@microsoft/teams-js",
-  "email": "kangxuanye@microsoft.com",
-  "dependentChangeType": "patch"
-}
