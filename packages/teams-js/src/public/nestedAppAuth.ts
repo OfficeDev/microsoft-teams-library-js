@@ -85,7 +85,7 @@ export function canParentManageNAATrustedOrigins(): boolean {
  * @beta
  */
 export function isDeeplyNestedAuthSupported(): boolean {
-  return (ensureInitialized(runtime) && isNAAChannelRecommended() && runtime.isDeeplyNestedAuthSupported) ?? false;
+  return (ensureInitialized(runtime) && runtime.isDeeplyNestedAuthSupported) ?? false;
 }
 
 function isNAAChannelRecommendedForLegacyTeamsMobile(): boolean {
