@@ -17,7 +17,7 @@ Tue, 01 Apr 2025 18:17:07 GMT
 - Added `manageNAATrustedOrigins` capability which allows the top-level parent app to register its child app's origin as trusted for nested app auth. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
 - Added standalone nested app auth bridge for nested child app
 - Removed child messaging proxying by default to avoid security issues. If an app still needs this pattern, it can be activated through the feature flag function `activateChildProxyingCommunication` which enables child proxying for that app.
-- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+- Bumped eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ### Patches
 
