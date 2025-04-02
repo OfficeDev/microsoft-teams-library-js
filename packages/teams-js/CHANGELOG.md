@@ -1,8 +1,29 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 13 Mar 2025 17:02:30 GMT and should not be manually modified.
+This log was last generated on Tue, 01 Apr 2025 18:17:07 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.36.0
+
+Tue, 01 Apr 2025 18:17:07 GMT
+
+### Minor changes
+
+- Added `canParentManageNAATrustedOrigins` capability to check if the parent can manage its list of trusted child origins for Nested App Auth (NAA). The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `getParentOrigin` API to read the parent origin for nested app auth
+- Added support for `ExternalAppCardActionsForDA` capability.
+- Added support for `isDeeplyNestedAuthSupported` to check if deeply nested auth is supported.
+- Added `manageNAATrustedOrigins` capability which allows the top-level parent app to register its child app's origin as trusted for nested app auth. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added standalone nested app auth bridge for nested child app
+- Removed child messaging proxying by default to avoid security issues. If an app still needs this pattern, it can be activated through the feature flag function `activateChildProxyingCommunication` which enables child proxying for that app.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Set a unique Teams-JS instance id when Teams-JS library is used and appended this unique id to message request sent to host sdk.
+- Disabled default nested app auth bridge injection for nested child app
+- Added `apiVersion` tag in NAA request and removed `isNAAChannelRecommended` check in `isDeeplyNestedAuthSupported` api
 
 ## 2.35.0
 
