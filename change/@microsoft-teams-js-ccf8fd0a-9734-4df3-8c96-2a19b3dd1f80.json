@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added standalone nested app auth bridge for nested child app",
-  "packageName": "@microsoft/teams-js",
-  "email": "baljesingh@microsoft.com",
-  "dependentChangeType": "patch"
-}
