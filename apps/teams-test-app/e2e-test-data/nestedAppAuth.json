@@ -31,7 +31,6 @@
       "expectedTestAppValue": "NAA deeply nested auth is supported"
     },
     {
-      "title": "nestedAppAuth - Send NAA message to NAA bridge from parent window",
       "title": "nestedAppAuth - send message to NAA bridge from parent window",
       "type": "callResponse",
       "boxSelector": "#box_sendMessageToNestedAppAuthBridge",
