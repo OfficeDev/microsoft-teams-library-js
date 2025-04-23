@@ -14,11 +14,11 @@ const CopilotAPIs = (): ReactElement => {
     });
 
   const GetEligibilityInfo = (): ReactElement =>
-    ApiWithoutInput({
+    ApiWithTextInput<boolean>({
       name: 'getEligibilityInfo',
       title: 'Get the app Eligibility Information',
-      onClick: async () => {
-        const result = await copilot.eligibility.getEligibilityInfo();
+      onClick: async (input: boolean) => {
+        const result = await copilot.eligibility.getEligibilityInfo(input);
         return JSON.stringify(result);
       },
     });
