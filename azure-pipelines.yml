@@ -46,6 +46,8 @@ extends:
       image: windows-2022
       os: windows
     sdl:
+      hera:
+        heraARMServiceConnection: "Hera_Connector_Prod"
       eslint:
         configuration: 'required'
         parser: '@typescript-eslint/parser'
