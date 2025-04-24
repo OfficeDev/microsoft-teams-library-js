@@ -43,9 +43,13 @@ extends:
   parameters:
     pool:
       name: Azure-Pipelines-1ESPT-ExDShared
-      image: windows-2022
-      os: windows
+      image: ubuntu-latest
+      os: linux
     sdl:
+      sourceAnalysisPool:
+          name: Azure-Pipelines-1ESPT-ExDShared
+          image: windows-latest
+          os: windows
       eslint:
         configuration: 'required'
         parser: '@typescript-eslint/parser'
