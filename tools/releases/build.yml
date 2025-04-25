@@ -1,0 +1,102 @@
+variables:
+  - group: InfoSec-SecurityResults
+  - name: products
+    value: 6eff390d-80c0-4456-81b6-6abafa71e768
+
+trigger:
+  branches:
+    include:
+      - 'main'
+      - 'release/*'
+
+resources:
+  repositories:
+    - repository: OfficePipelineTemplates
+      type: git
+      name: 1ESPipelineTemplates/OfficePipelineTemplates
+      ref: refs/tags/release
+
+extends:
+  template: v1/Office.Official.PipelineTemplate.yml@OfficePipelineTemplates
+  parameters:
+    pool:
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: windows-latest
+      os: windows
+    sdl:
+      eslint:
+        configuration: 'required'
+        parser: '@typescript-eslint/parser'
+        parserOptions: 'ecmaFeatures:{jsx:true}\necmaVersion:12\nsourceType:module\nproject:$(Build.SourcesDirectory)/tsconfig.common.json'
+        enableExclusions: true
+        exclusionPatterns": "*.d.ts\n*.spec.js\n*.spec.jsx\n*.spec.ts\n*.spec.tsx\n*.test.ts\n*.test.tsx"
+        customEnvironments: true
+        environmentsBrowser: true
+        environmentsNode: true
+        environmentsCommonJs: true
+        environmentsSharedNodeBrowser: false
+        environmentsEs6: false
+        environmentsEs2017: false
+        environmentsEs2020: true
+        environmentsJest: false
+      sourceRepositoriesToScan:
+        include:
+          - repository: AppHostingSdk
+          - repository: AppHostingSdkV2
+          - repository: AppHostingSdkV3
+          - repository: AppHostingSdkV4
+          - repository: AndroidAppHostingSdk
+          - repository: IOSAppHostingSdk
+      codeql:
+        compiled:
+          enabled: false
+          justificationForDisabling: 'CodeQL has some known issues with arm64 macos. Disabling auto-injection and using manual task instead'
+    customBuildTags:
+      - ES365AIMigrationTooling
+    stages:
+      - stage: __default
+        jobs:
+          - job: Security
+            displayName: 'Security Tasks'
+            steps:
+              - template: tools/yaml-templates/security.yml@self
+
+          - job: Build
+            displayName: 'Build Test Publish'
+            steps:
+              - template: tools/yaml-templates/build-test-publish.yml@self
+
+            templateContext:
+              outputs:
+                - output: pipelineArtifact
+                  displayName: 'Publish bundle analysis'
+                  condition: and( in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'main'))
+                  targetPath: './common/temp/bundleAnalysis'
+                  artifactName: '$(bundleArtifactName)'
+
+                - output: pipelineArtifact
+                  displayName: 'Publish Test app artifacts'
+                  targetPath: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
+                  artifactName: 'teams-test-app'
+                  sbomBuildDropPath: '$(Build.ArtifactStagingDirectory)\teams-test-app'
+                  sbomPackageName: 'teamstestappArtifact'
+
+                - output: pipelineArtifact
+                  displayName: 'Publish CDN feed to build Artifacts'
+                  targetPath: '$(Build.ArtifactStagingDirectory)\CDNFeed'
+                  artifactName: 'CDNFeed'
+
+                - output: pipelineArtifact
+                  displayName: 'Publish validDomains to Build Artifacts'
+                  targetPath: '$(Build.ArtifactStagingDirectory)\validDomains'
+                  artifactName: 'validDomains'
+
+                - output: pipelineArtifact
+                  displayName: 'Publish NPM feed to Build Artifacts'
+                  targetPath: '$(Build.ArtifactStagingDirectory)\NPMFeed'
+                  artifactName: 'NPMFeed'
+
+                - output: pipelineArtifact
+                  displayName: 'Publish Powershell Scripts to Build Artifacts'
+                  targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
+                  artifactName: 'scripts'
