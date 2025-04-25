@@ -268,7 +268,7 @@ describe('tasks', () => {
   });
 
   describe('submitTask', () => {
-    const allowedContexts = [FrameContexts.task, FrameContexts.content];
+    const allowedContexts = [FrameContexts.content, FrameContexts.task];
     it('should not allow calls before initialization', () => {
       expect(() => tasks.submitTask()).toThrowError(new Error(errorLibraryNotInitialized));
     });
