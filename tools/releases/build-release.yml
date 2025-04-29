@@ -39,14 +39,6 @@ extends:
         environmentsEs2017: false
         environmentsEs2020: true
         environmentsJest: false
-      sourceRepositoriesToScan:
-        include:
-          - repository: AppHostingSdk
-          - repository: AppHostingSdkV2
-          - repository: AppHostingSdkV3
-          - repository: AppHostingSdkV4
-          - repository: AndroidAppHostingSdk
-          - repository: IOSAppHostingSdk
       codeql:
         compiled:
           enabled: false
