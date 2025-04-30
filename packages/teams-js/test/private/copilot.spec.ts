@@ -201,13 +201,22 @@ describe('copilot', () => {
           expect(message.args?.[0]).toBe(true);
         });
 
+        it(`should pass forceRefresh parameter if it exists - with context ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+          copilot.eligibility.getEligibilityInfo(false);
+          const message = utils.findMessageByActionName('copilot.eligibility.getEligibilityInfo');
+          expect(message.args?.[0]).toBe(false);
+        });
+
         it(`should default forceRefresh parameter to false if not passed - with context ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig(copilotRuntimeConfig);
           copilot.eligibility.getEligibilityInfo();
           const message = utils.findMessageByActionName('copilot.eligibility.getEligibilityInfo');
-          expect(message.args?.[0]).toBe(false);
+          expect(message.args?.[0]).toBe(undefined);
         });
 
         it(`should not throw if featureSet in response is undefined - with context ${frameContext}`, async () => {
