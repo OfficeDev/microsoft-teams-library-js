@@ -1,7 +1,7 @@
 import { copilot, UUID } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CopilotAPIs = (): ReactElement => {
@@ -14,12 +14,11 @@ const CopilotAPIs = (): ReactElement => {
     });
 
   const GetEligibilityInfo = (): ReactElement =>
-    ApiWithCheckboxInput({
+    ApiWithoutInput({
       name: 'getEligibilityInfo',
       title: 'Get the app Eligibility Information',
-      label: 'forceRefresh',
-      onClick: async (input: boolean) => {
-        const result = await copilot.eligibility.getEligibilityInfo(input);
+      onClick: async () => {
+        const result = await copilot.eligibility.getEligibilityInfo();
         return JSON.stringify(result);
       },
     });

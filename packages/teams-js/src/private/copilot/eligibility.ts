@@ -44,7 +44,7 @@ export function isSupported(): boolean {
  * Limited to Microsoft-internal use
  * @beta
  */
-export async function getEligibilityInfo(forceRefresh: boolean = false): Promise<AppEligibilityInformation> {
+export async function getEligibilityInfo(forceRefresh?: boolean): Promise<AppEligibilityInformation> {
   ensureInitialized(runtime);
   if (!isSupported()) {
     throw new Error(`Error code: ${errorNotSupportedOnPlatform.errorCode}, message: Not supported on platform`);
