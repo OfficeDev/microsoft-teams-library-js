@@ -11,13 +11,13 @@ trigger:
 
 resources:
   repositories:
-    - repository: OfficePipelineTemplates
+    - repository: m365Pipelines
       type: git
-      name: 1ESPipelineTemplates/OfficePipelineTemplates
+      name: 1ESPipelineTemplates/M365GPT
       ref: refs/tags/release
 
 extends:
-  template: v1/Office.Official.PipelineTemplate.yml@OfficePipelineTemplates
+  template: v1/M365.Official.PipelineTemplate.yml@m365Pipelines
   parameters:
     pool:
       name: Azure-Pipelines-1ESPT-ExDShared
