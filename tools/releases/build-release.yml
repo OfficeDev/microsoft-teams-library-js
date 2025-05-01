@@ -11,40 +11,19 @@ trigger:
 
 resources:
   repositories:
-    - repository: OfficePipelineTemplates
+    - repository: GovernedTemplates
       type: git
-      name: 1ESPipelineTemplates/OfficePipelineTemplates
-      ref: refs/tags/release
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
 
 extends:
-  template: v1/Office.Unofficial.PipelineTemplate.yml@OfficePipelineTemplates
+  template: v2/Microsoft.Official.yml@GovernedTemplates
   parameters:
-    pool:
-      name: Azure-Pipelines-1ESPT-ExDShared
-      image: windows-latest
-      os: windows
-    sdl:
-      eslint:
-        configuration: 'required'
-        parser: '@typescript-eslint/parser'
-        parserOptions: 'ecmaFeatures:{jsx:true}\necmaVersion:12\nsourceType:module\nproject:$(Build.SourcesDirectory)/tsconfig.common.json'
-        enableExclusions: true
-        exclusionPatterns": "*.d.ts\n*.spec.js\n*.spec.jsx\n*.spec.ts\n*.spec.tsx\n*.test.ts\n*.test.tsx"
-        customEnvironments: true
-        environmentsBrowser: true
-        environmentsNode: true
-        environmentsCommonJs: true
-        environmentsSharedNodeBrowser: false
-        environmentsEs6: false
-        environmentsEs2017: false
-        environmentsEs2020: true
-        environmentsJest: false
-      codeql:
-        compiled:
-          enabled: false
-          justificationForDisabling: 'CodeQL has some known issues with arm64 macos. Disabling auto-injection and using manual task instead'
-    customBuildTags:
-      - ES365AIMigrationTooling
+    platform:
+      name: m365
+      workload: Substrate
+      serviceTreeId: $(serviceTreeId)
+      serviceGroupName: Platform
     stages:
       - stage: __default
         jobs:
