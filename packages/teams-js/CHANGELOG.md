@@ -11,7 +11,6 @@ Fri, 02 May 2025 19:11:28 GMT
 ### Minor changes
 
 - Added `forceRefresh` optional argument in `getEligibilityInfo` API.
-- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ## 2.36.0
 
