@@ -1,0 +1,13 @@
+## DO NOT MODIFY THIS FILE MANUALLY. This is part of auto-baselining from 1ES Pipeline Templates. Go to [https://aka.ms/1espt-autobaselining] for more details.
+
+pipelines:
+  17483:
+    retail:
+      source:
+        eslint:
+          lastModifiedDate: 2025-05-02
+        armory:
+          lastModifiedDate: 2025-05-02
+      binary:
+        binskim:
+          lastModifiedDate: 2025-05-02
