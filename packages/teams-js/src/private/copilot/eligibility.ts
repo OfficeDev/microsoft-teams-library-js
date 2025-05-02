@@ -34,22 +34,24 @@ export function isSupported(): boolean {
 }
 
 /**
+ *
+ * @param forceRefresh - boolean to represent whether to force refresh the eligibility information
+ * @returns the copilot eligibility information about the user
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
  * @hidden
  * @internal
  * Limited to Microsoft-internal use
  * @beta
- * @returns the copilot eligibility information about the user
- *
- * @throws Error if {@linkcode app.initialize} has not successfully completed
  */
-export async function getEligibilityInfo(): Promise<AppEligibilityInformation> {
+export async function getEligibilityInfo(forceRefresh?: boolean): Promise<AppEligibilityInformation> {
   ensureInitialized(runtime);
   if (!isSupported()) {
     throw new Error(`Error code: ${errorNotSupportedOnPlatform.errorCode}, message: Not supported on platform`);
   }
 
   // Return the eligibility information if it is already available
-  if (runtime.hostVersionsInfo?.appEligibilityInformation) {
+  if (runtime.hostVersionsInfo?.appEligibilityInformation && !forceRefresh) {
     copilotLogger('Eligibility information is already available on runtime.');
     return runtime.hostVersionsInfo!.appEligibilityInformation;
   }
@@ -59,6 +61,7 @@ export async function getEligibilityInfo(): Promise<AppEligibilityInformation> {
   const response = await sendAndUnwrap<AppEligibilityInformation | SdkError>(
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_Eligibility_GetEligibilityInfo),
     ApiName.Copilot_Eligibility_GetEligibilityInfo,
+    forceRefresh,
   );
 
   if (isSdkError(response)) {

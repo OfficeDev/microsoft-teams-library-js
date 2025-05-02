@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `forceRefresh` optional argument in `getEligibilityInfo` API.",
+  "packageName": "@microsoft/teams-js",
+  "email": "31258166+juanscr@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
