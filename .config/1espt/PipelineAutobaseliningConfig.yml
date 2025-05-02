@@ -11,3 +11,13 @@ pipelines:
       binary:
         binskim:
           lastModifiedDate: 2025-05-02
+  34875:
+    retail:
+      source:
+        eslint:
+          lastModifiedDate: 2025-05-02
+        armory:
+          lastModifiedDate: 2025-05-02
+      binary:
+        binskim:
+          lastModifiedDate: 2025-05-02
