@@ -76,3 +76,5 @@ If the CDN hash value on the npm page is out of date please refer to [here](http
 ## Contributing
 
 Please be sure to check out the [Contributor's guide](../../CONTRIBUTING.md) for crucial steps.
+
+//Ignore me
