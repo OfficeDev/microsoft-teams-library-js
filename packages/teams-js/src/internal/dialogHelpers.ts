@@ -18,6 +18,12 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
  */
 export const dialogTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
+const dialogSubmitWarning =
+  'dialog.submit should not be called from FrameContext.content.' +
+  '\nIf dialog.submit was called from inside the dialog, please disregard this message.' +
+  '\nThis issue occurs due to a bug in Teams mobile where the dialog is incorrectly identified as being in the content FrameContext.' +
+  '\nWe are working to resolve this.';
+
 export function updateResizeHelper(apiVersionTag: string, dimensions: DialogSize): void {
   ensureInitialized(
     runtime,
@@ -83,9 +89,17 @@ export function botUrlOpenHelper(
 }
 
 export function urlSubmitHelper(apiVersionTag: string, result?: string | object, appIds?: string | string[]): void {
-  ensureInitialized(runtime, FrameContexts.task);
+  // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
+  // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
+  // FrameContexts.content will be removed once the bug is fixed.
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
   if (!dialog.url.isSupported()) {
     throw errorNotSupportedOnPlatform;
+  }
+
+  // If dialog.submit is called from frameContext.content, warn the user, so they don't take dependency on this behavior
+  if (GlobalVars.frameContext === FrameContexts.content) {
+    console.warn(dialogSubmitWarning);
   }
 
   // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
