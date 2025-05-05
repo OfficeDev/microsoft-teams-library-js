@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `getParentOrigin` API to read the parent origin for nested app auth",
-  "packageName": "@microsoft/teams-js",
-  "email": "baljesingh@microsoft.com",
-  "dependentChangeType": "patch"
-}

@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Refactored child communication to an isolated module, no functionality change. This will allow apps to tree shake this module.",
-  "packageName": "@microsoft/teams-js",
-  "email": "jcardenasr123@gmail.com",
-  "dependentChangeType": "patch"
-}
