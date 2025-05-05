@@ -11,7 +11,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isPrimitiveOrPlainObject, validateId, validateUrl } from '../internal/utils';
-import { AppId } from '../public';
+import { AppId, UUID } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ISerializable } from '../public/serializable.interface';
@@ -356,6 +356,10 @@ export function isInvokeError(err: unknown): err is InvokeError {
  */
 export enum InvokeErrorCode {
   INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
+  MOS_ACQUIRE_TOKEN_ERROR = 'MOS_ACQUIRE_TOKEN_ERROR', // Error from the mos service when it fails to acquire a token for the user
+  MOS_RESOURCE_NOT_FOUND = 'MOS_RESOURCE_NOT_FOUND', // The resource was not found in the mos service
+  AUTH_WINDOW_ERROR = 'AUTH_WINDOW_ERROR', // The authentication window was not defined
+  USER_CANCELLED = 'USER_CANCELLED', // The user cancelled the authentication
 }
 
 /**
@@ -566,6 +570,7 @@ export function authenticateWithOauth2(
   titleId: string,
   oauthConfigId: string,
   oauthWindowParameters: OauthWindowProperties,
+  corelationId?: UUID,
 ): Promise<void> {
   ensureInitialized(runtime, FrameContexts.content);
 
@@ -575,7 +580,6 @@ export function authenticateWithOauth2(
 
   validateId(titleId, new Error('titleId is Invalid.'));
   validateId(oauthConfigId, new Error('oauthConfigId is Invalid.'));
-
   return sendMessageToParentAsync(
     getApiVersionTag(
       externalAppAuthenticationTelemetryVersionNumber,
@@ -588,6 +592,7 @@ export function authenticateWithOauth2(
       oauthWindowParameters.width,
       oauthWindowParameters.height,
       oauthWindowParameters.isExternal,
+      corelationId,
     ],
   ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
     if (!wasSuccessful) {

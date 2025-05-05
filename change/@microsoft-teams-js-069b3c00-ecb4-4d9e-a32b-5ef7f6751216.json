@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Updated `InvokeErrorCode` with different error enums and added corelationId `authenticateWithOauth2` to `{copilot}` capability.",
+  "packageName": "@microsoft/teams-js",
+  "email": "niharikad@microsoft.com",
+  "dependentChangeType": "patch"
+}
