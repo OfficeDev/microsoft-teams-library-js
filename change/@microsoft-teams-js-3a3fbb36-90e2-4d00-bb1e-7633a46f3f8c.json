@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Removed Beta tag from nestedAppAuth.isNAAChannelRecommended API",
+  "packageName": "@microsoft/teams-js",
+  "email": "baljesingh@microsoft.com",
+  "dependentChangeType": "patch"
+}
