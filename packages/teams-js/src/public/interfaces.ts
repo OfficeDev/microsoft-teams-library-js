@@ -1,6 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
-import { ChannelType, DialogDimension, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
+import {
+  ChannelType,
+  DialogDimension,
+  HostClientType,
+  HostName,
+  RenderingSurfaces,
+  TeamType,
+  UserTeamRole,
+} from './constants';
 import { FrameContexts } from './constants';
 
 /**
@@ -581,6 +589,8 @@ export interface Context {
    * The context where tab url is loaded (content, task, setting, remove, sidePanel)
    */
   frameContext?: FrameContexts;
+
+  renderingSurface?: RenderingSurfaces;
 
   /**
    * @deprecated

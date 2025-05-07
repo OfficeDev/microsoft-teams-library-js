@@ -16,7 +16,15 @@ import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../in
 import { inServerSideRenderingEnvironment } from '../../internal/utils';
 import * as messageChannels from '../../private/messageChannels/messageChannels';
 import { AppId } from '../appId';
-import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from '../constants';
+import {
+  ChannelType,
+  FrameContexts,
+  HostClientType,
+  HostName,
+  RenderingSurfaces,
+  TeamType,
+  UserTeamRole,
+} from '../constants';
 import {
   ActionInfo,
   Context as LegacyContext,
@@ -296,6 +304,11 @@ export interface PageInfo {
    * The context where page url is loaded (content, task, setting, remove, sidePanel)
    */
   frameContext: FrameContexts;
+
+  /**
+   * The surface where the page is loaded
+   */
+  renderingSurface?: RenderingSurfaces;
 
   /**
    * The developer-defined unique ID for the sub-page this content points to.
@@ -824,6 +837,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       frameContext: legacyContext.frameContext ? legacyContext.frameContext : GlobalVars.frameContext,
+      renderingSurface: legacyContext.renderingSurface,
       subPageId: legacyContext.subEntityId,
       isFullScreen: legacyContext.isFullScreen,
       isMultiWindow: legacyContext.isMultiWindow,
