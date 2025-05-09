@@ -36,7 +36,6 @@ enum TrustedOriginAction {
  *
  * @throws Error if {@linkcode app.initialize} has not successfully completed
  *
- * @beta
  */
 export function isNAAChannelRecommended(): boolean {
   return (
