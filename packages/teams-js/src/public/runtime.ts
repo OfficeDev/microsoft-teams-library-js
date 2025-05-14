@@ -277,7 +277,9 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly dataLayer?: {};
     };
     readonly monetization?: {};
-    readonly nestedAppAuth?: {};
+    readonly nestedAppAuth?: {
+      readonly deeplyNestedAuth?: {};
+    };
     readonly notifications?: {};
     readonly otherAppStateChange?: {};
     readonly pages?: {
@@ -608,6 +610,12 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
   '2.1.1': [
     {
       capability: { nestedAppAuth: {} },
+      hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS],
+    },
+  ],
+  '2.1.2': [
+    {
+      capability: { nestedAppAuth: { deeplyNestedAuth: {} } },
       hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS],
     },
   ],

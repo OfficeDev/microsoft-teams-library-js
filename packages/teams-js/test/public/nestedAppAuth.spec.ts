@@ -115,7 +115,7 @@ describe('nestedAppAuth', () => {
           await utils.initializeWithContext(FrameContexts.content, hostClient);
           const runtimeConfig: Runtime = {
             apiVersion: 4,
-            supports: { nestedAppAuth },
+            supports: { nestedAppAuth: {} },
             isNAAChannelRecommended: false,
             isLegacyTeams: true,
           };
@@ -203,6 +203,40 @@ describe('nestedAppAuth', () => {
       };
       utils.setRuntimeConfig(runtimeConfig);
       expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
+    });
+    describe('should return true if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for following clients that supports nestedAppAuth.deeplyNestedAuth', () => {
+      const hostClients = [HostClientType.ipados, HostClientType.ios, HostClientType.android];
+
+      hostClients.forEach((hostClient) => {
+        it(`for ${hostClient} client`, async () => {
+          await utils.initializeWithContext(FrameContexts.content, hostClient);
+          const runtimeConfig: Runtime = {
+            apiVersion: 4,
+            supports: { nestedAppAuth: { deeplyNestedAuth: {} } },
+            isNAAChannelRecommended: false,
+            isLegacyTeams: true,
+          };
+          utils.setRuntimeConfig(runtimeConfig);
+          expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeTruthy();
+        });
+      });
+    });
+    describe('should return false if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for following clients that does not support nestedAppAuth.deeplyNestedAuth', () => {
+      const hostClients = [HostClientType.ipados, HostClientType.ios, HostClientType.android];
+
+      hostClients.forEach((hostClient) => {
+        it(`for ${hostClient} client`, async () => {
+          await utils.initializeWithContext(FrameContexts.content, hostClient);
+          const runtimeConfig: Runtime = {
+            apiVersion: 4,
+            supports: { nestedAppAuth: {} },
+            isNAAChannelRecommended: false,
+            isLegacyTeams: true,
+          };
+          utils.setRuntimeConfig(runtimeConfig);
+          expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
+        });
+      });
     });
   });
   describe('getParentOrigin', () => {
