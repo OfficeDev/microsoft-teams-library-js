@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added `{namespace}` capability that will {explain capability}. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
+  "comment": "Added `nestedAppAuth.deeplyNestedAuth` capability against a new client version `2.1.2` to support isDeeplyNestedAuthSupported for Teams Mobile",
   "packageName": "@microsoft/teams-js",
   "email": "prpatwa@microsoft.com",
   "dependentChangeType": "patch"
