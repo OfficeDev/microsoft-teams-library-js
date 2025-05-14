@@ -84,7 +84,20 @@ export function canParentManageNAATrustedOrigins(): boolean {
  * @beta
  */
 export function isDeeplyNestedAuthSupported(): boolean {
-  return (ensureInitialized(runtime) && runtime.isDeeplyNestedAuthSupported) ?? false;
+  return (
+    ((ensureInitialized(runtime) && runtime.isDeeplyNestedAuthSupported) ||
+      isDeeplyNestedAuthSupportedForLegacyTeamsMobile()) ??
+    false
+  );
+}
+
+function isDeeplyNestedAuthSupportedForLegacyTeamsMobile(): boolean {
+  return ensureInitialized(runtime) &&
+    isHostAndroidOrIOSOrIPadOSOrVisionOS() &&
+    runtime.isLegacyTeams &&
+    runtime.supports.nestedAppAuth?.deeplyNestedAuth
+    ? true
+    : false;
 }
 
 function isNAAChannelRecommendedForLegacyTeamsMobile(): boolean {

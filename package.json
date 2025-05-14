@@ -151,7 +151,13 @@
       "nanoid": "There is a vulnerability with nanoid versions less than 3.3.8 This package is currently being consumed in @types/webpack and needs to be updated there. For now we will override this until that is fixed.",
       "socks": "There is a vulnerability in the ip package which has no fix. We consume ip via socks (eventually via lerna). Socks released a new version that removed the ip dependency. We are using this newer version of socks to avoid the vulnerability. If ip is ever updated or lerna (or any package in the chain) eventually updates to a version of socks that doesn't depend on ip, we can remove this override",
       "tar": "There is a vulnerability in the tar package which is being used by lerna that hasn't yet been updated. Once this is patched in lerna we can remove this override"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "sharp"
+    ],
+    "onlyBuiltDependencies": [
+      "nx"
+    ]
   },
   "dependencies": {
     "skeleton-buffer": "file:./skeleton-buffer",
@@ -162,7 +168,7 @@
       "brotli": false,
       "path": "./packages/teams-js/dist/esm/packages/teams-js/src/index.js",
       "import": "{ app, authentication, pages }",
-      "limit": "57.204 KB"
+      "limit": "57.32 KB"
     },
     {
       "brotli": false,
