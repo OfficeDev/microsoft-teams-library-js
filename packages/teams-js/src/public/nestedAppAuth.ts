@@ -85,8 +85,8 @@ export function canParentManageNAATrustedOrigins(): boolean {
  */
 export function isDeeplyNestedAuthSupported(): boolean {
   return (
-    ((ensureInitialized(runtime) && runtime.isDeeplyNestedAuthSupported) ||
-      isDeeplyNestedAuthSupportedForLegacyTeamsMobile()) ??
+    (ensureInitialized(runtime) &&
+      (runtime.isDeeplyNestedAuthSupported || isDeeplyNestedAuthSupportedForLegacyTeamsMobile())) ??
     false
   );
 }
