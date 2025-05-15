@@ -33,8 +33,8 @@ export function isSupported(): boolean {
 /**
  * Get user content data from the hub to send to copilot app.
  *
- * @returns { Promise<void> } - promise resolves when the host SDK acknowledges that it has received the message.
- * @throws { Error } - Throws an error if the app has not been successfully initialized or the host SDK returns an error as a response to this call
+ * @returns { Promise<Content> } - promise resolves with a content object containing user content data
+ * @throws { SdkError } - Throws an SdkError if host SDK returns an error as a response to this call
  *
  * @hidden
  * @internal
