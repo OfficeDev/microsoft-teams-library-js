@@ -102,6 +102,10 @@ export enum FrameContexts {
   meetingStage = 'meetingStage',
 }
 
+export enum RenderingSurfaces {
+  copilotSidePanel = 'copilotSidePanel',
+}
+
 /**
  * Indicates the team type, currently used to distinguish between different team
  * types in Office 365 for Education (team types 1, 2, 3, and 4).
