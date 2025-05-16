@@ -102,7 +102,13 @@ export enum FrameContexts {
   meetingStage = 'meetingStage',
 }
 
+/**
+ * The type of surface or mode the app is rendered by the host.
+ */
 export enum RenderingSurfaces {
+  /**
+   * The mode the copilot app rendered by the host.
+   */
   copilotSidePanel = 'copilotSidePanel',
 }
 

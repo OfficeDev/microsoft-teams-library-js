@@ -590,6 +590,12 @@ export interface Context {
    */
   frameContext?: FrameContexts;
 
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.PageInfo.renderingSurface | app.Context.page.renderingSurface} instead
+   *
+   * The surface where the tab is rendered (sidePanel, meeting, chat, channel)
+   */
   renderingSurface?: RenderingSurfaces;
 
   /**
