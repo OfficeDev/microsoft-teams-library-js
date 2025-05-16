@@ -103,6 +103,16 @@ export enum FrameContexts {
 }
 
 /**
+ * The type of surface or mode the app is rendered by the host.
+ */
+export enum RenderingSurfaces {
+  /**
+   * The mode the copilot app rendered by the host.
+   */
+  copilotSidePanel = 'copilotSidePanel',
+}
+
+/**
  * Indicates the team type, currently used to distinguish between different team
  * types in Office 365 for Education (team types 1, 2, 3, and 4).
  */
