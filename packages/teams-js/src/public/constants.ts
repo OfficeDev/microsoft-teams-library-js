@@ -103,7 +103,12 @@ export enum FrameContexts {
 }
 
 /**
- * The type of surface or mode the app is rendered by the host.
+ * RenderingSurfaces describes the context or surface in which your app is being displayed within the host application.
+ * This parameter allows your app to detect where it is rendered (for example, in a side panel or stage view)
+ * and adjust its behavior or UI accordingly. The intent is to help developers understand the user's context of use,
+ * not the exact pixel size or layout. If a host (such as Outlook Meeting Apps) changes the size of a surface (e.g., makes the side panel larger),
+ * it will still use the same RenderingSurface value. Developers are expected to use responsive UI techniques to adapt to size changes,
+ * since the user's context and intent remain the same even if the surface dimensions change.
  */
 export enum RenderingSurfaces {
   /**
