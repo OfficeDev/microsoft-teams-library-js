@@ -42,7 +42,7 @@ export function isSupported(): boolean {
  * Limited to Microsoft-internal use
  * @beta
  */
-export async function getContent(payloadSize?:number): Promise<Content> {
+export async function getContent(): Promise<Content> {
   ensureInitialized(runtime);
   copilotLogger(
     'Sending content data to side panel hosted copilot app');

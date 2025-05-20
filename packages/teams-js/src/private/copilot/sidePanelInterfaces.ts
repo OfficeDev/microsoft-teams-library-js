@@ -19,25 +19,51 @@ export enum ContentType {
 /**
  * @hidden
  *
- * Interface for email content data
+ * Common properties for all email content types
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-interface EmailContent {
-    id: string; // Unique identifier for the email
-    subject: string;
-    body: string;
-    sender: string;
-    recipients: string[]; // List of recipient email addresses
-    cc?: string[]; // List of CC email addresses
-    bcc?: string[]; // List of BCC email addresses
-    attachments?: string[]; // List of attachment file names or URLs
-    receivedTime: Date; // Date and time when the email was received
-    sentTime: Date; // Date and time when the email was sent
-    renderedHtml?: string;
-    // Add other relevant email properties
+interface BaseEmailContent {
+  subject?: string;
+  body?: string;
+  sender?: string;
+  recipients?: string[];
+  cc?: string[];
+  bcc?: string[];
+  attachments?: string[];
+  renderedHtml?: string;
+  // Add other relevant common email properties
 }
+
+/**
+ * @hidden
+ *
+ * Interface for server email content (must have id, receivedTime, sentTime)
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+interface ServerEmailContent extends BaseEmailContent {
+  id: string;
+  receivedTime?: Date;
+  sentTime?: Date;
+}
+
+/**
+ * @hidden
+ *
+ * Interface for draft email content (no id, times optional)
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+interface DraftEmailContent extends BaseEmailContent {
+  savedTime?: Date;
+}
+
+// Union type for usage elsewhere
+export type EmailContent = ServerEmailContent | DraftEmailContent;
 
 /**
  * @hidden
@@ -47,7 +73,7 @@ interface EmailContent {
  * @internal
  * Limited to Microsoft-internal use
  */
-interface CalendarInviteContent {
+export interface CalendarInviteContent {
     id: string;
     title?: string;
     startTime?: Date;
@@ -68,7 +94,7 @@ interface CalendarInviteContent {
  * @internal
  * Limited to Microsoft-internal use
  */
-interface WebPageContent {
+export interface WebPageContent {
     url: string; // URL of the web page
     title: string; // Title of the web page
     description_for_model?: string; // Description of the web page for the model
@@ -92,17 +118,84 @@ interface TextSelection {
 /**
  * @hidden
  *
- * Interface for user selected media data
+ * Interface for image media content
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-interface MediaSelection {
-    type: 'image' | 'video' | 'audio';
-    altText: string;
-    source?: EmailContent | WebPageContent | CalendarInviteContent; 
-    // Consider adding dimensions, file size, etc.
+export interface ImageContent {
+  url: string; // URL of the image
+  width?: number; // Width in pixels
+  height?: number; // Height in pixels
+  fileSize?: number; // File size in bytes
+  format?: string; // e.g., 'jpeg', 'png'
+  thumbnailUrl?: string; // Optional thumbnail
 }
+
+/**
+ * @hidden
+ *
+ * Interface for audio media content
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface AudioContent {
+  url: string; // URL of the audio file
+  duration?: number; // Duration in seconds
+  fileSize?: number; // File size in bytes
+  format?: string; // e.g., 'mp3', 'wav'
+  transcript?: string; // Optional transcript
+}
+
+/**
+ * @hidden
+ *
+ * Interface for video media content
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface VideoContent {
+  url: string; // URL of the video file
+  width?: number; // Width in pixels
+  height?: number; // Height in pixels
+  duration?: number; // Duration in seconds
+  fileSize?: number; // File size in bytes
+  format?: string; // e.g., 'mp4', 'mov'
+  thumbnailUrl?: string; // Optional thumbnail
+  transcript?: string; // Optional transcript
+}
+
+/**
+ * @hidden
+ *
+ * Enum for media selection types
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum MediaSelectionType {
+  IMAGE = 'image',
+  AUDIO = 'audio',
+  VIDEO = 'video'
+}
+
+/**
+ * @hidden
+ *
+ * Interface for media selection
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface MediaSelection {
+  type: MediaSelectionType;
+  altText?: string;
+  content: ImageContent | AudioContent | VideoContent;
+  source?: EmailContent | WebPageContent | CalendarInviteContent;
+}
+
 /**
  * @hidden
  *
@@ -114,7 +207,7 @@ interface MediaSelection {
 interface MixedContent {
   emails?: EmailContent[];
   texts?: TextSelection[];
-  media?: MediaSelection[];
+  media?: (ImageContent | AudioContent | VideoContent)[];
   calendarInvites?: CalendarInviteContent[];
   webPages?: WebPageContent[];
   otherContent?: Array<Record<string, any>> | undefined; // Other content types that don't fit into the above categories
@@ -131,10 +224,10 @@ interface MixedContent {
 export type ContentItem = EmailContent | TextSelection | MediaSelection | CalendarInviteContent | WebPageContent | MixedContent; 
 
 export interface Content {
-  userAction: string;
+  userAction?: string;
   contentType: ContentType.CALENDAR_INVITE | ContentType.EMAIL | ContentType.MEDIA | ContentType.TEXT | ContentType.WEB_PAGE | ContentType.MIXED;
-  contentId: string; // Unique identifier for the content
-  content: ContentItem[];
+  formCode?: string; // Unique identifier for the content
+  contentItems: ContentItem[];
   metadata?: string;
   description?: string;
 }
