@@ -32,7 +32,6 @@ describe('externalAppCardActionsForDA', () => {
         height: DialogDimension.Large,
       },
     };
-    const serializedInput = [null, null];
     const testError = {
       errorCode: ExternalAppErrorCode.INTERNAL_ERROR,
       message: 'testMessage',
