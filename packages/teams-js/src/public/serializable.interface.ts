@@ -1,3 +1,5 @@
+import { SimpleType } from '../internal/responseHandler';
+
 /**
  * Interface for objects that can be serialized and passed to the host
  */
@@ -22,4 +24,22 @@ export function isSerializable(arg: unknown): arg is ISerializable {
     (arg as ISerializable).serialize !== undefined &&
     typeof (arg as ISerializable).serialize === 'function'
   );
+}
+
+/**
+ * Represents an object that contains serializable properties.
+ */
+type ISerializableObject = { [key: string]: SimpleType };
+
+/**
+ * Class for serializing an object with simple properties.
+ */
+export class SerializableObject<I extends ISerializableObject> implements ISerializable {
+  public constructor(private _instance: I) {}
+
+  public serialize(): string | object {
+    return {
+      ...this._instance,
+    };
+  }
 }

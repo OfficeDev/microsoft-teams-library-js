@@ -15,7 +15,7 @@ import { DialogSize } from '../public';
 import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { ISerializable } from '../public/serializable.interface';
+import { ISerializable, SerializableObject } from '../public/serializable.interface';
 import { UUID, validateUuidInstance } from '../public/uuidObject';
 import { isExternalAppError } from './externalAppErrorHandling';
 
@@ -52,6 +52,20 @@ export interface IActionOpenUrlDialogInfo extends IDialogActionBase {
   url: URL;
 }
 
+export type Card = {
+  /**
+   * The adaptive card ID.
+   */
+  id: string;
+};
+
+export type Action = {
+  /**
+   * The title for the action button.
+   */
+  title: string;
+};
+
 /**
  * @beta
  * @hidden
@@ -61,12 +75,16 @@ export interface IActionOpenUrlDialogInfo extends IDialogActionBase {
  * @param appId ID of the application the request is intended for. This must be a UUID
  * @param actionOpenUrlDialogInfo Information required to open the URL dialog
  * @param traceId The trace identifier used for monitoring and live site investigations
+ * @param card The adaptive card that contains the action
+ * @param action The action that triggered the dialog
  * @returns Promise that resolves when the request is completed and rejects with ExternalAppError if the request fails
  */
 export async function processActionOpenUrlDialog(
   appId: AppId,
   actionOpenUrlDialogInfo: IActionOpenUrlDialogInfo,
   traceId: UUID,
+  card?: Card,
+  action?: Action,
 ): Promise<void> {
   ensureInitialized(runtime, FrameContexts.content);
 
@@ -75,9 +93,17 @@ export async function processActionOpenUrlDialog(
   }
   validateInput(appId, traceId);
 
+  const serializableCard = card ? new SerializableObject(card) : undefined;
+  const serializableAction = action ? new SerializableObject(action) : undefined;
   return callFunctionInHost(
     ApiName.ExternalAppCardActionsForDA_ProcessActionOpenUrlDialog,
-    [appId, new SerializableActionOpenUrlDialogInfo(actionOpenUrlDialogInfo), traceId],
+    [
+      appId,
+      new SerializableActionOpenUrlDialogInfo(actionOpenUrlDialogInfo),
+      traceId,
+      serializableCard,
+      serializableAction,
+    ],
     getApiVersionTag(
       externalAppCardActionsForDATelemetryVersionNumber,
       ApiName.ExternalAppCardActionsForDA_ProcessActionOpenUrlDialog,

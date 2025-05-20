@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added card and action parameters to `actionOpenUrlDialog`.",
+  "packageName": "@microsoft/teams-js",
+  "email": "31258166+juanscr@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
