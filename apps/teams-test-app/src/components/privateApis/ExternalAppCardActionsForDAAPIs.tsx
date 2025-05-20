@@ -19,6 +19,8 @@ const ProcessActionOpenUrlDialog = (): React.ReactElement =>
     appId: string;
     actionOpenUrlDialogInfo: externalAppCardActionsForDA.IActionOpenUrlDialogInfo;
     traceId: string;
+    card: externalAppCardActionsForDA.Card;
+    action: externalAppCardActionsForDA.Action;
   }>({
     name: 'processActionOpenUrlDialogForDA',
     title: 'Process Action OpenUrlDialog For DA',
@@ -43,6 +45,8 @@ const ProcessActionOpenUrlDialog = (): React.ReactElement =>
           new AppId(input.appId),
           actionOpenUrlDialogInfo,
           new UUID(input.traceId),
+          input.card,
+          input.action,
         );
         return 'Completed';
       },
