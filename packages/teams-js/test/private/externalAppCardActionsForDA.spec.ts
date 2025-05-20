@@ -32,11 +32,7 @@ describe('externalAppCardActionsForDA', () => {
         height: DialogDimension.Large,
       },
     };
-    const serializedInput = [
-      testAppId.serialize(),
-      new externalAppCardActionsForDA.SerializableActionOpenUrlDialogInfo(testActionOpenUrlDialogInfo).serialize(),
-      testTraceId.serialize(),
-    ];
+    const serializedInput = [null, null];
     const testError = {
       errorCode: ExternalAppErrorCode.INTERNAL_ERROR,
       message: 'testMessage',
@@ -111,13 +107,47 @@ describe('externalAppCardActionsForDA', () => {
           const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForDA_ProcessActionOpenUrlDialog);
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual(serializedInput);
+            expect(message.args).toEqual([
+              testAppId.serialize(),
+              new externalAppCardActionsForDA.SerializableActionOpenUrlDialogInfo(
+                testActionOpenUrlDialogInfo,
+              ).serialize(),
+              testTraceId.serialize(),
+              null,
+              null,
+            ]);
             utils.respondToMessage(message, undefined);
           }
           await expect(promise).resolves.toBeUndefined();
         });
+        it(`from frame context ${frameContext} it should pass card argument if present`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForDA: {} } });
+          externalAppCardActionsForDA.processActionOpenUrlDialog(testAppId, testActionOpenUrlDialogInfo, testTraceId, {
+            id: 'testCardId',
+          });
+          const message = utils.findMessageByActionName(ApiName.ExternalAppCardActionsForDA_ProcessActionOpenUrlDialog);
+          expect(message.args?.[3]).toEqual({ id: 'testCardId' });
+        });
+        it(`from frame context ${frameContext} it should pass action argument if present`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForDA: {} } });
+          externalAppCardActionsForDA.processActionOpenUrlDialog(
+            testAppId,
+            testActionOpenUrlDialogInfo,
+            testTraceId,
+            undefined,
+            {
+              title: 'testActionTitle',
+            },
+          );
+          const message = utils.findMessageByActionName(ApiName.ExternalAppCardActionsForDA_ProcessActionOpenUrlDialog);
+          expect(message.args?.[4]).toEqual({ title: 'testActionTitle' });
+        });
         it(`should throw error from host when called from context - ${frameContext}`, async () => {
-          expect.assertions(3);
+          expect.assertions(2);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForDA: {} } });
           const promise = externalAppCardActionsForDA.processActionOpenUrlDialog(
@@ -128,7 +158,6 @@ describe('externalAppCardActionsForDA', () => {
           const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForDA_ProcessActionOpenUrlDialog);
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual(serializedInput);
             utils.respondToMessage(message, testError);
           }
           await expect(promise).rejects.toThrowError(
