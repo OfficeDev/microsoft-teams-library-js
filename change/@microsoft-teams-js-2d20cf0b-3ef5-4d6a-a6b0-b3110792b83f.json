@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Misc change.",
+  "comment": "Released 2.37.0.",
   "packageName": "@microsoft/teams-js",
   "email": "31258166+juanscr@users.noreply.github.com",
   "dependentChangeType": "none"
