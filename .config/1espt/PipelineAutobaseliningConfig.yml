@@ -8,9 +8,21 @@ pipelines:
           lastModifiedDate: 2025-05-02
         armory:
           lastModifiedDate: 2025-05-02
+        credscan:
+          lastModifiedDate: 2025-05-22
+        bandit:
+          lastModifiedDate: 2025-05-22
+        psscriptanalyzer:
+          lastModifiedDate: 2025-05-22
       binary:
         binskim:
           lastModifiedDate: 2025-05-02
+        credscan:
+          lastModifiedDate: 2025-05-22
+        prefast:
+          lastModifiedDate: 2025-05-22
+        roslyn:
+          lastModifiedDate: 2025-05-22
   34875:
     retail:
       source:
