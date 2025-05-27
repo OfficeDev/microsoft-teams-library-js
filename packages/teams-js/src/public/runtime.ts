@@ -225,7 +225,6 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly isDeeplyNestedAuthSupported?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
-    readonly isDeeplyNestedAuthSupported?: boolean;
     readonly app?: {
       readonly notifySuccessResponse?: {};
     };
@@ -417,11 +416,6 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
 
 export interface ICapabilityReqs {
   readonly capability: object;
-  readonly hostClientTypes: Array<string>;
-}
-
-export interface IPropertyReqs {
-  readonly property: object;
   readonly hostClientTypes: Array<string>;
 }
 

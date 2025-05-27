@@ -109,15 +109,7 @@ function isNAAChannelRecommendedForLegacyTeamsMobile(): boolean {
     : false;
 }
 
-/**
- * Checks if host is Android, iOS, iPadOs or visionOs
- * @returns true if host is Android, iOS, iPadOs or visionOs
- *
- * @throws Error if {@linkcode app.initialize} has not successfully completed
- *
- * @beta
- */
-export function isHostAndroidOrIOSOrIPadOSOrVisionOS(): boolean {
+function isHostAndroidOrIOSOrIPadOSOrVisionOS(): boolean {
   return (
     GlobalVars.hostClientType === HostClientType.android ||
     GlobalVars.hostClientType === HostClientType.ios ||

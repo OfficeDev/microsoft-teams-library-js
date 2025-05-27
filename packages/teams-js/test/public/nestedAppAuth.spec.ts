@@ -119,7 +119,7 @@ describe('nestedAppAuth', () => {
           await utils.initializeWithContext(FrameContexts.content, hostClient);
           const runtimeConfig: Runtime = {
             apiVersion: 4,
-            supports: { nestedAppAuth: {} },
+            supports: { nestedAppAuth },
             isNAAChannelRecommended: false,
             isLegacyTeams: true,
           };
