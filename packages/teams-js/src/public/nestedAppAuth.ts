@@ -84,20 +84,7 @@ export function canParentManageNAATrustedOrigins(): boolean {
  * @beta
  */
 export function isDeeplyNestedAuthSupported(): boolean {
-  return (
-    (ensureInitialized(runtime) &&
-      (runtime.isDeeplyNestedAuthSupported || isDeeplyNestedAuthSupportedForLegacyTeamsMobile())) ??
-    false
-  );
-}
-
-function isDeeplyNestedAuthSupportedForLegacyTeamsMobile(): boolean {
-  return ensureInitialized(runtime) &&
-    isHostAndroidOrIOSOrIPadOSOrVisionOS() &&
-    runtime.isLegacyTeams &&
-    runtime.supports.nestedAppAuth?.deeplyNestedAuth
-    ? true
-    : false;
+  return (ensureInitialized(runtime) && runtime.isDeeplyNestedAuthSupported) ?? false;
 }
 
 function isNAAChannelRecommendedForLegacyTeamsMobile(): boolean {
@@ -109,7 +96,15 @@ function isNAAChannelRecommendedForLegacyTeamsMobile(): boolean {
     : false;
 }
 
-function isHostAndroidOrIOSOrIPadOSOrVisionOS(): boolean {
+/**
+ * Checks if host is Android, iOS, iPadOs or visionOs
+ * @returns true if host is Android, iOS, iPadOs or visionOs
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @beta
+ */
+export function isHostAndroidOrIOSOrIPadOSOrVisionOS(): boolean {
   return (
     GlobalVars.hostClientType === HostClientType.android ||
     GlobalVars.hostClientType === HostClientType.ios ||

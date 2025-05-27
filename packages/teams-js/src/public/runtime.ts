@@ -6,6 +6,7 @@ import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType, teamsMinAdaptiveCardVersion } from './constants';
 import { HostVersionsInfo } from './interfaces';
+import { isHostAndroidOrIOSOrIPadOSOrVisionOS } from './nestedAppAuth';
 
 const runtimeLogger = getLogger('runtime');
 
@@ -277,9 +278,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly dataLayer?: {};
     };
     readonly monetization?: {};
-    readonly nestedAppAuth?: {
-      readonly deeplyNestedAuth?: {};
-    };
+    readonly nestedAppAuth?: {};
     readonly notifications?: {};
     readonly otherAppStateChange?: {};
     readonly pages?: {
@@ -613,12 +612,6 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
       hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS],
     },
   ],
-  '2.1.2': [
-    {
-      capability: { nestedAppAuth: { deeplyNestedAuth: {} } },
-      hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS],
-    },
-  ],
 };
 
 const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
@@ -698,9 +691,18 @@ export function generateVersionBasedTeamsRuntimeConfig(
     }
   });
 
+  let isDeeplyNestedAuthSupportedLegacy = false;
+
+  if (compareSDKVersions(highestSupportedVersion, '2.1.2') >= 0) {
+    if (GlobalVars.hostClientType !== undefined && isHostAndroidOrIOSOrIPadOSOrVisionOS()) {
+      isDeeplyNestedAuthSupportedLegacy = true;
+    }
+  }
+
   const teamsBackCompatRuntimeConfig: Runtime = {
     apiVersion: latestRuntimeApiVersion,
     hostVersionsInfo: teamsMinAdaptiveCardVersion,
+    isDeeplyNestedAuthSupported: isDeeplyNestedAuthSupportedLegacy,
     isLegacyTeams: true,
     supports: newSupports,
   };
