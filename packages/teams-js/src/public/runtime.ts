@@ -6,7 +6,6 @@ import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType, teamsMinAdaptiveCardVersion } from './constants';
 import { HostVersionsInfo } from './interfaces';
-import { isHostAndroidOrIOSOrIPadOSOrVisionOS } from './nestedAppAuth';
 
 const runtimeLogger = getLogger('runtime');
 
@@ -226,6 +225,7 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly isDeeplyNestedAuthSupported?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
+    readonly isDeeplyNestedAuthSupported?: boolean;
     readonly app?: {
       readonly notifySuccessResponse?: {};
     };
@@ -420,6 +420,11 @@ export interface ICapabilityReqs {
   readonly hostClientTypes: Array<string>;
 }
 
+export interface IPropertyReqs {
+  readonly property: object;
+  readonly hostClientTypes: Array<string>;
+}
+
 const v1NonMobileHostClientTypes = [
   HostClientType.desktop,
   HostClientType.web,
@@ -544,6 +549,11 @@ export const upgradeChain: IRuntimeUpgrade[] = [
     },
   },
 ];
+
+/**
+ * Teams Mobile Sdk version that supports Deeply Nested App Auth
+ */
+export const teamsMobileVersionLegacyForDeeplyNestedAuth = '2.1.2';
 
 /**
  * This structure is used for versions of Teams that don't pass a runtime object during initialization.
@@ -691,18 +701,9 @@ export function generateVersionBasedTeamsRuntimeConfig(
     }
   });
 
-  let isDeeplyNestedAuthSupportedLegacy = false;
-
-  if (compareSDKVersions(highestSupportedVersion, '2.1.2') >= 0) {
-    if (GlobalVars.hostClientType !== undefined && isHostAndroidOrIOSOrIPadOSOrVisionOS()) {
-      isDeeplyNestedAuthSupportedLegacy = true;
-    }
-  }
-
   const teamsBackCompatRuntimeConfig: Runtime = {
     apiVersion: latestRuntimeApiVersion,
     hostVersionsInfo: teamsMinAdaptiveCardVersion,
-    isDeeplyNestedAuthSupported: isDeeplyNestedAuthSupportedLegacy,
     isLegacyTeams: true,
     supports: newSupports,
   };

@@ -8,8 +8,9 @@ import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ResponseHandler, SimpleType } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { compareSDKVersions } from '../internal/utils';
 import { errorNotSupportedOnPlatform, HostClientType } from './constants';
-import { runtime } from './runtime';
+import { runtime, teamsMobileVersionLegacyForDeeplyNestedAuth } from './runtime';
 import { ISerializable } from './serializable.interface';
 
 /**
@@ -84,9 +85,21 @@ export function canParentManageNAATrustedOrigins(): boolean {
  * @beta
  */
 export function isDeeplyNestedAuthSupported(): boolean {
-  return (ensureInitialized(runtime) && runtime.isDeeplyNestedAuthSupported) ?? false;
+  return (
+    (ensureInitialized(runtime) &&
+      (runtime.isDeeplyNestedAuthSupported || isDeeplyNestedAuthSupportedForLegacyTeamsMobile())) ??
+    false
+  );
 }
 
+function isDeeplyNestedAuthSupportedForLegacyTeamsMobile(): boolean {
+  return ensureInitialized(runtime) &&
+    isHostAndroidOrIOSOrIPadOSOrVisionOS() &&
+    runtime.isLegacyTeams &&
+    compareSDKVersions(GlobalVars.clientSupportedSDKVersion, teamsMobileVersionLegacyForDeeplyNestedAuth) >= 0
+    ? true
+    : false;
+}
 function isNAAChannelRecommendedForLegacyTeamsMobile(): boolean {
   return ensureInitialized(runtime) &&
     isHostAndroidOrIOSOrIPadOSOrVisionOS() &&
