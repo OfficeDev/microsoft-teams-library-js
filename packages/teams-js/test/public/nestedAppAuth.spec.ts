@@ -197,7 +197,7 @@ describe('nestedAppAuth', () => {
       expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
     });
 
-    it('should return false if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for android client that does not supports nestedAppAuth', async () => {
+    it('should return false if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for android client for version < teamsMobileVersionLegacyForDeeplyNestedAuth', async () => {
       await utils.initializeWithContext(FrameContexts.content, HostClientType.android);
       const runtimeConfig: Runtime = {
         apiVersion: 4,
@@ -205,11 +205,12 @@ describe('nestedAppAuth', () => {
         isDeeplyNestedAuthSupported: false,
         isLegacyTeams: true,
       };
+      utils.setClientSupportedSDKVersion('2.1.1');
       utils.setRuntimeConfig(runtimeConfig);
       expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
     });
 
-    describe('should return true if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for following clients that supports nestedAppAuth', () => {
+    describe('should return true if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for android clients with version teamsMobileVersionLegacyForDeeplyNestedAuth', () => {
       const hostClients = [HostClientType.ipados, HostClientType.ios, HostClientType.android];
       hostClients.forEach((hostClient) => {
         it(`for ${hostClient} client`, async () => {
