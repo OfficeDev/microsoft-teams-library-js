@@ -616,8 +616,10 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
       hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS],
     },
   ],
-  //teamsMobileVersionLegacyForDeeplyNestedAuth 2.1.2 is for deeplyNestedAppAuth but
-  //doesn't have any new capability added into it.
+  '2.1.2': [
+    // isDeeplyNestedAuthSupported: true (based on const legacyTeamsMobileVersionForDeeplyNestedAuth)
+    // for hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS]
+  ],
 };
 
 const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
