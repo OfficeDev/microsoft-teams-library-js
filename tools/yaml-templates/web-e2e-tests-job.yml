@@ -30,7 +30,7 @@ jobs:
         displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
         pool:
           name: Azure-Pipelines-1ESPT-ExDShared
-          image: 'ubuntu-2004'
+          image: 'ubuntu-latest'
           os: linux
         variables:
           - name: envType
