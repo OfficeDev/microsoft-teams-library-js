@@ -545,9 +545,10 @@ export const upgradeChain: IRuntimeUpgrade[] = [
 ];
 
 /**
- * Teams Mobile Sdk version for legacy code that supports Deeply Nested App Auth
+ * This version is for legacy Teams mobile clients that don’t pass a runtime object during initialization.
+ * It’s the minimum version required to support deeply nested app auth.
  */
-export const teamsMobileVersionLegacyForDeeplyNestedAuth = '2.1.2';
+export const legacyTeamsMobileVersionForDeeplyNestedAuth = '2.1.2';
 
 /**
  * This structure is used for versions of Teams that don't pass a runtime object during initialization.
