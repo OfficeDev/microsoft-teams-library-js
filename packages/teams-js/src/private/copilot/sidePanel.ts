@@ -61,6 +61,8 @@ export async function getContent(): Promise<Content> {
     // }
       return response;
 }
+/** Register user action content select handler function type */
+export type userActionHandlerType = (selectedContent : Content) => void 
 /**
  * @hidden
  *
@@ -70,13 +72,12 @@ export async function getContent(): Promise<Content> {
  * @internal
  * Limited to Microsoft-internal use
  */
-type userActionHandlerType = ( copilotsidePanelContext : any) => Content 
 export function registerOnContentChangeHandler(
   handler: userActionHandlerType,
 ): void {
   registerHandlerHelper(
-    getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_RegisterContentUpdate),
-    'focusEnter',
+    getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_RegisterUserActionContentSelect),
+    'copilot.sidePanel.registerOnContentUpdateHandler',
     handler,
     [],
     () => {
