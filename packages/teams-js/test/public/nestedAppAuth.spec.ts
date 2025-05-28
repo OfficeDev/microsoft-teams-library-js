@@ -5,7 +5,7 @@ import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import {
   _minRuntimeConfigToUninitialize,
   Runtime,
-  teamsMobileVersionLegacyForDeeplyNestedAuth,
+  legacyTeamsMobileVersionForDeeplyNestedAuth,
 } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -197,7 +197,7 @@ describe('nestedAppAuth', () => {
       expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
     });
 
-    it('should return false if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for android client for version < teamsMobileVersionLegacyForDeeplyNestedAuth', async () => {
+    it('should return false if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for android client for version < legacyTeamsMobileVersionForDeeplyNestedAuth', async () => {
       await utils.initializeWithContext(FrameContexts.content, HostClientType.android);
       const runtimeConfig: Runtime = {
         apiVersion: 4,
@@ -210,12 +210,12 @@ describe('nestedAppAuth', () => {
       expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
     });
 
-    describe('should return true if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for android clients with version teamsMobileVersionLegacyForDeeplyNestedAuth', () => {
+    describe('should return true if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for android clients with version legacyTeamsMobileVersionForDeeplyNestedAuth', () => {
       const hostClients = [HostClientType.ipados, HostClientType.ios, HostClientType.android];
       hostClients.forEach((hostClient) => {
         it(`for ${hostClient} client`, async () => {
           await utils.initializeWithContext(FrameContexts.content, hostClient);
-          utils.setClientSupportedSDKVersion(teamsMobileVersionLegacyForDeeplyNestedAuth);
+          utils.setClientSupportedSDKVersion(legacyTeamsMobileVersionForDeeplyNestedAuth);
           const runtimeConfig: Runtime = {
             apiVersion: 4,
             supports: {},

@@ -9,7 +9,7 @@ import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/inter
 import { ResponseHandler, SimpleType } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, HostClientType } from './constants';
-import { runtime, teamsMobileVersionLegacyForDeeplyNestedAuth } from './runtime';
+import { runtime, legacyTeamsMobileVersionForDeeplyNestedAuth } from './runtime';
 import { ISerializable } from './serializable.interface';
 
 /**
@@ -95,7 +95,7 @@ function isDeeplyNestedAuthSupportedForLegacyTeamsMobile(): boolean {
   return ensureInitialized(runtime) &&
     isHostAndroidOrIOSOrIPadOSOrVisionOS() &&
     runtime.isLegacyTeams &&
-    isCurrentSDKVersionAtLeast(teamsMobileVersionLegacyForDeeplyNestedAuth)
+    isCurrentSDKVersionAtLeast(legacyTeamsMobileVersionForDeeplyNestedAuth)
     ? true
     : false;
 }
