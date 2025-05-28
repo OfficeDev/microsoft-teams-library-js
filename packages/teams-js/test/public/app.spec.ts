@@ -9,6 +9,7 @@ import {
   FrameContexts,
   HostClientType,
   HostName,
+  RenderingSurfaces,
   TeamType,
   UserTeamRole,
 } from '../../src/public/constants';
@@ -412,7 +413,7 @@ describe('Testing app capability', () => {
         message = utils.findMessageByFunc('getContext');
         expect(message).not.toBeNull();
       });
-
+  
       Object.values(FrameContexts).forEach((context) => {
         it(`app.getContext should successfully get frame context in ${context} context`, async () => {
           await utils.initializeWithContext(context);
@@ -556,6 +557,7 @@ describe('Testing app capability', () => {
             isMultiWindow: true,
             isBackgroundLoad: true,
             frameContext: context,
+            renderingSurface: RenderingSurfaces.copilotSidePanel,
             appLaunchId: 'appLaunchId',
             userDisplayName: 'someTestUser',
             teamSiteId: 'someSiteId',
@@ -588,6 +590,7 @@ describe('Testing app capability', () => {
             page: {
               id: 'someEntityId',
               subPageId: 'someSubEntityId',
+              renderingSurface: RenderingSurfaces.copilotSidePanel,
               isFullScreen: true,
               sourceOrigin: 'www.origin.com',
               frameContext: context,

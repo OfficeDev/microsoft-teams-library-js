@@ -5,6 +5,7 @@ export {
   FrameContexts,
   HostClientType,
   HostName,
+  RenderingSurfaces,
   TaskModuleDimension,
   TeamType,
   UserTeamRole,
