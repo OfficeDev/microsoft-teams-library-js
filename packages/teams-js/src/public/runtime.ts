@@ -545,7 +545,7 @@ export const upgradeChain: IRuntimeUpgrade[] = [
 ];
 
 /**
- * Teams Mobile Sdk version that supports Deeply Nested App Auth
+ * Teams Mobile Sdk version for legacy code that supports Deeply Nested App Auth
  */
 export const teamsMobileVersionLegacyForDeeplyNestedAuth = '2.1.2';
 
@@ -616,6 +616,8 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
       hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS],
     },
   ],
+  //teamsMobileVersionLegacyForDeeplyNestedAuth 2.1.2 is for deeplyNestedAppAuth but
+  //doesn't have any new capability added into it.
 };
 
 const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
