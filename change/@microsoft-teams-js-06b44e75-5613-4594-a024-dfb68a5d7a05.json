@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Unblocked apps on Mobile to call `dialog.url.submit` from dialog by allowing this API from `FrameContext.content`.\nThere is a bug in Teams mobile that returns `frameContext.content in dialog instead of `frameContext.task`. Once the bug is fixed, this change will be reverted.",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}
