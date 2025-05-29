@@ -14,7 +14,7 @@ import { ResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { errorNotSupportedOnPlatform } from '../../public/constants';
 import { runtime } from '../../public/runtime';
-import { Content } from './sidePanelInterfaces';
+import { Content, PreCheckContextResponse } from './sidePanelInterfaces';
 
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 const copilotLogger = getLogger('copilot');
@@ -67,7 +67,8 @@ export type userActionHandlerType = (selectedContent : Content) => void
  * @hidden
  *
  * Registers a handler to get updated content data from the hub to send to copilot app.
- * @param handler - The handler for placing focus within the application.
+ * This handler will be called when the user selects content in the application.
+ * @param handler - The handler for getting user action content select.
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -77,9 +78,40 @@ export function registerOnContentChangeHandler(
 ): void {
   registerHandlerHelper(
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_RegisterUserActionContentSelect),
-    'copilot.sidePanel.registerOnContentUpdateHandler',
+    'copilot.sidePanel.userActionContentSelect',
     handler,
-    [],
+    [], // TODO: get expectedFrameContexts from the host
+    () => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    },
+  );
+}
+
+
+/** Register for user consent changes. Copilot app can only access the content of the page/data displayed in the hub, if the user has consented 
+ * to share the content with the copilot app.
+ */
+export type registerUserConsentPreCheckResponseType = (selectedContent : PreCheckContextResponse) => void 
+/**
+ * @hidden
+ *
+ * Registers a handler to get user consent changes.
+ * This handler will be called when the user changes their consent in the hub.
+ * @param handler - The handler for getting user consent changes.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerUserConsent(
+  handler: registerUserConsentPreCheckResponseType,
+): void {
+  registerHandlerHelper(
+    getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_RegisterOnUserConsentChange),
+    'copilot.sidePanel.userConsentChange',
+    handler,
+    [], // TODO: get expectedFrameContexts from the host
     () => {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;

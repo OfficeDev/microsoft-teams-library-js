@@ -24,7 +24,7 @@ export enum ContentType {
  * @internal
  * Limited to Microsoft-internal use
  */
-interface BaseEmailContent {
+export interface BaseEmailContent {
   subject?: string;
   body?: string;
   sender?: string;
@@ -44,7 +44,7 @@ interface BaseEmailContent {
  * @internal
  * Limited to Microsoft-internal use
  */
-interface ServerEmailContent extends BaseEmailContent {
+export interface ServerEmailContent extends BaseEmailContent {
   id: string;
   receivedTime?: Date;
   sentTime?: Date;
@@ -58,7 +58,7 @@ interface ServerEmailContent extends BaseEmailContent {
  * @internal
  * Limited to Microsoft-internal use
  */
-interface DraftEmailContent extends BaseEmailContent {
+export interface DraftEmailContent extends BaseEmailContent {
   savedTime?: Date;
 }
 
@@ -95,8 +95,10 @@ export interface CalendarInviteContent {
  * Limited to Microsoft-internal use
  */
 export interface WebPageContent {
+    id?: string; // Unique identifier for the web page content
     url: string; // URL of the web page
-    title: string; // Title of the web page
+    title?: string; // Title of the web page
+    data?: string; // Raw HTML or text content of the web page
     description_for_model?: string; // Description of the web page for the model
     description?: string; // Description of the web page
     faviconUrl?: string; // URL of the favicon  
@@ -110,7 +112,7 @@ export interface WebPageContent {
  * @internal
  * Limited to Microsoft-internal use
  */
-interface TextSelection {
+export interface TextSelection {
     content: string;
     source?: EmailContent | WebPageContent | CalendarInviteContent; 
 }
@@ -204,7 +206,7 @@ export interface MediaSelection {
  * @internal
  * Limited to Microsoft-internal use
  */
-interface MixedContent {
+export interface MixedContent {
   emails?: EmailContent[];
   texts?: TextSelection[];
   media?: (ImageContent | AudioContent | VideoContent)[];
@@ -230,4 +232,33 @@ export interface Content {
   contentItems: ContentItem[];
   metadata?: string;
   description?: string;
+}
+
+/**
+ * @hidden
+ *
+ * Interface for the response context used during user consent pre-checks.
+ * Contains information about the user's consent status and whether to show the consent card.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface PreCheckContextResponse {
+  error_code?: string;           // Optional error code if the pre-check failed
+  status?: string;               // Optional status message
+  user_consent: UserConsent;     // The user's consent status (accepted or not accepted)
+  show_consent_card: boolean;    // Whether the consent card should be shown to the user
+}
+
+/**
+ * @hidden
+ *
+ * Enum representing possible user consent states.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum UserConsent {
+  Accepted = "accepted",         // User has accepted/consented
+  NotAccepted = "not_accepted",  // User has not accepted/consented
 }

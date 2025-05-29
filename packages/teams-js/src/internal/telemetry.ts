@@ -110,6 +110,7 @@ export const enum ApiName {
   Copilot_CustomTelemetry_SendCustomTelemetryData = 'copilot.customTelemetry.sendCustomTelemetryData',
   Copilot_Eligibility_GetEligibilityInfo = 'copilot.eligibility.getEligibilityInfo',
   Copilot_SidePanel_RegisterUserActionContentSelect = 'copilot.sidePanel.registerUserActionContentSelect',
+  Copilot_SidePanel_RegisterOnUserConsentChange = 'copilot.sidePanel.registerOnUserConsentChange',
   Copilot_SidePanel_GetContent = 'copilot.sidePanel.getContent',
   Dialog_AdaptiveCard_Bot_Open = 'dialog.adaptiveCard.bot.open',
   Dialog_AdaptiveCard_Open = 'dialog.adaptiveCard.open',
