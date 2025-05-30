@@ -11,13 +11,12 @@ import { callFunctionInHostAndHandleResponse } from '../../internal/communicatio
 import { registerHandlerHelper } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ResponseHandler } from '../../internal/responseHandler';
-import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
 import { errorNotSupportedOnPlatform } from '../../public/constants';
 import { runtime } from '../../public/runtime';
 import { Content, PreCheckContextResponse, SidePanelError, SidePanelErrorCode } from './sidePanelInterfaces';
 
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-const copilotLogger = getLogger('copilot');
 
 /**
  * @hidden
@@ -67,22 +66,18 @@ export function isSidePanelError(err: unknown): err is SidePanelError {
  */
 export async function getContent(): Promise<Content> {
   ensureInitialized(runtime);
-  copilotLogger(
-    'Sending content data to side panel hosted copilot app');
-
   const response = callFunctionInHostAndHandleResponse(
     ApiName.Copilot_SidePanel_GetContent,
     [],
     new GetContentResponseHandler(),
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_GetContent),
-    isSidePanelError
+    isSidePanelError,
   );
-    return response;
+  return response;
 }
 
 export async function preCheckUserConsent(): Promise<PreCheckContextResponse> {
   ensureInitialized(runtime);
-
   const response = callFunctionInHostAndHandleResponse(
     ApiName.Copilot_SidePanel_PreCheckUserConsent,
     [],
@@ -93,7 +88,7 @@ export async function preCheckUserConsent(): Promise<PreCheckContextResponse> {
 }
 
 /** Register user action content select handler function type */
-export type userActionHandlerType = (selectedContent : Content) => void 
+export type userActionHandlerType = (selectedContent: Content) => void;
 /**
  * @hidden
  *
@@ -104,9 +99,7 @@ export type userActionHandlerType = (selectedContent : Content) => void
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerOnContentChangeHandler(
-  handler: userActionHandlerType,
-): void {
+export function registerOnContentChangeHandler(handler: userActionHandlerType): void {
   registerHandlerHelper(
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_RegisterUserActionContentSelect),
     'copilot.sidePanel.userActionContentSelect',
@@ -120,11 +113,10 @@ export function registerOnContentChangeHandler(
   );
 }
 
-
-/** Register for user consent changes. Copilot app can only access the content of the page/data displayed in the hub, if the user has consented 
+/** Register for user consent changes. Copilot app can only access the content of the page/data displayed in the hub, if the user has consented
  * to share the content with the copilot app.
  */
-export type registerUserConsentPreCheckResponseType = (selectedContent : PreCheckContextResponse) => void 
+export type registerUserConsentPreCheckResponseType = (selectedContent: PreCheckContextResponse) => void;
 /**
  * @hidden
  *
@@ -135,9 +127,7 @@ export type registerUserConsentPreCheckResponseType = (selectedContent : PreChec
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerUserConsent(
-  handler: registerUserConsentPreCheckResponseType,
-): void {
+export function registerUserConsent(handler: registerUserConsentPreCheckResponseType): void {
   registerHandlerHelper(
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_RegisterOnUserConsentChange),
     'copilot.sidePanel.userConsentChange',
@@ -160,7 +150,7 @@ class GetContentResponseHandler extends ResponseHandler<Content, Content> {
 
   public deserialize(response: Content): Content {
     // Add deserialization logic to convert the serialized response to `Content`
-    return response
+    return response;
   }
 }
 
@@ -172,6 +162,6 @@ class PreCheckContextResponseHandler extends ResponseHandler<PreCheckContextResp
 
   public deserialize(response: PreCheckContextResponse): PreCheckContextResponse {
     // Add deserialization logic to convert the serialized response to `Content`
-    return response
+    return response;
   }
 }

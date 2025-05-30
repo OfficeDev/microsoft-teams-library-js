@@ -1,8 +1,7 @@
-
 /**
  * @hidden
  *
- * Interface for content data 
+ * Interface for content data
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -13,7 +12,7 @@ export enum ContentType {
   MEDIA = 'media',
   CALENDAR_INVITE = 'calendarInvite',
   WEB_PAGE = 'webPage',
-  MIXED = 'mixed'
+  MIXED = 'mixed',
 }
 
 /**
@@ -74,17 +73,17 @@ export type EmailContent = ServerEmailContent | DraftEmailContent;
  * Limited to Microsoft-internal use
  */
 export interface CalendarInviteContent {
-    id: string;
-    title?: string;
-    startTime?: Date;
-    endTime?: Date;
-    location?: string;
-    meetingParameters?: string;
-    attendees?: string[]; // List of attendee email addresses
-    organizer?: string; // Email address of the meeting organizer
-    body?: string; // Body of the calendar invite
-    attachments?: string[]; // List of attachment file names or URLs
-    // Add other calendar event properties
+  id: string;
+  title?: string;
+  startTime?: Date;
+  endTime?: Date;
+  location?: string;
+  meetingParameters?: string;
+  attendees?: string[]; // List of attendee email addresses
+  organizer?: string; // Email address of the meeting organizer
+  body?: string; // Body of the calendar invite
+  attachments?: string[]; // List of attachment file names or URLs
+  // Add other calendar event properties
 }
 /**
  * @hidden
@@ -95,13 +94,13 @@ export interface CalendarInviteContent {
  * Limited to Microsoft-internal use
  */
 export interface WebPageContent {
-    id?: string; // Unique identifier for the web page content
-    url: string; // URL of the web page
-    title?: string; // Title of the web page
-    data?: string; // Raw HTML or text content of the web page
-    description_for_model?: string; // Description of the web page for the model
-    description?: string; // Description of the web page
-    faviconUrl?: string; // URL of the favicon  
+  id?: string; // Unique identifier for the web page content
+  url: string; // URL of the web page
+  title?: string; // Title of the web page
+  data?: string; // Raw HTML or text content of the web page
+  description_for_model?: string; // Description of the web page for the model
+  description?: string; // Description of the web page
+  faviconUrl?: string; // URL of the favicon
 }
 
 /**
@@ -113,8 +112,8 @@ export interface WebPageContent {
  * Limited to Microsoft-internal use
  */
 export interface TextSelection {
-    content: string;
-    source?: EmailContent | WebPageContent | CalendarInviteContent; 
+  content: string;
+  source?: EmailContent | WebPageContent | CalendarInviteContent;
 }
 
 /**
@@ -180,7 +179,7 @@ export interface VideoContent {
 export enum MediaSelectionType {
   IMAGE = 'image',
   AUDIO = 'audio',
-  VIDEO = 'video'
+  VIDEO = 'video',
 }
 
 /**
@@ -212,7 +211,7 @@ export interface MixedContent {
   media?: (ImageContent | AudioContent | VideoContent)[];
   calendarInvites?: CalendarInviteContent[];
   webPages?: WebPageContent[];
-  otherContent?: Array<Record<string, any>> | undefined; // Other content types that don't fit into the above categories
+  otherContent?: Array<Record<string, unknown>> | undefined; // Other content types that don't fit into the above categories
 }
 
 /**
@@ -223,17 +222,29 @@ export interface MixedContent {
  * @internal
  * Limited to Microsoft-internal use
  */
-export type ContentItem = EmailContent | TextSelection | MediaSelection | CalendarInviteContent | WebPageContent | MixedContent; 
+export type ContentItem =
+  | EmailContent
+  | TextSelection
+  | MediaSelection
+  | CalendarInviteContent
+  | WebPageContent
+  | MixedContent;
 
 export interface Content {
   userAction?: string;
-  contentType: ContentType.CALENDAR_INVITE | ContentType.EMAIL | ContentType.MEDIA | ContentType.TEXT | ContentType.WEB_PAGE | ContentType.MIXED;
+  contentType:
+    | ContentType.CALENDAR_INVITE
+    | ContentType.EMAIL
+    | ContentType.MEDIA
+    | ContentType.TEXT
+    | ContentType.WEB_PAGE
+    | ContentType.MIXED;
   formCode?: string; // Unique identifier for the content
   contentItems: ContentItem[];
   metadata?: string;
   description?: string;
-  error_code?: string;           // Optional error code if the content retrieval failed
-  status?: string;               // Optional status message
+  error_code?: string; // Optional error code if the content retrieval failed
+  status?: string; // Optional status message
 }
 
 /**
@@ -246,10 +257,10 @@ export interface Content {
  * Limited to Microsoft-internal use
  */
 export interface PreCheckContextResponse {
-  error_code?: string;           // Optional error code if the pre-check failed
-  status?: string;               // Optional status message
-  user_consent: UserConsent;     // The user's consent status (accepted or not accepted)
-  show_consent_card: boolean;    // Whether the consent card should be shown to the user
+  error_code?: string; // Optional error code if the pre-check failed
+  status?: string; // Optional status message
+  user_consent: UserConsent; // The user's consent status (accepted or not accepted)
+  show_consent_card: boolean; // Whether the consent card should be shown to the user
 }
 
 /**
@@ -261,8 +272,8 @@ export interface PreCheckContextResponse {
  * Limited to Microsoft-internal use
  */
 export enum UserConsent {
-  Accepted = "accepted",         // User has accepted/consented
-  NotAccepted = "not_accepted",  // User has not accepted/consented
+  Accepted = 'accepted', // User has accepted/consented
+  NotAccepted = 'not_accepted', // User has not accepted/consented
 }
 
 /**
@@ -273,7 +284,6 @@ export enum UserConsent {
  * @internal
  * Limited to Microsoft-internal use
  */
-// Define SidePanelErrorCode as a string enum or type
 export enum SidePanelErrorCode {
   BLOCKED_BY_POLICY = 'page_content_blocked_by_policy',
   BLOCKED_BY_DLP = 'page_content_blocked_by_dlp',
@@ -282,11 +292,21 @@ export enum SidePanelErrorCode {
   EXTRACTION_FAILED = 'content_extraction_failed',
   CONTENT_NOT_FOUND = 'content_not_found',
   CONTENT_NOT_SUPPORTED = 'content_not_supported',
-  CONTENT_CHANGED= 'content_changed',
+  CONTENT_CHANGED = 'content_changed',
   UNKNOWN_ERROR = 'unknown_error',
-  INTERNAL_ERROR = 'internal_error',
+  INTERNAL_ERROR = 'internal_error', // catch all error code for unexpected issues
+  NOT_SUPPORTED_ON_PLATFORM = 'not_supported_on_platform', // API not supported on the current platform
 }
 
+/**
+ * @hidden
+ *
+ * Interface for errors related to side panel operations.
+ * Contains an error code and an optional message.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface SidePanelError {
   errorCode: SidePanelErrorCode;
   message?: string;
