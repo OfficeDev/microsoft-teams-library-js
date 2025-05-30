@@ -232,6 +232,8 @@ export interface Content {
   contentItems: ContentItem[];
   metadata?: string;
   description?: string;
+  error_code?: string;           // Optional error code if the content retrieval failed
+  status?: string;               // Optional status message
 }
 
 /**
@@ -261,4 +263,31 @@ export interface PreCheckContextResponse {
 export enum UserConsent {
   Accepted = "accepted",         // User has accepted/consented
   NotAccepted = "not_accepted",  // User has not accepted/consented
+}
+
+/**
+ * @hidden
+ *
+ * Type for user action handler functions that receive content data.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+// Define SidePanelErrorCode as a string enum or type
+export enum SidePanelErrorCode {
+  BLOCKED_BY_POLICY = 'page_content_blocked_by_policy',
+  BLOCKED_BY_DLP = 'page_content_blocked_by_dlp',
+  MEDIA_NOT_SUPPORTED = 'media_not_supported',
+  USER_CONSENT_REQUIRED = 'user_consent_required',
+  EXTRACTION_FAILED = 'content_extraction_failed',
+  CONTENT_NOT_FOUND = 'content_not_found',
+  CONTENT_NOT_SUPPORTED = 'content_not_supported',
+  CONTENT_CHANGED= 'content_changed',
+  UNKNOWN_ERROR = 'unknown_error',
+  INTERNAL_ERROR = 'internal_error',
+}
+
+export interface SidePanelError {
+  errorCode: SidePanelErrorCode;
+  message?: string;
 }

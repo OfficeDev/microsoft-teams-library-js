@@ -14,13 +14,14 @@ import { ResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { errorNotSupportedOnPlatform } from '../../public/constants';
 import { runtime } from '../../public/runtime';
-import { Content, PreCheckContextResponse } from './sidePanelInterfaces';
+import { Content, PreCheckContextResponse, SidePanelError, SidePanelErrorCode } from './sidePanelInterfaces';
 
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 const copilotLogger = getLogger('copilot');
 
 /**
  * @hidden
+ * @beta
  * @internal
  * Limited to Microsoft-internal use
  * @beta
@@ -31,6 +32,27 @@ const copilotLogger = getLogger('copilot');
 export function isSupported(): boolean {
   return ensureInitialized(runtime) && !!runtime.supports.copilot?.sidePanel;
 }
+
+/**
+ * @beta
+ * @hidden
+ * Determines if the provided error object is an instance of SidePanelError
+ * @internal
+ * Limited to Microsoft-internal use
+ * @param err The error object to check whether it is of SidePanelError type
+ */
+export function isSidePanelError(err: unknown): err is SidePanelError {
+  if (typeof err !== 'object' || err === null) {
+    return false;
+  }
+
+  const error = err as SidePanelError;
+
+  return (
+    Object.values(SidePanelErrorCode).includes(error.errorCode) &&
+    (error.message === undefined || typeof error.message === 'string')
+  );
+}
 /**
  * Get user content data from the hub to send to copilot app.
  *
@@ -38,6 +60,7 @@ export function isSupported(): boolean {
  * @throws { SdkError } - Throws an SdkError if host SDK returns an error as a response to this call
  *
  * @hidden
+ * @beta
  * @internal
  * Limited to Microsoft-internal use
  * @beta
@@ -52,6 +75,7 @@ export async function getContent(): Promise<Content> {
     [],
     new GetContentResponseHandler(),
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_GetContent),
+    isSidePanelError
   );
     return response;
 }
