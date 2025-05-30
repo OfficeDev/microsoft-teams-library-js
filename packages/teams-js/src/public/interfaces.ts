@@ -590,6 +590,8 @@ export interface Context {
    */
   frameContext?: FrameContexts;
 
+  renderingSurface?: RenderingSurfaces;
+
   /**
    * @deprecated
    * As of TeamsJS v2.0.0, please use {@link app.PageInfo.renderingSurface | app.Context.page.renderingSurface} instead
