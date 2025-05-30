@@ -112,6 +112,7 @@ export const enum ApiName {
   Copilot_SidePanel_RegisterUserActionContentSelect = 'copilot.sidePanel.registerUserActionContentSelect',
   Copilot_SidePanel_RegisterOnUserConsentChange = 'copilot.sidePanel.registerOnUserConsentChange',
   Copilot_SidePanel_GetContent = 'copilot.sidePanel.getContent',
+  Copilot_SidePanel_PreCheckUserConsent = 'copilot.sidePanel.preCheckUserConsent',
   Dialog_AdaptiveCard_Bot_Open = 'dialog.adaptiveCard.bot.open',
   Dialog_AdaptiveCard_Open = 'dialog.adaptiveCard.open',
   Dialog_RegisterMessageForChildHandler = 'dialog.registerMessageForChildHandler',

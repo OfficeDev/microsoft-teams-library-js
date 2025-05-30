@@ -53,14 +53,21 @@ export async function getContent(): Promise<Content> {
     new GetContentResponseHandler(),
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_GetContent),
   );
-    // check payload size
-    //   const payloadSize = new TextEncoder().encode(JSON.stringify({ messages: [{ role: 'user', content: response }] })).length;
-
-    // if (payloadSize > this.maxPayloadSizeBytes) {
-    //   throw new Error(`Payload size (${payloadSize} bytes) exceeds the limit of ${this.maxPayloadSizeBytes} bytes.`);
-    // }
-      return response;
+    return response;
 }
+
+export async function preCheckUserConsent(): Promise<PreCheckContextResponse> {
+  ensureInitialized(runtime);
+
+  const response = callFunctionInHostAndHandleResponse(
+    ApiName.Copilot_SidePanel_PreCheckUserConsent,
+    [],
+    new PreCheckContextResponseHandler(),
+    getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_PreCheckUserConsent),
+  );
+  return response;
+}
+
 /** Register user action content select handler function type */
 export type userActionHandlerType = (selectedContent : Content) => void 
 /**
@@ -128,6 +135,18 @@ class GetContentResponseHandler extends ResponseHandler<Content, Content> {
   }
 
   public deserialize(response: Content): Content {
+    // Add deserialization logic to convert the serialized response to `Content`
+    return response
+  }
+}
+
+class PreCheckContextResponseHandler extends ResponseHandler<PreCheckContextResponse, PreCheckContextResponse> {
+  public validate(response: PreCheckContextResponse): boolean {
+    // Add validation logic for the serialized response
+    return response !== null && typeof response === 'object';
+  }
+
+  public deserialize(response: PreCheckContextResponse): PreCheckContextResponse {
     // Add deserialization logic to convert the serialized response to `Content`
     return response
   }
