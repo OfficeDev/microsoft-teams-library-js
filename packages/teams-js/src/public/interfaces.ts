@@ -594,6 +594,14 @@ export interface Context {
 
   /**
    * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.PageInfo.renderingSurface | app.Context.page.renderingSurface} instead
+   *
+   * The surface where the tab is rendered (sidePanel, meeting, chat, channel)
+   */
+  renderingSurface?: RenderingSurfaces;
+
+  /**
+   * @deprecated
    * As of TeamsJS v2.0.0, please use {@link app.Context | app.Context.sharepoint} instead
    *
    * SharePoint context. This is only available when hosted in SharePoint.

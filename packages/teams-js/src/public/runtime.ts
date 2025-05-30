@@ -546,6 +546,12 @@ export const upgradeChain: IRuntimeUpgrade[] = [
 ];
 
 /**
+ * This version is for legacy Teams mobile clients that don’t pass a runtime object during initialization.
+ * It’s the minimum version required to support deeply nested app auth.
+ */
+export const legacyTeamsMobileVersionForDeeplyNestedAuth = '2.1.2';
+
+/**
  * This structure is used for versions of Teams that don't pass a runtime object during initialization.
  * Please see the extensive comments in versionAndPlatformAgnosticTeamsRuntimeConfig for more information
  * on when and how to use this structure.
@@ -611,6 +617,10 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
       capability: { nestedAppAuth: {} },
       hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS],
     },
+  ],
+  '2.1.2': [
+    // isDeeplyNestedAuthSupported: true (based on const legacyTeamsMobileVersionForDeeplyNestedAuth)
+    // for hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS]
   ],
 };
 

@@ -2,7 +2,11 @@ import * as communication from '../../src/internal/communication';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app, FrameContexts, HostClientType, nestedAppAuth } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
+import {
+  _minRuntimeConfigToUninitialize,
+  Runtime,
+  legacyTeamsMobileVersionForDeeplyNestedAuth,
+} from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -125,6 +129,105 @@ describe('nestedAppAuth', () => {
       });
     });
   });
+
+  describe('isDeeplyNestedAuthSupported', () => {
+    it('should throw if called before initialization', () => {
+      utils.uninitializeRuntimeConfig();
+      expect(() => nestedAppAuth.isDeeplyNestedAuthSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('should return true if isDeeplyNestedAuthSupported set to true in runtime object', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      const runtimeConfig: Runtime = {
+        apiVersion: 4,
+        supports: {},
+        isDeeplyNestedAuthSupported: true,
+      };
+      utils.setRuntimeConfig(runtimeConfig);
+      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeTruthy();
+    });
+
+    it('should return false if isDeeplyNestedAuthSupported set to false in runtime object ', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      const runtimeConfig: Runtime = {
+        apiVersion: 4,
+        supports: {},
+        isDeeplyNestedAuthSupported: false,
+      };
+      utils.setRuntimeConfig(runtimeConfig);
+      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
+    });
+
+    it('should return false if isDeeplyNestedAuthSupported not present in runtime object ', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      const runtimeConfig: Runtime = {
+        apiVersion: 4,
+        supports: {},
+      };
+      utils.setRuntimeConfig(runtimeConfig);
+      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
+    });
+
+    describe('should return false when isDeeplyNestedAuthSupported is false across different host clients', () => {
+      const hostClients = [HostClientType.macos, HostClientType.desktop, HostClientType.web];
+
+      hostClients.forEach((hostClient) => {
+        it(`${hostClient} client`, async () => {
+          await utils.initializeWithContext(FrameContexts.content, hostClient);
+          const runtimeConfig: Runtime = {
+            apiVersion: 4,
+            supports: {},
+            isDeeplyNestedAuthSupported: false,
+          };
+          utils.setRuntimeConfig(runtimeConfig);
+          expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
+        });
+      });
+    });
+
+    it('should return false if isDeeplyNestedAuthSupported is false and isLegacyTeams is false in runtimeConfig', async () => {
+      await utils.initializeWithContext(FrameContexts.content, HostClientType.android);
+      const runtimeConfig: Runtime = {
+        apiVersion: 4,
+        supports: {},
+        isDeeplyNestedAuthSupported: false,
+        isLegacyTeams: false,
+      };
+      utils.setRuntimeConfig(runtimeConfig);
+      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
+    });
+
+    it('should return false if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for android client for version < legacyTeamsMobileVersionForDeeplyNestedAuth', async () => {
+      await utils.initializeWithContext(FrameContexts.content, HostClientType.android);
+      const runtimeConfig: Runtime = {
+        apiVersion: 4,
+        supports: {},
+        isDeeplyNestedAuthSupported: false,
+        isLegacyTeams: true,
+      };
+      utils.setClientSupportedSDKVersion('2.1.1');
+      utils.setRuntimeConfig(runtimeConfig);
+      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
+    });
+
+    describe('should return true if isDeeplyNestedAuthSupported is false and isLegacyTeams is true in runtimeConfig for android clients with version legacyTeamsMobileVersionForDeeplyNestedAuth', () => {
+      const hostClients = [HostClientType.ipados, HostClientType.ios, HostClientType.android];
+      hostClients.forEach((hostClient) => {
+        it(`for ${hostClient} client`, async () => {
+          await utils.initializeWithContext(FrameContexts.content, hostClient);
+          utils.setClientSupportedSDKVersion(legacyTeamsMobileVersionForDeeplyNestedAuth);
+          const runtimeConfig: Runtime = {
+            apiVersion: 4,
+            supports: {},
+            isDeeplyNestedAuthSupported: false,
+            isLegacyTeams: true,
+          };
+          utils.setRuntimeConfig(runtimeConfig);
+          expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeTruthy();
+        });
+      });
+    });
+  });
   describe('canParentManageNAATrustedOrigins', () => {
     it('should throw if called before initialization', () => {
       utils.uninitializeRuntimeConfig();
@@ -163,46 +266,6 @@ describe('nestedAppAuth', () => {
       };
       utils.setRuntimeConfig(runtimeConfig);
       expect(nestedAppAuth.canParentManageNAATrustedOrigins()).toBeFalsy();
-    });
-  });
-  describe('nestedAppAuth.isDeeplyNestedAuthSupported', () => {
-    it('should throw if called before initialization', () => {
-      utils.uninitializeRuntimeConfig();
-      expect(() => nestedAppAuth.isDeeplyNestedAuthSupported()).toThrowError(new Error(errorLibraryNotInitialized));
-    });
-
-    it('should return true if isDeeplyNestedAuthSupported set to true in runtime object', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      const runtimeConfig: Runtime = {
-        apiVersion: 4,
-        supports: {},
-        isNAAChannelRecommended: true,
-        isDeeplyNestedAuthSupported: true,
-      };
-      utils.setRuntimeConfig(runtimeConfig);
-      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeTruthy();
-    });
-
-    it('should return false if isDeeplyNestedAuthSupported set to false in runtime object ', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      const runtimeConfig: Runtime = {
-        apiVersion: 4,
-        supports: {},
-        isNAAChannelRecommended: false,
-      };
-      utils.setRuntimeConfig(runtimeConfig);
-      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
-    });
-
-    it('should return false if isDeeplyNestedAuthSupported not present in runtime object ', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      const runtimeConfig: Runtime = {
-        apiVersion: 4,
-        supports: {},
-        isNAAChannelRecommended: true,
-      };
-      utils.setRuntimeConfig(runtimeConfig);
-      expect(nestedAppAuth.isDeeplyNestedAuthSupported()).toBeFalsy();
     });
   });
   describe('getParentOrigin', () => {
