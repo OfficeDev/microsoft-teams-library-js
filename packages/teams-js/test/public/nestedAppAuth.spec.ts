@@ -4,8 +4,8 @@ import { app, FrameContexts, HostClientType, nestedAppAuth } from '../../src/pub
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import {
   _minRuntimeConfigToUninitialize,
-  Runtime,
   legacyTeamsMobileVersionForDeeplyNestedAuth,
+  Runtime,
 } from '../../src/public/runtime';
 import { Utils } from '../utils';
 

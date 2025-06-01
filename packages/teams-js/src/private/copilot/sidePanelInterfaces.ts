@@ -1,3 +1,5 @@
+import { ErrorCode } from '../../public/interfaces';
+
 /**
  * @hidden
  *
@@ -6,7 +8,7 @@
  * @internal
  * Limited to Microsoft-internal use
  */
-export enum ContentType {
+export enum ContentItemType {
   EMAIL = 'email',
   TEXT = 'text',
   MEDIA = 'media',
@@ -233,12 +235,12 @@ export type ContentItem =
 export interface Content {
   userAction?: string;
   contentType:
-    | ContentType.CALENDAR_INVITE
-    | ContentType.EMAIL
-    | ContentType.MEDIA
-    | ContentType.TEXT
-    | ContentType.WEB_PAGE
-    | ContentType.MIXED;
+    | ContentItemType.CALENDAR_INVITE
+    | ContentItemType.EMAIL
+    | ContentItemType.MEDIA
+    | ContentItemType.TEXT
+    | ContentItemType.WEB_PAGE
+    | ContentItemType.MIXED;
   formCode?: string; // Unique identifier for the content
   contentItems: ContentItem[];
   metadata?: string;
@@ -308,6 +310,23 @@ export enum SidePanelErrorCode {
  * Limited to Microsoft-internal use
  */
 export interface SidePanelError {
-  errorCode: SidePanelErrorCode;
+  errorCode: SidePanelErrorCode | ErrorCode;
   message?: string;
+}
+
+/**
+ * @hidden
+ * @beta
+ * Implementation of the SidePanelError interface.
+ * This class extends the built-in Error class and includes an error code.
+ * It is used to represent errors that occur during side panel operations.
+ * The error code can be one of the SidePanelErrorCode values or a general ErrorCode.
+ */
+export class SidePanelErrorImpl extends Error implements SidePanelError {
+  public errorCode: SidePanelErrorCode | ErrorCode;
+  public constructor(errorCode: SidePanelErrorCode, message?: string) {
+    super(message);
+    this.errorCode = errorCode;
+    this.name = 'SidePanelError';
+  }
 }

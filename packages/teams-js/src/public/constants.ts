@@ -102,10 +102,6 @@ export enum FrameContexts {
   meetingStage = 'meetingStage',
 }
 
-export enum RenderingSurfaces {
-  copilotSidePanel = 'copilotSidePanel',
-}
-
 /**
  * RenderingSurfaces describes the context or surface in which your app is being displayed within the host application.
  * This parameter allows your app to detect where it is rendered (for example, in a side panel or stage view)

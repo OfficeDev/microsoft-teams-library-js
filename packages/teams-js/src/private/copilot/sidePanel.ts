@@ -12,9 +12,16 @@ import { registerHandlerHelper } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
-import { errorNotSupportedOnPlatform } from '../../public/constants';
+import { FrameContexts } from '../../public/constants';
+import { isSdkError } from '../../public/interfaces';
 import { runtime } from '../../public/runtime';
-import { Content, PreCheckContextResponse, SidePanelError, SidePanelErrorCode } from './sidePanelInterfaces';
+import {
+  Content,
+  PreCheckContextResponse,
+  SidePanelError,
+  SidePanelErrorCode,
+  SidePanelErrorImpl,
+} from './sidePanelInterfaces';
 
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
@@ -48,8 +55,9 @@ export function isSidePanelError(err: unknown): err is SidePanelError {
   const error = err as SidePanelError;
 
   return (
-    Object.values(SidePanelErrorCode).includes(error.errorCode) &&
-    (error.message === undefined || typeof error.message === 'string')
+    (Object.values(SidePanelErrorCode).includes(error.errorCode as SidePanelErrorCode) &&
+      (error.message === undefined || typeof error.message === 'string')) ||
+    isSdkError(err) // If the error is an SdkError, it can be considered a SidePanelError
   );
 }
 /**
@@ -104,10 +112,10 @@ export function registerOnContentChangeHandler(handler: userActionHandlerType): 
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_RegisterUserActionContentSelect),
     'copilot.sidePanel.userActionContentSelect',
     handler,
-    [], // TODO: get expectedFrameContexts from the host
+    [FrameContexts.content],
     () => {
       if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+        throw copilotSidePanelNotSupportedOnPlatformError;
       }
     },
   );
@@ -132,36 +140,43 @@ export function registerUserConsent(handler: registerUserConsentPreCheckResponse
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_RegisterOnUserConsentChange),
     'copilot.sidePanel.userConsentChange',
     handler,
-    [], // TODO: get expectedFrameContexts from the host
+    [FrameContexts.content],
     () => {
       if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+        throw copilotSidePanelNotSupportedOnPlatformError;
       }
     },
   );
 }
 
-// TODO: Add a deserializer for the response
+/**
+ * @hidden
+ * @beta
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Error thrown when the copilot side panel API is not supported on the current platform.
+ */
+export const copilotSidePanelNotSupportedOnPlatformError = new SidePanelErrorImpl(
+  SidePanelErrorCode.NOT_SUPPORTED_ON_PLATFORM,
+  'This API is not supported on the current platform.',
+);
 class GetContentResponseHandler extends ResponseHandler<Content, Content> {
   public validate(response: Content): boolean {
-    // Add validation logic for the serialized response
     return response !== null && typeof response === 'object';
   }
 
   public deserialize(response: Content): Content {
-    // Add deserialization logic to convert the serialized response to `Content`
     return response;
   }
 }
 
 class PreCheckContextResponseHandler extends ResponseHandler<PreCheckContextResponse, PreCheckContextResponse> {
   public validate(response: PreCheckContextResponse): boolean {
-    // Add validation logic for the serialized response
     return response !== null && typeof response === 'object';
   }
 
   public deserialize(response: PreCheckContextResponse): PreCheckContextResponse {
-    // Add deserialization logic to convert the serialized response to `Content`
     return response;
   }
 }
