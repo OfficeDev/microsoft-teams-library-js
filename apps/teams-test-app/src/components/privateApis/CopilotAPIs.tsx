@@ -1,6 +1,11 @@
 import { copilot, UUID } from '@microsoft/teams-js';
+import {
+  Content,
+  PreCheckContextResponse,
+} from '@microsoft/teams-js/dist/esm/packages/teams-js/dts/private/copilot/sidePanelInterfaces';
 import React, { ReactElement } from 'react';
 
+import { generateRegistrationMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
 
@@ -56,6 +61,64 @@ const CopilotAPIs = (): ReactElement => {
       }),
     });
 
+  const CheckCopilotSidePanelCapability = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCopilotSidePanelCapability',
+      title: 'Check if Copilot.SidePanel is supported',
+      onClick: async () => `Copilot.SidePanel module ${copilot.sidePanel.isSupported() ? 'is' : 'is not'} supported`,
+    });
+
+  const GetContent = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'getContent',
+      title: 'Get the hub content for copilot',
+      onClick: async () => {
+        const result = await copilot.sidePanel.getContent();
+        return JSON.stringify(result);
+      },
+    });
+
+  const PreCheckUserConsent = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'preCheckUserConsent',
+      title: 'Get the user consent for the copilot to see the context',
+      onClick: async () => {
+        const result = await copilot.sidePanel.preCheckUserConsent();
+        return JSON.stringify(result);
+      },
+    });
+
+  const RegisterUserActionContentSelect = (): React.ReactElement =>
+    ApiWithoutInput({
+      name: 'registerUserActionContentSelect',
+      title: 'Register UserAction Content Select',
+      onClick: async (setResult) => {
+        const handler = (data: Content): void => {
+          const res = `UserAction Content Select called with data: ${JSON.stringify(data)}`;
+          setResult(res);
+        };
+        copilot.sidePanel.registerUserActionContentSelect(handler);
+        return generateRegistrationMsg('then the content is selected by the user');
+      },
+    });
+
+  const RegisterUserConsent = (): React.ReactElement =>
+    ApiWithoutInput({
+      name: 'registerUserConsent',
+      title: 'Register User Consent',
+      onClick: async (setResult) => {
+        const handler = (data: PreCheckContextResponse): void => {
+          if (data.error_code) {
+            setResult(`Error: ${data.error_code} - ${data.status}`);
+            return;
+          }
+          setResult(data.user_consent === 'accepted' ? 'User consent accepted' : 'User consent not accepted');
+        };
+        copilot.sidePanel.registerUserConsent(handler);
+        return generateRegistrationMsg('then the user changes their consent in the hub');
+      },
+    });
+
   return (
     <>
       <ModuleWrapper title="Copilot.Eligibility">
@@ -65,6 +128,13 @@ const CopilotAPIs = (): ReactElement => {
       <ModuleWrapper title="Copilot.CustomTelemetry">
         <CheckCopilotCustomTelemetryCapability />
         <SendCustomTelemetryData />
+      </ModuleWrapper>
+      <ModuleWrapper title="Copilot.SidePanel">
+        <CheckCopilotSidePanelCapability />
+        <RegisterUserActionContentSelect />
+        <RegisterUserConsent />
+        <GetContent />
+        <PreCheckUserConsent />
       </ModuleWrapper>
     </>
   );

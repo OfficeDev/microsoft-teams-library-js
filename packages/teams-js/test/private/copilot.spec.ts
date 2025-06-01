@@ -607,9 +607,9 @@ describe('copilot', () => {
       });
     });
 
-    describe('registerOnContentChangeHandler', () => {
+    describe('registerUserActionContentSelect', () => {
       it('should throw if called before initialization', () => {
-        expect(() => copilot.sidePanel.registerOnContentChangeHandler(() => {})).toThrowError(
+        expect(() => copilot.sidePanel.registerUserActionContentSelect(() => {})).toThrowError(
           new Error(errorLibraryNotInitialized),
         );
       });
@@ -627,7 +627,7 @@ describe('copilot', () => {
         utils.setRuntimeConfig(runtimeWithSidePanel);
         const mockedContent: Content = { contentType: ContentItemType.TEXT, contentItems: [{ content: 'Hello' }] };
 
-        copilot.sidePanel.registerOnContentChangeHandler((eventData: Content) => {
+        copilot.sidePanel.registerUserActionContentSelect((eventData: Content) => {
           expect(eventData).toEqual(mockedContent);
         });
 
@@ -643,7 +643,7 @@ describe('copilot', () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
 
-        expect(() => copilot.sidePanel.registerOnContentChangeHandler(() => {})).toThrowError(
+        expect(() => copilot.sidePanel.registerUserActionContentSelect(() => {})).toThrowError(
           copilotSidePanelNotSupportedOnPlatformError,
         );
       });

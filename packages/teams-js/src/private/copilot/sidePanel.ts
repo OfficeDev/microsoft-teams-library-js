@@ -107,7 +107,7 @@ export type userActionHandlerType = (selectedContent: Content) => void;
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerOnContentChangeHandler(handler: userActionHandlerType): void {
+export function registerUserActionContentSelect(handler: userActionHandlerType): void {
   registerHandlerHelper(
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_RegisterUserActionContentSelect),
     'copilot.sidePanel.userActionContentSelect',
