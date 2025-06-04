@@ -306,12 +306,8 @@ export interface PageInfo {
   frameContext: FrameContexts;
 
   /**
-<<<<<<< HEAD
-   * The surface where the page is loaded
-=======
    * The mode or surface where the page is rendered (e.g. sidePanel, meetingStage, etc.)
    * This will be used by the app developers in future to know where in the host the app is rendered instead of the frameContext.
->>>>>>> main
    */
   renderingSurface?: RenderingSurfaces;
 

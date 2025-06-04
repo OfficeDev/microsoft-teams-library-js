@@ -1,5 +1,3 @@
-import { ErrorCode } from '../../public/interfaces';
-
 /**
  * @hidden
  *
@@ -249,6 +247,10 @@ export interface Content {
   status?: string; // Optional status message
 }
 
+export interface ContentRequest {
+  localEndpointInfo: string; // local endpoint information for the request- used by Edge
+}
+
 /**
  * @hidden
  *
@@ -287,17 +289,16 @@ export enum UserConsent {
  * Limited to Microsoft-internal use
  */
 export enum SidePanelErrorCode {
-  BLOCKED_BY_POLICY = 'page_content_blocked_by_policy',
-  BLOCKED_BY_DLP = 'page_content_blocked_by_dlp',
-  MEDIA_NOT_SUPPORTED = 'media_not_supported',
-  USER_CONSENT_REQUIRED = 'user_consent_required',
-  EXTRACTION_FAILED = 'content_extraction_failed',
-  CONTENT_NOT_FOUND = 'content_not_found',
-  CONTENT_NOT_SUPPORTED = 'content_not_supported',
-  CONTENT_CHANGED = 'content_changed',
-  UNKNOWN_ERROR = 'unknown_error',
-  INTERNAL_ERROR = 'internal_error', // catch all error code for unexpected issues
-  NOT_SUPPORTED_ON_PLATFORM = 'not_supported_on_platform', // API not supported on the current platform
+  ConsentNotAccepted = 'consent_not_accepted',
+  PageContentBlockedPolicy = 'page_content_blocked_policy',
+  PageContentBlockedDlp = 'page_content_blocked_dlp',
+  PageContentTypeNotSupportedYet = 'page_content_type_not_supported_yet',
+  PageContentSizeNotSupported = 'page_content_size_not_supported',
+  PageContextChanged = 'page_context_changed',
+  PageContentExtractionFailed = 'page_content_extraction_failed',
+  PageContentSizeNotSupportedPDF = 'page_content_size_not_supported_pdf',
+  NotSupportedOnPlatform = 'not_supported_on_platform', // API not supported on the current platform
+  OtherError = 'other_error', // catch all error code for unexpected issues
 }
 
 /**
@@ -310,7 +311,7 @@ export enum SidePanelErrorCode {
  * Limited to Microsoft-internal use
  */
 export interface SidePanelError {
-  errorCode: SidePanelErrorCode | ErrorCode;
+  errorCode: SidePanelErrorCode;
   message?: string;
 }
 
@@ -323,7 +324,7 @@ export interface SidePanelError {
  * The error code can be one of the SidePanelErrorCode values or a general ErrorCode.
  */
 export class SidePanelErrorImpl extends Error implements SidePanelError {
-  public errorCode: SidePanelErrorCode | ErrorCode;
+  public errorCode: SidePanelErrorCode;
   public constructor(errorCode: SidePanelErrorCode, message?: string) {
     super(message);
     this.errorCode = errorCode;

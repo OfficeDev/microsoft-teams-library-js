@@ -1,6 +1,7 @@
 import { copilot, UUID } from '@microsoft/teams-js';
 import {
   Content,
+  ContentRequest,
   PreCheckContextResponse,
 } from '@microsoft/teams-js/dist/esm/packages/teams-js/dts/private/copilot/sidePanelInterfaces';
 import React, { ReactElement } from 'react';
@@ -35,12 +36,12 @@ const CopilotAPIs = (): ReactElement => {
       onClick: async () =>
         `Copilot.CustomTelemetry module ${copilot.customTelemetry.isSupported() ? 'is' : 'is not'} supported`,
     });
-  interface InputType {
+  interface CustomTelemetryInputType {
     stageNameIdentifier: string;
     timestamp?: number;
   }
   const SendCustomTelemetryData = (): ReactElement =>
-    ApiWithTextInput<InputType>({
+    ApiWithTextInput<CustomTelemetryInputType>({
       name: 'sendCustomTelemetryData',
       title: 'sendCustomTelemetryData',
       onClick: {
@@ -69,19 +70,30 @@ const CopilotAPIs = (): ReactElement => {
     });
 
   const GetContent = (): ReactElement =>
-    ApiWithoutInput({
+    ApiWithTextInput<ContentRequest>({
       name: 'getContent',
-      title: 'Get the hub content for copilot',
-      onClick: async () => {
-        const result = await copilot.sidePanel.getContent();
-        return JSON.stringify(result);
+      title: 'getContent',
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        validateInput: (_input) => {},
+        submit: async (input) => {
+          try {
+            const result = input ? await copilot.sidePanel.getContent(input) : await copilot.sidePanel.getContent();
+            return JSON.stringify(result);
+          } catch (error) {
+            return `Error: ${error}`;
+          }
+        },
       },
+      defaultInput: JSON.stringify({
+        localEndpointInfo: 'read',
+      }),
     });
 
   const PreCheckUserConsent = (): ReactElement =>
     ApiWithoutInput({
       name: 'preCheckUserConsent',
-      title: 'Get the user consent for the copilot to see the context',
+      title: 'Get User Consent',
       onClick: async () => {
         const result = await copilot.sidePanel.preCheckUserConsent();
         return JSON.stringify(result);

@@ -561,7 +561,7 @@ describe('copilot', () => {
         utils.setRuntimeConfig(runtimeWithSidePanel);
 
         const err: SidePanelError = {
-          errorCode: SidePanelErrorCode.BLOCKED_BY_POLICY,
+          errorCode: SidePanelErrorCode.PageContentBlockedPolicy,
           message: 'Content blocked by policy',
         };
 
