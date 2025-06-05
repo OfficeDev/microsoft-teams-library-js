@@ -648,50 +648,5 @@ describe('copilot', () => {
         );
       });
     });
-
-    describe('registerUserConsent', () => {
-      it('should throw if called before initialization', () => {
-        expect(() => copilot.sidePanel.registerUserConsent(() => {})).toThrowError(
-          new Error(errorLibraryNotInitialized),
-        );
-      });
-
-      it('should register handler if sidePanel is supported', async () => {
-        expect.assertions(4);
-        await utils.initializeWithContext(FrameContexts.content);
-        const runtimeWithSidePanel = {
-          ..._minRuntimeConfigToUninitialize,
-          supports: {
-            ..._minRuntimeConfigToUninitialize.supports,
-            copilot: { sidePanel: {} },
-          },
-        };
-        utils.setRuntimeConfig(runtimeWithSidePanel);
-        const mockedPreCheckResponse: PreCheckContextResponse = {
-          user_consent: UserConsent.Accepted,
-          show_consent_card: true,
-        };
-
-        copilot.sidePanel.registerUserConsent((eventData: PreCheckContextResponse) => {
-          expect(eventData).toEqual(mockedPreCheckResponse);
-        });
-
-        const registerHandlerMessage = utils.findMessageByFunc('registerHandler');
-        expect(registerHandlerMessage).not.toBeNull();
-        expect(registerHandlerMessage?.args?.length).toBe(1);
-        expect(registerHandlerMessage?.args?.[0]).toBe('copilot.sidePanel.userConsentChange');
-
-        await utils.sendMessage('copilot.sidePanel.userConsentChange', mockedPreCheckResponse);
-      });
-
-      it('should throw if sidePanel is not supported', async () => {
-        await utils.initializeWithContext(FrameContexts.content);
-        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-
-        expect(() => copilot.sidePanel.registerUserConsent(() => {})).toThrowError(
-          copilotSidePanelNotSupportedOnPlatformError,
-        );
-      });
-    });
   });
 });

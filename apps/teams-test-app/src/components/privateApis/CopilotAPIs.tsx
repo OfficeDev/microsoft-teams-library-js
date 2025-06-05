@@ -114,23 +114,6 @@ const CopilotAPIs = (): ReactElement => {
       },
     });
 
-  const RegisterUserConsent = (): React.ReactElement =>
-    ApiWithoutInput({
-      name: 'registerUserConsent',
-      title: 'Register User Consent',
-      onClick: async (setResult) => {
-        const handler = (data: PreCheckContextResponse): void => {
-          if (data.error_code) {
-            setResult(`Error: ${data.error_code} - ${data.status}`);
-            return;
-          }
-          setResult(data.user_consent === 'accepted' ? 'User consent accepted' : 'User consent not accepted');
-        };
-        copilot.sidePanel.registerUserConsent(handler);
-        return generateRegistrationMsg('then the user changes their consent in the hub');
-      },
-    });
-
   return (
     <>
       <ModuleWrapper title="Copilot.Eligibility">
@@ -144,7 +127,6 @@ const CopilotAPIs = (): ReactElement => {
       <ModuleWrapper title="Copilot.SidePanel">
         <CheckCopilotSidePanelCapability />
         <RegisterUserActionContentSelect />
-        <RegisterUserConsent />
         <GetContent />
         <PreCheckUserConsent />
       </ModuleWrapper>

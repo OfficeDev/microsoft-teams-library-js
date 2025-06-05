@@ -132,34 +132,6 @@ export function registerUserActionContentSelect(handler: userActionHandlerType):
   );
 }
 
-/** Register for user consent changes. Copilot app can only access the content of the page/data displayed in the hub, if the user has consented
- * to share the content with the copilot app.
- */
-export type registerUserConsentPreCheckResponseType = (selectedContent: PreCheckContextResponse) => void;
-/**
- * @hidden
- * @beta
- * Registers a handler to get user consent changes.
- * This handler will be called when the user changes their consent in the hub.
- * @param handler - The handler for getting user consent changes.
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function registerUserConsent(handler: registerUserConsentPreCheckResponseType): void {
-  registerHandlerHelper(
-    getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_RegisterOnUserConsentChange),
-    'copilot.sidePanel.userConsentChange',
-    handler,
-    [FrameContexts.content],
-    () => {
-      if (!isSupported()) {
-        throw copilotSidePanelNotSupportedOnPlatformError;
-      }
-    },
-  );
-}
-
 /**
  * @hidden
  * @beta
