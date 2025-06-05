@@ -1,8 +1,4 @@
-import { copilot, UUID } from '@microsoft/teams-js';
-import {
-  Content,
-  ContentRequest,
-} from '@microsoft/teams-js/dist/esm/packages/teams-js/dts/private/copilot/sidePanelInterfaces';
+import { copilot, sidePanelInterfaces, UUID } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../../App';
@@ -69,7 +65,7 @@ const CopilotAPIs = (): ReactElement => {
     });
 
   const GetContent = (): ReactElement =>
-    ApiWithTextInput<ContentRequest>({
+    ApiWithTextInput<sidePanelInterfaces.ContentRequest>({
       name: 'getContent',
       title: 'getContent',
       onClick: {
@@ -104,7 +100,7 @@ const CopilotAPIs = (): ReactElement => {
       name: 'registerUserActionContentSelect',
       title: 'Register UserAction Content Select',
       onClick: async (setResult) => {
-        const handler = (data: Content): void => {
+        const handler = (data: sidePanelInterfaces.Content): void => {
           const res = `UserAction Content Select called with data: ${JSON.stringify(data)}`;
           setResult(res);
         };
