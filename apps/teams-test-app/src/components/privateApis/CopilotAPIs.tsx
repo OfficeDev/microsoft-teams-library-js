@@ -2,7 +2,6 @@ import { copilot, UUID } from '@microsoft/teams-js';
 import {
   Content,
   ContentRequest,
-  PreCheckContextResponse,
 } from '@microsoft/teams-js/dist/esm/packages/teams-js/dts/private/copilot/sidePanelInterfaces';
 import React, { ReactElement } from 'react';
 

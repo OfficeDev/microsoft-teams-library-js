@@ -596,7 +596,10 @@ describe('copilot', () => {
         };
         utils.setRuntimeConfig(runtimeWithSidePanel);
 
-        const mockedPreCheckResponse = { user_consent: 'accepted', show_consent_card: true };
+        const mockedPreCheckResponse: PreCheckContextResponse = {
+          user_consent: UserConsent.Accepted,
+          show_consent_card: true,
+        };
         const promise = copilot.sidePanel.preCheckUserConsent();
         const message = utils.findMessageByFunc('copilot.sidePanel.preCheckUserConsent');
         expect(message).not.toBeNull();
