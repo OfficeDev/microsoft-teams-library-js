@@ -15,9 +15,8 @@ Tue, 27 May 2025 21:09:59 GMT
 
 ### Patches
 
-- Removed Beta tag from nestedAppAuth.isNAAChannelRecommended API
-- Unblocked apps on Mobile to call `dialog.url.submit` from dialog by allowing this API from `FrameContext.content`.
-There is a bug in Teams mobile that returns `frameContext.content in dialog instead of `frameContext.task`. Once the bug is fixed, this change will be reverted.
+- Removed Beta tag from `nestedAppAuth.isNAAChannelRecommended` API.
+- Unblocked apps on Mobile to call `dialog.url.submit` from dialog by allowing this API from `FrameContext.content`. There is a bug in Teams mobile that returns `frameContext.content` in dialog instead of `frameContext.task`. Once the bug is fixed, this change will be reverted.
 
 ## 2.37.0
 
