@@ -1,8 +1,22 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 02 May 2025 19:11:28 GMT and should not be manually modified.
+This log was last generated on Tue, 27 May 2025 21:09:59 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.38.0
+
+Tue, 27 May 2025 21:09:59 GMT
+
+### Minor changes
+
+- Added `renderingSurface` property to `{app.Page.Context}` capability.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Removed Beta tag from `nestedAppAuth.isNAAChannelRecommended` API.
+- Unblocked apps on Mobile to call `dialog.url.submit` from dialog by allowing this API from `FrameContext.content`. There is a bug in Teams mobile that returns `frameContext.content` in dialog instead of `frameContext.task`. Once the bug is fixed, this change will be reverted.
 
 ## 2.37.0
 
