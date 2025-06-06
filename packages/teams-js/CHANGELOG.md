@@ -1,8 +1,18 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Tue, 27 May 2025 21:09:59 GMT and should not be manually modified.
+This log was last generated on Fri, 06 Jun 2025 17:53:12 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.39.0
+
+Fri, 06 Jun 2025 17:53:12 GMT
+
+### Minor changes
+
+- Added `{copilot.sidePanel}` capability that will help copilot to receive more context aware data from the hosts. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added a new client version `2.1.2` to support isDeeplyNestedAuthSupported for Teams Mobile legacy code
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ## 2.38.0
 
