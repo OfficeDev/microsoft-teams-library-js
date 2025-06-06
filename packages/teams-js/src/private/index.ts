@@ -23,6 +23,7 @@ export * as conversations from './conversations';
 //to keep the named exports so as to not break the existing consumers directly referencing the named exports.
 export { ConversationResponse, OpenConversationRequest } from './conversations';
 export * as copilot from './copilot/copilot';
+export * as sidePanelInterfaces from './copilot/sidePanelInterfaces';
 export * as externalAppAuthentication from './externalAppAuthentication';
 export * as externalAppAuthenticationForCEA from './externalAppAuthenticationForCEA';
 export * as externalAppCardActions from './externalAppCardActions';
