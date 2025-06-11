@@ -1,8 +1,32 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 02 May 2025 19:11:28 GMT and should not be manually modified.
+This log was last generated on Fri, 06 Jun 2025 17:53:12 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.39.0
+
+Fri, 06 Jun 2025 17:53:12 GMT
+
+### Minor changes
+
+- Added `{copilot.sidePanel}` capability that will help copilot to receive more context aware data from the hosts. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added a new client version `2.1.2` to support isDeeplyNestedAuthSupported for Teams Mobile legacy code
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.38.0
+
+Tue, 27 May 2025 21:09:59 GMT
+
+### Minor changes
+
+- Added `renderingSurface` property to `{app.Page.Context}` capability.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Removed Beta tag from `nestedAppAuth.isNAAChannelRecommended` API.
+- Unblocked apps on Mobile to call `dialog.url.submit` from dialog by allowing this API from `FrameContext.content`. There is a bug in Teams mobile that returns `frameContext.content` in dialog instead of `frameContext.task`. Once the bug is fixed, this change will be reverted.
 
 ## 2.37.0
 
