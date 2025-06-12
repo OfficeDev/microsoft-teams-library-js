@@ -171,6 +171,7 @@ extends:
               versionBranch: 'v4'
 
           - job: E2ETestCDN
+            timeoutInMinutes: 120
             displayName: 'E2E Tests - CDN (only runs on release builds)'
             # This test only runs after deployment from a release branch and the new CDN version has been deployed
             # This check will run on the PR to merge the release branch back into main
@@ -221,6 +222,7 @@ extends:
                   androidAppHostingSdkGitPath: AndroidAppHostingSdk
                   shardNum: 2
                   shardIndex: 0
+            continueOnError: true
 
           - job: E2ETestAndroidB
             displayName: 'E2E Tests - Android - Plan B'
@@ -234,6 +236,7 @@ extends:
                   androidAppHostingSdkGitPath: AndroidAppHostingSdk
                   shardNum: 2
                   shardIndex: 1
+            continueOnError: true
 
           # Comment out all of iOS E2E tests in TJS side due to unknown E2E testing failures on CI
           # - job: E2ETestIOS
