@@ -131,7 +131,7 @@ const Authenticate = (): React.ReactElement =>
         },
       },
     },
-    defaultInput: '{"url":"https://www.microsoft.com"}',
+    defaultInput: '{"url":"https://localhost:4000"}',
   });
 
 const getAuthParams = (authParam: authAuthenticateParams): authentication.AuthenticatePopUpParameters => {
