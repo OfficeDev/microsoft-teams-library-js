@@ -1,6 +1,7 @@
-import { copilot, UUID } from '@microsoft/teams-js';
+import { copilot, sidePanelInterfaces, UUID } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
+import { generateRegistrationMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
 
@@ -30,12 +31,12 @@ const CopilotAPIs = (): ReactElement => {
       onClick: async () =>
         `Copilot.CustomTelemetry module ${copilot.customTelemetry.isSupported() ? 'is' : 'is not'} supported`,
     });
-  interface InputType {
+  interface CustomTelemetryInputType {
     stageNameIdentifier: string;
     timestamp?: number;
   }
   const SendCustomTelemetryData = (): ReactElement =>
-    ApiWithTextInput<InputType>({
+    ApiWithTextInput<CustomTelemetryInputType>({
       name: 'sendCustomTelemetryData',
       title: 'sendCustomTelemetryData',
       onClick: {
@@ -56,6 +57,58 @@ const CopilotAPIs = (): ReactElement => {
       }),
     });
 
+  const CheckCopilotSidePanelCapability = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCopilotSidePanelCapability',
+      title: 'Check if Copilot.SidePanel is supported',
+      onClick: async () => `Copilot.SidePanel module ${copilot.sidePanel.isSupported() ? 'is' : 'is not'} supported`,
+    });
+
+  const GetContent = (): ReactElement =>
+    ApiWithTextInput<sidePanelInterfaces.ContentRequest>({
+      name: 'getContent',
+      title: 'getContent',
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        validateInput: (_input) => {},
+        submit: async (input) => {
+          try {
+            const result = input ? await copilot.sidePanel.getContent(input) : await copilot.sidePanel.getContent();
+            return JSON.stringify(result);
+          } catch (error) {
+            return `Error: ${error}`;
+          }
+        },
+      },
+      defaultInput: JSON.stringify({
+        localEndpointInfo: 'read',
+      }),
+    });
+
+  const PreCheckUserConsent = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'preCheckUserConsent',
+      title: 'Get User Consent',
+      onClick: async () => {
+        const result = await copilot.sidePanel.preCheckUserConsent();
+        return JSON.stringify(result);
+      },
+    });
+
+  const RegisterUserActionContentSelect = (): React.ReactElement =>
+    ApiWithoutInput({
+      name: 'registerUserActionContentSelect',
+      title: 'Register UserAction Content Select',
+      onClick: async (setResult) => {
+        const handler = (data: sidePanelInterfaces.Content): void => {
+          const res = `UserAction Content Select called with data: ${JSON.stringify(data)}`;
+          setResult(res);
+        };
+        copilot.sidePanel.registerUserActionContentSelect(handler);
+        return generateRegistrationMsg('then the content is selected by the user');
+      },
+    });
+
   return (
     <>
       <ModuleWrapper title="Copilot.Eligibility">
@@ -65,6 +118,12 @@ const CopilotAPIs = (): ReactElement => {
       <ModuleWrapper title="Copilot.CustomTelemetry">
         <CheckCopilotCustomTelemetryCapability />
         <SendCustomTelemetryData />
+      </ModuleWrapper>
+      <ModuleWrapper title="Copilot.SidePanel">
+        <CheckCopilotSidePanelCapability />
+        <RegisterUserActionContentSelect />
+        <GetContent />
+        <PreCheckUserConsent />
       </ModuleWrapper>
     </>
   );

@@ -1,6 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
-import { ChannelType, DialogDimension, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
+import {
+  ChannelType,
+  DialogDimension,
+  HostClientType,
+  HostName,
+  RenderingSurfaces,
+  TeamType,
+  UserTeamRole,
+} from './constants';
 import { FrameContexts } from './constants';
 
 /**
@@ -581,6 +589,14 @@ export interface Context {
    * The context where tab url is loaded (content, task, setting, remove, sidePanel)
    */
   frameContext?: FrameContexts;
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.PageInfo.renderingSurface | app.Context.page.renderingSurface} instead
+   *
+   * The surface where the tab is rendered (sidePanel, meeting, chat, channel)
+   */
+  renderingSurface?: RenderingSurfaces;
 
   /**
    * @deprecated

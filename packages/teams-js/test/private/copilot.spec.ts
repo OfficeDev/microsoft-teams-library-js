@@ -1,6 +1,15 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ApiName } from '../../src/internal/telemetry';
 import * as copilot from '../../src/private/copilot/copilot';
+import { copilotSidePanelNotSupportedOnPlatformError } from '../../src/private/copilot/sidePanel';
+import {
+  Content,
+  ContentItemType,
+  PreCheckContextResponse,
+  SidePanelError,
+  SidePanelErrorCode,
+  UserConsent,
+} from '../../src/private/copilot/sidePanelInterfaces';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { Cohort, EduType, ErrorCode, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
@@ -190,6 +199,33 @@ describe('copilot', () => {
           }
 
           return expect(promise).resolves.toEqual(mockedAppEligibilityInformation);
+        });
+
+        it(`should pass forceRefresh parameter if it exists - with context ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+          copilot.eligibility.getEligibilityInfo(true);
+          const message = utils.findMessageByActionName('copilot.eligibility.getEligibilityInfo');
+          expect(message.args?.[0]).toBe(true);
+        });
+
+        it(`should pass forceRefresh parameter if it exists - with context ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+          copilot.eligibility.getEligibilityInfo(false);
+          const message = utils.findMessageByActionName('copilot.eligibility.getEligibilityInfo');
+          expect(message.args?.[0]).toBe(false);
+        });
+
+        it(`should default forceRefresh parameter to false if not passed - with context ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+          copilot.eligibility.getEligibilityInfo();
+          const message = utils.findMessageByActionName('copilot.eligibility.getEligibilityInfo');
+          expect(message.args?.[0]).toBe(undefined);
         });
 
         it(`should not throw if featureSet in response is undefined - with context ${frameContext}`, async () => {
@@ -436,6 +472,183 @@ describe('copilot', () => {
         await expect(copilot.customTelemetry.sendCustomTelemetryData(new UUID('805a4340-d5e0-4587-8f04-0ae88219699f')));
         const message = utils.findMessageByFunc(ApiName.Copilot_CustomTelemetry_SendCustomTelemetryData);
         expect(message).not.toBeNull();
+      });
+    });
+  });
+
+  describe('copilot.sidePanel', () => {
+    let utils: Utils;
+
+    beforeEach(() => {
+      utils = new Utils();
+    });
+
+    afterEach(() => {
+      if (app._uninitialize) {
+        utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfig);
+        app._uninitialize();
+      }
+    });
+
+    describe('isSupported', () => {
+      it('should throw if called before initialization', () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        expect(() => copilot.sidePanel.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('should return false if sidePanel is not supported in runtimeConfig', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        expect(copilot.sidePanel.isSupported()).toBeFalsy();
+      });
+
+      it('should return true if sidePanel is supported in runtimeConfig', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(FrameContexts.content);
+        const runtimeWithSidePanel = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: { sidePanel: {} },
+          },
+        };
+        utils.setRuntimeConfig(runtimeWithSidePanel);
+        expect(copilot.sidePanel.isSupported()).toBeTruthy();
+      });
+    });
+
+    describe('getContent', () => {
+      it('should throw if called before initialization', async () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        await expect(copilot.sidePanel.getContent()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('should resolve with content if host returns content', async () => {
+        expect.assertions(2);
+        await utils.initializeWithContext(FrameContexts.content);
+        const runtimeWithSidePanel = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: { sidePanel: {} },
+          },
+        };
+        utils.setRuntimeConfig(runtimeWithSidePanel);
+
+        const mockedContent = { contentType: 'text', contentItems: [{ content: 'Hello' }] };
+        const promise = copilot.sidePanel.getContent();
+        const message = utils.findMessageByFunc('copilot.sidePanel.getContent');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedContent);
+        }
+        await expect(promise).resolves.toEqual(mockedContent);
+      });
+
+      it('should throw error if host returns error', async () => {
+        expect.assertions(2);
+        await utils.initializeWithContext(FrameContexts.content);
+        const runtimeWithSidePanel = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: { sidePanel: {} },
+          },
+        };
+        utils.setRuntimeConfig(runtimeWithSidePanel);
+
+        const err: SidePanelError = {
+          errorCode: SidePanelErrorCode.PageContentBlockedPolicy,
+          message: 'Content blocked by policy',
+        };
+
+        const promise = copilot.sidePanel.getContent();
+        const message = utils.findMessageByFunc('copilot.sidePanel.getContent');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, err);
+        }
+        await expect(promise).rejects.toThrowError(new Error(`${err.errorCode}, message: ${err.message ?? 'None'}`));
+      });
+    });
+
+    describe('preCheckUserConsent', () => {
+      it('should throw if called before initialization', async () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        await expect(copilot.sidePanel.preCheckUserConsent()).rejects.toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      it('should resolve with PreCheckContextResponse if host returns it', async () => {
+        expect.assertions(2);
+        await utils.initializeWithContext(FrameContexts.content);
+        const runtimeWithSidePanel = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: { sidePanel: {} },
+          },
+        };
+        utils.setRuntimeConfig(runtimeWithSidePanel);
+
+        const mockedPreCheckResponse: PreCheckContextResponse = {
+          user_consent: UserConsent.Accepted,
+          show_consent_card: true,
+        };
+        const promise = copilot.sidePanel.preCheckUserConsent();
+        const message = utils.findMessageByFunc('copilot.sidePanel.preCheckUserConsent');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedPreCheckResponse);
+        }
+        await expect(promise).resolves.toEqual(mockedPreCheckResponse);
+      });
+    });
+
+    describe('registerUserActionContentSelect', () => {
+      it('should throw if called before initialization', () => {
+        expect(() => copilot.sidePanel.registerUserActionContentSelect(() => {})).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      it('should register handler if sidePanel is supported', async () => {
+        expect.assertions(4);
+        await utils.initializeWithContext(FrameContexts.content);
+        const runtimeWithSidePanel = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: { sidePanel: {} },
+          },
+        };
+        utils.setRuntimeConfig(runtimeWithSidePanel);
+        const mockedContent: Content = { contentType: ContentItemType.TEXT, contentItems: [{ content: 'Hello' }] };
+
+        copilot.sidePanel.registerUserActionContentSelect((eventData: Content) => {
+          expect(eventData).toEqual(mockedContent);
+        });
+
+        const registerHandlerMessage = utils.findMessageByFunc('registerHandler');
+        expect(registerHandlerMessage).not.toBeNull();
+        expect(registerHandlerMessage?.args?.length).toBe(1);
+        expect(registerHandlerMessage?.args?.[0]).toBe('copilot.sidePanel.userActionContentSelect');
+
+        await utils.sendMessage('copilot.sidePanel.userActionContentSelect', mockedContent);
+      });
+
+      it('should throw if sidePanel is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+
+        expect(() => copilot.sidePanel.registerUserActionContentSelect(() => {})).toThrowError(
+          copilotSidePanelNotSupportedOnPlatformError,
+        );
       });
     });
   });
