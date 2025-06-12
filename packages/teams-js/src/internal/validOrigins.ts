@@ -22,6 +22,7 @@ async function getValidOriginsListFromCDN(shouldDisableCache: boolean = false): 
     return validOriginsCache;
   }
   if (validOriginsPromise) {
+    // Fetch has already been initiated, return the existing promise
     return validOriginsPromise;
   }
   if (!inServerSideRenderingEnvironment()) {
