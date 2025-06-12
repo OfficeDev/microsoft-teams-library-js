@@ -5,9 +5,12 @@ import { inServerSideRenderingEnvironment, isValidHttpsURL } from './utils';
 
 let validOriginsCache: string[] = [];
 const validateOriginLogger = getLogger('validateOrigin');
+let validOriginsPromise: Promise<string[]> | undefined;
 
 export async function prefetchOriginsFromCDN(): Promise<void> {
-  await getValidOriginsListFromCDN();
+  if (!validOriginsPromise) {
+    await getValidOriginsListFromCDN();
+  }
 }
 
 function isValidOriginsCacheEmpty(): boolean {
@@ -18,13 +21,16 @@ async function getValidOriginsListFromCDN(shouldDisableCache: boolean = false): 
   if (!isValidOriginsCacheEmpty() && !shouldDisableCache) {
     return validOriginsCache;
   }
+  if (validOriginsPromise) {
+    return validOriginsPromise;
+  }
   if (!inServerSideRenderingEnvironment()) {
     validateOriginLogger('Initiating fetch call to acquire valid origins list from CDN');
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), ORIGIN_LIST_FETCH_TIMEOUT_IN_MS);
 
-    return fetch(validOriginsCdnEndpoint, { signal: controller.signal })
+    validOriginsPromise = fetch(validOriginsCdnEndpoint, { signal: controller.signal })
       .then((response) => {
         clearTimeout(timeoutId);
         if (!response.ok) {
@@ -51,6 +57,7 @@ async function getValidOriginsListFromCDN(shouldDisableCache: boolean = false): 
         validOriginsCache = validOriginsFallback;
         return validOriginsCache;
       });
+    return validOriginsPromise;
   } else {
     validOriginsCache = validOriginsFallback;
     return validOriginsFallback;
