@@ -2,14 +2,14 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { doesHandlerExist } from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import {
   DialogDimension,
   errorNotSupportedOnPlatform,
   FrameContexts,
   minAdaptiveCardVersion,
 } from '../../src/public/constants';
-import { dialog } from '../../src/public/dialog';
+import * as dialog from '../../src/public/dialog/dialog';
 import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo, DialogInfo, DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
@@ -272,7 +272,7 @@ describe('Dialog', () => {
       it('should not allow calls before initialization', () => {
         expect(() => dialog.url.submit()).toThrowError(errorLibraryNotInitialized);
       });
-      const allowedContexts = [FrameContexts.task];
+      const allowedContexts = [FrameContexts.content, FrameContexts.task];
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
@@ -1314,7 +1314,7 @@ describe('Dialog', () => {
       it('should not allow calls before initialization', () => {
         expect(() => dialog.url.submit()).toThrowError(errorLibraryNotInitialized);
       });
-      const allowedContexts = [FrameContexts.task];
+      const allowedContexts = [FrameContexts.content, FrameContexts.task];
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {

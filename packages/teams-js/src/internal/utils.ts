@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
-import { pages } from '../public/pages';
+import * as pages from '../public/pages/pages';
 
 /**
  * @internal
@@ -94,6 +94,9 @@ export function generateGUID(): string {
  */
 export function deepFreeze<T extends object>(obj: T): T {
   Object.keys(obj).forEach((prop) => {
+    if (obj[prop] === null || obj[prop] === undefined) {
+      return;
+    }
     if (typeof obj[prop] === 'object') {
       deepFreeze(obj[prop]);
     }
@@ -269,16 +272,16 @@ export function runWithTimeout<TResult, TError>(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
+export function createTeamsAppLink(params: pages.AppNavigationParameters): string {
   const url = new URL(
     'https://teams.microsoft.com/l/entity/' +
-      encodeURIComponent(params.appId) +
+      encodeURIComponent(params.appId.toString()) +
       '/' +
       encodeURIComponent(params.pageId),
   );
 
   if (params.webUrl) {
-    url.searchParams.append('webUrl', params.webUrl);
+    url.searchParams.append('webUrl', params.webUrl.toString());
   }
   if (params.chatId || params.channelId || params.subPageId) {
     url.searchParams.append(
@@ -457,43 +460,19 @@ export function fullyQualifyUrlString(fullOrRelativePath: string): URL {
 }
 
 /**
- * The hasScriptTags function first decodes any HTML entities in the input string using the decodeHTMLEntities function.
- * It then tries to decode the result as a URI component. If the URI decoding fails (which would throw an error), it assumes that the input was not encoded and uses the original input.
- * Next, it defines a regular expression scriptRegex that matches any string that starts with <script (followed by any characters), then has any characters (including newlines),
- * and ends with </script> (preceded by any characters).
- * Finally, it uses the test method to check if the decoded input matches this regular expression. The function returns true if a match is found and false otherwise.
- * @param input URL converted to string to pattern match
+ * Detects if there are any script tags in a given string, even if they are Uri encoded or encoded as HTML entities.
+ * @param input string to test for script tags
  * @returns true if the input string contains a script tag, false otherwise
  */
-function hasScriptTags(input: string): boolean {
-  let decodedInput;
-  try {
-    const decodedHTMLInput = decodeHTMLEntities(input);
-    decodedInput = decodeURIComponent(decodedHTMLInput);
-  } catch (e) {
-    // input was not encoded, use it as is
-    decodedInput = input;
-  }
-  const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
-  return scriptRegex.test(decodedInput);
-}
+export function hasScriptTags(input: string): boolean {
+  const openingScriptTagRegex = /<script[^>]*>|&lt;script[^&]*&gt;|%3Cscript[^%]*%3E/gi;
+  const closingScriptTagRegex = /<\/script[^>]*>|&lt;\/script[^&]*&gt;|%3C\/script[^%]*%3E/gi;
 
-/**
- * The decodeHTMLEntities function replaces HTML entities in the input string with their corresponding characters.
- */
-function decodeHTMLEntities(input: string): string {
-  const entityMap = new Map<string, string>([
-    ['&lt;', '<'],
-    ['&gt;', '>'],
-    ['&amp;', '&'],
-    ['&quot;', '"'],
-    ['&#39;', "'"],
-    ['&#x2F;', '/'],
-  ]);
-  entityMap.forEach((value, key) => {
-    input = input.replace(new RegExp(key, 'gi'), value);
-  });
-  return input;
+  const openingOrClosingScriptTagRegex = new RegExp(
+    `${openingScriptTagRegex.source}|${closingScriptTagRegex.source}`,
+    'gi',
+  );
+  return openingOrClosingScriptTagRegex.test(input);
 }
 
 function isIdLengthValid(id: string): boolean {
@@ -524,4 +503,66 @@ export function validateUuid(id: string | undefined | null): void {
   if (uuid.validate(id) === false) {
     throw new Error('id must be a valid UUID');
   }
+}
+
+/**
+ * Cache if performance timers are available to avoid redoing this on each function call.
+ */
+const supportsPerformanceTimers = !!performance && 'now' in performance;
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ * @returns current timestamp in milliseconds
+ */
+export function getCurrentTimestamp(): number | undefined {
+  return supportsPerformanceTimers ? performance.now() + performance.timeOrigin : undefined;
+}
+
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Function to check whether the data is a primitive type or a plain object.
+ * Recursion is limited to a maximum depth of 1000 to prevent excessive nesting and potential stack overflow.
+ *
+ * @param value The value to check
+ * @returns true if the value is a primitive type or a plain object, false otherwise
+ *
+ */
+export function isPrimitiveOrPlainObject(value: unknown, depth: number = 0): boolean {
+  if (depth > 1000) {
+    return false; // Limit recursion depth
+  }
+
+  // Check if the value is a primitive type or null
+  if (
+    typeof value === 'undefined' ||
+    typeof value === 'boolean' ||
+    typeof value === 'number' ||
+    typeof value === 'bigint' ||
+    typeof value === 'string' ||
+    value === null
+  ) {
+    return true;
+  }
+
+  if (Array.isArray(value)) {
+    // Check if all elements in the array are serializable
+    return value.every((element) => isPrimitiveOrPlainObject(element, depth + 1));
+  }
+
+  // Check if the value is a plain object
+  const isPlainObject =
+    typeof value === 'object' &&
+    Object.prototype.toString.call(value) === '[object Object]' &&
+    (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
+
+  if (!isPlainObject) {
+    return false;
+  }
+
+  // Check all properties of the object recursively
+  return Object.keys(value).every((key) => isPrimitiveOrPlainObject(value[key], depth + 1));
 }

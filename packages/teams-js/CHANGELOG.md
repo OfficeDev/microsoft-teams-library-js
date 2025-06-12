@@ -1,8 +1,226 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 07 Aug 2024 19:24:31 GMT and should not be manually modified.
+This log was last generated on Fri, 06 Jun 2025 17:53:12 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.39.0
+
+Fri, 06 Jun 2025 17:53:12 GMT
+
+### Minor changes
+
+- Added `{copilot.sidePanel}` capability that will help copilot to receive more context aware data from the hosts. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added a new client version `2.1.2` to support isDeeplyNestedAuthSupported for Teams Mobile legacy code
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.38.0
+
+Tue, 27 May 2025 21:09:59 GMT
+
+### Minor changes
+
+- Added `renderingSurface` property to `{app.Page.Context}` capability.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Removed Beta tag from `nestedAppAuth.isNAAChannelRecommended` API.
+- Unblocked apps on Mobile to call `dialog.url.submit` from dialog by allowing this API from `FrameContext.content`. There is a bug in Teams mobile that returns `frameContext.content` in dialog instead of `frameContext.task`. Once the bug is fixed, this change will be reverted.
+
+## 2.37.0
+
+Fri, 02 May 2025 19:11:28 GMT
+
+### Minor changes
+
+- Added `forceRefresh` optional argument in `getEligibilityInfo` API.
+
+## 2.36.0
+
+Tue, 01 Apr 2025 18:17:07 GMT
+
+### Minor changes
+
+- Added `canParentManageNAATrustedOrigins` capability to check if the parent can manage its list of trusted child origins for Nested App Auth (NAA). The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `getParentOrigin` API to read the parent origin for nested app auth
+- Added support for `ExternalAppCardActionsForDA` capability.
+- Added support for `isDeeplyNestedAuthSupported` to check if deeply nested auth is supported.
+- Added `manageNAATrustedOrigins` capability which allows the top-level parent app to register its child app's origin as trusted for nested app auth. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added standalone nested app auth bridge for nested child app
+- Removed child messaging proxying by default to avoid security issues. If an app still needs this pattern, it can be activated through the feature flag function `activateChildProxyingCommunication` which enables child proxying for that app.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Set a unique Teams-JS instance id when Teams-JS library is used and appended this unique id to message request sent to host sdk.
+- Disabled default nested app auth bridge injection for nested child app
+- Added `apiVersion` tag in NAA request and removed `isNAAChannelRecommended` check in `isDeeplyNestedAuthSupported` api
+
+## 2.35.0
+
+Thu, 13 Mar 2025 17:02:30 GMT
+
+### Minor changes
+
+- Updated `externalAppAuthenticationForCEA.authenticateWithSSO` to take `authId` and `connectionName` parameters.
+- Added "authId" and "connectionName" parameters to `authTokenRequest` in `ExternalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest`
+- Added new `AppTypes` enum values to filter base and streaming townhalls.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Refactored `backstack` initialization to resolve a `pages` bug when dynamically importing teams-js
+- Refactored child communication to an isolated module, no functionality change. This will allow apps to tree shake this module.
+- Fixed security issue in `authenticate` function for web hosts to avoid using child proxying.
+
+## 2.34.0
+
+Wed, 05 Feb 2025 16:57:29 GMT
+
+### Minor changes
+
+- Added functions for opening different types of stores along with ics filtering
+- Updated `validateEmails` function to `void` type for `mail.handoff` sub-capability.
+- Added the`mail.handoff.composeMailWithHandoffId` function that allows passing a handoff id to the compose mail window.
+- Add visionOS client type support for Teams SDK. This change will enable app developers to find out if app is running on visionOS
+- Added the new parameters to `app.getContext` named `appId` and `manifestVersion`
+- Bump `eslint-plugin-recommend-no-namespaces` to v0.1.0
+
+### Patches
+
+- Updated the `sendCustomTelemetryData` function in `copilot.customTelemetry` capability.
+- Decoupled prefetch of CDN resources from the initialization workflow and added fallback when resources could not be fetched in 1.5 seconds
+- Added field to tag child proxied messages.
+- Added a `global` polyfill
+- Updated `authentication.notifySuccess` documentation with security guidance
+- Added additional logging for child window (auth window) communication
+
+## 2.33.0
+
+Thu, 09 Jan 2025 16:42:36 GMT
+
+### Minor changes
+
+- Added `customTelemetry` capability under `copilot` to send app loading data to the host.
+
+### Patches
+
+- Explicitly use browser implementation of `debug` package to resolve polyfill issue.
+- Moved uuidObject.ts from internal to public folder in preparation for exporting it.
+
+## 2.32.0
+
+Fri, 13 Dec 2024 20:07:32 GMT
+
+### Minor changes
+
+- Added optional `FeatureSet` field to `AppEligibilityInformation` interface
+- Added `store` capability that will enable user to open several types of app store dialogs.. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `nestedAppAuth` capability against a new client version `2.1.1` to support isNAAChannelRecommended for Teams Mobile
+
+### Patches
+
+- Added `ConversationResponse` to explicit named exports for back-compat
+- Resolved an issue with non-necessary polyfills being included
+- Backed out `Buffer` removal changes
+- Removed `@beta` tag from all functions on `dialog` capability (and all subcapabilities)
+
+## 2.31.1
+
+Wed, 20 Nov 2024 19:25:55 GMT
+
+### Patches
+
+- Fixed a bug causing `buffer` polyfill to stil be included
+- Fixed bugs regarding `EduType`not being exported, and enum typings
+
+## 2.31.0
+
+Wed, 13 Nov 2024 19:22:01 GMT
+
+### Minor changes
+
+- Made the library treeshakable.
+- Made `externalAppAuthenticationForCEA.ts` throw `Error` objects instead of `SdkErrors`.
+- Replaced `Buffer` with `uint8array-extras` to allow for `buffer` polyfill removal.
+- Added validation for AppId instance in CEA APIs.
+- Changed the `notifySuccess` function to indicate through a promise when the function finished processing in the host.
+- Added new timestamp and handler for analyzing latencies due to message delays between app and hub.
+
+### Patches
+
+- Add userClickTimeV2 to app `Context` to provide the timestamp when the user clicked the app using the performance timer API.
+- Increased the initialize response wait-timeout to 60 sec
+- Removed `type: module` from package.json to fix nextjs bug
+- Added validation for `IActionExecuteInvokeRequest.data` element in `ExternalAppAuthentication` and `ExternalAppAuthenticationForCEA` capabilities. The element can be of type primitive or plain object only
+
+## 2.30.0
+
+Mon, 21 Oct 2024 18:11:30 GMT
+
+### Minor changes
+
+- Updated `copilot.eligibility.getEligibilityInfo` to be async and get the eligibility info from the host if it is not already available.
+
+### Patches
+
+- Updated edgeapi.freya.svc.cloud.microsoft to chatuxmanager.svc.cloud.microsoft.
+- Updated edgeapi endpoint from `edgeapi.svc.cloud.microsoft` to `edgeapi.freya.svc.cloud.microsoft` in valid domains list. Added `work.bing.com` to valid domains list.
+- Clarified usage for `validMessageOrigins` parameter on `app.initialize` in documentation.
+
+## 2.29.0
+
+Thu, 03 Oct 2024 22:51:48 GMT
+
+### Minor changes
+
+- Added support for `externalAppAuthenticationForCEA` capability
+- Added support for `externalAppCardActionsForCEA` capability
+- Added logging for current teamsjs instance and timestamps
+- Added a Rollup built bundle of Teams-JS
+- Added three properties to `ICallDetails`, `originalCallerInfo`, `dialedEntityInfo`, and `callId`, created a new type `ICallParticipantIdentifiers`, and deprecated the `originalCaller` and `dialedEntity` properties
+- Updated `pages.navigateToApp` to now optionally accept a more type-safe input object
+- Added logging for version on startup
+
+### Patches
+
+- Updated logging for messages to be clearer
+- Added `edgeapi.svc.cloud.microsoft` to valid domains list
+- Updated internal app id validation
+- Unified common data models for external card actions into `externalAppCardActions` namespace.
+- Updated types for `externalAppCardActionsForCEA` capability.
+
+## 2.28.0
+
+Tue, 03 Sep 2024 22:19:52 GMT
+
+### Minor changes
+
+- Removed invalid validations for content fields on `IContentResponse` interface
+
+### Patches
+
+- Fixed a bug with `AppEligibilityInformation` that could cause `app.initialize` to fail.
+
+## 2.27.0
+
+Wed, 28 Aug 2024 19:31:44 GMT
+
+### Minor changes
+
+- Added 1P-only `hostEntity` capability for adding and configuring, removing, renaming, re-configuring and fetching all tabs.
+- Added optional field `messageId` to `stageView.open`. Passing `messageId` to `stageView.open` allows opening the stageView in a channel meeting
+- Added optional enum attribute for `registerFocusEnterHandler` and `returnFocus` APIs that allows developers to send and receive more nuanced information about where focus should go in their app or the host respectively
+- Added `copilot` and `copilot.eligibility` capability that will get the eligibility information of the user using M365ChatApp. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added new `AppId` class to use as a type where app ids are being stored
+
+### Patches
+
+- Added `*.m365.cloud.microsoft` to dynamic domain list
+- Moved `AppId` type to public folder
+- Enabled `webStorage` capability to be used on Teams Mobile in compatibility scenarios
+- Updated documentation on usage of `versionAndPlatformAgnosticTeamsRuntimeConfig` and `mapTeamsVersionToSupportedCapabilities`
 
 ## 2.26.0
 
@@ -315,7 +533,7 @@ Fri, 03 Mar 2023 19:57:31 GMT
 
 - Updated documentation for `dialog` and `tasks` capabilities
 - Elaborated on various areas of `authentication` documentation
-- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
 
 ## 2.8.0
 
@@ -330,7 +548,7 @@ Wed, 01 Feb 2023 23:22:55 GMT
 
 ### Patches
 
-- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
 - Updated typedoc version and fixed doc issues raised by it
 - Added documentation for `dialog.submit`
 - Changed user facing documentation associated with `meeting.ts`

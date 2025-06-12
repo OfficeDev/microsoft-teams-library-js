@@ -1,0 +1,25 @@
+{
+  "name": "tree-shaking-test-app",
+  "private": true,
+  "author": "Noah",
+  "description": "Test app to test the tree-shakability of TeamsJS",
+  "version": "0.0.1",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "build-rollup": "pnpm clean && rollup --c",
+    "build-webpack": "webpack",
+    "clean": "rimraf ./dist"
+  },
+  "dependencies": {
+    "@microsoft/teams-js": "workspace:*"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@rollup/plugin-terser": "0.4.4",
+    "rollup": "^4.24.4",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4"
+  }
+}

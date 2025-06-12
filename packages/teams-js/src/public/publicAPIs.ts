@@ -1,10 +1,16 @@
+import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from '../internal/appHelpers';
 import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
+import {
+  getMruTabInstancesHelper,
+  getTabInstancesHelper,
+  setCurrentFrameHelper,
+  shareDeepLinkHelper,
+} from '../internal/pagesHelpers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from './app';
 import { FrameContexts } from './constants';
 import {
   Context,
@@ -14,10 +20,9 @@ import {
   TabInformation,
   TabInstanceParameters,
 } from './interfaces';
-import { getMruTabInstancesHelper, getTabInstancesHelper, setCurrentFrameHelper, shareDeepLinkHelper } from './pages';
-import { pages } from './pages';
+import * as pages from './pages/pages';
 import { runtime } from './runtime';
-import { teamsCore } from './teamsAPIs';
+import * as teamsCore from './teamsAPIs';
 
 /**
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
@@ -45,8 +50,10 @@ export type registerOnThemeChangeHandlerFunctionType = (theme: string) => void;
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  * @param callback - Optionally specify a callback to invoke when Teams SDK has successfully initialized
- * @param validMessageOrigins - Optionally specify a list of cross frame message origins. There must have
- * https: protocol otherwise they will be ignored. Example: https://www.example.com
+ * @param validMessageOrigins - Optionally specify a list of cross-frame message origins. This parameter is used if you know that your app
+ * will be hosted on a custom domain (i.e., not a standard Microsoft 365 host like Teams, Outlook, etc.) Most apps will never need
+ * to pass a value for this parameter.
+ * Any domains passed in the array must have the https: protocol on the string otherwise they will be ignored. Example: https://www.example.com
  */
 export function initialize(callback?: callbackFunctionType, validMessageOrigins?: string[]): void {
   appInitializeHelper(

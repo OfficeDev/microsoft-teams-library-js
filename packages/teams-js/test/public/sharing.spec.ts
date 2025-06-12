@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { compareSDKVersions } from '../../src/internal/utils';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
 import {
@@ -11,7 +11,7 @@ import {
   versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../../src/public/runtime';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
-import { sharing } from '../../src/public/sharing';
+import * as sharing from '../../src/public/sharing/sharing';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -758,50 +758,6 @@ describe('sharing_v2', () => {
           } as DOMMessageEvent);
           expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
         });
-
-        it(`sharing.history.getContent should throw if author id is invalid uuid. context: ${context}`, async () => {
-          await utils.initializeWithContext(context);
-          utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: { history: {} } } });
-          const promise = sharing.history.getContent();
-          const contentDetails = [
-            {
-              appId: 'appId',
-              title: 'title',
-              contentReference: 'contentReference',
-              threadId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
-              author: 'authorId',
-              contentType: 'contentType',
-            },
-          ];
-          await utils.respondToFramelessMessage({
-            data: {
-              args: [null, contentDetails],
-            },
-          } as DOMMessageEvent);
-          expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-        });
-
-        it(`sharing.history.getContent should throw if threadId is invalid uuid. context: ${context}`, async () => {
-          await utils.initializeWithContext(context);
-          utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: { history: {} } } });
-          const promise = sharing.history.getContent();
-          const contentDetails = [
-            {
-              appId: 'appId',
-              title: 'title',
-              contentReference: 'contentReference',
-              threadId: 'threadId',
-              author: 'da5b7aeb-2a31-6151-5e51-d4eab4abe577',
-              contentType: 'contentType',
-            },
-          ];
-          await utils.respondToFramelessMessage({
-            data: {
-              args: [null, contentDetails],
-            },
-          } as DOMMessageEvent);
-          expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-        });
       } else {
         it(`should not allow sharing.history.getContent calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
@@ -822,7 +778,7 @@ describe('sharing_v2', () => {
       });
       afterEach(() => {
         app._uninitialize();
-      });      
+      });
       it('sharing.history.isSupported should return false if the runtime says sharing.history is not supported', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });

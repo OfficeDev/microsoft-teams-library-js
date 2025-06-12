@@ -1,4 +1,4 @@
-export { logs } from './logs';
+export * as logs from './logs';
 export {
   ChatMembersInformation,
   FilePreviewParameters,
@@ -18,17 +18,27 @@ export {
   registerUserSettingsChangeHandler,
   openFilePreview,
 } from './privateAPIs';
-export { conversations } from './conversations';
-export { copilot } from './copilot';
-export { externalAppAuthentication } from './externalAppAuthentication';
-export { externalAppCardActions } from './externalAppCardActions';
-export { externalAppCommands } from './externalAppCommands';
-export { files } from './files';
-export { meetingRoom } from './meetingRoom';
-export { messageChannels } from './messageChannels';
-export { notifications } from './notifications';
-export { otherAppStateChange } from './otherAppStateChange';
-export { remoteCamera } from './remoteCamera';
-export { appEntity } from './appEntity';
-export { teams } from './teams';
-export { videoEffectsEx } from './videoEffectsEx';
+export * as conversations from './conversations';
+//It is necessary to export ConversationResponse and OpenConversationRequest from conversations.ts individually as well
+//to keep the named exports so as to not break the existing consumers directly referencing the named exports.
+export { ConversationResponse, OpenConversationRequest } from './conversations';
+export * as copilot from './copilot/copilot';
+export * as sidePanelInterfaces from './copilot/sidePanelInterfaces';
+export * as externalAppAuthentication from './externalAppAuthentication';
+export * as externalAppAuthenticationForCEA from './externalAppAuthenticationForCEA';
+export * as externalAppCardActions from './externalAppCardActions';
+export * as externalAppCardActionsForCEA from './externalAppCardActionsForCEA';
+export * as externalAppCardActionsForDA from './externalAppCardActionsForDA';
+export * as externalAppCommands from './externalAppCommands';
+export * as files from './files';
+export * as meetingRoom from './meetingRoom';
+export * as messageChannels from './messageChannels/messageChannels';
+export * as nestedAppAuthBridge from './nestedAppAuth/nestedAppAuthBridge';
+export * as notifications from './notifications';
+export * as otherAppStateChange from './otherAppStateChange';
+export * as remoteCamera from './remoteCamera';
+export * as appEntity from './appEntity';
+export * as teams from './teams/teams';
+export * as videoEffectsEx from './videoEffectsEx';
+export * as hostEntity from './hostEntity/hostEntity';
+export * as store from './store';

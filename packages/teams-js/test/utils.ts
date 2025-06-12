@@ -1,13 +1,12 @@
-import { validOriginsFallback as validOrigins } from '../src/internal/constants';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { MessageRequest, SerializedMessageRequest, SerializedMessageResponse } from '../src/internal/messageObjects';
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
-import { UUID as MessageUUID } from '../src/internal/uuidObject';
 import { HostClientType } from '../src/public';
-import { app } from '../src/public/app';
+import * as app from '../src/public/app/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
+import { UUID as MessageUUID } from '../src/public/uuidObject';
 
 function deserializeMessageRequest(serializedMessage: SerializedMessageRequest): MessageRequest {
   const message = {
@@ -39,9 +38,14 @@ export class Utils {
   public parentWindow: Window;
   public topWindow: Window;
 
+  public respondWithTimestamp: boolean;
+
+  private onMessageSent: null | ((messageRequest: MessageRequest) => void) = null;
+
   public constructor() {
     this.messages = [];
     this.childMessages = [];
+    this.respondWithTimestamp = false;
 
     this.parentWindow = {
       postMessage: (serializedMessage: SerializedMessageRequest, targetOrigin: string): void => {
@@ -53,6 +57,9 @@ export class Utils {
         const message: MessageRequest = deserializeMessageRequest(serializedMessage);
 
         this.messages.push(message);
+        if (this.onMessageSent !== null) {
+          this.onMessageSent(message);
+        }
       },
     } as Window;
 
@@ -98,6 +105,9 @@ export class Utils {
           const parsedMessage: SerializedMessageRequest = JSON.parse(serializedMessage);
           const message: MessageRequest = deserializeMessageRequest(parsedMessage);
           this.messages.push(message);
+          if (this.onMessageSent !== null) {
+            this.onMessageSent(message);
+          }
         },
       },
       self: null as unknown as Window,
@@ -126,19 +136,17 @@ export class Utils {
         return;
       },
       closed: false,
+      location: {
+        origin: this.validOrigin,
+      },
     };
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        status: 200,
-        ok: true,
-        json: async () => {
-          return { validOrigins };
-        },
-      } as Response),
-    );
   }
 
   public processMessage: null | ((ev: MessageEvent) => Promise<void>);
+
+  public setRespondWithTimestamp(respondWithTimestamp: boolean): void {
+    this.respondWithTimestamp = respondWithTimestamp;
+  }
 
   public initializeWithContext = async (
     frameContext: string,
@@ -187,6 +195,28 @@ export class Utils {
     return null;
   };
 
+  public async waitUntilMessageIsSent(actionName: string): Promise<MessageRequest> {
+    const messageRequest = this.findMessageByFunc(actionName);
+    if (messageRequest !== null) {
+      return messageRequest;
+    }
+
+    if (this.onMessageSent !== null) {
+      throw new Error(
+        'You can only wait for one message at a time. Feel free to extend this function to support multiple simultaneous waits!',
+      );
+    }
+
+    return new Promise<MessageRequest>((resolve) => {
+      this.onMessageSent = (message: MessageRequest): void => {
+        if (message.func === actionName) {
+          this.onMessageSent = null;
+          resolve(message);
+        }
+      };
+    });
+  }
+
   /**
    * This function is used to find a message by the action name provided to the send* functions. Usually the action name is the
    * name of the function being called..
@@ -213,16 +243,13 @@ export class Utils {
     return initMessage;
   };
 
-  public findMessageInChildByFunc = (func: string): MessageRequest | null => {
-    if (this.childMessages && this.childMessages.length) {
-      for (let i = 0; i < this.childMessages.length; i++) {
-        if (this.childMessages[i].func === func) {
-          return this.childMessages[i];
-        }
-      }
-    }
-    return null;
-  };
+  public findMessageInChildByFunc(func: string): MessageRequest | null {
+    return this.childMessages.find((v) => v.func === func) ?? null;
+  }
+
+  public findMessageResponseInChildById(id: number): MessageRequest | null {
+    return this.childMessages.find((v) => v.id === id) ?? null;
+  }
 
   public respondToMessage = async (
     message: MessageRequest | NestedAppAuthRequest,
@@ -233,9 +260,12 @@ export class Utils {
 
   public respondToMessageWithPorts = async (
     message: MessageRequest | NestedAppAuthRequest,
-    args: unknown[] = [],
+    args: unknown[],
     ports: MessagePort[] = [],
   ): Promise<void> => {
+    const timestamp = this.respondWithTimestamp
+      ? { monotonicTimestamp: performance.now() + performance.timeOrigin }
+      : {};
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
@@ -246,6 +276,7 @@ export class Utils {
           id: message.id,
           uuidAsString: getMessageUUIDString(message),
           args: args,
+          ...timestamp,
         } as SerializedMessageResponse,
         ports,
       } as DOMMessageEvent;
@@ -258,6 +289,7 @@ export class Utils {
           id: message.id,
           uuidAsString: getMessageUUIDString(message),
           args: args,
+          ...timestamp,
         } as SerializedMessageResponse,
         ports,
       } as unknown as MessageEvent);
@@ -330,6 +362,30 @@ export class Utils {
   public sendMessage = async (func: string, ...args: unknown[]): Promise<void> => {
     return this.sendMessageWithCustomOrigin(func, this.validOrigin, ...args);
   };
+
+  public async sendMessageFromChild(func: string, ...args: unknown[]): Promise<number> {
+    return await this.sendCustomMessage(this.childWindow.location.origin, this.childWindow, func, args);
+  }
+
+  public async sendCustomMessage(origin: string, window: unknown, func: string, ...args: unknown[]): Promise<number> {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot send message with function ${func} because processMessage function has not been set and is null`,
+      );
+    }
+    const id = 3;
+
+    await this.processMessage({
+      origin,
+      source: window,
+      data: {
+        id,
+        func,
+        args,
+      },
+    } as MessageEvent);
+    return id;
+  }
 
   public respondToFramelessMessage = (event: DOMMessageEvent): void => {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(event);

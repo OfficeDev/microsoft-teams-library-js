@@ -3,21 +3,20 @@
   "private": true,
   "author": "Microsoft Teams",
   "description": "Teams Test App utilizing Teams JavaScript client SDK to test Hosts",
-  "version": "2.26.0",
+  "version": "2.39.0",
   "scripts": {
     "build": "pnpm build:bundle",
-    "build:bundle": "pnpm lint && webpack",
+    "build:bundle": "pnpm validate-test-schema && pnpm lint && webpack",
     "build:CDN": "pnpm lint && webpack --config webpack.cdn.config.js",
-    "build:CDNV1": "pnpm lint && webpack --config webpack.cdnV1.config.js",
     "build:local": "pnpm lint && webpack --config webpack.local.config.js && pnpm copy",
     "clean": "rimraf ./build",
-    "copy": "shx cp ../../packages/teams-js/dist/MicrosoftTeams.min.js ./build/ && shx cp ../../packages/teams-js/dist/MicrosoftTeams.min.js.map ./build/",
+    "copy": "shx cp ../../packages/teams-js/dist/umd/MicrosoftTeams.min.js ./build/ && shx cp ../../packages/teams-js/dist/umd/MicrosoftTeams.min.js.map ./build/",
     "lint": "pnpm eslint ./src --max-warnings 0 --fix --ext .tsx",
     "start": "pnpm start:bundle",
     "start:bundle": "webpack serve",
     "start:CDN": "webpack serve --config webpack.cdn.config.js",
-    "start:CDNV1": "webpack serve --config webpack.cdnV1.config.js",
-    "start:local": "webpack serve --config webpack.local.config.js"
+    "start:local": "webpack serve --config webpack.local.config.js",
+    "validate-test-schema": "cd ../.. && pnpm validate-test-schema"
   },
   "dependencies": {
     "react": "^17.0.1",

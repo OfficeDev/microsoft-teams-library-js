@@ -1,8 +1,8 @@
 import * as communication from '../../src/internal/communication';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { messageChannels } from '../../src/private/messageChannels';
+import * as messageChannels from '../../src/private/messageChannels/messageChannels';
 import { FrameContexts } from '../../src/public';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';

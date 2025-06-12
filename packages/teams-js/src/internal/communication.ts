@@ -2,16 +2,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable strict-null-checks/all */
 
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
-import { SdkError } from '../public/interfaces';
+import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
+import { ISerializable, isSerializable } from '../public/serializable.interface';
+import { UUID as MessageUUID } from '../public/uuidObject';
 import { version } from '../public/version';
+import {
+  handleIncomingMessageFromChild,
+  shouldProcessChildMessage,
+  uninitializeChildCommunication,
+} from './childCommunication';
+import { flushMessageQueue, getMessageIdsAsLogString } from './communicationUtils';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
+import HostToAppMessageDelayTelemetry from './hostToAppTelemetry';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import {
-  deserializeMessageRequest,
   deserializeMessageResponse,
   MessageID,
   MessageRequest,
@@ -20,7 +27,6 @@ import {
   SerializedMessageRequest,
   SerializedMessageResponse,
   serializeMessageRequest,
-  serializeMessageResponse,
 } from './messageObjects';
 import {
   NestedAppAuthMessageEventNames,
@@ -28,9 +34,9 @@ import {
   ParsedNestedAppAuthMessageData,
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuthUtils';
+import { ResponseHandler, SimpleType } from './responseHandler';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
-import { ssrSafeWindow } from './utils';
-import { UUID as MessageUUID } from './uuidObject';
+import { getCurrentTimestamp, ssrSafeWindow } from './utils';
 import { validateOrigin } from './validOrigins';
 
 const communicationLogger = getLogger('communication');
@@ -43,8 +49,6 @@ export class Communication {
   public static currentWindow: Window | any;
   public static parentOrigin: string | null;
   public static parentWindow: Window | any;
-  public static childWindow: Window | null;
-  public static childOrigin: string | null;
   public static topWindow: Window | any;
   public static topOrigin: string | null;
 }
@@ -55,7 +59,6 @@ export class Communication {
  */
 class CommunicationPrivate {
   public static parentMessageQueue: MessageRequest[] = [];
-  public static childMessageQueue: MessageRequest[] = [];
   public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
   public static callbacks: Map<MessageUUID, Function> = new Map();
@@ -87,7 +90,7 @@ export function initializeCommunication(
   apiVersionTag: string,
 ): Promise<InitializeResponse> {
   // Listen for messages post to our window
-  CommunicationPrivate.messageListener = async (evt: DOMMessageEvent): Promise<void> => await processMessage(evt);
+  CommunicationPrivate.messageListener = (evt: DOMMessageEvent): Promise<void> => processIncomingMessage(evt);
 
   // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
   // it's the window that opened us (i.e., window.opener)
@@ -108,7 +111,7 @@ export function initializeCommunication(
     const extendedWindow = Communication.currentWindow as unknown as ExtendedWindow;
     if (extendedWindow.nativeInterface) {
       GlobalVars.isFramelessWindow = true;
-      extendedWindow.onNativeMessage = handleParentMessage;
+      extendedWindow.onNativeMessage = handleIncomingMessageFromParent;
     } else {
       // at this point we weren't able to find a parent to talk to, no way initialization will succeed
       return Promise.reject(new Error('Initialization Failed. No Parent window found.'));
@@ -149,18 +152,18 @@ export function uninitializeCommunication(): void {
   Communication.currentWindow = null;
   Communication.parentWindow = null;
   Communication.parentOrigin = null;
-  Communication.childWindow = null;
-  Communication.childOrigin = null;
   CommunicationPrivate.parentMessageQueue = [];
-  CommunicationPrivate.childMessageQueue = [];
   CommunicationPrivate.nextMessageId = 0;
   CommunicationPrivate.callbacks.clear();
   CommunicationPrivate.promiseCallbacks.clear();
   CommunicationPrivate.portCallbacks.clear();
   CommunicationPrivate.legacyMessageIdsToUuidMap = {};
+  HostToAppMessageDelayTelemetry.clearMessages();
+  uninitializeChildCommunication();
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then unwrap result. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -174,6 +177,7 @@ export function sendAndUnwrap<T>(apiVersionTag: string, actionName: string, ...a
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then handle status and reason. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -190,6 +194,7 @@ export function sendAndHandleStatusAndReason(apiVersionTag: string, actionName: 
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then handle status and reason with default error. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -214,6 +219,7 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then handle SDK error. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -232,6 +238,7 @@ export function sendAndHandleSdkError<T>(apiVersionTag: string, actionName: stri
 }
 
 /**
+ * @deprecated This function will no longer be exported in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent asynchronously. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -255,6 +262,88 @@ export function sendMessageToParentAsync<T>(
     const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
     resolve(waitForResponse<T>(request.uuid));
   });
+}
+
+function serializeItemArray(items: (SimpleType | ISerializable)[]): (SimpleType | object)[] {
+  return items.map((item) => {
+    if (isSerializable(item)) {
+      return item.serialize();
+    } else {
+      return item;
+    }
+  });
+}
+
+/**
+ * Call a function in the host and receive a response. If the host returns an {@link SdkError} instead of a normal response, this function will throw a new Error containing the SdkError's information
+ *
+ * @param functionName The function name to call in the host.
+ * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
+ * @param responseHandler When the host responds, this handler will validate and deserialize the response.
+ * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes. This should be set using {@link getApiVersionTag}, which should be passed a unique string identifying the function being called by the app developer as well as a version number that is incremented whenever meaningful changes are made to that function.
+ * @param isResponseAReportableError This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this if your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
+ *
+ * @returns The response received from the host after deserialization.
+ *
+ * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
+ */
+export async function callFunctionInHostAndHandleResponse<
+  SerializedReturnValueFromHost,
+  DeserializedReturnValueFromHost,
+>(
+  functionName: string,
+  args: (SimpleType | ISerializable)[],
+  responseHandler: ResponseHandler<SerializedReturnValueFromHost, DeserializedReturnValueFromHost>,
+  apiVersionTag: string,
+  isResponseAReportableError?: (response: unknown) => response is { errorCode: number | string; message?: string },
+): Promise<DeserializedReturnValueFromHost> {
+  const serializedArguments = serializeItemArray(args);
+  const [response] = await sendMessageToParentAsync<[SerializedReturnValueFromHost | SdkError]>(
+    apiVersionTag,
+    functionName,
+    serializedArguments,
+  );
+
+  if (
+    (isResponseAReportableError && isResponseAReportableError(response)) ||
+    (!isResponseAReportableError && isSdkError(response))
+  ) {
+    throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
+  } else if (!responseHandler.validate(response as SerializedReturnValueFromHost)) {
+    throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host - ${JSON.stringify(response)}`);
+  } else {
+    return responseHandler.deserialize(response as SerializedReturnValueFromHost);
+  }
+}
+
+/**
+ * Call a function in the host that receives either an {@link SdkError} or undefined as a response. If the host returns an {@link SdkError} this function will throw a new Error containing the SdkError's information.
+ *
+ * @param functionName The function name to call in the host.
+ * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
+ * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes. This should be set using {@link getApiVersionTag}, which should be passed a unique string identifying the function being called by the app developer as well as a version number that is incremented whenever meaningful changes are made to that function.
+ * @param isResponseAReportableError This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
+ *
+ * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
+ */
+export async function callFunctionInHost(
+  functionName: string,
+  args: (SimpleType | ISerializable)[],
+  apiVersionTag: string,
+  isResponseAReportableError?: (response: unknown) => response is { errorCode: number | string; message?: string },
+): Promise<void> {
+  const serializedArguments = serializeItemArray(args);
+  const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, functionName, serializedArguments);
+
+  if (
+    (isResponseAReportableError && isResponseAReportableError(response)) ||
+    (!isResponseAReportableError && isSdkError(response))
+  ) {
+    throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
+  } else if (response !== undefined) {
+    // If we receive a response from the host that is not a recognized error type it is an invalid response
+    throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`);
+  }
 }
 
 /**
@@ -305,12 +394,14 @@ function waitForResponse<T>(requestUuid: MessageUUID): Promise<T> {
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @internal
  * Limited to Microsoft-internal use
  */
 export function sendMessageToParent(apiVersionTag: string, actionName: string, callback?: Function): void;
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  *
@@ -325,6 +416,7 @@ export function sendMessageToParent(
 ): void;
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -362,13 +454,15 @@ const sendNestedAuthRequestToTopWindowLogger = communicationLogger.extend('sendN
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuthRequest {
+export function sendNestedAuthRequestToTopWindow(message: string, apiVersionTag: string): NestedAppAuthRequest {
   const logger = sendNestedAuthRequestToTopWindowLogger;
 
   const targetWindow = Communication.topWindow;
-  const request = createNestedAppAuthRequest(message);
+  const request = createNestedAppAuthRequest(message, apiVersionTag);
 
-  logger('Message %i information: %o', request.uuid, { actionName: request.func });
+  logger('Message %s information: %o', getMessageIdsAsLogString(request), {
+    actionName: request.func,
+  });
 
   return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAppAuthRequest;
 }
@@ -389,7 +483,11 @@ function sendRequestToTargetWindowHelper(
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
-      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.uuidAsString);
+      logger(
+        'Sending message %s to %s via framelessPostMessage interface',
+        getMessageIdsAsLogString(request),
+        targetWindowName,
+      );
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
   } else {
@@ -398,10 +496,10 @@ function sendRequestToTargetWindowHelper(
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
-      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.uuidAsString);
+      logger('Sending message %s to %s via postMessage', getMessageIdsAsLogString(request), targetWindowName);
       targetWindow.postMessage(request, targetOrigin);
     } else {
-      logger(`Adding message %i to ${targetWindowName} message queue`, request.uuidAsString);
+      logger('Adding message %s to %s message queue', getMessageIdsAsLogString(request), targetWindowName);
       getTargetMessageQueue(targetWindow).push(messageRequest);
     }
   }
@@ -418,27 +516,35 @@ function sendMessageToParentHelper(
   apiVersionTag: string,
   actionName: string,
   args: any[] | undefined,
+  isProxiedFromChild?: boolean,
+  teamsJsInstanceId?: string,
 ): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
-
   const targetWindow = Communication.parentWindow;
-  const request = createMessageRequest(apiVersionTag, actionName, args);
+  const request = createMessageRequest(apiVersionTag, actionName, args, isProxiedFromChild, teamsJsInstanceId);
+  HostToAppMessageDelayTelemetry.storeCallbackInformation(request.uuid, {
+    name: actionName,
+    calledAt: request.timestamp,
+  });
 
-  logger('Message %i information: %o', request.uuid, { actionName, args });
+  logger('Message %s information: %o', getMessageIdsAsLogString(request), { actionName, args });
 
   return sendRequestToTargetWindowHelper(targetWindow, request);
 }
 
-const processMessageLogger = communicationLogger.extend('processMessage');
+const processIncomingMessageLogger = communicationLogger.extend('processIncomingMessage');
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-async function processMessage(evt: DOMMessageEvent): Promise<void> {
+async function processIncomingMessage(evt: DOMMessageEvent): Promise<void> {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
-    processMessageLogger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
+    processIncomingMessageLogger(
+      'Unrecognized message format received by app, message being ignored. Message: %o',
+      evt,
+    );
     return;
   }
 
@@ -448,20 +554,33 @@ async function processMessage(evt: DOMMessageEvent): Promise<void> {
   const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
   const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
 
-  return shouldProcessMessage(messageSource, messageOrigin).then((result) => {
+  return shouldProcessIncomingMessage(messageSource, messageOrigin).then((result) => {
     if (!result) {
-      processMessageLogger(
-        'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
+      processIncomingMessageLogger(
+        'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin, message: %o, source: %o, origin: %o',
+        evt,
+        messageSource,
+        messageOrigin,
       );
       return;
     }
-    // Update our parent and child relationships based on this message
+    // Update our parent relationship based on this message
     updateRelationships(messageSource, messageOrigin);
-    // Handle the message
+
+    // Handle the message if the source is from the parent
     if (messageSource === Communication.parentWindow) {
-      handleParentMessage(evt);
-    } else if (messageSource === Communication.childWindow) {
-      handleChildMessage(evt);
+      handleIncomingMessageFromParent(evt);
+      return;
+    }
+
+    // Message proxy from child to parent
+    if (shouldProcessChildMessage(messageSource, messageOrigin)) {
+      handleIncomingMessageFromChild(
+        evt,
+        messageSource,
+        sendMessageToParentHelper,
+        (uuid: MessageUUID, callback: Function) => CommunicationPrivate.callbacks.set(uuid, callback),
+      );
     }
   });
 }
@@ -511,7 +630,7 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
     return;
   }
 
-  if (!shouldProcessMessage(messageSource, messageOrigin)) {
+  if (!shouldProcessIncomingMessage(messageSource, messageOrigin)) {
     logger(
       'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
     );
@@ -530,19 +649,19 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
     Communication.topOrigin = messageOrigin;
   }
 
-  // Clean up pointers to closed parent and child windows
+  // Clean up pointers to closed parent
   if (Communication.topWindow && Communication.topWindow.closed) {
     Communication.topWindow = null;
     Communication.topOrigin = null;
   }
 
-  flushMessageQueue(Communication.topWindow);
+  flushMessageQueue(Communication.topWindow, Communication.topOrigin, CommunicationPrivate.topMessageQueue, 'top');
 
   // Return the response to the registered callback
   onMessageReceived(message);
 }
 
-const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMessage');
+const shouldProcessIncomingMessageLogger = communicationLogger.extend('shouldProcessIncomingMessage');
 
 /**
  * @hidden
@@ -551,11 +670,11 @@ const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMess
  * @internal
  * Limited to Microsoft-internal use
  */
-async function shouldProcessMessage(messageSource: Window, messageOrigin: string): Promise<boolean> {
+async function shouldProcessIncomingMessage(messageSource: Window, messageOrigin: string): Promise<boolean> {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
-    shouldProcessMessageLogger('Should not process message because it is coming from the current window');
+    shouldProcessIncomingMessageLogger('Should not process message because it is coming from the current window');
     return false;
   } else if (
     Communication.currentWindow &&
@@ -569,13 +688,13 @@ async function shouldProcessMessage(messageSource: Window, messageOrigin: string
     try {
       messageOriginURL = new URL(messageOrigin);
     } catch (_) {
-      shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
+      shouldProcessIncomingMessageLogger('Message has an invalid origin of %s', messageOrigin);
       return false;
     }
 
     const isOriginValid = await validateOrigin(messageOriginURL);
     if (!isOriginValid) {
-      shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
+      shouldProcessIncomingMessageLogger('Message has an invalid origin of %s', messageOrigin);
     }
     return isOriginValid;
   }
@@ -586,47 +705,40 @@ async function shouldProcessMessage(messageSource: Window, messageOrigin: string
  * Limited to Microsoft-internal use
  */
 function updateRelationships(messageSource: Window, messageOrigin: string): void {
-  // Determine whether the source of the message is our parent or child and update our
-  // window and origin pointer accordingly
-  // For frameless windows (i.e mobile), there is no parent frame, so the message must be from the child.
+  // Determine if the source of the message is our parent and update our window and
+  // origin pointer accordingly.
+  // For frameless windows (i.e mobile), there is no parent frame
   if (
     !GlobalVars.isFramelessWindow &&
     (!Communication.parentWindow || Communication.parentWindow.closed || messageSource === Communication.parentWindow)
   ) {
     Communication.parentWindow = messageSource;
     Communication.parentOrigin = messageOrigin;
-  } else if (
-    !Communication.childWindow ||
-    Communication.childWindow.closed ||
-    messageSource === Communication.childWindow
-  ) {
-    Communication.childWindow = messageSource;
-    Communication.childOrigin = messageOrigin;
   }
 
-  // Clean up pointers to closed parent and child windows
+  // Clean up pointers to closed parent windows
   if (Communication.parentWindow && Communication.parentWindow.closed) {
     Communication.parentWindow = null;
     Communication.parentOrigin = null;
   }
-  if (Communication.childWindow && Communication.childWindow.closed) {
-    Communication.childWindow = null;
-    Communication.childOrigin = null;
-  }
 
   // If we have any messages in our queue, send them now
-  flushMessageQueue(Communication.parentWindow);
-  flushMessageQueue(Communication.childWindow);
+  flushMessageQueue(
+    Communication.parentWindow,
+    Communication.parentOrigin,
+    CommunicationPrivate.parentMessageQueue,
+    'parent',
+  );
 }
 
-const handleParentMessageLogger = communicationLogger.extend('handleParentMessage');
+const handleIncomingMessageFromParentLogger = communicationLogger.extend('handleIncomingMessageFromParent');
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
 function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID | undefined {
-  const logger = handleParentMessageLogger;
+  const logger = handleIncomingMessageFromParentLogger;
   if (response.uuid) {
     const responseUUID = response.uuid;
     const callbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.callbacks, responseUUID);
@@ -644,10 +756,7 @@ function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID
   } else {
     return CommunicationPrivate.legacyMessageIdsToUuidMap[response.id];
   }
-  logger(
-    `Received a message with uuid: ${response.uuid?.toString()} and legacyId: %i that failed to produce a callbackId`,
-    response.id,
-  );
+  logger('Received message %s that failed to produce a callbackId', getMessageIdsAsLogString(response));
   return undefined;
 }
 
@@ -657,7 +766,7 @@ function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID
  *
  * This function is used to compare a new MessageUUID object value to the key values in the specified callback and retrieving that key
  * We use this because two objects with the same value are not considered equivalent therefore we can't use the new MessageUUID object
- * as a key to retrieve the value assosciated with it and should use this function instead.
+ * as a key to retrieve the value associated with it and should use this function instead.
  */
 function retrieveMessageUUIDFromCallback(
   map: Map<MessageUUID, Function>,
@@ -695,8 +804,9 @@ function removeMessageHandlers(message: MessageResponse, map: Map<MessageUUID, F
  * @internal
  * Limited to Microsoft-internal use
  */
-function handleParentMessage(evt: DOMMessageEvent): void {
-  const logger = handleParentMessageLogger;
+function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
+  const logger = handleIncomingMessageFromParentLogger;
+  const timeWhenMessageArrived = getCurrentTimestamp();
 
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
@@ -705,37 +815,50 @@ function handleParentMessage(evt: DOMMessageEvent): void {
     const callbackId = retrieveMessageUUIDFromResponse(message);
     if (callbackId) {
       const callback = CommunicationPrivate.callbacks.get(callbackId);
-      logger('Received a response from parent for message %i', callbackId);
+      logger('Received a response from parent for message %s', callbackId.toString());
+      HostToAppMessageDelayTelemetry.handlePerformanceMetrics(callbackId, message, logger, timeWhenMessageArrived);
       if (callback) {
-        logger('Invoking the registered callback for message %i with arguments %o', callbackId, message.args);
+        logger(
+          'Invoking the registered callback for message %s with arguments %o',
+          callbackId.toString(),
+          message.args,
+        );
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         callback.apply(null, [...message.args, message.isPartialResponse]);
 
         // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
         if (!isPartialResponse(evt)) {
-          logger('Removing registered callback for message %i', callbackId);
+          logger('Removing registered callback for message %s', callbackId.toString());
           removeMessageHandlers(message, CommunicationPrivate.callbacks);
         }
       }
       const promiseCallback = CommunicationPrivate.promiseCallbacks.get(callbackId);
       if (promiseCallback) {
-        logger('Invoking the registered promise callback for message %i with arguments %o', callbackId, message.args);
+        logger(
+          'Invoking the registered promise callback for message %s with arguments %o',
+          callbackId.toString(),
+          message.args,
+        );
         promiseCallback(message.args);
 
-        logger('Removing registered promise callback for message %i', callbackId);
+        logger('Removing registered promise callback for message %s', callbackId.toString());
         removeMessageHandlers(message, CommunicationPrivate.promiseCallbacks);
       }
       const portCallback = CommunicationPrivate.portCallbacks.get(callbackId);
       if (portCallback) {
-        logger('Invoking the registered port callback for message %i with arguments %o', callbackId, message.args);
+        logger(
+          'Invoking the registered port callback for message %s with arguments %o',
+          callbackId.toString(),
+          message.args,
+        );
         let port: MessagePort | undefined;
         if (evt.ports && evt.ports[0] instanceof MessagePort) {
           port = evt.ports[0];
         }
         portCallback(port, message.args);
 
-        logger('Removing registered port callback for message %i', callbackId);
+        logger('Removing registered port callback for message %s', callbackId.toString());
         removeMessageHandlers(message, CommunicationPrivate.portCallbacks);
       }
       if (message.uuid) {
@@ -745,7 +868,8 @@ function handleParentMessage(evt: DOMMessageEvent): void {
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
-    logger('Received an action message %s from parent', message.func);
+    HostToAppMessageDelayTelemetry.handleOneWayPerformanceMetrics(message, logger, timeWhenMessageArrived);
+    logger('Received a message from parent %s, action: "%s"', getMessageIdsAsLogString(message), message.func);
     callHandler(message.func, message.args);
   } else {
     logger('Received an unknown message: %O', evt);
@@ -758,38 +882,6 @@ function handleParentMessage(evt: DOMMessageEvent): void {
  */
 function isPartialResponse(evt: DOMMessageEvent): boolean {
   return evt.data.isPartialResponse === true;
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function handleChildMessage(evt: DOMMessageEvent): void {
-  if ('id' in evt.data && 'func' in evt.data) {
-    // Try to delegate the request to the proper handler, if defined
-    const message = deserializeMessageRequest(evt.data as SerializedMessageRequest);
-    const [called, result] = callHandler(message.func, message.args);
-    if (called && typeof result !== 'undefined') {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      sendMessageResponseToChild(message.id, message.uuid, Array.isArray(result) ? result : [result]);
-    } else {
-      // No handler, proxy to parent
-      sendMessageToParent(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
-        message.func,
-        message.args,
-        (...args: any[]): void => {
-          if (Communication.childWindow) {
-            const isPartialResponse = args.pop();
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
-          }
-        },
-      );
-    }
-  }
 }
 
 /**
@@ -813,8 +905,6 @@ function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
     return CommunicationPrivate.topMessageQueue;
   } else if (targetWindow === Communication.parentWindow) {
     return CommunicationPrivate.parentMessageQueue;
-  } else if (targetWindow === Communication.childWindow) {
-    return CommunicationPrivate.childMessageQueue;
   } else {
     return [];
   }
@@ -829,8 +919,6 @@ function getTargetOrigin(targetWindow: Window | null): string | null {
     return Communication.topOrigin;
   } else if (targetWindow === Communication.parentWindow) {
     return Communication.parentOrigin;
-  } else if (targetWindow === Communication.childWindow) {
-    return Communication.childOrigin;
   } else {
     return null;
   }
@@ -845,36 +933,8 @@ function getTargetName(targetWindow: Window | null): string | null {
     return 'top';
   } else if (targetWindow === Communication.parentWindow) {
     return 'parent';
-  } else if (targetWindow === Communication.childWindow) {
-    return 'child';
   } else {
     return null;
-  }
-}
-
-const flushMessageQueueLogger = communicationLogger.extend('flushMessageQueue');
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function flushMessageQueue(targetWindow: Window | any): void {
-  const targetOrigin = getTargetOrigin(targetWindow);
-  const targetMessageQueue = getTargetMessageQueue(targetWindow);
-  const target = getTargetName(targetWindow);
-
-  while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
-    const messageRequest = targetMessageQueue.shift();
-    if (messageRequest) {
-      const request: SerializedMessageRequest = serializeMessageRequest(messageRequest);
-
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      flushMessageQueueLogger(
-        'Flushing message %i from ' + target + ' message queue via postMessage.',
-        request?.uuidAsString,
-      );
-
-      targetWindow.postMessage(request, targetOrigin);
-    }
   }
 }
 
@@ -896,51 +956,6 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
 }
 
 /**
- * @hidden
- * Send a response to child for a message request that was from child
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-function sendMessageResponseToChild(
-  id: MessageID,
-  uuid?: MessageUUID,
-  args?: any[],
-  isPartialResponse?: boolean,
-): void {
-  const targetWindow = Communication.childWindow;
-  const response = createMessageResponse(id, uuid, args, isPartialResponse);
-  const serializedResponse = serializeMessageResponse(response);
-  const targetOrigin = getTargetOrigin(targetWindow);
-  if (targetWindow && targetOrigin) {
-    targetWindow.postMessage(serializedResponse, targetOrigin);
-  }
-}
-
-/**
- * @hidden
- * Send a custom message object that can be sent to child window,
- * instead of a response message to a child
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function sendMessageEventToChild(actionName: string, args?: any[]): void {
-  const targetWindow = Communication.childWindow;
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  const customEvent = createMessageEvent(actionName, args);
-  const targetOrigin = getTargetOrigin(targetWindow);
-
-  // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
-  // queue the message and send it after the origin is established
-  if (targetWindow && targetOrigin) {
-    targetWindow.postMessage(customEvent, targetOrigin);
-  } else {
-    getTargetMessageQueue(targetWindow).push(customEvent);
-  }
-}
-
-/**
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -948,17 +963,28 @@ function createMessageRequest(
   apiVersionTag: string,
   func: string,
   args: any[] | undefined,
+  isProxiedFromChild?: boolean,
+  teamsJsInstanceId?: string,
 ): MessageRequestWithRequiredProperties {
   const messageId: MessageID = CommunicationPrivate.nextMessageId++;
   const messageUuid: MessageUUID = new MessageUUID();
   CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
+  /**
+   * Only when `isProxiedFromChild` is explicitly set to be true, the message request is created and relayed for child app
+   * Parent app needs to create and relay message request with whatever child app sent to it,
+   * and parent app's TeamsJS instance ID can NOT be used in this case.
+   */
+  const tjsInstanceIdToAttach = isProxiedFromChild === true ? teamsJsInstanceId : GlobalVars.teamsJsInstanceId;
   return {
     id: messageId,
     uuid: messageUuid,
     func: func,
     timestamp: Date.now(),
+    monotonicTimestamp: getCurrentTimestamp(),
     args: args || [],
     apiVersionTag: apiVersionTag,
+    isProxiedFromChild: isProxiedFromChild ?? false,
+    teamsJsInstanceId: tjsInstanceIdToAttach,
   };
 }
 
@@ -973,7 +999,7 @@ function createMessageRequest(
  *
  * @returns {NestedAppAuthRequest} Returns a NestedAppAuthRequest object with a unique id, the function name set to 'nestedAppAuthRequest', the current timestamp, an empty args array, and the provided message as data.
  */
-function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
+function createNestedAppAuthRequest(message: string, apiVersionTag: string): NestedAppAuthRequest {
   const messageId: MessageID = CommunicationPrivate.nextMessageId++;
   const messageUuid: MessageUUID = new MessageUUID();
   CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
@@ -982,41 +1008,11 @@ function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
     uuid: messageUuid,
     func: 'nestedAppAuth.execute',
     timestamp: Date.now(),
+    monotonicTimestamp: getCurrentTimestamp(),
+    apiVersionTag: apiVersionTag,
     // Since this is a nested app auth request, we don't need to send any args.
     // We avoid overloading the args array with the message to avoid potential issues processing of these messages on the hubSDK.
     args: [],
     data: message,
-  };
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function createMessageResponse(
-  id: MessageID,
-  uuid?: MessageUUID,
-  args?: any[] | undefined,
-  isPartialResponse?: boolean,
-): MessageResponse {
-  return {
-    id: id,
-    uuid: uuid,
-    args: args || [],
-    isPartialResponse,
-  };
-}
-
-/**
- * @hidden
- * Creates a message object without any id and api version, used for custom actions being sent to child frame/window
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-function createMessageEvent(func: string, args?: any[]): MessageRequest {
-  return {
-    func: func,
-    args: args || [],
   };
 }

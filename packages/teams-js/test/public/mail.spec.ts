@@ -1,8 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { FrameContexts } from '../../src/public';
-import { app } from '../../src/public/app';
-import { mail } from '../../src/public/mail';
+import { FrameContexts, mail } from '../../src/public';
+import * as app from '../../src/public/app/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -262,6 +261,115 @@ describe('mail', () => {
 
       await utils.respondToMessage(composeMailMessage, data.success);
       await expect(promise).resolves.not.toThrow();
+    });
+  });
+
+  describe('sub-capability mail.handoff.composeMail', () => {
+    const composeMailParams: mail.ComposeMailParams = {
+      type: mail.ComposeMailType.New,
+    };
+    const composeMailParamsWithHandoff: mail.handoff.ComposeMailParamsWithHandoff = {
+      composeMailParams: composeMailParams,
+      handoffId: 'mockHandoffId',
+    };
+    const composeMailParamsWithInvalidEmails: mail.ComposeMailParams = {
+      type: mail.ComposeMailType.New,
+      toRecipients: ['sam@example', 'sam1example.com'],
+    };
+    const paramHandoffWithInvalidEmails: mail.handoff.ComposeMailParamsWithHandoff = {
+      composeMailParams: composeMailParamsWithInvalidEmails,
+      handoffId: 'mockHandoffId',
+    };
+    const paramHandoffWithInvalidHandoffId: mail.handoff.ComposeMailParamsWithHandoff = {
+      composeMailParams: composeMailParams,
+      handoffId: '  ',
+    };
+
+    it('should not allow calls before initialization', () => {
+      return expect(() => mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
+    });
+
+    Object.keys(FrameContexts)
+      .map((k) => FrameContexts[k])
+      .forEach((frameContext) => {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          if (frameContext === FrameContexts.content) {
+            return;
+          }
+          await utils.initializeWithContext(frameContext);
+          expect.assertions(1);
+          expect(() => mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff)).toThrowError(
+            `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
+          );
+        });
+      });
+
+    it('should not allow calls if runtime does not support mail', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect.assertions(1);
+      const error = new Error('Not supported');
+      try {
+        mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff);
+      } catch (e) {
+        expect(e).toEqual(error);
+      }
+    });
+
+    it('should not allow calls if runtime does not support mail.handoff.composeMail but support mail', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
+      expect.assertions(1);
+      const error = new Error('Not supported');
+      try {
+        mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff);
+      } catch (e) {
+        expect(e).toEqual(error);
+      }
+    });
+
+    it('should not allow calls if handoffId is empty string', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: { handoff: {} } } });
+      expect.assertions(1);
+      const error = new Error('handoffId should not be null or empty string.');
+      try {
+        mail.handoff.composeMailWithHandoff(paramHandoffWithInvalidHandoffId);
+      } catch (e) {
+        expect(e).toEqual(error);
+      }
+    });
+    it('should not allow calls if invalid email(s) in the put', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: { handoff: {} } } });
+      expect.assertions(1);
+      const error = new Error('Input email address does not have the correct format.');
+      try {
+        mail.handoff.composeMailWithHandoff(paramHandoffWithInvalidEmails);
+      } catch (e) {
+        expect(e).toEqual(error);
+      }
+    });
+
+    it('should successfully throw if the composeMailParamsWithHandoff message sends and fails', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: { handoff: {} } } });
+      mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff).catch((e) => {
+        expect(e).toMatchObject(new Error(dataError));
+      });
+    });
+
+    it('should successfully send the composeMailParamsWithHandoff message', async () => {
+      await utils.initializeWithContext('content');
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: { handoff: {} } } });
+      mail.handoff.composeMailWithHandoff(composeMailParamsWithHandoff).then(() => {
+        const message = utils.findMessageByFunc('mail.composeMailWithHandoff');
+        expect(message).not.toBeNull();
+        expect(message?.args?.length).toEqual(1);
+        expect(message?.args?.[0]).toStrictEqual(composeMailParamsWithHandoff);
+      });
     });
   });
 

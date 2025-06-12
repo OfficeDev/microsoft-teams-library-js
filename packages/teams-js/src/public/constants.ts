@@ -12,6 +12,8 @@ export enum HostClientType {
   ipados = 'ipados',
   /** The host is running on a macOS client, which runs on devices such as MacBooks. */
   macos = 'macos',
+  /** The host is running on a visionOS client, which runs on devices such as Apple Vision. */
+  visionOS = 'visionOS',
   /**
    * @deprecated
    * As of TeamsJS v2.0.0, please use {@link teamsRoomsWindows} instead.
@@ -101,6 +103,21 @@ export enum FrameContexts {
 }
 
 /**
+ * RenderingSurfaces describes the context or surface in which your app is being displayed within the host application.
+ * This parameter allows your app to detect where it is rendered (for example, in a side panel or stage view)
+ * and adjust its behavior or UI accordingly. The intent is to help developers understand the user's context of use,
+ * not the exact pixel size or layout. If a host (such as Outlook Meeting Apps) changes the size of a surface (e.g., makes the side panel larger),
+ * it will still use the same RenderingSurface value. Developers are expected to use responsive UI techniques to adapt to size changes,
+ * since the user's context and intent remain the same even if the surface dimensions change.
+ */
+export enum RenderingSurfaces {
+  /**
+   * The mode the copilot app rendered by the host.
+   */
+  copilotSidePanel = 'copilotSidePanel',
+}
+
+/**
  * Indicates the team type, currently used to distinguish between different team
  * types in Office 365 for Education (team types 1, 2, 3, and 4).
  */
@@ -147,7 +164,7 @@ import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
  * As of TeamsJS v2.0.0, please use {@link DialogDimension} instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export import TaskModuleDimension = DialogDimension;
+export { DialogDimension as TaskModuleDimension };
 import { HostVersionsInfo } from './interfaces';
 
 /**

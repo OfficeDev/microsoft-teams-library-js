@@ -3,14 +3,17 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import * as handlers from '../../src/internal/handlers';
 import { MessageRequest } from '../../src/internal/messageObjects';
 import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuthUtils';
+import { ResponseHandler } from '../../src/internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
-import { UUID } from '../../src/internal/uuidObject';
-import { FrameContexts } from '../../src/public';
-import { app } from '../../src/public/app';
+import { ErrorCode, FrameContexts, SdkError } from '../../src/public';
+import * as app from '../../src/public/app/app';
+import { UUID } from '../../src/public/uuidObject';
 import { Utils } from '../utils';
 
 jest.mock('../../src/internal/handlers', () => ({
-  callHandler: jest.fn(),
+  initializeHandlers: jest.fn(),
+  callHandler: jest.fn(() => [false, undefined]),
+  registerHandler: jest.fn(),
 }));
 
 const testApiVersion = getApiVersionTag(ApiVersionNumber.V_1, 'mockedApiName' as ApiName);
@@ -275,7 +278,7 @@ describe('Testing communication', () => {
       it('should set Communication.parentWindow and Communication.parentOrigin to null if the parent window is closed during the initialization call', async () => {
         expect.assertions(4);
 
-        /* 
+        /*
           This promise is intentionally not being awaited
           If the parent window is closed during the initialize call,
           the initialize response never resolves (even though we receive it)
@@ -384,33 +387,10 @@ describe('Testing communication', () => {
       expect(communication.Communication.parentOrigin).toBeNull();
     });
 
-    it('should set Communication.childWindow to null', () => {
-      app._initialize(utils.mockWindow);
-      communication.Communication.childWindow = utils.mockWindow;
-      /* eslint-disable-next-line strict-null-checks/all */
-      expect(communication.Communication.childWindow).not.toBeNull();
-      communication.uninitializeCommunication();
-      /* eslint-disable-next-line strict-null-checks/all */
-      expect(communication.Communication.childWindow).toBeNull();
-    });
-
-    it('should set Communication.childOrigin to null', () => {
-      app._initialize(utils.mockWindow);
-      communication.Communication.childOrigin = utils.mockWindow.origin;
-      /* eslint-disable-next-line strict-null-checks/all */
-      expect(communication.Communication.childOrigin).not.toBeNull();
-      communication.uninitializeCommunication();
-      /* eslint-disable-next-line strict-null-checks/all */
-      expect(communication.Communication.childOrigin).toBeNull();
-    });
-
     it('should empty the queue of messages for the current parent', () => {
       expect.assertions(1);
-      communication.Communication.childWindow = utils.mockWindow;
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.Communication.parentWindow = utils.mockWindow;
       // This function inserts a message into the parentMessageQueue
-      communication.sendMessageEventToChild('testMessage');
+      communication.sendMessageToParent(testApiVersion, 'testAction');
       communication.uninitializeCommunication();
 
       communication.Communication.parentWindow = utils.mockWindow;
@@ -419,27 +399,6 @@ describe('Testing communication', () => {
         fn();
       };
       communication.waitForMessageQueue(communication.Communication.parentWindow, () => {
-        // this callback only ever fires if the message queue associated with the passed in window is empty
-        expect(true).toBeTruthy();
-      });
-    });
-
-    it('should empty the queue of messages for the current child', () => {
-      expect.assertions(1);
-      communication.Communication.childWindow = utils.mockWindow;
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.Communication.parentWindow = utils.mockWindow.parent;
-      // This function inserts a message into the parentMessageQueue
-      communication.sendMessageEventToChild('testMessage');
-      communication.uninitializeCommunication();
-
-      communication.Communication.childWindow = utils.mockWindow;
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.Communication.currentWindow.setInterval = (fn) => {
-        fn();
-      };
-      /* eslint-disable-next-line strict-null-checks/all */
-      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
         // this callback only ever fires if the message queue associated with the passed in window is empty
         expect(true).toBeTruthy();
       });
@@ -662,6 +621,21 @@ describe('Testing communication', () => {
       }
       expect(sentMessage.args.length).toBe(1);
       expect(sentMessage.args[0]).toBe(arg1);
+    });
+    it('messages sent from parent should not be tagged as proxied from child', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const arg1 = 'testArg1';
+      communication.sendMessageToParentAsync(testApiVersion, actionName, [arg1]);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+
+      expect(sentMessage.isProxiedFromChild).toBe(false);
     });
     it('should not send postMessage until after initialization response received', async () => {
       communication.initializeCommunication(undefined, testApiVersion);
@@ -1006,6 +980,21 @@ describe('Testing communication', () => {
       expect(sentMessage.args.length).toBe(1);
       expect(sentMessage.args[0]).toBe(arg1);
     });
+    it('messages sent from the parent are not tagged as proxied from child', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const arg1 = 'testArg1';
+      communication.sendMessageToParent(testApiVersion, actionName, [arg1]);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+
+      expect(sentMessage.isProxiedFromChild).toBe(false);
+    });
     it('should not send postMessage until after initialization response received', async () => {
       communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
@@ -1047,7 +1036,7 @@ describe('Testing communication', () => {
       communication.Communication.topWindow = utils.mockWindow.parent;
       communication.Communication.topOrigin = utils.validOrigin;
 
-      communication.sendNestedAuthRequestToTopWindow(message);
+      communication.sendNestedAuthRequestToTopWindow(message, testApiVersion);
 
       expect(utils.messages.length).toBe(1);
       expect(utils.messages[0].id).toBe(0);
@@ -1060,7 +1049,7 @@ describe('Testing communication', () => {
       communication.Communication.topWindow = utils.topWindow;
       communication.Communication.topOrigin = utils.validOrigin;
 
-      communication.sendNestedAuthRequestToTopWindow(message);
+      communication.sendNestedAuthRequestToTopWindow(message, testApiVersion);
 
       expect(utils.topMessages.length).toBe(1);
       expect(utils.topMessages[0].id).toBe(0);
@@ -1273,7 +1262,397 @@ describe('Testing communication', () => {
       }
     });
   });
+  describe('callFunctionInHostAndHandleResponse', () => {
+    let utils: Utils = new Utils();
+    const functionName = 'actionName';
 
+    class UnitTestResponseHandler implements ResponseHandler<unknown, string> {
+      public constructor(
+        private validateResponse?: (response: unknown) => boolean,
+        private deserializeResponse?: (response: unknown) => string,
+      ) {}
+
+      public validate(response: unknown): boolean {
+        return this.validateResponse ? this.validateResponse(response) : true;
+      }
+      public deserialize(response: unknown): string {
+        return this.deserializeResponse ? this.deserializeResponse(response) : 'default deserialization';
+      }
+    }
+
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+      app._initialize(utils.mockWindow);
+    });
+    afterAll(() => {
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.uninitializeCommunication();
+    });
+    it('should throw error if an invalid apiVersionTag is passed in', async () => {
+      expect.assertions(1);
+
+      try {
+        await communication.callFunctionInHostAndHandleResponse(
+          functionName,
+          ['arg2'],
+          new UnitTestResponseHandler(),
+          '',
+        );
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+    });
+    it('should pass action name and empty args array to host', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler(),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+      expect(sentMessage!.args).toBeDefined();
+      expect(sentMessage!.args!.length).toBe(0);
+    });
+    it('should pass args array containing only simple types to host', async () => {
+      expect.assertions(3);
+
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const inputArgs = [1, 'string', true, undefined, null, [1]];
+      communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        inputArgs,
+        new UnitTestResponseHandler(),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+      expect(sentMessage!.args).toBeDefined();
+      expect(sentMessage!.args!.length).toBe(inputArgs.length);
+      try {
+        sentMessage?.args?.forEach((arg, index) => {
+          if (arg !== inputArgs[index]) {
+            throw new Error(`Arg value ${arg} at index ${index} does not match expected value`);
+          }
+        });
+      } catch (e) {
+        expect(e).toBeUndefined();
+      }
+    });
+    it('should pass args array containing only ISerializableObjects to host', async () => {
+      expect.assertions(3);
+
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const inputArgs = [{ serialize: () => 'foo' }, { serialize: () => 'bar' }];
+      communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        inputArgs,
+        new UnitTestResponseHandler(),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+
+      expect(sentMessage).toBeDefined();
+      expect(sentMessage!.args).toBeDefined();
+      expect(sentMessage!.args!.length).toBe(inputArgs.length);
+
+      try {
+        sentMessage?.args?.forEach((arg, index) => {
+          if (arg !== inputArgs[index].serialize()) {
+            throw new Error(`Arg value ${arg} at index ${index} does not match expected serialized value`);
+          }
+        });
+      } catch (e) {
+        expect(e).toBeUndefined();
+      }
+    });
+    it('should throw error if host returns an SdkError', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const sdkError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, message: 'Unit Test Error' };
+      const promise = communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler(),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, sdkError);
+
+      expect(promise).rejects.toThrowError(new Error(`${sdkError.errorCode}, message: ${sdkError.message}`));
+    });
+    it('should throw error if host does not return SdkError and ResponseHandler says response is invalid', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const promise = communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler((_response) => false),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, 'host response value');
+
+      expect(promise).rejects.toThrowError(
+        new Error(
+          `${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host - ${JSON.stringify('host response value')}`,
+        ),
+      );
+    });
+    it('should return correctly deserialized response if host returns a valid response that is not an error', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const promise = communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler(
+          (_response) => true,
+          (_response) => 'this is the deserialized response',
+        ),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, 'host response value');
+
+      expect(promise).resolves.toEqual('this is the deserialized response');
+    });
+    it('should throw error if returned object matches passed in errorChecker', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const weirdError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, name: 'weird error message' };
+      const promise = communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler(),
+        testApiVersion,
+        (err: unknown): err is SdkError => {
+          const returnedErrorCode = (err as SdkError).errorCode;
+          const extraValue = (err as { name })?.name;
+          return returnedErrorCode === weirdError.errorCode && extraValue === 'weird error message';
+        },
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, weirdError);
+
+      expect(promise).rejects.toThrowError(new Error(`${weirdError.errorCode}, message: None`));
+    });
+    it('should throw invalid response error if returned object does not match passed in errorChecker', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const weirdError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, name: 'bizarre error message' };
+      const promise = communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler((_response) => false),
+        testApiVersion,
+        (err: unknown): err is SdkError => {
+          const returnedErrorCode = (err as SdkError).errorCode;
+          const extraValue = (err as { name })?.name;
+          return returnedErrorCode === ErrorCode.FILE_NOT_FOUND && extraValue === 'weird error message';
+        },
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, weirdError);
+
+      expect(promise).rejects.toThrowError(
+        new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host - ${JSON.stringify(weirdError)}`),
+      );
+    });
+  });
+  describe('callFunctionInHost', () => {
+    let utils: Utils = new Utils();
+    const functionName = 'actionName';
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+      app._initialize(utils.mockWindow);
+    });
+    afterAll(() => {
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.uninitializeCommunication();
+    });
+    it('should throw error if an invalid apiVersionTag is passed in', async () => {
+      expect.assertions(1);
+      try {
+        await communication.callFunctionInHost('', ['arg2'], 'arg1');
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+    });
+    it('should pass action name and empty args array to host', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      communication.callFunctionInHost(functionName, [], testApiVersion);
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      if (!sentMessage.args || sentMessage.args.length > 0) {
+        throw new Error('empty args expected on message');
+      }
+    });
+    it('should pass args array containing only simple types to host', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const inputArgs = [1, 'string', true, undefined, null, [1]];
+      communication.callFunctionInHost(functionName, inputArgs, testApiVersion);
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      if (!sentMessage.args) {
+        throw new Error('No arg array found on Message');
+      } else {
+        sentMessage.args.forEach((arg, index) => {
+          if (arg !== inputArgs[index]) {
+            throw new Error(`Arg value ${arg} at index ${index} does not match expected value`);
+          }
+        });
+      }
+    });
+    it('should pass args array containing only ISerializableObjects to host', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const inputArgs = [{ serialize: () => 'foo' }, { serialize: () => 'bar' }];
+      communication.callFunctionInHost(functionName, inputArgs, testApiVersion);
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      if (!sentMessage.args) {
+        throw new Error('No arg array found on Message');
+      } else {
+        sentMessage.args.forEach((arg, index) => {
+          if (arg !== inputArgs[index].serialize()) {
+            throw new Error(`Arg value ${arg} at index ${index} does not match expected serialized value`);
+          }
+        });
+      }
+    });
+    it('should throw error if host returns an SdkError', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const sdkError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, message: 'Unit Test Error' };
+      const promise = communication.callFunctionInHost(functionName, [], testApiVersion);
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, sdkError);
+
+      expect(promise).rejects.toThrowError(new Error(`${sdkError.errorCode}, message: ${sdkError.message}`));
+    });
+    it('should not throw error if no error returned from host', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const sdkError = undefined;
+      const promise = communication.callFunctionInHost(functionName, [], testApiVersion, (err): err is SdkError => {
+        return false;
+      });
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, sdkError);
+
+      expect(promise).resolves;
+    });
+    it('should throw error if returned object matches passed in errorChecker', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const weirdError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, name: 'weird error message' };
+      const promise = communication.callFunctionInHost(
+        functionName,
+        [],
+        testApiVersion,
+        (err: unknown): err is SdkError => {
+          const returnedErrorCode = (err as SdkError).errorCode;
+          const extraValue = (err as { name })?.name;
+          return returnedErrorCode === weirdError.errorCode && extraValue === weirdError.name;
+        },
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, weirdError);
+
+      expect(promise).rejects.toThrowError(new Error(`${weirdError.errorCode}, message: None`));
+    });
+    it('should not throw error if returned object does not match passed in errorChecker', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const sdkError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, message: 'Unit Test Error' };
+      const promise = communication.callFunctionInHost(functionName, [], testApiVersion, (err): err is SdkError => {
+        return false;
+      });
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, sdkError);
+
+      expect(promise).rejects.toThrowError(
+        new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`),
+      );
+    });
+  });
   describe('sendAndHandleSdkError', () => {
     let utils: Utils = new Utils();
     const actionName = 'test';
@@ -1389,15 +1768,15 @@ describe('Testing communication', () => {
     });
     it('should never call callback if parent message queue is not empty', () => {
       expect.assertions(0);
-      communication.Communication.childWindow = utils.mockWindow;
+      // This function inserts a message into the parentMessageQueue
+      communication.sendMessageToParent(testApiVersion, 'testAction');
+
       communication.Communication.currentWindow = utils.mockWindow;
       communication.Communication.parentWindow = utils.mockWindow;
       communication.Communication.currentWindow.setInterval = (fn) => {
         fn();
       };
 
-      // This function inserts a message into the parentMessageQueue
-      communication.sendMessageEventToChild('testMessage');
       communication.waitForMessageQueue(communication.Communication.parentWindow, () => {
         // this callback only ever fires if the message queue associated with the passed in window is empty
         expect(false).toBeTruthy();
@@ -1405,7 +1784,6 @@ describe('Testing communication', () => {
     });
     it('should call callback once parent message queue is empty', () => {
       expect.assertions(1);
-      communication.Communication.childWindow = utils.mockWindow;
       communication.Communication.currentWindow = utils.mockWindow;
       communication.Communication.parentWindow = utils.mockWindow;
       communication.Communication.currentWindow.setInterval = (fn) => {
@@ -1418,7 +1796,7 @@ describe('Testing communication', () => {
       });
 
       // This function inserts a message into the parentMessageQueue
-      communication.sendMessageEventToChild('testMessage');
+      communication.sendMessageToParent(testApiVersion, 'testAction');
       communication.uninitializeCommunication();
     });
     it('should throw if Communication.currentWindow is undefined', () => {
@@ -1441,64 +1819,6 @@ describe('Testing communication', () => {
           expect(false).toBeTruthy();
         });
       }).toThrow(TypeError);
-    });
-  });
-  describe('sendMessageEventToChild', () => {
-    let utils: Utils = new Utils();
-    beforeEach(() => {
-      utils = new Utils();
-      communication.uninitializeCommunication();
-    });
-    afterAll(() => {
-      communication.uninitializeCommunication();
-    });
-    it('should post message to window if Communication.childWindow is set', () => {
-      communication.Communication.childWindow = utils.childWindow;
-      communication.Communication.childOrigin = utils.validOrigin;
-      expect(utils.childMessages.length).toBe(0);
-      communication.sendMessageEventToChild('testAction', ['arg zero']);
-      expect(utils.childMessages.length).toBe(1);
-      expect(utils.childMessages[0].func).toBe('testAction');
-      if (!utils.childMessages[0].args) {
-        throw new Error('No args found on message');
-      }
-      expect(utils.childMessages[0].args[0]).toBe('arg zero');
-    });
-
-    it('should add message to childWindow message queue if Communication.childOrigin is not set', () => {
-      expect.assertions(1);
-      communication.Communication.childWindow = utils.childWindow;
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.Communication.currentWindow.setInterval = (fn) => {
-        fn();
-      };
-      /* eslint-disable-next-line strict-null-checks/all */
-      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
-        expect(false).toBeFalsy();
-      });
-      communication.sendMessageEventToChild('testAction', ['arg zero']);
-      /* eslint-disable-next-line strict-null-checks/all */
-      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
-        expect(true).toBeFalsy();
-      });
-    });
-
-    it('should add message to childWindow message queue if Communication.childWindow is not set', () => {
-      expect.assertions(1);
-      communication.Communication.childOrigin = utils.validOrigin;
-      communication.Communication.currentWindow = utils.mockWindow;
-      communication.Communication.currentWindow.setInterval = (fn) => {
-        fn();
-      };
-      /* eslint-disable-next-line strict-null-checks/all */
-      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
-        expect(false).toBeFalsy();
-      });
-      communication.sendMessageEventToChild('testAction', ['arg zero']);
-      /* eslint-disable-next-line strict-null-checks/all */
-      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
-        expect(true).toBeFalsy();
-      });
     });
   });
 
@@ -1546,18 +1866,18 @@ describe('Testing communication', () => {
 
     describe('postMessage', () => {
       it('should post a message when called with a valid NestedAppAuthRequest', async () => {
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(validMessage);
 
-        expect(utils.topMessages.length).toBe(1);
-        expect(utils.topMessages[0].func).toBe(requestName);
-        expect((utils.topMessages[0] as NestedAppAuthRequest).data).toEqual(validMessage);
+        expect(utils.messages.length).toBe(2);
+        expect(utils.messages[1].func).toBe(requestName);
+        expect((utils.messages[1] as NestedAppAuthRequest).data).toEqual(validMessage);
       });
 
       it('should not post a message when called with an invalid message', async () => {
         const invalidMessage = 'Invalid message';
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(invalidMessage);
 
@@ -1566,7 +1886,7 @@ describe('Testing communication', () => {
 
       it('should not post a message when called with a valid JSON that is not a NestedAppAuthRequest', async () => {
         const nonRequestMessage = JSON.stringify({ messageType: 'NonRequestMessage' });
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(nonRequestMessage);
 
@@ -1578,7 +1898,7 @@ describe('Testing communication', () => {
       test('should respond to a valid nestedAppAuthRequest with a nestedAppAuthResponse', async () => {
         const onMessageReceivedCb = jest.fn();
 
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
@@ -1598,7 +1918,7 @@ describe('Testing communication', () => {
       test('should ignore invalid nestedAppAuthResponse', async () => {
         const onMessageReceivedCb = jest.fn();
 
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
@@ -1618,7 +1938,7 @@ describe('Testing communication', () => {
       test('should ignore other SDK messages', async () => {
         const onMessageReceivedCb = jest.fn();
 
-        utils.mockWindow.top = utils.topWindow;
+        utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 

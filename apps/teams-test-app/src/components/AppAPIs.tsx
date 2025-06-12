@@ -3,12 +3,14 @@ import {
   Context,
   executeDeepLink,
   getContext,
+  HostToAppPerformanceMetrics,
   registerOnThemeChangeHandler,
   ResumeContext,
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { urlParams } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
@@ -64,6 +66,20 @@ const OpenLink = (): ReactElement =>
     defaultInput: '"https://teams.microsoft.com/l/call/0/0?users=testUser1,testUser2&withVideo=true&source=test"',
   });
 
+const RegisterHostToAppPerformanceMetricsHandler = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'registerHostToAppPerformanceMetricsHandler',
+    title: 'Register Host to App performance metrics handler',
+    onClick: async (setResult) => {
+      const handler = (v: HostToAppPerformanceMetrics): void => {
+        console.log(v);
+        setResult(JSON.stringify(v));
+      };
+      app.registerHostToAppPerformanceMetricsHandler(handler);
+      return 'Registered callback!';
+    },
+  });
+
 const RegisterOnThemeChangeHandler = (): ReactElement =>
   ApiWithoutInput({
     name: 'registerOnThemeChangeHandler',
@@ -92,7 +108,9 @@ const RegisterOnResumeHandler = (): React.ReactElement => {
         const route = context.contentUrl;
         // navigate to the correct path based on URL
         navigate(route.pathname);
-        app.notifySuccess();
+        if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+          app.notifySuccess();
+        }
       });
 
       return 'registered';
@@ -128,6 +146,7 @@ const AppAPIs = (): ReactElement => (
   <ModuleWrapper title="App">
     <GetContext />
     <OpenLink />
+    <RegisterHostToAppPerformanceMetricsHandler />
     <RegisterOnThemeChangeHandler />
     <RegisterBeforeSuspendOrTerminateHandler />
     <RegisterOnResumeHandler />

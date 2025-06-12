@@ -1,4 +1,17 @@
-import { debug as registerLogger, Debugger } from 'debug';
+// We are directly referencing the browser implementation of `debug` to resolve an issue with polyfilling. For a full write-up on the bug please see ADO Bug #9619161
+import { debug as registerLogger, Debugger } from 'debug/src/browser';
+
+import { UUID } from '../public/uuidObject';
+
+// Each teamsjs instance gets a unique identifier that will be prepended to every log statement
+export const teamsJsInstanceIdentifier = new UUID();
+
+// Every log statement will get prepended with the teamsJsInstanceIdentifier and a timestamp
+const originalFormatArgsFunction = registerLogger.formatArgs;
+registerLogger.formatArgs = function (args) {
+  args[0] = `(${new Date().toISOString()}): ${args[0]} [${teamsJsInstanceIdentifier.toString()}]`;
+  originalFormatArgsFunction.call(this, args);
+};
 
 const topLevelLogger = registerLogger('teamsJs');
 
@@ -94,6 +107,12 @@ export const enum ApiName {
   Conversations_OpenConversation = 'conversations.openConversation',
   Conversations_RegisterCloseConversationHandler = 'conversations.registerCloseConversationHandler',
   Conversations_RegisterStartConversationHandler = 'conversations.registerStartConversationHandler',
+  Copilot_CustomTelemetry_SendCustomTelemetryData = 'copilot.customTelemetry.sendCustomTelemetryData',
+  Copilot_Eligibility_GetEligibilityInfo = 'copilot.eligibility.getEligibilityInfo',
+  Copilot_SidePanel_RegisterUserActionContentSelect = 'copilot.sidePanel.registerUserActionContentSelect',
+  Copilot_SidePanel_RegisterOnUserConsentChange = 'copilot.sidePanel.registerOnUserConsentChange',
+  Copilot_SidePanel_GetContent = 'copilot.sidePanel.getContent',
+  Copilot_SidePanel_PreCheckUserConsent = 'copilot.sidePanel.preCheckUserConsent',
   Dialog_AdaptiveCard_Bot_Open = 'dialog.adaptiveCard.bot.open',
   Dialog_AdaptiveCard_Open = 'dialog.adaptiveCard.open',
   Dialog_RegisterMessageForChildHandler = 'dialog.registerMessageForChildHandler',
@@ -111,8 +130,15 @@ export const enum ApiName {
   ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest = 'externalAppAuthentication.authenticateWithSSOAndResendRequest',
   ExternalAppAuthentication_AuthenticateWithOauth2 = 'externalAppAuthentication.authenticateWithOauth2',
   ExternalAppAuthentication_AuthenticateWithPowerPlatformConnectorPlugins = 'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
+  ExternalAppAuthenticationForCEA_AuthenticateWithOauth = 'externalAppAuthenticationForCEA.authenticateWithOauth',
+  ExternalAppAuthenticationForCEA_AuthenticateWithSSO = 'externalAppAuthenticationForCEA.authenticateWithSSO',
+  ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest = 'externalAppAuthenticationForCEA.authenticateAndResendRequest',
+  ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest = 'externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest',
   ExternalAppCardActions_ProcessActionOpenUrl = 'externalAppCardActions.processActionOpenUrl',
   ExternalAppCardActions_ProcessActionSubmit = 'externalAppCardActions.processActionSubmit',
+  ExternalAppCardActionsForCEA_ProcessActionOpenUrl = 'externalAppCardActionsForCEA.processActionOpenUrl',
+  ExternalAppCardActionsForCEA_ProcessActionSubmit = 'externalAppCardActionsForCEA.processActionSubmit',
+  ExternalAppCardActionsForDA_ProcessActionOpenUrlDialog = 'externalAppCardActionsForDA.processActionOpenUrlDialog',
   ExternalAppCommands_ProcessActionCommands = 'externalAppCommands.processActionCommand',
   Files_AddCloudStorageFolder = 'files.addCloudStorageFolder',
   Files_AddCloudStorageProvider = 'files.addCloudStorageProvider',
@@ -138,6 +164,11 @@ export const enum ApiName {
   GeoLocation_RequestPermission = 'geoLocation.requestPermission',
   GeoLocation_ShowLocation = 'geoLocation.showLocation',
   HandleBeforeUnload = 'handleBeforeUnload',
+  HostEntity_Tab_addAndConfigureApp = 'hostEntity.tab.addAndConfigure',
+  HostEntity_Tab_reconfigure = 'hostEntity.tab.reconfigure',
+  HostEntity_Tab_rename = 'hostEntity.tab.rename',
+  HostEntity_Tab_remove = 'hostEntity.tab.remove',
+  HostEntity_Tab_getAll = 'hostEntity.tab.getAll',
   Interactive_GetClientInfo = 'interactive.getClientInfo',
   Interactive_GetClientRoles = 'interactive.getClientRoles',
   Interactive_GetFluidContainerId = 'interactive.getFluidContainerId',
@@ -151,6 +182,7 @@ export const enum ApiName {
   Logs_Receive = 'log.receive',
   Logs_RegisterLogRequestHandler = 'log.request',
   Mail_ComposeMail = 'mail.composeMail',
+  Mail_Handoff_ComposeMail = 'mail.handoff.composeMail',
   Mail_OpenMailItem = 'mail.openMailItem',
   Marketplace_AddOrUpdateCartItems = 'marketplace.addOrUpdateCartItems',
   Marketplace_GetCart = 'marketplace.getCart',
@@ -206,9 +238,12 @@ export const enum ApiName {
   Navigation_NavigateCrossDomain = 'navigation.navigateCrossDomain',
   Navigation_NavigateToTab = 'navigation.navigateToTab',
   Navigation_ReturnFocus = 'navigation.returnFocus',
+  NestedAppAuth_Execute = 'nestedAppAuth.execute',
+  NestedAppAuth_ManageNAATrustedOrigins = 'nestedAppAuth.manageNAATrustedOrigins',
   Notifications_ShowNotification = 'notifications.showNotification',
   OtherAppStateChange_Install = 'otherApp.install',
   OtherAppStateChange_UnregisterInstall = 'otherApp.unregisterInstall',
+  OtherAppStateChange_NotifyInstallCompleted = 'otherApp.notifyInstallCompleted',
   Pages_AppButton_OnClick = 'pages.appButton.onClick',
   Pages_AppButton_OnHoverEnter = 'pages.appButton.onHoverEnter',
   Pages_AppButton_OnHoverLeave = 'pages.appButton.onHoverLeave',
@@ -298,6 +333,10 @@ export const enum ApiName {
   Sharing_ShareWebContent = 'sharing.shareWebContent',
   StageView_Open = 'stageView.open',
   StageView_Self_Close = 'stageView.self.close',
+  Store_OpenFullStore = 'store.openFullStore',
+  Store_OpenAppDetail = 'store.openAppDetail',
+  Store_OpenInContextStore = 'store.openInContextStore',
+  Store_OpenSpecificStore = 'store.openSpecificStore',
   Tasks_StartTask = 'tasks.startTask',
   Tasks_SubmitTask = 'tasks.submitTask',
   Tasks_UpdateTask = 'tasks.updateTask',

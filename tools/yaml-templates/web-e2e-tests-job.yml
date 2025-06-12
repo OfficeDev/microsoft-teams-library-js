@@ -18,11 +18,16 @@ parameters:
   - name: testPrefixPatternGroups
     type: object
     default: ['{[A-Z],[a-z],[0-9]}']
+  - name: versionBranch
+    type: string
+    default: none
 
 jobs:
   - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
-      - job: E2ETestsWeb_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
-        displayName: 'E2E Tests - Web - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
+      # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
+      # Sadly ADO does not support regex matching here at this time.
+      - job: E2ETestsWeb_${{parameters.versionBranch}}_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
+        displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
         pool:
           name: Azure-Pipelines-1ESPT-ExDShared
           image: 'ubuntu-2004'
@@ -56,11 +61,11 @@ jobs:
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
           - bash: |
-              # This sets up the server but runs no tests
-              pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --useDataFromLocal=true --testPrefixPattern "{[]}"
-              # This runs the Electron tests, which currently cannot be filtered
+              pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=test --serverUrl=https://localhost:4000/
+              pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=orange --serverUrl=https://local.teams.office.com:8080
+              # This runs the Electron-integration layer tests, which currently cannot be filtered
               pnpm exec xvfb-maybe playwright test
-            displayName: 'Run Electron E2E tests'
+            displayName: 'Run Electron-Integration Layer tests'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 

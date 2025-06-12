@@ -1,10 +1,10 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { minAdaptiveCardVersion, TaskModuleDimension } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { TaskInfo } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
-import { tasks } from '../../src/public/tasks';
+import * as tasks from '../../src/public/tasks';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -268,7 +268,7 @@ describe('tasks', () => {
   });
 
   describe('submitTask', () => {
-    const allowedContexts = [FrameContexts.task];
+    const allowedContexts = [FrameContexts.content, FrameContexts.task];
     it('should not allow calls before initialization', () => {
       expect(() => tasks.submitTask()).toThrowError(new Error(errorLibraryNotInitialized));
     });

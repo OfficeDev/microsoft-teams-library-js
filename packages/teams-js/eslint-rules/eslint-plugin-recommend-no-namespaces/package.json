@@ -1,0 +1,18 @@
+{
+  "name": "eslint-plugin-recommend-no-namespaces",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Noah",
+  "description": "Recommend against the use of namespaces as they cannot be treeshaken",
+  "type": "commonjs",
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "eslintplugin",
+    "treeshaking",
+    "namespaces"
+  ],
+  "peerDependencies": {
+    "eslint": ">=5.0.0"
+  }
+}

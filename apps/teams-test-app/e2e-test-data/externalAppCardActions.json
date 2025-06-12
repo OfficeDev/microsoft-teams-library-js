@@ -1,7 +1,7 @@
 {
   "name": "ExternalAppCardActions",
   "version": ">2.18.0",
-  "platform": "Web",
+  "platforms": "Web",
   "testCases": [
     {
       "title": "checkExternalAppCardActionsCapability API Call - Success",

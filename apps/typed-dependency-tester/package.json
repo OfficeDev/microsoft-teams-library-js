@@ -5,12 +5,15 @@
   "description": "A tester to check if types in the dependency array will cause errors",
   "version": "0.0.1",
   "scripts": {
-    "build": "pnpm i && pnpm copy && pnpm tsc && pnpm clean",
-    "copy": "cp ./node_modules/@microsoft/teams-js/dist/MicrosoftTeams.d.ts ./ || xcopy .\\node_modules\\@microsoft\\teams-js\\dist\\MicrosoftTeams.d.ts .\\ /Y",
-    "clean": "rimraf node_modules && rimraf MicrosoftTeams.d.ts"
+    "build": "pnpm i && pnpm copy && cd ./types && pnpm tsc && cd ../ && pnpm clean",
+    "copy": "mkdir types && cp -R ./node_modules/@microsoft/teams-js/dist/esm/packages/teams-js/dts/* ./types || xcopy .\\node_modules\\@microsoft\\teams-js\\dist\\esm\\packages\\teams-js\\dts\\* .\\types /Y /E",
+    "clean": "rimraf node_modules && rimraf ./types"
   },
-  "dependencies": {},
+  "dependencies": {
+    "debug": "^4.3.3"
+  },
   "devDependencies": {
+    "@types/debug": "^4.1.7",
     "@microsoft/teams-js": "workspace:*"
   }
 }

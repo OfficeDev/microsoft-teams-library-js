@@ -1,22 +1,26 @@
 {
   "name": "@microsoft/teams-js",
   "author": "Microsoft Teams",
-  "version": "2.26.0",
+  "version": "2.39.0",
   "description": "Microsoft Client SDK for building app for Microsoft hosts",
   "repository": {
     "directory": "packages/teams-js",
     "type": "git",
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
-  "main": "./dist/MicrosoftTeams.min.js",
-  "typings": "./dist/MicrosoftTeams.d.ts",
+  "main": "./dist/umd/MicrosoftTeams.min.js",
+  "typings": "./dist/esm/packages/teams-js/dts/index.d.ts",
+  "module": "./dist/esm/packages/teams-js/src/index.js",
   "scripts": {
-    "build": "pnpm lint && webpack && pnpm docs:validate",
+    "build": "pnpm clean && pnpm lint && pnpm build-rollup && pnpm build-webpack && pnpm docs:validate && pnpm size",
+    "build-rollup": "pnpm clean && rollup -c",
+    "build-webpack": "webpack",
     "clean": "rimraf ./dist",
     "docs": "pnpm typedoc",
     "docs:validate": "pnpm typedoc --emit none",
     "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
+    "size": "size-limit",
     "test": "jest",
     "test:verbose": "pnpm test -- --verbose false --silent false"
   },
@@ -25,8 +29,21 @@
     "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7"
+    "@types/debug": "^4.1.7",
+    "eslint-plugin-recommend-no-namespaces": "file:./eslint-rules/eslint-plugin-recommend-no-namespaces"
   },
+  "sideEffects": [
+    "src/internal/communication.ts",
+    "src/internal/nestedAppAuthUtils.ts",
+    "src/internal/utils.ts",
+    "src/internal/validOrigins.ts",
+    "src/internal/videoEffectsUtils.ts",
+    "src/private/constants.ts",
+    "src/private/interfaces.ts",
+    "src/public/constants.ts",
+    "src/public/handlers.ts",
+    "src/public/interfaces.ts"
+  ],
   "license": "MIT",
   "files": [
     "dist/**",

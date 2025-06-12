@@ -1,9 +1,9 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { app } from '../../src/public/app';
+import { ShowProfileRequestInternal } from '../../src/internal/profileUtil';
+import * as app from '../../src/public/app/app';
 import { FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
-import { ShowProfileRequestInternal } from '../../src/public/profile';
-import { profile } from '../../src/public/profile';
+import * as profile from '../../src/public/profile';
 import { Utils } from '../utils';
 
 /* eslint-disable */

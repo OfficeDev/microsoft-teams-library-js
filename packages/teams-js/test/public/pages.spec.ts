@@ -2,11 +2,18 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageResponse } from '../../src/internal/messageObjects';
+import {
+  convertAppNavigationParametersToNavigateToAppParams,
+  convertNavigateToAppParamsToAppNavigationParameters,
+  isAppNavigationParametersObject,
+} from '../../src/internal/pagesHelpers';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
-import { app } from '../../src/public/app';
+import { activateChildProxyingCommunication } from '../../src/public';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { resetBuildFeatureFlags } from '../../src/public/featureFlags';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
-import { pages } from '../../src/public/pages';
+import * as pages from '../../src/public/pages/pages';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import {
@@ -33,6 +40,108 @@ describe('Testing pages module', () => {
       app._uninitialize();
     });
 
+    describe('childProxyingCommunication on', () => {
+      beforeEach(() => {
+        activateChildProxyingCommunication();
+      });
+      afterEach(() => {
+        resetBuildFeatureFlags();
+      });
+
+      describe('Testing pages.config.registerOnSaveHandler function', () => {
+        const allowedContexts = [FrameContexts.settings];
+
+        allowedContexts.forEach((context) => {
+          it('pages.config.registerOnSaveHandler should proxy to childWindow if no handler in top window', async () => {
+            await utils.initializeWithContext(context, undefined, ['https://teams.microsoft.com']);
+            // Remove possibly any previous registration
+            pages.config.registerOnSaveHandler(undefined as unknown as pages.saveEventType);
+
+            await utils.processMessage!({
+              origin: 'https://outlook.office365.com',
+              source: utils.childWindow,
+              data: {
+                id: 100,
+                func: 'settings.save',
+                args: [],
+              } as MessageResponse,
+            } as MessageEvent);
+
+            expect(utils.childMessages.length).toBe(1);
+            const childMessage = utils.findMessageInChildByFunc('settings.save');
+            expect(childMessage).not.toBeNull();
+          });
+
+          it('pages.config.registerOnSaveHandler should not proxy to childWindow if handler in top window', async () => {
+            await utils.initializeWithContext(context, undefined, ['https://teams.microsoft.com']);
+            let handlerCalled = false;
+            pages.config.registerOnSaveHandler((saveEvent) => {
+              saveEvent.notifySuccess();
+              handlerCalled = true;
+            });
+            expect(handlerCalled).toBe(false);
+            await utils.processMessage!({
+              origin: 'https://outlook.office365.com',
+              source: utils.childWindow,
+              data: {
+                id: 100,
+                func: 'settings.save',
+                args: [],
+              } as MessageResponse,
+            } as MessageEvent);
+            expect(handlerCalled).toBe(true);
+            expect(utils.childMessages.length).toBe(0);
+          });
+        });
+      });
+
+      describe('Testing pages.config.registerOnRemoveHandler function', () => {
+        const allowedContexts = [FrameContexts.remove, FrameContexts.settings];
+
+        allowedContexts.forEach((context) => {
+          it('pages.config.registerOnRemoveHandler should proxy to childWindow if no handler in top window', async () => {
+            await utils.initializeWithContext(context, undefined, ['https://teams.microsoft.com']);
+
+            // Remove possibly any previous registration
+            pages.config.registerOnRemoveHandler(undefined as unknown as pages.removeEventType);
+
+            await utils.processMessage!({
+              origin: 'https://outlook.office365.com',
+              source: utils.childWindow,
+              data: {
+                id: 100,
+                func: 'settings.remove',
+                args: [],
+              } as MessageResponse,
+            } as MessageEvent);
+            expect(utils.childMessages.length).toBe(1);
+            const childMessage = utils.findMessageInChildByFunc('settings.remove');
+            expect(childMessage).not.toBeNull();
+          });
+
+          it('pages.config.registerOnRemoveHandler should not proxy to childWindow if handler in top window', async () => {
+            await utils.initializeWithContext(context, undefined, ['https://teams.microsoft.com']);
+            let handlerCalled = false;
+            pages.config.registerOnRemoveHandler(() => {
+              handlerCalled = true;
+            });
+            expect(handlerCalled).toBe(false);
+            await utils.processMessage!({
+              origin: 'https://outlook.office365.com',
+              source: utils.childWindow,
+              data: {
+                id: 100,
+                func: 'settings.remove',
+                args: [],
+              } as MessageResponse,
+            } as MessageEvent);
+            expect(handlerCalled).toBe(true);
+            expect(utils.childMessages.length).toBe(0);
+          });
+        });
+      });
+    });
+
     describe('Testing pages.returnFocus function', () => {
       it('pages.returnFocus should not allow calls before initialization', () => {
         expect(() => pages.returnFocus()).toThrowError(new Error(errorLibraryNotInitialized));
@@ -57,6 +166,21 @@ describe('Testing pages module', () => {
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
           validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, true);
+        });
+
+        it(`pages.returnFocus should successfully return focus when ReturnFocusType is set and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          pages.returnFocus(pages.ReturnFocusType.NextLandmark);
+
+          const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+          validateExpectedArgumentsInRequest(
+            returnFocusMessage,
+            'returnFocus',
+            MatcherType.ToBe,
+            true,
+            pages.ReturnFocusType.NextLandmark,
+          );
         });
 
         it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
@@ -436,6 +560,11 @@ describe('Testing pages module', () => {
         subPageId: 'task456',
       };
 
+      const typeSafeAppNavigationParams: pages.AppNavigationParameters =
+        convertNavigateToAppParamsToAppNavigationParameters(navigateToAppParams);
+      const typeSafeAppNavigationParamsWithChat: pages.AppNavigationParameters =
+        convertNavigateToAppParamsToAppNavigationParameters(navigateToAppParamsWithChat);
+
       it('pages.navigateToApp should not allow calls before initialization', async () => {
         await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
           new Error(errorLibraryNotInitialized),
@@ -474,7 +603,9 @@ describe('Testing pages module', () => {
             await expect(promise).resolves.toBe(undefined);
           });
 
-          it('pages.navigateToApp should successfully send the navigateToApp message', async () => {
+          async function validateNavigateToAppMessage(
+            navigateToAppParams: pages.NavigateToAppParams | pages.AppNavigationParameters,
+          ) {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
 
@@ -485,14 +616,26 @@ describe('Testing pages module', () => {
               navigateToAppMessage,
               'pages.navigateToApp',
               MatcherType.ToStrictEqual,
-              navigateToAppParams,
+              isAppNavigationParametersObject(navigateToAppParams)
+                ? convertAppNavigationParametersToNavigateToAppParams(navigateToAppParams)
+                : navigateToAppParams,
             );
 
             await utils.respondToMessage(navigateToAppMessage!, true);
             await promise;
+          }
+
+          it('pages.navigateToApp should successfully send the navigateToApp message using serialized parameter', async () => {
+            validateNavigateToAppMessage(navigateToAppParams);
           });
 
-          it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients', async () => {
+          it('pages.navigateToApp should successfully send the navigateToApp message using type-safe parameter', async () => {
+            validateNavigateToAppMessage(typeSafeAppNavigationParams);
+          });
+
+          async function validateNavigateToAppMessageForLegacyTeams(
+            navigateToAppParams: pages.NavigateToAppParams | pages.AppNavigationParameters,
+          ) {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({
               apiVersion: 1,
@@ -514,9 +657,19 @@ describe('Testing pages module', () => {
 
             await utils.respondToMessage(executeDeepLinkMessage!, true);
             await promise;
+          }
+
+          it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients using a serialized parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeams(navigateToAppParams);
           });
 
-          it('pages.navigateToApp should successfully send an executeDeepLink message with chat id for legacy teams clients', async () => {
+          it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients using a type-safe parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeams(typeSafeAppNavigationParams);
+          });
+
+          async function validateNavigateToAppMessageForLegacyTeamsWithChat(
+            navigateToAppParamsWithChat: pages.NavigateToAppParams | pages.AppNavigationParameters,
+          ) {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({
               apiVersion: 1,
@@ -538,6 +691,13 @@ describe('Testing pages module', () => {
 
             await utils.respondToMessage(executeDeepLinkMessage!, true);
             await promise;
+          }
+
+          it('pages.navigateToApp should successfully send an executeDeepLink message with chat id for legacy teams clients using serialized parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeamsWithChat(navigateToAppParamsWithChat);
+          });
+          it('pages.navigateToApp should successfully send an executeDeepLink message with chat id for legacy teams clients using type-safe parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeamsWithChat(typeSafeAppNavigationParamsWithChat);
           });
         } else {
           it(`pages.navigateToApp should not allow calls from ${context} context`, async () => {
@@ -1295,10 +1455,10 @@ describe('Testing pages module', () => {
               validateRequestWithoutArguments(message, 'settings.save.success');
             });
 
-            it('pages.config.registerOnSaveHandler should proxy to childWindow if no handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
-              pages.config.registerOnSaveHandler(undefined);
-              await utils.processMessage({
+            it('pages.config.registerOnSaveHandler should not proxy to childWindow', async () => {
+              await utils.initializeWithContext(context, undefined, ['https://teams.microsoft.com']);
+              pages.config.registerOnSaveHandler(jest.fn());
+              await utils.processMessage!({
                 origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
                 data: {
@@ -1307,29 +1467,6 @@ describe('Testing pages module', () => {
                   args: [],
                 } as MessageResponse,
               } as MessageEvent);
-              expect(utils.childMessages.length).toBe(1);
-              const childMessage = utils.findMessageInChildByFunc('settings.save');
-              expect(childMessage).not.toBeNull();
-            });
-
-            it('pages.config.registerOnSaveHandler should not proxy to childWindow if handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
-              let handlerCalled = false;
-              pages.config.registerOnSaveHandler((saveEvent) => {
-                saveEvent.notifySuccess();
-                handlerCalled = true;
-              });
-              expect(handlerCalled).toBe(false);
-              await utils.processMessage({
-                origin: 'https://outlook.office365.com',
-                source: utils.childWindow,
-                data: {
-                  id: 100,
-                  func: 'settings.save',
-                  args: [],
-                } as MessageResponse,
-              } as MessageEvent);
-              expect(handlerCalled).toBe(true);
               expect(utils.childMessages.length).toBe(0);
             });
           } else {
@@ -1395,10 +1532,10 @@ describe('Testing pages module', () => {
               expect(handlerCalled).toBeTruthy();
             });
 
-            it('pages.config.registerOnRemoveHandler should proxy to childWindow if no handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
-              pages.config.registerOnRemoveHandler(undefined);
-              await utils.processMessage({
+            it('pages.config.registerOnRemoveHandler should not proxy to childWindow', async () => {
+              await utils.initializeWithContext(context, undefined, ['https://teams.microsoft.com']);
+              pages.config.registerOnRemoveHandler(jest.fn());
+              await utils.processMessage!({
                 origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
                 data: {
@@ -1407,28 +1544,6 @@ describe('Testing pages module', () => {
                   args: [],
                 } as MessageResponse,
               } as MessageEvent);
-              expect(utils.childMessages.length).toBe(1);
-              const childMessage = utils.findMessageInChildByFunc('settings.remove');
-              expect(childMessage).not.toBeNull();
-            });
-
-            it('pages.config.registerOnRemoveHandler should not proxy to childWindow if handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
-              let handlerCalled = false;
-              pages.config.registerOnRemoveHandler(() => {
-                handlerCalled = true;
-              });
-              expect(handlerCalled).toBe(false);
-              await utils.processMessage({
-                origin: 'https://outlook.office365.com',
-                source: utils.childWindow,
-                data: {
-                  id: 100,
-                  func: 'settings.remove',
-                  args: [],
-                } as MessageResponse,
-              } as MessageEvent);
-              expect(handlerCalled).toBe(true);
               expect(utils.childMessages.length).toBe(0);
             });
 
@@ -2126,6 +2241,23 @@ describe('Testing pages module', () => {
             data: {
               func: 'focusEnter',
               args: [true],
+            },
+          } as DOMMessageEvent);
+          expect(handlerInvoked).toBeTruthy();
+        });
+
+        it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when EnterFocusType set to nextLandmark and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          let handlerInvoked = false;
+          pages.registerFocusEnterHandler((x: boolean, enterFocusType: pages.EnterFocusType) => {
+            handlerInvoked = true;
+            return true;
+          });
+          await utils.respondToFramelessMessage({
+            data: {
+              func: 'focusEnter',
+              args: [true, pages.EnterFocusType.NextLandmark],
             },
           } as DOMMessageEvent);
           expect(handlerInvoked).toBeTruthy();

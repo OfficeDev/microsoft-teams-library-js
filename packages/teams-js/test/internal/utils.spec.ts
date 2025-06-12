@@ -3,13 +3,15 @@ import {
   compareSDKVersions,
   createTeamsAppLink,
   getBase64StringFromBlob,
+  hasScriptTags,
+  isPrimitiveOrPlainObject,
   validateId,
   validateUrl,
   validateUuid,
 } from '../../src/internal/utils';
-import { UUID } from '../../src/internal/uuidObject';
-import { pages } from '../../src/public';
+import { AppId, pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
+import { UUID } from '../../src/public/uuidObject';
 
 describe('utils', () => {
   test('compareSDKVersions', () => {
@@ -24,26 +26,26 @@ describe('utils', () => {
   });
   describe('createTeamsAppLink', () => {
     it('builds a basic URL with an appId and pageId', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
       };
       const expected = 'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123';
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with a webUrl parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
-        webUrl: 'https://tasklist.example.com/123',
+        webUrl: new URL('https://tasklist.example.com/123'),
       };
       const expected =
         'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123';
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with a subPageUrl parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
         subPageId: 'task456',
       };
@@ -52,8 +54,8 @@ describe('utils', () => {
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with a channelId parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
         channelId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
       };
@@ -63,8 +65,8 @@ describe('utils', () => {
     });
 
     it('builds a URL with a chatId parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
         chatId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
       };
@@ -73,10 +75,10 @@ describe('utils', () => {
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with all optional properties', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
-        webUrl: 'https://tasklist.example.com/123',
+        webUrl: new URL('https://tasklist.example.com/123'),
         channelId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
         subPageId: 'task456',
       };
@@ -367,6 +369,105 @@ describe('utils', () => {
     });
   });
 
+  describe('hasScriptTags', () => {
+    test('detects plain opening <script> tag', () => {
+      expect(hasScriptTags('<script>alert("XSS")</script>')).toBe(true);
+    });
+
+    test('detects HTML entity encoded opening <script> tag', () => {
+      expect(hasScriptTags('&lt;script&gt;alert("XSS")&lt;/script&gt;')).toBe(true);
+    });
+
+    test('detects URI encoded opening <script> tag', () => {
+      expect(hasScriptTags('%3Cscript%3Ealert("XSS")%3C/script%3E')).toBe(true);
+    });
+
+    test('detects plain closing </script> tag', () => {
+      expect(hasScriptTags('</script>')).toBe(true);
+    });
+
+    test('detects HTML entity encoded closing </script> tag', () => {
+      expect(hasScriptTags('&lt;/script&gt;')).toBe(true);
+    });
+
+    test('detects URI encoded closing </script> tag', () => {
+      expect(hasScriptTags('%3C/script%3E')).toBe(true);
+    });
+
+    test('returns false for strings without <script> tags', () => {
+      expect(hasScriptTags('<div>no script here</div>')).toBe(false);
+    });
+
+    test('detects mixed content with <script> tags', () => {
+      expect(hasScriptTags('<div><script>alert("XSS")</script></div>')).toBe(true);
+    });
+
+    test('returns false for empty string', () => {
+      expect(hasScriptTags('')).toBe(false);
+    });
+
+    test('detects multiple <script> tags', () => {
+      expect(hasScriptTags('<script>alert("XSS")</script><script>alert("XSS2")</script>')).toBe(true);
+    });
+
+    test('detects <script> tags with attributes', () => {
+      expect(hasScriptTags('<script type="text/javascript">alert("XSS")</script>')).toBe(true);
+      expect(hasScriptTags('<script src="example.js"></script>')).toBe(true);
+      expect(hasScriptTags('<script async defer>alert("XSS")</script>')).toBe(true);
+    });
+
+    test('detects HTML entity encoded <script> tag with attributes', () => {
+      expect(hasScriptTags('&lt;script type="text/javascript"&gt;alert("XSS")&lt;/script&gt;')).toBe(true);
+      expect(hasScriptTags('&lt;script src="example.js"&gt;&lt;/script&gt;')).toBe(true);
+    });
+
+    test('detects URI encoded <script> tag with attributes', () => {
+      expect(hasScriptTags('%3Cscript%20type=%22text/javascript%22%3Ealert("XSS")%3C/script%3E')).toBe(true);
+      expect(hasScriptTags('%3Cscript%20src=%22example.js%22%3E%3C/script%3E')).toBe(true);
+    });
+
+    test('detects <script> tags with spaces', () => {
+      expect(hasScriptTags('<script >alert("XSS")</script >')).toBe(true);
+    });
+
+    test('detects plain opening <script> tag with URI encoded closing tag', () => {
+      expect(hasScriptTags('<script>alert("XSS")%3C/script%3E')).toBe(true);
+    });
+
+    test('detects URI encoded opening <script> tag with plain closing tag', () => {
+      expect(hasScriptTags('%3Cscript%3Ealert("XSS")</script>')).toBe(true);
+    });
+
+    test('detects plain opening <script> tag with HTML entity encoded closing tag', () => {
+      expect(hasScriptTags('<script>alert("XSS")&lt;/script&gt;')).toBe(true);
+    });
+
+    test('detects HTML entity encoded opening <script> tag with plain closing tag', () => {
+      expect(hasScriptTags('&lt;script&gt;alert("XSS")</script>')).toBe(true);
+    });
+
+    test('detects nested <script> tags', () => {
+      expect(hasScriptTags('<script><script>alert("nested")</script></script>')).toBe(true);
+    });
+
+    test('detects <script> tags with unusual but valid attributes', () => {
+      expect(hasScriptTags('<script data-custom="value">alert("XSS")</script>')).toBe(true);
+      expect(hasScriptTags('<script nonce="random">alert("XSS")</script>')).toBe(true);
+    });
+
+    test('detects <script> tags with different casing', () => {
+      expect(hasScriptTags('<SCRIPT>alert("XSS")</SCRIPT>')).toBe(true);
+      expect(hasScriptTags('&lt;SCRIPT&gt;alert("XSS")&lt;/SCRIPT&gt;')).toBe(true);
+      expect(hasScriptTags('%3CSCRIPT%3Ealert("XSS")%3C/SCRIPT%3E')).toBe(true);
+    });
+
+    test('detects mixed casing <script> tags', () => {
+      expect(hasScriptTags('<sCRipT>alert("XSS")</sCRipT>')).toBe(true);
+      expect(hasScriptTags('&lt;sCRipT&gt;alert("XSS")&lt;/sCRipT&gt;')).toBe(true);
+      expect(hasScriptTags('%3CsCRipT%3Ealert("XSS")%3C/sCRipT%3E')).toBe(true);
+    });
+  });
+
   describe('UUID class tests', () => {
     describe('validateUuid', () => {
       it('should throw error when id is undefined', async () => {
@@ -446,6 +547,67 @@ describe('utils', () => {
         expect(() => validateUuid(uuid.toString())).not.toThrow();
         return expect(() => uuid.toString() === id);
       });
+    });
+  });
+  describe('isPrimitiveOrPlainObject', () => {
+    type NestedObject = { [key: string]: NestedObject | null };
+    function createNestedObject(depth: number): NestedObject {
+      // Create an empty object to start
+      const current: NestedObject = {};
+      let nestedObject: NestedObject = current;
+
+      // Loop to create a nested structure
+      for (let i = 0; i < depth; i++) {
+        nestedObject[i.toString()] = {}; // Create a new nested object for each depth level
+        nestedObject = nestedObject[i.toString()] as NestedObject; // Move deeper into the nesting
+      }
+
+      return current; // Return the top-level object
+    }
+    it('should return true for undefined or null', () => {
+      expect(isPrimitiveOrPlainObject(undefined)).toBe(true);
+      expect(isPrimitiveOrPlainObject(null)).toBe(true);
+    });
+
+    it('should return true for primitives except symbol', () => {
+      expect(isPrimitiveOrPlainObject(true)).toBe(true); // Check for boolean
+      expect(isPrimitiveOrPlainObject(-123)).toBe(true); //Check for number
+      expect(isPrimitiveOrPlainObject(BigInt(123))).toBe(true); //Check for BigInt
+      expect(isPrimitiveOrPlainObject('testString')).toBe(true); //Check for string
+    });
+
+    it('should return false for symbol', () => {
+      expect(isPrimitiveOrPlainObject(Symbol('symbol'))).toBe(false);
+    });
+
+    it('should return true for arrays of primitive types', () => {
+      expect(isPrimitiveOrPlainObject([1, 'a', true, null, undefined])).toBe(true);
+    });
+
+    it('should return true for plain objects', () => {
+      expect(isPrimitiveOrPlainObject({ a: 1, b: 'string', c: true })).toBe(true);
+    });
+
+    it('should return false for non-plain objects', () => {
+      expect(isPrimitiveOrPlainObject(new Date())).toBe(false);
+      expect(isPrimitiveOrPlainObject(new Map())).toBe(false);
+    });
+    it('should return true for nested plain objects and arrays', () => {
+      expect(isPrimitiveOrPlainObject({ a: [1, 2, { b: 'string' }] })).toBe(true);
+    });
+
+    it('should return false for nested structures with non-plain objects', () => {
+      expect(isPrimitiveOrPlainObject({ a: [1, 2, new Date()] })).toBe(false);
+      expect(isPrimitiveOrPlainObject({ a: { b: [1, 2, function () {}] } })).toBe(false);
+    });
+
+    it('should return false for functions', () => {
+      expect(isPrimitiveOrPlainObject(function () {})).toBe(false);
+    });
+
+    it('should return false for objects nested deeper than 1000 levels', () => {
+      expect(isPrimitiveOrPlainObject(createNestedObject(1001))).toBe(false);
+      expect(isPrimitiveOrPlainObject(createNestedObject(1000))).toBe(true);
     });
   });
 });

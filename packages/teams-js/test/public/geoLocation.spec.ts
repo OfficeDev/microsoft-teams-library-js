@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized, permissionsAPIsRequiredVersion } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, geoLocation, location } from '../../src/public/index';
 import { DevicePermission } from '../../src/public/interfaces';

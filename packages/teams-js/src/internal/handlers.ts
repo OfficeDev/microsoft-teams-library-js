@@ -2,11 +2,12 @@
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
-import { LoadContext, ResumeContext } from '../public/interfaces';
-import { pages } from '../public/pages';
+import { HostToAppPerformanceMetrics, LoadContext, ResumeContext } from '../public/interfaces';
 import { runtime } from '../public/runtime';
-import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { sendMessageEventToChild, shouldEventBeRelayedToChild } from './childCommunication';
+import { sendMessageToParent } from './communication';
 import { ensureInitialized } from './internalAPIs';
+import { initializeBackStackHelper } from './pagesHelpers';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';
 
@@ -31,6 +32,7 @@ class HandlersPrivate {
   public static beforeUnloadHandler: null | ((readyToUnload: () => void) => boolean) = null;
   public static beforeSuspendOrTerminateHandler: null | (() => Promise<void>) = null;
   public static resumeHandler: null | ((context: ResumeContext) => void) = null;
+  public static hostToAppPerformanceMetricsHandler: null | ((metrics: HostToAppPerformanceMetrics) => void) = null;
 
   /**
    * @internal
@@ -42,7 +44,7 @@ class HandlersPrivate {
     HandlersPrivate.handlers['themeChange'] = handleThemeChange;
     HandlersPrivate.handlers['load'] = handleLoad;
     HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
-    pages.backStack._initialize();
+    initializeBackStackHelper();
   }
 
   /**
@@ -86,7 +88,7 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
     callHandlerLogger('Invoking the registered handler for message %s with arguments %o', name, args);
     const result = handler.apply(this, args);
     return [true, result];
-  } else if (Communication.childWindow) {
+  } else if (shouldEventBeRelayedToChild()) {
     sendMessageEventToChild(name, args);
     return [false, undefined];
   } else {
@@ -177,9 +179,30 @@ export function handleThemeChange(theme: string): void {
     HandlersPrivate.themeChangeHandler(theme);
   }
 
-  if (Communication.childWindow) {
+  if (shouldEventBeRelayedToChild()) {
     sendMessageEventToChild('themeChange', [theme]);
   }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerHostToAppPerformanceMetricsHandler(
+  handler: (metrics: HostToAppPerformanceMetrics) => void,
+): void {
+  HandlersPrivate.hostToAppPerformanceMetricsHandler = handler;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function handleHostToAppPerformanceMetrics(metrics: HostToAppPerformanceMetrics): void {
+  if (!HandlersPrivate.hostToAppPerformanceMetricsHandler) {
+    return;
+  }
+  HandlersPrivate.hostToAppPerformanceMetricsHandler(metrics);
 }
 
 /**
@@ -201,12 +224,12 @@ function handleLoad(loadContext: LoadContext): void {
   const resumeContext = convertToResumeContext(loadContext);
   if (HandlersPrivate.resumeHandler) {
     HandlersPrivate.resumeHandler(resumeContext);
-    if (Communication.childWindow) {
+    if (shouldEventBeRelayedToChild()) {
       sendMessageEventToChild('load', [resumeContext]);
     }
   } else if (HandlersPrivate.loadHandler) {
     HandlersPrivate.loadHandler(loadContext);
-    if (Communication.childWindow) {
+    if (shouldEventBeRelayedToChild()) {
       sendMessageEventToChild('load', [loadContext]);
     }
   }
@@ -248,13 +271,13 @@ async function handleBeforeUnload(): Promise<void> {
 
   if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
     await HandlersPrivate.beforeSuspendOrTerminateHandler();
-    if (Communication.childWindow) {
+    if (shouldEventBeRelayedToChild()) {
       sendMessageEventToChild('beforeUnload');
     } else {
       readyToUnload();
     }
   } else if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
-    if (Communication.childWindow) {
+    if (shouldEventBeRelayedToChild()) {
       sendMessageEventToChild('beforeUnload');
     } else {
       readyToUnload();

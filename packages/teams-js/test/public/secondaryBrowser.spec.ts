@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, HostClientType, secondaryBrowser } from '../../src/public/index';
 import { setUnitializedRuntime } from '../../src/public/runtime';
