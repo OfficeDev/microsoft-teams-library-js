@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Remove message source check but keep origin validation in nested app auth standalone bridge",
+  "comment": "Removed message source check but kept origin validation in nested app auth standalone bridge",
   "packageName": "@microsoft/teams-js",
   "email": "109554253+baljesingh@users.noreply.github.com",
   "dependentChangeType": "patch"
