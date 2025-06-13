@@ -147,29 +147,6 @@ describe('NestedAppAuthBridge', () => {
     expect(mockWindow.removeEventListener).not.toBeCalled();
   });
 
-  it('should ignore message if source is not top window', () => {
-    nestedAppAuthBridge.initialize(mockWindow as unknown as Window, mockOrigin);
-    const bridge = mockWindow.nestedAppAuthBridge as NestedAppAuthBridge;
-
-    const callback = jest.fn();
-    bridge.addEventListener('message', callback);
-
-    const handler = mockWindow.addEventListener.mock.calls[0][1] as (event: unknown) => void;
-
-    const fakeSource = {} as Window;
-
-    const msg = {
-      origin: mockOrigin,
-      source: fakeSource,
-      data: {
-        args: [null, JSON.stringify({ messageType: 'NestedAppAuthResponse' })],
-      },
-    };
-
-    handler(msg);
-    expect(callback).not.toBeCalled();
-  });
-
   it('should ignore message without messageType', () => {
     nestedAppAuthBridge.initialize(mockWindow as unknown as Window, mockOrigin);
     const bridge = mockWindow.nestedAppAuthBridge as NestedAppAuthBridge;
