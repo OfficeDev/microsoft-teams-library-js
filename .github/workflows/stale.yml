@@ -22,10 +22,10 @@ jobs:
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         stale-issue-message: 'Stale issue message'
-        stale-pr-message: 'This pull request has been marked as stale because it has been inactive for 30 days'
+        stale-pr-message: 'This pull request has been marked as inactive because it has not had activity in 4 days. This PR will be closed in 7 days if there is no further activity.'
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
-        days-before-pr-stale: 7
+        days-before-pr-stale: 4
         days-before-pr-close: 7
         days-before-issue-stale: -1
         days-before-issue-close: -1
