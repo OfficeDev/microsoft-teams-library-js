@@ -1,6 +1,6 @@
 import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { validateOrigin } from '../../src/internal/validOrigins';
+import { resetValidOrigins, validateOrigin } from '../../src/internal/validOrigins';
 import * as app from '../../src/public/app/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -535,7 +535,7 @@ describe('validOrigins', () => {
       global.fetch = jest.fn(
         () =>
           new Promise((resolve) => {
-            jest.advanceTimersByTime(ORIGIN_LIST_FETCH_TIMEOUT_IN_MS);
+            jest.advanceTimersByTime(ORIGIN_LIST_FETCH_TIMEOUT_IN_MS + 10000);
             resolve({
               status: 200,
               ok: true,
@@ -545,6 +545,8 @@ describe('validOrigins', () => {
             } as Response);
           }),
       );
+
+      resetValidOrigins();
     });
 
     afterAll(() => {

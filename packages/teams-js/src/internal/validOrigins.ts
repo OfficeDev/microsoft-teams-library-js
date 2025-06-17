@@ -119,36 +119,67 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
  * Limited to Microsoft-internal use
  */
 export function validateOrigin(messageOrigin: URL, disableCache?: boolean): Promise<boolean> {
-  return getValidOriginsListFromCDN(disableCache).then((validOriginsList) => {
-    // Check whether the url is in the pre-known allowlist or supplied by user
-    if (!isValidHttpsURL(messageOrigin)) {
-      validateOriginLogger(
-        'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
-        messageOrigin,
-        messageOrigin.protocol,
-      );
-      return false;
-    }
-    const messageOriginHost = messageOrigin.host;
-    if (validOriginsList.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
-      return true;
-    }
-
-    for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
-      const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
-      if (validateHostAgainstPattern(pattern, messageOriginHost)) {
-        return true;
-      }
-    }
-
+  // Check whether the url is in the pre-known allowlist or supplied by user
+  if (!isValidHttpsURL(messageOrigin)) {
     validateOriginLogger(
-      'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
+      'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
       messageOrigin,
-      validOriginsList,
-      GlobalVars.additionalValidOrigins,
+      messageOrigin.protocol,
     );
-    return false;
+    return Promise.resolve(false);
+  }
+
+  const localValidOrigins = !disableCache && validOriginsCache.length > 0 ? validOriginsCache : validOriginsFallback;
+  const messageOriginHost = messageOrigin.host;
+
+  return validateOriginInternal(messageOriginHost, localValidOrigins).then((isValid) => {
+    if (isValid) {
+      return true;
+    } else {
+      return getValidOriginsListFromCDN(disableCache).then((cdnValidOrigins) => {
+        return validateOriginInternal(messageOriginHost, cdnValidOrigins).then((isValid) => {
+          if (isValid) {
+            return true;
+          } else {
+            validateOriginLogger(
+              'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
+              messageOrigin,
+              cdnValidOrigins,
+              GlobalVars.additionalValidOrigins,
+            );
+            return false;
+          }
+        });
+      });
+    }
   });
+}
+
+function validateOriginInternal(messageOrigin: string, validOrigins: string[]): Promise<boolean> {
+  if (validOrigins.some((pattern) => validateHostAgainstPattern(pattern, messageOrigin))) {
+    return Promise.resolve(true);
+  }
+
+  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
+    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
+    if (validateHostAgainstPattern(pattern, messageOrigin)) {
+      return Promise.resolve(true);
+    }
+  }
+  return Promise.resolve(false);
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Resets the valid origins cache and promise.
+ * This is used for testing to ignore pre-fetched valid origins.
+ */
+export function resetValidOrigins(): void {
+  validOriginsCache = [];
+  validOriginsPromise = undefined;
+  validateOriginLogger('Valid origins cache and promise have been reset.');
 }
 
 prefetchOriginsFromCDN();
