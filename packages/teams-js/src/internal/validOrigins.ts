@@ -119,36 +119,56 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
  * Limited to Microsoft-internal use
  */
 export function validateOrigin(messageOrigin: URL, disableCache?: boolean): Promise<boolean> {
-  return getValidOriginsListFromCDN(disableCache).then((validOriginsList) => {
-    // Check whether the url is in the pre-known allowlist or supplied by user
-    if (!isValidHttpsURL(messageOrigin)) {
-      validateOriginLogger(
-        'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
-        messageOrigin,
-        messageOrigin.protocol,
-      );
-      return false;
-    }
-    const messageOriginHost = messageOrigin.host;
-    if (validOriginsList.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
-      return true;
-    }
+  // Try origin against the cache or hardcoded fallback list first before fetching from CDN
+  const localList = !disableCache && !isValidOriginsCacheEmpty() ? validOriginsCache : validOriginsFallback;
+  if (validateOriginWithValidOriginsList(messageOrigin, localList)) {
+    return Promise.resolve(true);
+  } else {
+    validateOriginLogger('Origin %s is not in the local valid origins list, fetching from CDN', messageOrigin);
+    return getValidOriginsListFromCDN(disableCache).then((validOriginsList) => {
+      return validateOriginWithValidOriginsList(messageOrigin, validOriginsList);
+    });
+  }
+}
 
-    for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
-      const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
-      if (validateHostAgainstPattern(pattern, messageOriginHost)) {
-        return true;
-      }
-    }
-
+function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList: string[]): boolean {
+  // Check whether the url is in the pre-known allowlist or supplied by user
+  if (!isValidHttpsURL(messageOrigin)) {
     validateOriginLogger(
-      'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
+      'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
       messageOrigin,
-      validOriginsList,
-      GlobalVars.additionalValidOrigins,
+      messageOrigin.protocol,
     );
     return false;
-  });
+  }
+  const messageOriginHost = messageOrigin.host;
+  if (validOriginsList.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
+    return true;
+  }
+
+  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
+    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
+    if (validateHostAgainstPattern(pattern, messageOriginHost)) {
+      return true;
+    }
+  }
+
+  validateOriginLogger(
+    'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
+    messageOrigin,
+    validOriginsList,
+    GlobalVars.additionalValidOrigins,
+  );
+  return false;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function resetValidOriginsCache(): void {
+  validOriginsCache = [];
+  validOriginsPromise = undefined;
 }
 
 prefetchOriginsFromCDN();

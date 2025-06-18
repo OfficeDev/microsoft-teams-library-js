@@ -1,6 +1,6 @@
 import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { validateOrigin } from '../../src/internal/validOrigins';
+import { resetValidOriginsCache, validateOrigin } from '../../src/internal/validOrigins';
 import * as app from '../../src/public/app/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -545,6 +545,8 @@ describe('validOrigins', () => {
             } as Response);
           }),
       );
+
+      resetValidOriginsCache();
     });
 
     afterAll(() => {
