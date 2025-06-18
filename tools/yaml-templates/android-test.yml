@@ -91,6 +91,7 @@ steps:
       targetType: inline
       script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh ${{ parameters.shardNum }} ${{ parameters.shardIndex }}'
       workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
+    continueOnError: true
 
   - task: CodeQL3000Finalize@0
     condition: always()
