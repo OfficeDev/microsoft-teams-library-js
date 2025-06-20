@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Removed the max length validation from the `authentication.authenticate` API.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "patch"
+}
