@@ -58,9 +58,18 @@ export interface ServerEmailContent extends BaseEmailContent {
  * Limited to Microsoft-internal use
  */
 export interface DraftEmailContent extends BaseEmailContent {
+  responseToEmailId?: string; // Optional, if this is a response to another email
   savedTime?: Date;
 }
 
+/**
+ * @hidden
+ *
+ * Interface for draft email content (no id, times optional)
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 // Union type for usage elsewhere
 export type EmailContent = ServerEmailContent | DraftEmailContent;
 
@@ -230,6 +239,15 @@ export type ContentItem =
   | WebPageContent
   | MixedContent;
 
+/**
+ * @hidden
+ *
+ * The Content interface represents the content data structure used in the side panel.
+ * It si the payload received by the copilot app from the hub.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface Content {
   userAction?: string;
   contentType:
@@ -247,6 +265,14 @@ export interface Content {
   status?: string; // Optional status message
 }
 
+/**
+ * @hidden
+ *
+ * The ContentRequest interface represents the request params sent to the hub to fetch content.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface ContentRequest {
   localEndpointInfo: string; // local endpoint information for the request- used by Edge
 }
