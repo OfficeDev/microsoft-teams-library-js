@@ -32,6 +32,7 @@
     "www.staging-bing-int.com",
     "*.cloud.microsoft",
     "*.m365.cloud.microsoft",
+    "*.outlook.cloud.microsoft",
     "chatuxmanager.svc.cloud.microsoft",
     "copilot.microsoft.com",
     "windows.msn.com",
