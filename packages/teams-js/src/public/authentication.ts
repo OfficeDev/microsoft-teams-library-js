@@ -139,7 +139,7 @@ async function authenticateHelper(
 ): Promise<string> {
   // Convert any relative URLs into absolute URLs before sending them over to the parent window.
   const fullyQualifiedURL: URL = fullyQualifyUrlString(authenticateParameters.url);
-  validateUrl(fullyQualifiedURL);
+  validateUrl(fullyQualifiedURL, undefined, false);
 
   // Ask the parent window to open an authentication window with the parameters provided by the caller.
   return sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
