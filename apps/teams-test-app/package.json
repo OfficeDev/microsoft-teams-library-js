@@ -3,7 +3,7 @@
   "private": true,
   "author": "Microsoft Teams",
   "description": "Teams Test App utilizing Teams JavaScript client SDK to test Hosts",
-  "version": "2.34.0",
+  "version": "2.39.0",
   "scripts": {
     "build": "pnpm build:bundle",
     "build:bundle": "pnpm validate-test-schema && pnpm lint && webpack",

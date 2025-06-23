@@ -23,14 +23,17 @@ export * as conversations from './conversations';
 //to keep the named exports so as to not break the existing consumers directly referencing the named exports.
 export { ConversationResponse, OpenConversationRequest } from './conversations';
 export * as copilot from './copilot/copilot';
+export * as sidePanelInterfaces from './copilot/sidePanelInterfaces';
 export * as externalAppAuthentication from './externalAppAuthentication';
 export * as externalAppAuthenticationForCEA from './externalAppAuthenticationForCEA';
 export * as externalAppCardActions from './externalAppCardActions';
 export * as externalAppCardActionsForCEA from './externalAppCardActionsForCEA';
+export * as externalAppCardActionsForDA from './externalAppCardActionsForDA';
 export * as externalAppCommands from './externalAppCommands';
 export * as files from './files';
 export * as meetingRoom from './meetingRoom';
 export * as messageChannels from './messageChannels/messageChannels';
+export * as nestedAppAuthBridge from './nestedAppAuth/nestedAppAuthBridge';
 export * as notifications from './notifications';
 export * as otherAppStateChange from './otherAppStateChange';
 export * as remoteCamera from './remoteCamera';

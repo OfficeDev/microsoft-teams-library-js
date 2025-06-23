@@ -6,8 +6,8 @@
  * @beta
  * @module
  */
-import { validateAppIdInstance } from '../internal/appIdValidation';
 import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../internal/communication';
+import { validateAppIdInstance } from '../internal/idValidation';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';

@@ -1,8 +1,78 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 05 Feb 2025 16:57:29 GMT and should not be manually modified.
+This log was last generated on Fri, 06 Jun 2025 17:53:12 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.39.0
+
+Fri, 06 Jun 2025 17:53:12 GMT
+
+### Minor changes
+
+- Added `{copilot.sidePanel}` capability that will help copilot to receive more context aware data from the hosts. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added a new client version `2.1.2` to support isDeeplyNestedAuthSupported for Teams Mobile legacy code
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.38.0
+
+Tue, 27 May 2025 21:09:59 GMT
+
+### Minor changes
+
+- Added `renderingSurface` property to `{app.Page.Context}` capability.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Removed Beta tag from `nestedAppAuth.isNAAChannelRecommended` API.
+- Unblocked apps on Mobile to call `dialog.url.submit` from dialog by allowing this API from `FrameContext.content`. There is a bug in Teams mobile that returns `frameContext.content` in dialog instead of `frameContext.task`. Once the bug is fixed, this change will be reverted.
+
+## 2.37.0
+
+Fri, 02 May 2025 19:11:28 GMT
+
+### Minor changes
+
+- Added `forceRefresh` optional argument in `getEligibilityInfo` API.
+
+## 2.36.0
+
+Tue, 01 Apr 2025 18:17:07 GMT
+
+### Minor changes
+
+- Added `canParentManageNAATrustedOrigins` capability to check if the parent can manage its list of trusted child origins for Nested App Auth (NAA). The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `getParentOrigin` API to read the parent origin for nested app auth
+- Added support for `ExternalAppCardActionsForDA` capability.
+- Added support for `isDeeplyNestedAuthSupported` to check if deeply nested auth is supported.
+- Added `manageNAATrustedOrigins` capability which allows the top-level parent app to register its child app's origin as trusted for nested app auth. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added standalone nested app auth bridge for nested child app
+- Removed child messaging proxying by default to avoid security issues. If an app still needs this pattern, it can be activated through the feature flag function `activateChildProxyingCommunication` which enables child proxying for that app.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Set a unique Teams-JS instance id when Teams-JS library is used and appended this unique id to message request sent to host sdk.
+- Disabled default nested app auth bridge injection for nested child app
+- Added `apiVersion` tag in NAA request and removed `isNAAChannelRecommended` check in `isDeeplyNestedAuthSupported` api
+
+## 2.35.0
+
+Thu, 13 Mar 2025 17:02:30 GMT
+
+### Minor changes
+
+- Updated `externalAppAuthenticationForCEA.authenticateWithSSO` to take `authId` and `connectionName` parameters.
+- Added "authId" and "connectionName" parameters to `authTokenRequest` in `ExternalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest`
+- Added new `AppTypes` enum values to filter base and streaming townhalls.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Refactored `backstack` initialization to resolve a `pages` bug when dynamically importing teams-js
+- Refactored child communication to an isolated module, no functionality change. This will allow apps to tree shake this module.
+- Fixed security issue in `authenticate` function for web hosts to avoid using child proxying.
 
 ## 2.34.0
 

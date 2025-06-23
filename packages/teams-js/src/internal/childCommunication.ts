@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { getCurrentFeatureFlagsState, isChildProxyingEnabled } from '../public/featureFlags';
 import { UUID as MessageUUID } from '../public/uuidObject';
 import { flushMessageQueue, getMessageIdsAsLogString } from './communicationUtils';
 import { callHandler } from './handlers';
@@ -45,6 +46,9 @@ export function uninitializeChildCommunication(): void {
  * Limited to Microsoft-internal use
  */
 export function shouldEventBeRelayedToChild(): boolean {
+  if (!isChildProxyingEnabled()) {
+    return false;
+  }
   return !!ChildCommunication.window;
 }
 
@@ -53,6 +57,7 @@ type SendMessageToParentHelper = (
   func: string,
   args?: any[],
   isProxiedFromChild?: boolean,
+  teamsJsInstanceId?: string,
 ) => MessageRequestWithRequiredProperties;
 
 type SetCallbackForRequest = (uuid: MessageUUID, callback: Function) => void;
@@ -63,6 +68,10 @@ type SetCallbackForRequest = (uuid: MessageUUID, callback: Function) => void;
  * Limited to Microsoft-internal use
  */
 export function shouldProcessChildMessage(messageSource: Window, messageOrigin: string): boolean {
+  if (!isChildProxyingEnabled()) {
+    return false;
+  }
+
   if (!ChildCommunication.window || ChildCommunication.window.closed || messageSource === ChildCommunication.window) {
     ChildCommunication.window = messageSource;
     ChildCommunication.origin = messageOrigin;
@@ -156,18 +165,33 @@ function sendChildMessageToParent(
     message.func,
     message.args,
     true, // Tags message as proxied from child
+    message.teamsJsInstanceId,
   );
+  // Copy variable to new pointer
+  const requestChildWindowOrigin = ChildCommunication.origin;
   setCallbackForRequest(request.uuid, (...args: any[]): void => {
-    if (ChildCommunication.window) {
-      const isPartialResponse = args.pop();
-      handleIncomingMessageFromChildLogger(
-        'Message from parent being relayed to child, id: %s',
-        getMessageIdsAsLogString(message),
-      );
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
+    if (!ChildCommunication.window) {
+      return;
     }
+
+    if (
+      !getCurrentFeatureFlagsState().disableEnforceOriginMatchForChildResponses &&
+      requestChildWindowOrigin !== ChildCommunication.origin
+    ) {
+      handleIncomingMessageFromChildLogger(
+        'Origin of child window has changed, not sending response back to child window',
+      );
+      return;
+    }
+
+    const isPartialResponse = args.pop();
+    handleIncomingMessageFromChildLogger(
+      'Message from parent being relayed to child, id: %s',
+      getMessageIdsAsLogString(message),
+    );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
   });
 }
 

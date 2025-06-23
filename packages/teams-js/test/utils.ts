@@ -243,16 +243,13 @@ export class Utils {
     return initMessage;
   };
 
-  public findMessageInChildByFunc = (func: string): MessageRequest | null => {
-    if (this.childMessages && this.childMessages.length) {
-      for (let i = 0; i < this.childMessages.length; i++) {
-        if (this.childMessages[i].func === func) {
-          return this.childMessages[i];
-        }
-      }
-    }
-    return null;
-  };
+  public findMessageInChildByFunc(func: string): MessageRequest | null {
+    return this.childMessages.find((v) => v.func === func) ?? null;
+  }
+
+  public findMessageResponseInChildById(id: number): MessageRequest | null {
+    return this.childMessages.find((v) => v.id === id) ?? null;
+  }
 
   public respondToMessage = async (
     message: MessageRequest | NestedAppAuthRequest,
@@ -366,26 +363,28 @@ export class Utils {
     return this.sendMessageWithCustomOrigin(func, this.validOrigin, ...args);
   };
 
-  public async sendMessageFromChild(func: string, ...args: unknown[]): Promise<void> {
-    await this.sendCustomMessage(this.childWindow.location.origin, this.childWindow, func, args);
+  public async sendMessageFromChild(func: string, ...args: unknown[]): Promise<number> {
+    return await this.sendCustomMessage(this.childWindow.location.origin, this.childWindow, func, args);
   }
 
-  public async sendCustomMessage(origin: string, window: unknown, func: string, ...args: unknown[]): Promise<void> {
+  public async sendCustomMessage(origin: string, window: unknown, func: string, ...args: unknown[]): Promise<number> {
     if (this.processMessage === null) {
       throw Error(
         `Cannot send message with function ${func} because processMessage function has not been set and is null`,
       );
     }
+    const id = 3;
 
     await this.processMessage({
       origin,
       source: window,
       data: {
-        id: 3,
+        id,
         func,
         args,
       },
     } as MessageEvent);
+    return id;
   }
 
   public respondToFramelessMessage = (event: DOMMessageEvent): void => {

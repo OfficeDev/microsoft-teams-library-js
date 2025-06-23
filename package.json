@@ -41,7 +41,7 @@
     "@babel/runtime": "^7.24.4",
     "@microsoft/eslint-plugin-sdl": "^0.2.2",
     "@mixer/webpack-bundle-compare": "^0.1.1",
-    "@next/eslint-plugin-next": "^15.1.6",
+    "@next/eslint-plugin-next": "^15.2.3",
     "@octokit/core": "^3.6.0",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-json": "^6.1.0",
@@ -162,7 +162,13 @@
       "brotli": false,
       "path": "./packages/teams-js/dist/esm/packages/teams-js/src/index.js",
       "import": "{ app, authentication, pages }",
-      "limit": "57 KB"
+      "limit": "57.60 KB"
+    },
+    {
+      "brotli": false,
+      "path": "./packages/teams-js/dist/esm/packages/teams-js/src/index.js",
+      "import": "{ nestedAppAuthBridge }",
+      "limit": "4 KB"
     },
     {
       "brotli": false,

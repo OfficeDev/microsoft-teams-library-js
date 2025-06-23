@@ -1,7 +1,7 @@
 {
   "type": "none",
-  "comment": "Released 2.34.0",
+  "comment": "Updated package for 2.39.0 release",
   "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
+  "email": "liuella@microsoft.com",
   "dependentChangeType": "none"
 }

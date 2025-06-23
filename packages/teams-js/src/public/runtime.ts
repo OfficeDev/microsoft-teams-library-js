@@ -221,6 +221,8 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly apiVersion: 4;
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isNAAChannelRecommended?: boolean;
+  readonly canParentManageNAATrustedOrigins?: boolean;
+  readonly isDeeplyNestedAuthSupported?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly app?: {
@@ -237,6 +239,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly copilot?: {
       readonly customTelemetry?: {};
       readonly eligibility?: {};
+      readonly sidePanel?: {};
     };
     readonly dialog?: {
       readonly card?: {
@@ -252,6 +255,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly externalAppAuthenticationForCEA?: {};
     readonly externalAppCardActions?: {};
     readonly externalAppCardActionsForCEA?: {};
+    readonly externalAppCardActionsForDA?: {};
     readonly externalAppCommands?: {};
     readonly geoLocation?: {
       readonly map?: {};
@@ -370,6 +374,7 @@ export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   apiVersion: 4,
   isNAAChannelRecommended: false,
+  isDeeplyNestedAuthSupported: false,
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {
@@ -541,6 +546,12 @@ export const upgradeChain: IRuntimeUpgrade[] = [
 ];
 
 /**
+ * This version is for legacy Teams mobile clients that don’t pass a runtime object during initialization.
+ * It’s the minimum version required to support deeply nested app auth.
+ */
+export const legacyTeamsMobileVersionForDeeplyNestedAuth = '2.1.2';
+
+/**
  * This structure is used for versions of Teams that don't pass a runtime object during initialization.
  * Please see the extensive comments in versionAndPlatformAgnosticTeamsRuntimeConfig for more information
  * on when and how to use this structure.
@@ -606,6 +617,10 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
       capability: { nestedAppAuth: {} },
       hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS],
     },
+  ],
+  '2.1.2': [
+    // isDeeplyNestedAuthSupported: true (based on const legacyTeamsMobileVersionForDeeplyNestedAuth)
+    // for hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS]
   ],
 };
 

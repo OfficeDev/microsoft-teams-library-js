@@ -1,4 +1,5 @@
 import { AppId } from '../public/appId';
+import { ValidatedSafeString } from '../public/validatedSafeString';
 import { hasScriptTags } from './utils';
 
 /**
@@ -12,17 +13,18 @@ import { hasScriptTags } from './utils';
  * @param potentialAppId A string to check if it's a "valid" app id
  * @throws Error with a message describing the exact validation violation
  */
-export function validateStringAsAppId(potentialAppId: string): void {
-  if (hasScriptTags(potentialAppId)) {
-    throw new Error(`Potential app id (${potentialAppId}) is invalid; it contains script tags.`);
-  }
-
+export function validateStringLength(potentialAppId: string): void {
   if (!isStringWithinAppIdLengthLimits(potentialAppId)) {
     throw new Error(
       `Potential app id (${potentialAppId}) is invalid; its length ${potentialAppId.length} is not within the length limits (${minimumValidAppIdLength}-${maximumValidAppIdLength}).`,
     );
   }
+}
 
+export function validateSafeContent(potentialAppId: string): void {
+  if (hasScriptTags(potentialAppId)) {
+    throw new Error(`Potential app id (${potentialAppId}) is invalid; it contains script tags.`);
+  }
   if (doesStringContainNonPrintableCharacters(potentialAppId)) {
     throw new Error(`Potential app id (${potentialAppId}) is invalid; it contains non-printable characters.`);
   }
@@ -53,5 +55,19 @@ export function doesStringContainNonPrintableCharacters(str: string): boolean {
 export function validateAppIdInstance(potentialAppId: AppId): void {
   if (!(potentialAppId instanceof AppId)) {
     throw new Error(`Potential app id (${potentialAppId}) is invalid; it is not an instance of AppId class.`);
+  }
+}
+
+/**
+ * @hidden
+ * Checks if the incoming string is an instance of ValidatedSafeString
+ * @param incomingString An object to check if it's an instance of ValidatedSafeString
+ * @throws Error with a message describing the violation
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateSafeStringInstance(incomingString: ValidatedSafeString): void {
+  if (!(incomingString instanceof ValidatedSafeString)) {
+    throw new Error(`The string (${incomingString}) is invalid; it is not an instance of ValidatedSafeString class.`);
   }
 }

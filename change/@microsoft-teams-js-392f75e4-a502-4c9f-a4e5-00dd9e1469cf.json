@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added `responseToEmailId` to `{copilot.sidePanel.DraftEmailContent}` capability.",
+  "packageName": "@microsoft/teams-js",
+  "email": "niharikad@microsoft.com",
+  "dependentChangeType": "patch"
+}
