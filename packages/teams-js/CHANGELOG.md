@@ -1,8 +1,20 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 06 Jun 2025 17:53:12 GMT and should not be manually modified.
+This log was last generated on Tue, 24 Jun 2025 20:38:27 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.39.1
+
+Tue, 24 Jun 2025 20:38:27 GMT
+
+### Patches
+
+- Added Outlook OCDI domain to validDomains.json
+- Updated valid domains CDN fetch logic to prevent duplicate requests.
+- Added `responseToEmailId` to `{copilot.sidePanel.DraftEmailContent}` capability.
+- Removed message source check but kept origin validation in nested app auth standalone bridge
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ## 2.39.0
 
