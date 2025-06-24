@@ -20,8 +20,12 @@
       }
 
       const getRedirectUri = () => {
-        const idx = window.location.href.lastIndexOf('/');
-        return `${window.location.href.slice(0, idx)}/auth_end.html`;
+        if (redirect_uri) {
+          return redirect_uri;
+        } else {
+          const idx = window.location.href.lastIndexOf('/');
+          return `${window.location.href.slice(0, idx)}/auth_end.html`;
+        }
       };
 
       // Redirect to auth_end page if its mockOauth for testing
