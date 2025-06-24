@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <h2 style="font-size: 40px">Starting auth</h2>
@@ -11,6 +11,7 @@
       const authId = params.get('authId');
       const method = params.get('oauthRedirectMethod');
       const redirectUrl = params.get('hostRedirectUrl');
+      const redirect_uri = params.get('redirect_uri');
       const hostName = params.get('hostName');
       const state = `{"authId":"${authId}","method":"${method}","hostName":"${hostName}"}`;
 
