@@ -124,7 +124,7 @@ export interface WebPageContent {
  */
 export interface TextSelection {
   content: string;
-  source?: EmailContent | WebPageContent | CalendarInviteContent;
+  source?: EmailContent | WebPageContent | CalendarInviteContent | TeamsContent | FileContent;
 }
 
 /**
@@ -205,7 +205,7 @@ export interface MediaSelection {
   type: MediaSelectionType;
   altText?: string;
   content: ImageContent | AudioContent | VideoContent;
-  source?: EmailContent | WebPageContent | CalendarInviteContent;
+  source?: EmailContent | WebPageContent | CalendarInviteContent | TeamsContent | FileContent;
 }
 
 /**
