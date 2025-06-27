@@ -62,6 +62,7 @@ export interface ServerEmailContent extends BaseEmailContent {
 export interface DraftEmailContent extends BaseEmailContent {
   responseToEmailId?: string; // Optional, if this is a response to another email
   savedTime?: Date;
+  composeType?: 'new' | 'reply' | 'replyAll' | 'forward'; // Type of compose action
 }
 
 /**
@@ -72,6 +73,26 @@ export interface DraftEmailContent extends BaseEmailContent {
  * @internal
  * Limited to Microsoft-internal use
  */
+export interface DraftEmailContent extends BaseEmailContent {
+  responseToEmailId?: string; // Optional, if this is a response to another email
+  savedTime?: Date;
+  composeType?: 'new' | 'reply' | 'replyAll' | 'forward'; // Type of compose action
+}
+
+/**
+ * @hidden
+ *
+ * Interface for draft email content (no id, times optional)
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface DraftEmailContent extends BaseEmailContent {
+  responseToEmailId?: string; // Optional, if this is a response to another email
+  savedTime?: Date;
+  composeType?: 'new' | 'reply' | 'replyAll' | 'forward'; // Type of compose action
+}
+
 // Union type for usage elsewhere
 export type EmailContent = ServerEmailContent | DraftEmailContent;
 
