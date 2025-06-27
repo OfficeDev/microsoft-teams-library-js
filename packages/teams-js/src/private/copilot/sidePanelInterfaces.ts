@@ -395,7 +395,7 @@ export interface TeamsContent {
  * Limited to Microsoft-internal use
  */
 export interface FileContent {
-  fileId: string;
+  fileUrl?: string; // URL of the file
 }
 
 /**
