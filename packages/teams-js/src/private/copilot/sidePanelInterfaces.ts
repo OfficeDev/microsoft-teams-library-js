@@ -13,6 +13,8 @@ export enum ContentItemType {
   CALENDAR_INVITE = 'calendarInvite',
   WEB_PAGE = 'webPage',
   MIXED = 'mixed',
+  TEAMS = 'teams', // Represents Teams-related content, such as chat or channel messages
+  FILE = 'file', // Represents file content, such as documents or attachments
 }
 
 /**
@@ -214,12 +216,182 @@ export interface MediaSelection {
  * @internal
  * Limited to Microsoft-internal use
  */
+export interface TeamsChatContext {
+  chatId: string; // Unique identifier for the chat
+}
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface TeamsChannelContext {
+  channelId: string; // Unique identifier for the channel
+  teamId: string; // Unique identifier for the team
+  channelName?: string; // Name of the channel
+  postId?: string; // Unique identifier for the post in the channel
+  replyChainId?: string; // Unique identifier for the reply chain in the channel
+  clientConversationId?: string; // Unique identifier for the client conversation
+}
+
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface TeamsMeetingContext {
+  callId: string;
+  threadId: string;
+  organizerId: string;
+  messageId?: string;
+  groupId?: string;
+  sessionType?: SessionType;
+  vroomId?: string;
+  iCalUid?: string;
+  conversationId?: string;
+  locale?: string;
+  disableHistory?: boolean;
+  Dimensions?: IDimension[];
+  UtteranceInfo?: IUtteranceInfo;
+  copilotMode?: CopilotMode;
+  transcriptState?: TranscriptState;
+  enableMeetingCopilotResponseHandoff?: boolean;
+  enableCopilotResponseCopyRestriction?: boolean;
+  enableMeetingCopilotVisualInsights?: boolean;
+  enableMeetingCopilotCitation?: boolean;
+}
+
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+
+export enum SessionType {
+  Private = 'Private',
+  Shared = 'Shared',
+  Recap = 'Recap',
+  RecapCall = 'RecapCall',
+  PrivateViewCall = 'PrivateViewCall',
+  Chat = 'Chat',
+  Compose = 'Compose',
+}
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface IDimension {
+  DimensionName: DimensionName;
+  DimensionValue: string;
+}
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum DimensionName {
+  ClientDeviceType = 'ClientDeviceType',
+  ClientRing = 'ClientRing',
+  ClientScenarioName = 'ClientScenarioName',
+}
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface IUtteranceInfo {
+  utteranceId?: string;
+}
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum CopilotMode {
+  Enabled = 'enabled',
+  Disabled = 'disabled',
+  EnabledWithTranscript = 'enabledWithTranscript',
+}
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum TranscriptState {
+  NotStarted = 'notStarted',
+  Active = 'active',
+  Inactive = 'inactive',
+  UnknownFutureValue = 'unknownFutureValue',
+}
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface TeamsContent {
+  appName?: string;
+  appVersion?: string;
+  appPlatform?: string;
+  appRingInfo?: string;
+  chatContext?: TeamsChatContext;
+  channelContext?: TeamsChannelContext;
+  meetingContext?: TeamsMeetingContext;
+}
+
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface FileContent {
+  fileId: string;
+}
+
+/**
+ * @hidden
+ *
+ * Interface for a catch all type content data
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface MixedContent {
   emails?: EmailContent[];
   texts?: TextSelection[];
   media?: (ImageContent | AudioContent | VideoContent)[];
   calendarInvites?: CalendarInviteContent[];
   webPages?: WebPageContent[];
+  files?: FileContent[];
   otherContent?: Array<Record<string, unknown>> | undefined; // Other content types that don't fit into the above categories
 }
 
@@ -237,6 +409,8 @@ export type ContentItem =
   | MediaSelection
   | CalendarInviteContent
   | WebPageContent
+  | TeamsContent
+  | FileContent
   | MixedContent;
 
 /**
@@ -255,6 +429,8 @@ export interface Content {
     | ContentItemType.EMAIL
     | ContentItemType.MEDIA
     | ContentItemType.TEXT
+    | ContentItemType.TEAMS
+    | ContentItemType.FILE
     | ContentItemType.WEB_PAGE
     | ContentItemType.MIXED;
   formCode?: string; // Unique identifier for the content
