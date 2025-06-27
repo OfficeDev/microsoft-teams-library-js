@@ -65,34 +65,6 @@ export interface DraftEmailContent extends BaseEmailContent {
   composeType?: 'new' | 'reply' | 'replyAll' | 'forward'; // Type of compose action
 }
 
-/**
- * @hidden
- *
- * Interface for draft email content (no id, times optional)
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export interface DraftEmailContent extends BaseEmailContent {
-  responseToEmailId?: string; // Optional, if this is a response to another email
-  savedTime?: Date;
-  composeType?: 'new' | 'reply' | 'replyAll' | 'forward'; // Type of compose action
-}
-
-/**
- * @hidden
- *
- * Interface for draft email content (no id, times optional)
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export interface DraftEmailContent extends BaseEmailContent {
-  responseToEmailId?: string; // Optional, if this is a response to another email
-  savedTime?: Date;
-  composeType?: 'new' | 'reply' | 'replyAll' | 'forward'; // Type of compose action
-}
-
 // Union type for usage elsewhere
 export type EmailContent = ServerEmailContent | DraftEmailContent;
 
@@ -117,6 +89,7 @@ export interface CalendarInviteContent {
   attachments?: string[]; // List of attachment file names or URLs
   // Add other calendar event properties
 }
+
 /**
  * @hidden
  *
@@ -228,11 +201,11 @@ export interface MediaSelection {
   content: ImageContent | AudioContent | VideoContent;
   source?: EmailContent | WebPageContent | CalendarInviteContent | TeamsContent | FileContent;
 }
-
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Interface representing the context of a Microsoft Teams chat.
+ * Contains identifying information for a specific Teams chat session.
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -243,7 +216,8 @@ export interface TeamsChatContext {
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Interface representing the context of a Microsoft Teams channel.
+ * Contains identifying information for a specific Teams channel and related content.
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -260,7 +234,8 @@ export interface TeamsChannelContext {
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Interface representing the context of a Microsoft Teams meeting.
+ * Contains configuration and identifying information for Teams meeting sessions including Copilot features.
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -271,14 +246,14 @@ export interface TeamsMeetingContext {
   organizerId: string;
   messageId?: string;
   groupId?: string;
-  sessionType?: SessionType;
+  sessionType?: TeamsSessionType;
   vroomId?: string;
   iCalUid?: string;
   conversationId?: string;
   locale?: string;
   disableHistory?: boolean;
-  Dimensions?: IDimension[];
-  UtteranceInfo?: IUtteranceInfo;
+  Dimensions?: TeamsDimension[];
+  UtteranceInfo?: TeamsUtteranceInfo;
   copilotMode?: CopilotMode;
   transcriptState?: TranscriptState;
   enableMeetingCopilotResponseHandoff?: boolean;
@@ -290,13 +265,14 @@ export interface TeamsMeetingContext {
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Enum representing different types of Teams session contexts.
+ * Defines the various meeting and chat session types within Microsoft Teams.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
 
-export enum SessionType {
+export enum TeamsSessionType {
   Private = 'Private',
   Shared = 'Shared',
   Recap = 'Recap',
@@ -308,24 +284,26 @@ export enum SessionType {
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Interface for telemetry dimension data used in analytics and reporting.
+ * Contains dimension name-value pairs for categorizing telemetry data.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface IDimension {
-  DimensionName: DimensionName;
+export interface TeamsDimension {
+  DimensionName: TeamsDimensionName;
   DimensionValue: string;
 }
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Enum defining telemetry dimension names for categorizing analytics data.
+ * Used to specify the type of dimension being tracked in telemetry systems.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export enum DimensionName {
+export enum TeamsDimensionName {
   ClientDeviceType = 'ClientDeviceType',
   ClientRing = 'ClientRing',
   ClientScenarioName = 'ClientScenarioName',
@@ -333,18 +311,20 @@ export enum DimensionName {
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Interface for utterance identification information used in conversation tracking.
+ * Contains unique identifiers for individual utterances in chat or meeting contexts.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface IUtteranceInfo {
+export interface TeamsUtteranceInfo {
   utteranceId?: string;
 }
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Enum defining different Copilot operational modes.
+ * Specifies whether Copilot is enabled and how it should function in Teams contexts.
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -357,7 +337,8 @@ export enum CopilotMode {
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Enum defining different transcript states for meeting recordings.
+ * Indicates the current status of transcript generation and availability.
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -371,7 +352,8 @@ export enum TranscriptState {
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Interface for Teams-related content data including app information and context.
+ * Contains metadata about Teams applications and their execution contexts.
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -389,7 +371,8 @@ export interface TeamsContent {
 /**
  * @hidden
  *
- * Interface for a catch all type content data
+ * Interface for file content data including URLs and metadata.
+ * Represents file attachments and documents referenced in content.
  *
  * @internal
  * Limited to Microsoft-internal use
