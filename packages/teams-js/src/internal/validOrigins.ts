@@ -165,7 +165,7 @@ function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList
 /**
  * @internal
  * Limited to Microsoft-internal use
- * 
+ *
  * This function is only used for testing to reset the valid origins cache and ignore prefetched values.
  */
 export function resetValidOriginsCache(): void {
