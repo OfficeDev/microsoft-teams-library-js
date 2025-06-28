@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `TeamsContent` interface for `{copilot.sidePanel}` capability.",
+  "packageName": "@microsoft/teams-js",
+  "email": "niharikad@microsoft.com",
+  "dependentChangeType": "patch"
+}
