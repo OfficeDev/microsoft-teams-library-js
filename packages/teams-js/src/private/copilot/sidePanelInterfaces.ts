@@ -349,6 +349,11 @@ export enum TranscriptState {
   Inactive = 'inactive',
   UnknownFutureValue = 'unknownFutureValue',
 }
+export enum TeamsContextType {
+  Chat = 'chat',
+  Channel = 'channel',
+  Meeting = 'meeting',
+}
 /**
  * @hidden
  *
@@ -363,9 +368,8 @@ export interface TeamsContent {
   appVersion?: string;
   appPlatform?: string;
   appRingInfo?: string;
-  chatContext?: TeamsChatContext;
-  channelContext?: TeamsChannelContext;
-  meetingContext?: TeamsMeetingContext;
+  contextType: TeamsContextType;
+  contextItem: TeamsChatContext | TeamsChannelContext | TeamsMeetingContext;
 }
 
 /**
