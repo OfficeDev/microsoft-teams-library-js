@@ -352,6 +352,21 @@ export enum TranscriptState {
 /**
  * @hidden
  *
+ * Enum defining the context types for Teams-related content.
+ * Specifies whether the content is from a chat, channel, meeting, or meeting chat.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum TeamsContextType {
+  Chat = 'Chat',
+  Channel = 'Channel',
+  Meeting = 'Meeting',
+  MeetingChat = 'MeetingChat',
+}
+/**
+ * @hidden
+ *
  * Interface for Teams-related content data including app information and context.
  * Contains metadata about Teams applications and their execution contexts.
  *
@@ -363,6 +378,7 @@ export interface TeamsContent {
   appVersion?: string;
   appPlatform?: string;
   appRingInfo?: string;
+  contextType: TeamsContextType;
   chatContext?: TeamsChatContext;
   channelContext?: TeamsChannelContext;
   meetingContext?: TeamsMeetingContext;
