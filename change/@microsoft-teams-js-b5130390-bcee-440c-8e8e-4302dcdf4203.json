@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added Outlook OCDI domain to validDomains.json",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "patch"
+}
