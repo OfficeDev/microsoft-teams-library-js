@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Updated valid domains CDN fetch logic to prevent duplicate requests.",
-  "packageName": "@microsoft/teams-js",
-  "email": "jeklouda@microsoft.com",
-  "dependentChangeType": "patch"
-}
