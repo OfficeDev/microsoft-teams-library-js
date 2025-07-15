@@ -240,6 +240,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly customTelemetry?: {};
       readonly eligibility?: {};
       readonly sidePanel?: {};
+      readonly view?: {};
     };
     readonly dialog?: {
       readonly card?: {
