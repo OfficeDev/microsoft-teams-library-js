@@ -2,7 +2,7 @@ import { copilot, sidePanelInterfaces, UUID } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../../App';
-import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CopilotAPIs = (): ReactElement => {
@@ -15,11 +15,12 @@ const CopilotAPIs = (): ReactElement => {
     });
 
   const GetEligibilityInfo = (): ReactElement =>
-    ApiWithoutInput({
+    ApiWithCheckboxInput({
       name: 'getEligibilityInfo',
       title: 'Get the app Eligibility Information',
-      onClick: async () => {
-        const result = await copilot.eligibility.getEligibilityInfo();
+      label: 'forceRefresh',
+      onClick: async (input) => {
+        const result = await copilot.eligibility.getEligibilityInfo(input);
         return JSON.stringify(result);
       },
     });
