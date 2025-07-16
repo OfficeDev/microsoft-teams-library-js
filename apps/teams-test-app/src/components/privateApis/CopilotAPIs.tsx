@@ -110,6 +110,27 @@ const CopilotAPIs = (): ReactElement => {
       },
     });
 
+  const CheckCopilotViewCapability = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCopilotViewCapability',
+      title: 'Check if Copilot.View is supported',
+      onClick: async () => `Copilot.View module ${copilot.view.isSupported() ? 'is' : 'is not'} supported`,
+    });
+
+  const CloseSidePanel = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'closeSidePanel',
+      title: 'Close Side Panel',
+      onClick: async () => {
+        try {
+          await copilot.view.closeSidePanel();
+          return 'copilot.view.closeSidePanel() was called';
+        } catch (error) {
+          return `Error: ${error}`;
+        }
+      },
+    });
+
   return (
     <>
       <ModuleWrapper title="Copilot.Eligibility">
@@ -125,6 +146,10 @@ const CopilotAPIs = (): ReactElement => {
         <RegisterUserActionContentSelect />
         <GetContent />
         <PreCheckUserConsent />
+      </ModuleWrapper>
+      <ModuleWrapper title="Copilot.View">
+        <CheckCopilotViewCapability />
+        <CloseSidePanel />
       </ModuleWrapper>
     </>
   );
