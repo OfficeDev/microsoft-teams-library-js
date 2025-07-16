@@ -652,4 +652,52 @@ describe('copilot', () => {
       });
     });
   });
+
+  describe('copilot.view', () => {
+    describe('isSupported', () => {
+      it('should throw if called before initialization', () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        expect(() => copilot.view.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('should return false if view is not supported in runtimeConfig', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        expect(copilot.view.isSupported()).toBe(false);
+      });
+
+      it('should return true if view is supported in runtimeConfig', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(FrameContexts.content);
+        const runtimeWithView = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: { view: {} },
+          },
+        };
+        utils.setRuntimeConfig(runtimeWithView);
+        expect(copilot.view.isSupported()).toBe(true);
+      });
+    });
+
+    describe('closeSidePanel', () => {
+      it('should throw if called before initialization', async () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        await expect(copilot.view.closeSidePanel()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('should call the closeSidePanel API if supported', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+        copilot.view.closeSidePanel();
+        const message = utils.findMessageByFunc('copilot.view.closeSidePanel');
+        expect(message).not.toBeNull();
+      });
+    });
+  });
 });
