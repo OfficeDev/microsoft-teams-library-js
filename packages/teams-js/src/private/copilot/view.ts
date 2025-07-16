@@ -22,15 +22,14 @@ export function isSupported(): boolean {
 /**
  * Closes the side panel that is hosting the copilot app.
  *
- * @returns { Promise<Record<sting, never>> } - empty object to indicate successful closure of the side panel
- * @throws { SdkError } - Throws a SdkError if host SDK returns an error as a response to this call
+ * @throws { Error } - Throws a Error if host SDK returns an error as a response to this call
  *
  * @hidden
  * @beta
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function closeSidePanel(): Promise<Record<string, never>> {
+export async function closeSidePanel(): Promise<void> {
   ensureInitialized(runtime);
   await callFunctionInHostAndHandleResponse(
     ApiName.Copilot_View_CloseSidePanel,
@@ -38,7 +37,6 @@ export async function closeSidePanel(): Promise<Record<string, never>> {
     new CloseSidePanelResponseHandler(),
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_View_CloseSidePanel),
   );
-  return {};
 }
 
 class CloseSidePanelResponseHandler extends ResponseHandler<Record<string, never>, Record<string, never>> {
