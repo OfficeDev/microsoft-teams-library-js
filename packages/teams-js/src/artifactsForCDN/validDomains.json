@@ -33,7 +33,7 @@
     "*.cloud.microsoft",
     "*.m365.cloud.microsoft",
     "*.outlook.cloud.microsoft",
-    "chatuxmanager.svc.cloud.microsoft",
+    "mss.office.com",
     "copilot.microsoft.com",
     "windows.msn.com",
     "fa000000125.resources.office.net",
