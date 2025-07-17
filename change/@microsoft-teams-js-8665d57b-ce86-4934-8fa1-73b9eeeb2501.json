@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Add Outlook DoD domains to validDomains",
+  "packageName": "@microsoft/teams-js",
+  "email": "chrp@microsoft.com",
+  "dependentChangeType": "patch"
+}
