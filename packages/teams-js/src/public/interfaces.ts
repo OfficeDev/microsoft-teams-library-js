@@ -1296,6 +1296,11 @@ export enum LegalAgeGroupClassification {
    * (as stipulated based on country or region). Generally, this means that teenagers are considered as notAdult in regulated countries.
    */
   NotAdult = 'notAdult',
+  /**
+   * @deprecated To provide back compatibility for the NonAdult enum value coming from the hubs
+   */
+  //  eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
+  NonAdult = 'notAdult',
 }
 
 /**
