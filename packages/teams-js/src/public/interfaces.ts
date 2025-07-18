@@ -1295,7 +1295,7 @@ export enum LegalAgeGroupClassification {
    * United Kingdom, European Union, or South Korea, and the user's age is between a minor and an adult age
    * (as stipulated based on country or region). Generally, this means that teenagers are considered as notAdult in regulated countries.
    */
-  NonAdult = 'nonAdult',
+  NotAdult = 'notAdult',
 }
 
 /**
