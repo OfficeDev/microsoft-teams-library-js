@@ -11,7 +11,7 @@ Mon, 21 Jul 2025 20:57:12 GMT
 ### Minor changes
 
 - Added view copilot API with function to close the side panel.
-- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+- Bumped eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ## 2.40.0
 
