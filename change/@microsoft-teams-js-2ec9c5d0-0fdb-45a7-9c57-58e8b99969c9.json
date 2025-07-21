@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added view copilot API with function to close the side panel.",
-  "packageName": "@microsoft/teams-js",
-  "email": "31258166+juanscr@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

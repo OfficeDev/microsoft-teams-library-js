@@ -1,8 +1,17 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Mon, 07 Jul 2025 23:19:06 GMT and should not be manually modified.
+This log was last generated on Mon, 21 Jul 2025 20:57:12 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.41.0
+
+Mon, 21 Jul 2025 20:57:12 GMT
+
+### Minor changes
+
+- Added view copilot API with function to close the side panel.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ## 2.40.0
 
