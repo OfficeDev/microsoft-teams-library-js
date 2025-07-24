@@ -413,7 +413,7 @@ describe('Testing app capability', () => {
         message = utils.findMessageByFunc('getContext');
         expect(message).not.toBeNull();
       });
-  
+
       Object.values(FrameContexts).forEach((context) => {
         it(`app.getContext should successfully get frame context in ${context} context`, async () => {
           await utils.initializeWithContext(context);
@@ -538,6 +538,7 @@ describe('Testing app capability', () => {
             sharepoint: {},
             tenantSKU: 'someTenantSKU',
             userLicenseType: 'someUserLicenseType',
+            messageId: 'someMessageId',
             parentMessageId: 'someParentMessageId',
             ringId: 'someRingId',
             appSessionId: 'appSessionId',
@@ -570,6 +571,7 @@ describe('Testing app capability', () => {
             app: {
               iconPositionVertical: 5,
               locale: 'someLocale',
+              messageId: 'someMessageId',
               parentMessageId: 'someParentMessageId',
               sessionId: 'appSessionId',
               theme: 'someTheme',
