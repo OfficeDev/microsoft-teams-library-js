@@ -73,6 +73,10 @@ export async function getEligibilityInfo(forceRefresh?: boolean): Promise<AppEli
   if (!isEligibilityInfoValid(response)) {
     throw new Error('Error deserializing eligibility information');
   }
+  // convert nonAdult age group to NotAdult
+  if ((response.ageGroup as unknown) === 'NonAdult') {
+    response.ageGroup = 'NotAdult' as typeof response.ageGroup;
+  }
   return response;
 }
 

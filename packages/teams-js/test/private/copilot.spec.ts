@@ -201,6 +201,28 @@ describe('copilot', () => {
           return expect(promise).resolves.toEqual(mockedAppEligibilityInformation);
         });
 
+        it('correct the ageGroup from nonAdult to notAdult', async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+
+          const promise = copilot.eligibility.getEligibilityInfo();
+          const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+          expect(message).not.toBeNull();
+          const mockedAppEligibilityInformationWithInCorrectedAgeGroup = {
+            ...mockedAppEligibilityInformation,
+            ageGroup: LegalAgeGroupClassification.NonAdult,
+          };
+          if (message) {
+            utils.respondToMessage(message, mockedAppEligibilityInformationWithInCorrectedAgeGroup);
+          }
+          const mockedAppEligibilityInformationWithCorrectedAgeGroup = {
+            ...mockedAppEligibilityInformation,
+            ageGroup: LegalAgeGroupClassification.NotAdult,
+          };
+
+          return expect(promise).resolves.toEqual(mockedAppEligibilityInformationWithCorrectedAgeGroup);
+        });
+
         it(`should pass forceRefresh parameter if it exists - with context ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
