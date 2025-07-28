@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `messageId` to app context.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "patch"
+}
