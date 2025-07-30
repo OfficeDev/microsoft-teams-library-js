@@ -624,6 +624,15 @@ export interface Context {
 
   /**
    * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.messageId | app.Context.app.messageId} instead
+   *
+   * The ID of the message from which this task module was launched.
+   * This is only available in task modules launched from bot cards.
+   */
+  messageId?: string;
+
+  /**
+   * @deprecated
    * As of TeamsJS v2.0.0, please use {@link app.AppInfo.parentMessageId | app.Context.app.parentMessageId} instead
    *
    * The ID of the parent message from which this task module was launched.
