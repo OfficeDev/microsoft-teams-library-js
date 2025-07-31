@@ -23,7 +23,6 @@ import {
 import * as app from '../public/app/app';
 import { FrameContexts } from '../public/constants';
 import * as dialog from '../public/dialog/dialog';
-import { LegalAgeGroupClassification } from '../public/interfaces';
 import * as menus from '../public/menus';
 import * as pages from '../public/pages/pages';
 import {
