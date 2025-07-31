@@ -18,6 +18,7 @@ import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } 
 import * as app from '../public/app/app';
 import { FrameContexts } from '../public/constants';
 import * as dialog from '../public/dialog/dialog';
+import { LegalAgeGroupClassification } from '../public/interfaces';
 import * as menus from '../public/menus';
 import * as pages from '../public/pages/pages';
 import {
@@ -154,6 +155,15 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
             // Check that givenRuntimeConfig is a valid instance of IBaseRuntime
             if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
               throw new Error('Received runtime config is invalid');
+            }
+            // Normalize ageGroup value from nonAdult to NotAdult for backward compatibility
+            if (givenRuntimeConfig.hostVersionsInfo?.appEligibilityInformation?.ageGroup) {
+              const ageGroup = givenRuntimeConfig.hostVersionsInfo.appEligibilityInformation
+                .ageGroup as unknown as string;
+              if (ageGroup?.toLowerCase() === 'nonadult') {
+                givenRuntimeConfig.hostVersionsInfo.appEligibilityInformation.ageGroup =
+                  LegalAgeGroupClassification.NotAdult;
+              }
             }
             runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
           } catch (e) {
