@@ -155,14 +155,14 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
           // After Teams updates its client code, we can remove this default code.
           try {
             initializeHelperLogger('Parsing %s', runtimeConfig);
-            const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(runtimeConfig);
+            let givenRuntimeConfig: IBaseRuntime | null = JSON.parse(runtimeConfig);
             initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
             // Check that givenRuntimeConfig is a valid instance of IBaseRuntime
             if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
               throw new Error('Received runtime config is invalid');
             }
             // Normalize ageGroup value for backward compatibility
-            normalizeAgeGroupValue(givenRuntimeConfig);
+            givenRuntimeConfig = normalizeAgeGroupValue(givenRuntimeConfig);
             runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
           } catch (e) {
             if (e instanceof SyntaxError) {
@@ -175,7 +175,7 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
                 if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                   GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                 }
-                const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(clientSupportedSDKVersion);
+                let givenRuntimeConfig: IBaseRuntime | null = JSON.parse(clientSupportedSDKVersion);
                 initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
 
                 if (!givenRuntimeConfig) {
@@ -183,6 +183,7 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
                     'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
                   );
                 } else {
+                  givenRuntimeConfig = normalizeAgeGroupValue(givenRuntimeConfig);
                   applyRuntimeConfig(givenRuntimeConfig);
                 }
               } catch (e) {
