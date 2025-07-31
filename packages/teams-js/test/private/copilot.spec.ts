@@ -57,6 +57,24 @@ const copilotInHostVersionsInfoRuntimeConfig: Runtime = {
   },
 };
 
+const copilotInHostVersionsInfoRuntimeConfigWithNonAdult: Runtime = {
+  apiVersion: 4,
+  hostVersionsInfo: {
+    appEligibilityInformation: { ...mockedAppEligibilityInformation, ageGroup: LegalAgeGroupClassification.NonAdult },
+  },
+  supports: {
+    pages: {
+      appButton: {},
+      tabs: {},
+      config: {},
+      backStack: {},
+      fullTrust: {},
+    },
+    teamsCore: {},
+    logs: {},
+  },
+};
+
 const copilotRuntimeConfig: Runtime = {
   apiVersion: 4,
   supports: {
@@ -137,6 +155,12 @@ describe('copilot', () => {
       it('isSupported should return true if eligibility information is on the runtimeConfig', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfig);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+      });
+
+      it('isSupported should return true if eligibility information is on the runtimeConfig with nonAdult enum', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfigWithNonAdult);
         expect(copilot.eligibility.isSupported()).toBeTruthy();
       });
 

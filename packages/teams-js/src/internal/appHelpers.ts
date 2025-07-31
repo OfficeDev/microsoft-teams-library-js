@@ -14,7 +14,12 @@ import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
-import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
+import {
+  compareSDKVersions,
+  inServerSideRenderingEnvironment,
+  normalizeAgeGroupValue,
+  runWithTimeout,
+} from '../internal/utils';
 import * as app from '../public/app/app';
 import { FrameContexts } from '../public/constants';
 import * as dialog from '../public/dialog/dialog';
@@ -156,15 +161,8 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
             if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
               throw new Error('Received runtime config is invalid');
             }
-            // Normalize ageGroup value from nonAdult to NotAdult for backward compatibility
-            if (givenRuntimeConfig.hostVersionsInfo?.appEligibilityInformation?.ageGroup) {
-              const ageGroup = givenRuntimeConfig.hostVersionsInfo.appEligibilityInformation
-                .ageGroup as unknown as string;
-              if (ageGroup?.toLowerCase() === 'nonadult') {
-                givenRuntimeConfig.hostVersionsInfo.appEligibilityInformation.ageGroup =
-                  LegalAgeGroupClassification.NotAdult;
-              }
-            }
+            // Normalize ageGroup value for backward compatibility
+            normalizeAgeGroupValue(givenRuntimeConfig);
             runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
           } catch (e) {
             if (e instanceof SyntaxError) {
