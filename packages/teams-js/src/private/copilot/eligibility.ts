@@ -11,7 +11,7 @@ import { sendAndUnwrap } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { errorNotSupportedOnPlatform } from '../../public/constants';
-import { AppEligibilityInformation, isSdkError, SdkError } from '../../public/interfaces';
+import { AppEligibilityInformation, isSdkError, LegalAgeGroupClassification, SdkError } from '../../public/interfaces';
 import { runtime } from '../../public/runtime';
 
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
@@ -72,6 +72,10 @@ export async function getEligibilityInfo(forceRefresh?: boolean): Promise<AppEli
   // validate response
   if (!isEligibilityInfoValid(response)) {
     throw new Error('Error deserializing eligibility information');
+  }
+  // convert nonAdult age group to NotAdult
+  if ((response.ageGroup as unknown as string)?.toLowerCase() === 'nonadult') {
+    response.ageGroup = LegalAgeGroupClassification.NotAdult;
   }
   return response;
 }
