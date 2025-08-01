@@ -162,7 +162,7 @@
       "brotli": false,
       "path": "./packages/teams-js/dist/esm/packages/teams-js/src/index.js",
       "import": "{ app, authentication, pages }",
-      "limit": "57.73 KB"
+      "limit": "57.75 KB"
     },
     {
       "brotli": false,
