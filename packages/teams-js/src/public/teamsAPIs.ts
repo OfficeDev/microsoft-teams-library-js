@@ -13,6 +13,8 @@ import { errorNotSupportedOnPlatform } from './constants';
 import { LoadContext } from './interfaces';
 import { runtime } from './runtime';
 
+export { enableTeamsShortcutCapability } from './shortcut';
+
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
