@@ -72,6 +72,8 @@ export const enum ApiName {
   App_NotifySuccess = 'app.notifySuccess',
   App_OpenLink = 'app.openLink',
   App_RegisterOnThemeChangeHandler = 'app.registerOnThemeChangeHandler',
+  App_RequestTeamsShortcut = 'app.requestTeamsShortcut',
+  App_ProcessShortcutKeydown = 'app.processShortcutKeydown',
   AppInitialization_NotifyAppLoaded = 'appInitialization.notifyAppLoaded',
   AppInitialization_NotifyExpectedFailure = 'appInitialization.notifyExpectedFailure',
   AppInitialization_NotifyFailure = 'appInitialization.notifyFailure',
