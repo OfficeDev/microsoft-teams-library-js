@@ -139,3 +139,4 @@ export * as liveShare from './liveShareHost';
 export { LiveShareHost } from './liveShareHost';
 export * as marketplace from './marketplace';
 export { ISerializable } from './serializable.interface';
+export * as shortcutRelay from './shortcutRelay';

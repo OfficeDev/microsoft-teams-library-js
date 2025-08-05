@@ -332,6 +332,8 @@ export const enum ApiName {
   Settings_SetValidityState = 'settings.setValidityState',
   Sharing_History_GetContent = 'sharing.history.getContent',
   Sharing_ShareWebContent = 'sharing.shareWebContent',
+  ShortcutRelay_RequestHostShortcuts = 'shortcutRelay.requestHostShortcuts',
+  ShortcutRelay_ForwardShortcutEvent = 'shortcutRelay.forwardShortcutEvent',
   StageView_Open = 'stageView.open',
   StageView_Self_Close = 'stageView.self.close',
   Store_OpenFullStore = 'store.openFullStore',
