@@ -139,6 +139,38 @@ class HostShortcutsResponseHandler extends ResponseHandler<HostShortcutsResponse
   }
 }
 
+function keydownHandler(event: KeyboardEvent): void {
+  // Skip if the event target is within an element that has the `data-disable-shortcuts-forwarding` attribute
+  if ((event.target as HTMLElement).closest(`[${DISABLE_SHORTCUT_FORWARDING_ATTRIBUTE}]`)) {
+    return;
+  }
+
+  const { matchedShortcut, isOverridable } = isMatchingShortcut(hostShortcuts, event);
+
+  if (!matchedShortcut) {
+    return; // ignore unrelated events
+  }
+
+  if (isOverridable && overridableShortcutHandler) {
+    const shouldOverride = overridableShortcutHandler(event, { matchedShortcut });
+    if (shouldOverride) {
+      return; // Do not forward shortcut to host
+    }
+  }
+
+  /* Forward shortcut to host */
+  const payload = new SerializableKeyboardEvent(event);
+
+  callFunctionInHost(
+    ApiName.ShortcutRelay_ForwardShortcutEvent,
+    [payload],
+    getApiVersionTag(ApiVersionNumber.V_2, ApiName.ShortcutRelay_ForwardShortcutEvent),
+  );
+
+  event.preventDefault();
+  event.stopImmediatePropagation();
+}
+
 /* ------------------------------------------------------------------ */
 /* In-memory                                                          */
 /* ------------------------------------------------------------------ */
@@ -192,6 +224,20 @@ export function setOverridableShortcutHandler(
 }
 
 /**
+ * Reset the state of the shortcut relay capability.
+ * This is useful for tests to ensure a clean state.
+ *
+ * @beta
+ */
+export function resetIsShortcutRelayCapabilityEnabled(): void {
+  isShortcutRelayCapabilityEnabled = false;
+  hostShortcuts.clear();
+  overridableShortcuts.clear();
+  overridableShortcutHandler = undefined;
+  document.removeEventListener('keydown', keydownHandler, { capture: true });
+}
+
+/**
  * Enable capability to support host shortcuts.
  *
  * @beta
@@ -217,41 +263,7 @@ export function enableShortcutRelayCapability(): void {
   );
 
   /* 2. Global key-down handler */
-  document.addEventListener(
-    'keydown',
-    (event: KeyboardEvent) => {
-      // Skip if the event target is within an element that has the `data-disable-shortcuts-forwarding` attribute
-      if ((event.target as HTMLElement).closest(`[${DISABLE_SHORTCUT_FORWARDING_ATTRIBUTE}]`)) {
-        return;
-      }
-
-      const { matchedShortcut, isOverridable } = isMatchingShortcut(hostShortcuts, event);
-
-      if (!matchedShortcut) {
-        return; // ignore unrelated events
-      }
-
-      if (isOverridable && overridableShortcutHandler) {
-        const shouldOverride = overridableShortcutHandler(event, { matchedShortcut });
-        if (shouldOverride) {
-          return; // Do not forward shortcut to host
-        }
-      }
-
-      /* Forward shortcut to host */
-      const payload = new SerializableKeyboardEvent(event);
-
-      callFunctionInHost(
-        ApiName.ShortcutRelay_ForwardShortcutEvent,
-        [payload],
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.ShortcutRelay_ForwardShortcutEvent),
-      );
-
-      event.preventDefault();
-      event.stopImmediatePropagation();
-    },
-    { capture: true },
-  );
+  document.addEventListener('keydown', keydownHandler, { capture: true });
 }
 
 /**
