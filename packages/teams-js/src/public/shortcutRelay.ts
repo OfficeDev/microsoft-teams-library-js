@@ -7,6 +7,7 @@
  */
 
 import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -163,6 +164,13 @@ const hostShortcuts: Set<string> = new Set();
  */
 let overridableShortcutHandler: OverridableShortcutHandler | undefined = undefined;
 
+/**
+ * @hidden
+ * @internal
+ * Flag to indicate if the shortcut relay capability has been enabled, so that we do not register the event listener multiple times.
+ */
+let isShortcutRelayCapabilityEnabled = false;
+
 /* ------------------------------------------------------------------ */
 /* API                                                                */
 /* ------------------------------------------------------------------ */
@@ -189,6 +197,11 @@ export function setOverridableShortcutHandler(
  * @beta
  */
 export function enableShortcutRelayCapability(): void {
+  if (isShortcutRelayCapabilityEnabled) {
+    return;
+  }
+  isShortcutRelayCapabilityEnabled = true;
+
   ensureInitialized(runtime);
 
   if (!isSupported()) {
@@ -197,10 +210,10 @@ export function enableShortcutRelayCapability(): void {
 
   /* 1. Ask host for the list of enabled shortcuts */
   callFunctionInHostAndHandleResponse(
-    ApiName.ShortcutRelay_RequestHostShortcuts,
+    ApiName.ShortcutRelay_GetHostShortcuts,
     [],
     new HostShortcutsResponseHandler(),
-    getApiVersionTag(ApiVersionNumber.V_2, ApiName.ShortcutRelay_RequestHostShortcuts),
+    getApiVersionTag(ApiVersionNumber.V_2, ApiName.ShortcutRelay_GetHostShortcuts),
   );
 
   /* 2. Global key-down handler */
