@@ -1185,6 +1185,10 @@ export interface AppEligibilityInformation {
    * Education Eligibility Information for the app user
    */
   userClassification: UserClassification | null;
+  /**
+   * Describes conversation settings available to the user.
+   */
+  conversationSettings: IAppConversationSettings;
 }
 
 /**
@@ -1217,6 +1221,13 @@ export interface UserClassificationWithEduType {
    * Describes additional traits of the user that contribute to FRE experience, etc.
    */
   persona: Persona.Faculty | Persona.Student;
+}
+
+export interface IAppConversationSettings {
+  /**
+   * Indicates OCE admin toggle
+   */
+  isOptionalConnectedExperiencesEnabled: boolean;
 }
 
 /**
