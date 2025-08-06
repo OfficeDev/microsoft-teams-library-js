@@ -44,30 +44,17 @@ describe('shortcutRelay capability', () => {
     });
 
     describe('enableShortcutRelayCapability()', () => {
-      it('should not allow calls before initialization', () => {
-        expect(() => shortcutRelay.enableShortcutRelayCapability()).toThrowError(new Error(errorLibraryNotInitialized));
-      });
-
-      it('should throw when capability not supported in runtime', async () => {
-        await utils.initializeWithContext(FrameContexts.content);
-        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: {} });
-        expect(() => shortcutRelay.enableShortcutRelayCapability()).toThrowError(
-          expect.objectContaining(errorNotSupportedOnPlatform),
+      it('should reject before initialization', async () => {
+        await expect(shortcutRelay.enableShortcutRelayCapability()).rejects.toThrowError(
+          new Error(errorLibraryNotInitialized),
         );
       });
 
-      it('sends ShortcutRelay_GetHostShortcuts request and adds handler exactly once', async () => {
+      it('should reject when capability not supported in runtime', async () => {
         await utils.initializeWithContext(FrameContexts.content);
-        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { shortcutRelay: {} } });
+        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: {} });
 
-        shortcutRelay.enableShortcutRelayCapability();
-        const firstMessage = utils.findMessageByFunc(ApiName.ShortcutRelay_GetHostShortcuts);
-        expect(firstMessage).not.toBeNull();
-
-        // second call should NOT send another request
-        shortcutRelay.enableShortcutRelayCapability();
-        const all = utils.messages.filter((m) => m.func === ApiName.ShortcutRelay_GetHostShortcuts);
-        expect(all.length).toBe(1);
+        await expect(shortcutRelay.enableShortcutRelayCapability()).rejects.toEqual(errorNotSupportedOnPlatform);
       });
 
       it('forwards a matching non-overridden shortcut to host', async () => {

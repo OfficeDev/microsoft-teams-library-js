@@ -116,27 +116,36 @@ function isMatchingShortcut(
   };
 }
 
+function updateHostShortcuts(data: HostShortcutsResponse): void {
+  hostShortcuts.clear();
+  data.shortcuts.forEach((shortcut: string) => {
+    hostShortcuts.add(normalizeShortcut(shortcut));
+  });
+
+  overridableShortcuts.clear();
+  data.overridableShortcuts.forEach((shortcut: string) => {
+    overridableShortcuts.add(normalizeShortcut(shortcut));
+  });
+}
+
 class HostShortcutsResponseHandler extends ResponseHandler<HostShortcutsResponse, HostShortcutsResponse> {
   public validate(response: HostShortcutsResponse): boolean {
     return response && Array.isArray(response.shortcuts) && Array.isArray(response.overridableShortcuts);
   }
 
   public deserialize(response: HostShortcutsResponse): HostShortcutsResponse {
-    this.onSuccess(response);
     return response;
   }
-
-  /** Persist the received shortcuts in memory */
-  private onSuccess(response: HostShortcutsResponse): void {
-    hostShortcuts.clear();
-    response.shortcuts.forEach((shortcut: string) => {
-      hostShortcuts.add(normalizeShortcut(shortcut));
-    });
-    overridableShortcuts.clear();
-    response.overridableShortcuts.forEach((shortcut: string) => {
-      overridableShortcuts.add(normalizeShortcut(shortcut));
-    });
-  }
+}
+/**
+ * register a handler to be called when shortcuts are updated in the host.
+ */
+function registerOnHostShortcutChangedHandler(handler: (hostShortcuts: HostShortcutsResponse) => void): void {
+  registerHandler(
+    getApiVersionTag(ApiVersionNumber.V_2, ApiName.ShortcutRelay_HostShortcutChanged),
+    ApiName.ShortcutRelay_HostShortcutChanged,
+    handler,
+  );
 }
 
 function keydownHandler(event: KeyboardEvent): void {
@@ -242,28 +251,30 @@ export function resetIsShortcutRelayCapabilityEnabled(): void {
  *
  * @beta
  */
-export function enableShortcutRelayCapability(): void {
-  if (isShortcutRelayCapabilityEnabled) {
-    return;
-  }
-  isShortcutRelayCapabilityEnabled = true;
-
-  ensureInitialized(runtime);
-
+export async function enableShortcutRelayCapability(): Promise<void> {
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
 
   /* 1. Ask host for the list of enabled shortcuts */
-  callFunctionInHostAndHandleResponse(
+  const response = await callFunctionInHostAndHandleResponse(
     ApiName.ShortcutRelay_GetHostShortcuts,
     [],
     new HostShortcutsResponseHandler(),
     getApiVersionTag(ApiVersionNumber.V_2, ApiName.ShortcutRelay_GetHostShortcuts),
   );
+  updateHostShortcuts(response);
 
   /* 2. Global key-down handler */
-  document.addEventListener('keydown', keydownHandler, { capture: true });
+  if (!isShortcutRelayCapabilityEnabled) {
+    document.addEventListener('keydown', keydownHandler, { capture: true });
+  }
+  isShortcutRelayCapabilityEnabled = true;
+
+  /* 3. Register handler for host shortcut updates */
+  registerOnHostShortcutChangedHandler((hostShortcuts: HostShortcutsResponse) => {
+    updateHostShortcuts(hostShortcuts);
+  });
 }
 
 /**
