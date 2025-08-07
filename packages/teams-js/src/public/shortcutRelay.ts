@@ -95,6 +95,15 @@ function eventToCanonicalShortcut(e: KeyboardEvent): string {
     .join('+');
 }
 
+/**
+ * Checks if the event is a valid shortcut event.
+ * A valid shortcut event is one that has at least one modifier key pressed
+ * (ctrl, shift, alt, meta) or the Escape key.
+ */
+function isValidShortcutEvent(e: KeyboardEvent): boolean {
+  return e.ctrlKey || e.shiftKey || e.altKey || e.metaKey || (!!e.key && e.key.toLowerCase() === 'escape');
+}
+
 function isMatchingShortcut(
   shortcuts: Shortcuts,
   e: KeyboardEvent,
@@ -102,14 +111,17 @@ function isMatchingShortcut(
   matchedShortcut: string | undefined;
   isOverridable: boolean;
 } {
-  const pressedShortcut = eventToCanonicalShortcut(e);
-  const isMatching = shortcuts.has(pressedShortcut);
-  if (isMatching) {
-    return {
-      matchedShortcut: pressedShortcut,
-      isOverridable: overridableShortcuts.has(pressedShortcut),
-    };
+  if (isValidShortcutEvent(e)) {
+    const pressedShortcut = eventToCanonicalShortcut(e);
+    const isMatching = shortcuts.has(pressedShortcut);
+    if (isMatching) {
+      return {
+        matchedShortcut: pressedShortcut,
+        isOverridable: overridableShortcuts.has(pressedShortcut),
+      };
+    }
   }
+
   return {
     matchedShortcut: undefined,
     isOverridable: false,
