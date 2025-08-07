@@ -227,6 +227,10 @@ let isShortcutRelayCapabilityEnabled = false;
 export function setOverridableShortcutHandler(
   handler: OverridableShortcutHandler | undefined,
 ): OverridableShortcutHandler | undefined {
+  if (!isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+
   const previous = overridableShortcutHandler;
   overridableShortcutHandler = handler;
   return previous;
@@ -239,6 +243,10 @@ export function setOverridableShortcutHandler(
  * @beta
  */
 export function resetIsShortcutRelayCapabilityEnabled(): void {
+  if (!isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+
   isShortcutRelayCapabilityEnabled = false;
   hostShortcuts.clear();
   overridableShortcuts.clear();
