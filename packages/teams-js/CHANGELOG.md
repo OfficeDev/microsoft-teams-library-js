@@ -1,8 +1,23 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Mon, 21 Jul 2025 20:57:12 GMT and should not be manually modified.
+This log was last generated on Thu, 07 Aug 2025 02:09:13 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.42.0
+
+Thu, 07 Aug 2025 02:09:13 GMT
+
+### Minor changes
+
+- Added `messageId` to app context.
+- Updated validDomains list to support the catalyst consumer domains
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Add Outlook DoD domains to validDomains
+- Fixed the typo from `NonAdult` to `NotAdult` in `LegalAgeGroupClassification` Enum.
 
 ## 2.41.0
 
