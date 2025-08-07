@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed the typo from `NonAdult` to `NotAdult` in `LegalAgeGroupClassification` Enum.",
-  "packageName": "@microsoft/teams-js",
-  "email": "niharikad@microsoft.com",
-  "dependentChangeType": "patch"
-}
