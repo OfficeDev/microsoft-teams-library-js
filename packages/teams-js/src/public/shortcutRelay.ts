@@ -26,7 +26,14 @@ type HostShortcutsResponse = {
   overridableShortcuts: Shortcuts;
 };
 
+/**
+ * Data passed to the overridable shortcut handler.
+ */
 export type OverridableShortcutHandlerData = {
+  /**
+   * The matched shortcut that triggered the handler.
+   * This is a canonical form of the shortcut, e.g. "ctrl+shift+x".
+   */
   matchedShortcut: string;
 };
 
