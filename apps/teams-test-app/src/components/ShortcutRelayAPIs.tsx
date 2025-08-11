@@ -14,9 +14,10 @@ const CheckShortcutRelayCapability = (): React.ReactElement =>
 const EnableShortcutRelayCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'shortcutRelay_enableShortcutRelayCapability',
-    title: 'Enable Shortcut Relay Capability',
+    title: 'Enable Shortcut Relay Capability and Trigger Ctrl+1 shortcut',
     onClick: async () => {
       await shortcutRelay.enableShortcutRelayCapability();
+      document.body.dispatchEvent(new KeyboardEvent('keydown', { key: '1', ctrlKey: true }));
       return 'called';
     },
   });
