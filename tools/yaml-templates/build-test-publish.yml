@@ -15,7 +15,7 @@ steps:
     displayName: 'Install repo dependencies'
     inputs:
       script: |
-        pnpm install
+        pnpm install --force
 
   - task: CmdLine@2
     displayName: 'Check that changefile was created if needed'

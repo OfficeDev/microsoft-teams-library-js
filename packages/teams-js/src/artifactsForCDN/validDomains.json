@@ -9,6 +9,9 @@
     "outlook-sdf.office.com",
     "outlook.office365.com",
     "outlook-sdf.office365.com",
+    "outlook.office365.us",
+    "outlook-dod.office365.us",
+    "webmail.apps.mil",
     "outlook.live.com",
     "outlook-sdf.live.com",
     "teams.live.com",
@@ -40,6 +43,10 @@
     "fa000000129.resources.office.net",
     "fa000000124.resources.office.net",
     "fa000000128.resources.office.net",
-    "fa000000136.resources.office.net"
+    "fa000000136.resources.office.net",
+    "fa000000125.officeapps.live.com",
+    "fa000000129.officeapps.live.com",
+    "fa000000124.officeapps.live.com",
+    "fa000000128.officeapps.live.com"
   ]
 }

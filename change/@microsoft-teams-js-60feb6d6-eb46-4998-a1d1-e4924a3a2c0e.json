@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Updated validDomains list to support the catalyst consumer domains",
+  "packageName": "@microsoft/teams-js",
+  "email": "marianamu@microsoft.com",
+  "dependentChangeType": "patch"
+}
