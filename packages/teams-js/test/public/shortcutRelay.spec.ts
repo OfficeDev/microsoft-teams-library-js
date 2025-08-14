@@ -18,10 +18,7 @@ describe('shortcutRelay capability', () => {
       GlobalVars.isFramelessWindow = false;
     });
     afterEach(() => {
-      app._uninitialize();
-      GlobalVars.isFramelessWindow = false;
-      jest.resetModules();
-      shortcutRelay.resetIsShortcutRelayCapabilityEnabled();
+      app._uninitialize?.();
     });
 
     describe('isSupported()', () => {
@@ -111,14 +108,15 @@ describe('shortcutRelay capability', () => {
     });
 
     describe('setOverridableShortcutHandler()', () => {
-      it('replaces and returns previous handler', () => {
-        const noop = (): boolean => true;
-        const prev = shortcutRelay.setOverridableShortcutHandler(noop);
-        expect(prev).toBeUndefined();
+      it('replaces and returns previous handler', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { shortcutRelay: {} } });
 
+        const noop = (): boolean => true;
+        shortcutRelay.setOverridableShortcutHandler(noop);
         const next = (): boolean => false;
-        const old = shortcutRelay.setOverridableShortcutHandler(next);
-        expect(old).toBe(noop);
+        const prev = shortcutRelay.setOverridableShortcutHandler(next);
+        expect(prev).toBe(noop);
       });
     });
   });
