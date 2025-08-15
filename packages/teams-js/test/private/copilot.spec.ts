@@ -10,6 +10,7 @@ import {
   SidePanelErrorCode,
   UserConsent,
 } from '../../src/private/copilot/sidePanelInterfaces';
+import { settings } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { Cohort, EduType, ErrorCode, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
@@ -28,6 +29,7 @@ const mockedAppEligibilityInformation = {
     eduType: EduType.HigherEducation,
   },
   featureSet: { serverFeatures: ['feature1', 'feature2'], uxFeatures: ['feature3'] },
+  settings: { conversationSettings: { isOptionalConnectedExperiencesEnabled: true} },
 };
 
 const mockedAppEligibilityInformationUserClassificationNull = {

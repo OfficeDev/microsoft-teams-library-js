@@ -1186,9 +1186,10 @@ export interface AppEligibilityInformation {
    */
   userClassification: UserClassification | null;
   /**
-   * Describes conversation settings available to the user.
+   * Describes settings available to the user.
+   * If this property is undefined, it indicates that the host is an older version that doesn't support this property.
    */
-  conversationSettings: IAppConversationSettings;
+  settings?: AppSettings | null;
 }
 
 /**
@@ -1223,7 +1224,24 @@ export interface UserClassificationWithEduType {
   persona: Persona.Faculty | Persona.Student;
 }
 
-export interface IAppConversationSettings {
+/**
+ * @hidden
+ * @beta
+ * Represents the settings set available to the user.
+ */
+export interface AppSettings {
+  /**
+   * Describes conversation settings available to the user.
+   */
+  conversationSettings?: AppConversationSettings | null;
+}
+
+/**
+ * @hidden
+ * @beta
+ * Represents the conversation settings available to the user.
+ */
+export interface AppConversationSettings {
   /**
    * Indicates OCE admin toggle
    */
