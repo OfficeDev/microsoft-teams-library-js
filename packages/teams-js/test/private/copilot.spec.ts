@@ -448,7 +448,9 @@ describe('copilot', () => {
         const mockedInvalidAppEligibilityInformationWithInvalidSettings = {
           ...mockedAppEligibilityInformation,
           settings: {
-            conversationSettings: undefined,
+            conversationSettings: {
+              isOptionalConnectedExperiencesEnabled: undefined,
+            },
           },
         };
 
