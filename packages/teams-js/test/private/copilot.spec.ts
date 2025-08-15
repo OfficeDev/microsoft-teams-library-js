@@ -10,7 +10,6 @@ import {
   SidePanelErrorCode,
   UserConsent,
 } from '../../src/private/copilot/sidePanelInterfaces';
-import { settings } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { Cohort, EduType, ErrorCode, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
@@ -29,7 +28,7 @@ const mockedAppEligibilityInformation = {
     eduType: EduType.HigherEducation,
   },
   featureSet: { serverFeatures: ['feature1', 'feature2'], uxFeatures: ['feature3'] },
-  settings: { conversationSettings: { isOptionalConnectedExperiencesEnabled: true} },
+  settings: { conversationSettings: { isOptionalConnectedExperiencesEnabled: true } },
 };
 
 const mockedAppEligibilityInformationUserClassificationNull = {
@@ -248,6 +247,24 @@ describe('copilot', () => {
           return expect(promise).resolves.toEqual(mockedAppEligibilityInformationWithUndefinedFeatureSet);
         });
 
+        it(`should not throw if settings in response is undefined - with context ${frameContext}`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+
+          const promise = copilot.eligibility.getEligibilityInfo();
+          const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+          const mockedAppEligibilityInformationWithUndefinedSettings = {
+            ...mockedAppEligibilityInformation,
+            settings: undefined,
+          };
+          expect(message).not.toBeNull();
+          if (message) {
+            utils.respondToMessage(message, mockedAppEligibilityInformationWithUndefinedSettings);
+          }
+
+          return expect(promise).resolves.toEqual(mockedAppEligibilityInformationWithUndefinedSettings);
+        });
+
         it(`should throw error if host returns error - with context ${frameContext}`, async () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig(copilotRuntimeConfig);
@@ -419,6 +436,27 @@ describe('copilot', () => {
         expect(message).not.toBeNull();
         if (message) {
           utils.respondToMessage(message, mockedInvalidAppEligibilityInformationWithInvalidUxFeatures);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.settings.conversationSettings is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformationWithInvalidSettings = {
+          ...mockedAppEligibilityInformation,
+          settings: {
+            conversationSettings: undefined,
+          },
+        };
+
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformationWithInvalidSettings);
         }
 
         await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
