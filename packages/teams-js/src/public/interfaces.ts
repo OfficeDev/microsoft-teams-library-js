@@ -1194,6 +1194,11 @@ export interface AppEligibilityInformation {
    * Education Eligibility Information for the app user
    */
   userClassification: UserClassification | null;
+  /**
+   * Describes settings available to the user.
+   * If this property is undefined, it indicates that the host is an older version that doesn't support this property.
+   */
+  settings?: AppSettings | null;
 }
 
 /**
@@ -1226,6 +1231,30 @@ export interface UserClassificationWithEduType {
    * Describes additional traits of the user that contribute to FRE experience, etc.
    */
   persona: Persona.Faculty | Persona.Student;
+}
+
+/**
+ * @hidden
+ * @beta
+ * Represents the settings set available to the user.
+ */
+export interface AppSettings {
+  /**
+   * Describes conversation settings available to the user.
+   */
+  conversationSettings?: AppConversationSettings | null;
+}
+
+/**
+ * @hidden
+ * @beta
+ * Represents the conversation settings available to the user.
+ */
+export interface AppConversationSettings {
+  /**
+   * Indicates OCE admin toggle
+   */
+  isOptionalConnectedExperiencesEnabled: boolean;
 }
 
 /**
