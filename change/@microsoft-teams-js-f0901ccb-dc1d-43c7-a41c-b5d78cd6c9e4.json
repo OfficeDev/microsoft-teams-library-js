@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `shortcutRelay` capability to support host shortcuts in apps.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "patch"
+}
