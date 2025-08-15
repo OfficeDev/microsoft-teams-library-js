@@ -624,6 +624,15 @@ export interface Context {
 
   /**
    * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.messageId | app.Context.app.messageId} instead
+   *
+   * The ID of the message from which this task module was launched.
+   * This is only available in task modules launched from bot cards.
+   */
+  messageId?: string;
+
+  /**
+   * @deprecated
    * As of TeamsJS v2.0.0, please use {@link app.AppInfo.parentMessageId | app.Context.app.parentMessageId} instead
    *
    * The ID of the parent message from which this task module was launched.
@@ -1324,7 +1333,12 @@ export enum LegalAgeGroupClassification {
    * United Kingdom, European Union, or South Korea, and the user's age is between a minor and an adult age
    * (as stipulated based on country or region). Generally, this means that teenagers are considered as notAdult in regulated countries.
    */
-  NonAdult = 'nonAdult',
+  NotAdult = 'notAdult',
+  /**
+   * @deprecated To provide back compatibility for the NonAdult enum value coming from the hubs
+   */
+  //  eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
+  NonAdult = 'notAdult',
 }
 
 /**

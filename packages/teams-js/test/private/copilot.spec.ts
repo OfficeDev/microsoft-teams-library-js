@@ -58,6 +58,24 @@ const copilotInHostVersionsInfoRuntimeConfig: Runtime = {
   },
 };
 
+const copilotInHostVersionsInfoRuntimeConfigWithNonAdult: Runtime = {
+  apiVersion: 4,
+  hostVersionsInfo: {
+    appEligibilityInformation: { ...mockedAppEligibilityInformation, ageGroup: LegalAgeGroupClassification.NonAdult },
+  },
+  supports: {
+    pages: {
+      appButton: {},
+      tabs: {},
+      config: {},
+      backStack: {},
+      fullTrust: {},
+    },
+    teamsCore: {},
+    logs: {},
+  },
+};
+
 const copilotRuntimeConfig: Runtime = {
   apiVersion: 4,
   supports: {
@@ -141,6 +159,12 @@ describe('copilot', () => {
         expect(copilot.eligibility.isSupported()).toBeTruthy();
       });
 
+      it('isSupported should return true if eligibility information is on the runtimeConfig with nonAdult enum', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfigWithNonAdult);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+      });
+
       it('isSupported should return true if copilot.eligibility is supported', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig(copilotRuntimeConfig);
@@ -200,6 +224,28 @@ describe('copilot', () => {
           }
 
           return expect(promise).resolves.toEqual(mockedAppEligibilityInformation);
+        });
+
+        it('correct the ageGroup from nonAdult to notAdult', async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+
+          const promise = copilot.eligibility.getEligibilityInfo();
+          const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+          expect(message).not.toBeNull();
+          const mockedAppEligibilityInformationWithInCorrectedAgeGroup = {
+            ...mockedAppEligibilityInformation,
+            ageGroup: LegalAgeGroupClassification.NonAdult,
+          };
+          if (message) {
+            utils.respondToMessage(message, mockedAppEligibilityInformationWithInCorrectedAgeGroup);
+          }
+          const mockedAppEligibilityInformationWithCorrectedAgeGroup = {
+            ...mockedAppEligibilityInformation,
+            ageGroup: LegalAgeGroupClassification.NotAdult,
+          };
+
+          return expect(promise).resolves.toEqual(mockedAppEligibilityInformationWithCorrectedAgeGroup);
         });
 
         it(`should pass forceRefresh parameter if it exists - with context ${frameContext}`, async () => {
