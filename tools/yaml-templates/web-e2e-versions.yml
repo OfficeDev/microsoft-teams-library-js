@@ -12,7 +12,7 @@ jobs:
       AppHostingSdk: AppHostingSdk
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'npm'
-      testPrefixPatternGroups: ['{[0-9],[A-D],[a-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
+      testPrefixPatternGroups: ['{[0-9],[A-B],[a-b]}', '{[C-D],[c-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
       versionBranch: ${{parameters.versionBranch}}
 
   - template: web-e2e-tests-job.yml@self
@@ -20,7 +20,7 @@ jobs:
       AppHostingSdk: AppHostingSdk
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'scriptTag'
-      testPrefixPatternGroups: ['{[0-9],[A-D],[a-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
+      testPrefixPatternGroups: ['{[0-9],[A-B],[a-b]}', '{[C-D],[c-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
       versionBranch: ${{parameters.versionBranch}}
 
   - template: web-e2e-tests-job.yml@self
