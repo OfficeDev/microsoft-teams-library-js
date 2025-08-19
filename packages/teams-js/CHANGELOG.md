@@ -1,8 +1,17 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 07 Aug 2025 04:45:52 GMT and should not be manually modified.
+This log was last generated on Tue, 19 Aug 2025 15:18:35 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.43.0
+
+Tue, 19 Aug 2025 15:18:35 GMT
+
+### Minor changes
+
+- Added `shortcutRelay` capability to support host shortcuts in apps.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ## 2.42.0
 
