@@ -59,6 +59,7 @@ import RemoteCameraAPIs from '../components/RemoteCameraAPIs';
 import SearchAPIs from '../components/SearchAPIs';
 import SecondaryBrowserAPIs from '../components/SecondaryBrowserAPIs';
 import SharingAPIs from '../components/SharingAPIs';
+import ShortcutRelayAPIs from '../components/ShortcutRelayAPIs';
 import StageViewAPIs from '../components/StageViewAPIs';
 import StageViewSelfAPIs from '../components/StageViewSelfAPIs';
 import StoreAPIs from '../components/StoreApis';
@@ -157,6 +158,7 @@ export const TestApp: React.FC = () => {
       { name: 'SearchAPIs', component: <SearchAPIs /> },
       { name: 'SecondaryBrowserAPIs', component: <SecondaryBrowserAPIs /> },
       { name: 'SharingAPIs', component: <SharingAPIs /> },
+      { name: 'ShortcutRelayAPIs', component: <ShortcutRelayAPIs /> },
       { name: 'WebStorageAPIs', component: <WebStorageAPIs /> },
       { name: 'StageViewAPIs', component: <StageViewAPIs /> },
       { name: 'StageViewSelfAPIs', component: <StageViewSelfAPIs /> },
