@@ -663,7 +663,7 @@ export interface AuthenticateWithFederatedConnectorsParameters extends ISerializ
   connectorId: string;
   /** The OAuth configuration ID associated with the connector. */
   oauthConfigId: string;
-  /** The correlation vector (UUID) for tracking the authentication request. If not provided, one will be generated. */
+  /** The correlation vector (UUID) for tracking the authentication request. */
   correlationVector: UUID;
   /** Optional parameters for the OAuth sign-in window. */
   oauthWindowParameters?: OauthWindowProperties;
