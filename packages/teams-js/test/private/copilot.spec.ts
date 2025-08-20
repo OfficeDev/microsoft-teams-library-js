@@ -487,7 +487,7 @@ describe('copilot', () => {
         await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
       });
 
-      it('getEligibilityInfo should throw if AppEligibilityInformation.settings.conversationSettings is undefined', async () => {
+      it('getEligibilityInfo should not throw if AppEligibilityInformation.settings.conversationSettings.isOptionalConnectedExperiencesEnabled is undefined', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig(copilotRuntimeConfig);
 
@@ -507,7 +507,7 @@ describe('copilot', () => {
           utils.respondToMessage(message, mockedInvalidAppEligibilityInformationWithInvalidSettings);
         }
 
-        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+        await expect(promise).resolves.toEqual(mockedInvalidAppEligibilityInformationWithInvalidSettings);
       });
     });
   });

@@ -89,11 +89,7 @@ function isEligibilityInfoValid(eligibilityInfo: AppEligibilityInformation): boo
     eligibilityInfo.isCopilotEnabledRegion === undefined ||
     eligibilityInfo.isOptedOutByAdmin === undefined ||
     (eligibilityInfo.featureSet &&
-      (eligibilityInfo.featureSet.serverFeatures === undefined ||
-        eligibilityInfo.featureSet.uxFeatures === undefined)) ||
-    (eligibilityInfo.settings &&
-      eligibilityInfo.settings.conversationSettings &&
-      eligibilityInfo.settings.conversationSettings.isOptionalConnectedExperiencesEnabled === undefined)
+      (eligibilityInfo.featureSet.serverFeatures === undefined || eligibilityInfo.featureSet.uxFeatures === undefined))
   ) {
     return false;
   }
