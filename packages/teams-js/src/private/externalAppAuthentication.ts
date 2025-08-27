@@ -646,44 +646,54 @@ export function authenticateWithPowerPlatformConnectorPlugins(
 }
 
 /**
- * Parameters required to authenticate with federated connectors.
+ * Parameters required to authenticate with federated connectors or graph connectors.
  *
  * @beta
  * @hidden
  * @internal
  * Limited to Microsoft-internal use
  *
- * @property connectorId - The unique identifier for the federated connector.
+ * @property windowParameters - Optional parameters for the OAuth sign-in window.
+ */
+export type AuthenticateWithConnectorParameters = ConnectorParameters & {
+  /** Optional parameters for the OAuth sign-in window. */
+  windowParameters?: OauthWindowProperties;
+};
+
+/**
+ * Parameters required to authenticate with connectors.
+ *
+ * @beta
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @property connectorId - The unique identifier for the connector.
  * @property oauthConfigId - The OAuth configuration ID associated with the connector.
  * @property correlationVector - The correlation vector (UUID) for tracking the authentication request. If not provided, one will be generated.
- * @property oauthWindowParameters - Optional parameters for the OAuth sign-in window.
  */
-export interface AuthenticateWithFederatedConnectorsParameters extends ISerializable {
-  /** The unique identifier for the federated connector. */
+export interface ConnectorParameters extends ISerializable {
+  /** The unique identifier for the connector. */
   connectorId: string;
   /** The OAuth configuration ID associated with the connector. */
-  oauthConfigId: string;
+  oAuthConfigId: string;
   /** The correlation vector (UUID) for tracking the authentication request. */
   correlationVector: UUID;
-  /** Optional parameters for the OAuth sign-in window. */
-  oauthWindowParameters?: OauthWindowProperties;
 }
 
 /**
  * @beta
  * @hidden
- * Signals to the host to perform authentication for federated connectors using the provided parameters.
+ * Signals to the host to perform authentication with connectors using the provided parameters.
  *
  * @internal
  * Limited to Microsoft-internal use
  *
- * @param input - The parameters required for federated connectors authentication, including connectorId, oauthConfigId, and optional oauthWindowParameters.
+ * @param input - The parameters required for connectors authentication, including connectorId, oauthConfigId, and optional oauthWindowParameters.
  * @returns A promise that resolves when authentication succeeds and rejects with InvokeError on failure.
  * @throws Error if {@linkcode app.initialize} has not successfully completed
  */
-export function authenticateWithFederatedConnectors(
-  input: AuthenticateWithFederatedConnectorsParameters,
-): Promise<void> {
+export function authenticateWithFederatedConnectors(input: AuthenticateWithConnectorParameters): Promise<void> {
   ensureInitialized(runtime, FrameContexts.content);
 
   if (!isSupported()) {
@@ -691,14 +701,14 @@ export function authenticateWithFederatedConnectors(
   }
 
   validateId(input.connectorId, new Error('connectorId is Invalid.'));
-  validateId(input.oauthConfigId, new Error('oauthConfigId is Invalid.'));
+  validateId(input.oAuthConfigId, new Error('oauthConfigId is Invalid.'));
 
   return callFunctionInHost(
-    ApiName.ExternalAppAuthentication_AuthenticateWithFederatedConnectors,
+    ApiName.ExternalAppAuthentication_AuthenticateWithConnector,
     [input],
     getApiVersionTag(
       externalAppAuthenticationTelemetryVersionNumber,
-      ApiName.ExternalAppAuthentication_AuthenticateWithFederatedConnectors,
+      ApiName.ExternalAppAuthentication_AuthenticateWithConnector,
     ),
     isInvokeError,
   );
@@ -765,26 +775,23 @@ class UserAuthenticationStateResponseHandler extends ResponseHandler<UserAuthent
  * @returns A promise that resolves to the user's authentication state for the federated connector.
  * @throws Error if the capability is not supported or if initialization has not completed.
  */
-export function getUserAuthenticationStateForFederatedConnector(
-  connectorId: string,
-  oauthConfigId: string,
-): Promise<UserAuthenticationState> {
+export function getUserAuthenticationStateForConnector(input: ConnectorParameters): Promise<UserAuthenticationState> {
   ensureInitialized(runtime, FrameContexts.content);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
 
-  validateId(connectorId, new Error('connectorId is Invalid.'));
-  validateId(oauthConfigId, new Error('oauthConfigId is Invalid.'));
+  validateId(input.connectorId, new Error('connectorId is Invalid.'));
+  validateId(input.oAuthConfigId, new Error('oAuthConfigId is Invalid.'));
 
   return callFunctionInHostAndHandleResponse<UserAuthenticationState, UserAuthenticationState>(
-    ApiName.ExternalAppAuthentication_GetUserAuthenticationStateForFederatedConnector,
-    [connectorId, oauthConfigId],
+    ApiName.ExternalAppAuthentication_GetUserAuthenticationStateForConnector,
+    [input],
     new UserAuthenticationStateResponseHandler(),
     getApiVersionTag(
       externalAppAuthenticationTelemetryVersionNumber,
-      ApiName.ExternalAppAuthentication_GetUserAuthenticationStateForFederatedConnector,
+      ApiName.ExternalAppAuthentication_GetUserAuthenticationStateForConnector,
     ),
     isInvokeError,
   );
