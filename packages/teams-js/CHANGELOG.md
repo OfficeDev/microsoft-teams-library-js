@@ -4,11 +4,11 @@ This log was last generated on Wed, 27 Aug 2025 21:57:44 GMT and should not be m
 
 <!-- Start content -->
 
-## 2.43.1
+## 2.44.0
 
 Wed, 27 Aug 2025 21:57:44 GMT
 
-### Patches
+### Minor changes
 
 - Added optional `Settings` field to `AppEligibilityInformation` interface
 - Bump eslint-plugin-recommend-no-namespaces to v0.1.0

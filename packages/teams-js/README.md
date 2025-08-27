@@ -24,7 +24,7 @@ To install the stable [version](https://learn.microsoft.com/javascript/api/overv
 
 ### Production
 
-You can reference these files directly [from here](https://res.cdn.office.net/teams-js/2.43.1/js/MicrosoftTeams.min.js) or point your package manager at them.
+You can reference these files directly [from here](https://res.cdn.office.net/teams-js/2.44.0/js/MicrosoftTeams.min.js) or point your package manager at them.
 
 ## Usage
 
