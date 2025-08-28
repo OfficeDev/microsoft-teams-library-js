@@ -1,6 +1,6 @@
 import './App.css';
 
-import { app, appInitialization, initialize } from '@microsoft/teams-js';
+import { app, appInitialization, initialize, ResumeContext } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
@@ -21,7 +21,24 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
-    app.initialize(validMessageOrigins);
+    app.initialize(validMessageOrigins).then(() => {
+      app.notifyAppLoaded();
+      app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
+        return new Promise<void>((resolve) => {
+          resolve();
+        });
+      });
+      app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
+        // get the route from the context
+        console.log(context.contentUrl);
+        // navigate to the correct path based on URL
+        // navigate(route.pathname);
+        if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+          app.notifySuccess();
+        }
+      });
+      app.notifySuccess();
+    });
   }
 }
 
@@ -38,8 +55,7 @@ if (
     appInitialization.notifyAppLoaded();
     appInitialization.notifySuccess();
   } else {
-    app.notifyAppLoaded();
-    app.notifySuccess();
+    //
   }
 }
 
