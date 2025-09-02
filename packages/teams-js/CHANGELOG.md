@@ -1,8 +1,17 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Tue, 19 Aug 2025 15:18:35 GMT and should not be manually modified.
+This log was last generated on Wed, 27 Aug 2025 21:57:44 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.44.0
+
+Wed, 27 Aug 2025 21:57:44 GMT
+
+### Minor changes
+
+- Added optional `Settings` field to `AppEligibilityInformation` interface
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ## 2.43.0
 
