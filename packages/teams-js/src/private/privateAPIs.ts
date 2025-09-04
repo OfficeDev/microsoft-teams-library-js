@@ -134,7 +134,7 @@ export function registerUserSettingsChangeHandler(
  * Limited to Microsoft-internal use
  */
 export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
-  ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task);
 
   const params = [
     filePreviewParameters.entityId,
