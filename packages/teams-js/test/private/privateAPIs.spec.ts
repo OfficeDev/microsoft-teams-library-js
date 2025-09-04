@@ -686,7 +686,7 @@ describe('AppSDK-privateAPIs', () => {
   });
 
   describe('openFilePreview', () => {
-    const allowedContexts = [FrameContexts.content, FrameContexts.task];
+    const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task];
     const openFilePreviewParams = {
       entityId: 'someEntityId',
       title: 'someTitle',
