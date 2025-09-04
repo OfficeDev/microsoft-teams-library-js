@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added optional `Settings` field to `AppEligibilityInformation` interface",
+  "packageName": "@microsoft/teams-js",
+  "email": "arindamsahu@microsoft.com",
+  "dependentChangeType": "patch"
+}
