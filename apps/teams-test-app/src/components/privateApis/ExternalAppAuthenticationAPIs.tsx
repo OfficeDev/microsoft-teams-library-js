@@ -1,4 +1,4 @@
-import { CopilotHost, externalAppAuthentication, UUID } from '@microsoft/teams-js';
+import { externalAppAuthentication, UUID } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput } from '../utils/ApiWithoutInput';
@@ -115,7 +115,6 @@ const AuthenticateWithConnector = (): React.ReactElement =>
       height?: number;
       isExternal?: boolean;
     };
-    copilotHost: CopilotHost;
     traceId: UUID;
   }>({
     name: 'authenticateWithConnector',
@@ -145,7 +144,6 @@ const AuthenticateWithConnector = (): React.ReactElement =>
         height: 400,
         isExternal: false,
       },
-      copilotHost: 'BizChat',
       traceId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
     }),
   });
@@ -154,7 +152,6 @@ const GetUserAuthenticationStateForConnector = (): React.ReactElement =>
   ApiWithTextInput<{
     connectorId: string;
     oAuthConfigId: string;
-    copilotHost: CopilotHost;
     traceId: UUID;
   }>({
     name: 'getUserAuthenticationStateForConnector',
@@ -184,7 +181,6 @@ const GetUserAuthenticationStateForConnector = (): React.ReactElement =>
         height: 400,
         isExternal: false,
       },
-      copilotHost: 'BizChat',
       traceId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
     }),
   });

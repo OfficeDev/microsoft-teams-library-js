@@ -646,24 +646,6 @@ export function authenticateWithPowerPlatformConnectorPlugins(
 }
 
 /**
- * Enumeration of different Copilot host environments that can launch authentication APIs.
- * This enum identifies the specific Microsoft Copilot application context where the authentication request originates.
- */
-export enum CopilotHost {
-  /** Microsoft 365 Business Chat - The general business chat experience in Microsoft 365 */
-  BizChat = 'BizChat',
-
-  /** Application-specific Chat - Chat experiences within specific Microsoft 365 applications */
-  AppChat = 'AppChat',
-
-  /** Teams Meeting Copilot - Copilot experience during Microsoft Teams meetings */
-  TeamsMeetingCopilot = 'TeamsMeetingCopilot',
-
-  /** One Copilot Mobile - Mobile integration for Copilot experiences (native mobile apps only) */
-  OneCopilotMobile = 'OneCopilotMobile',
-}
-
-/**
  * Parameters required to authenticate with connectors.
  *
  * @beta
@@ -682,8 +664,6 @@ export interface ConnectorParameters {
   oAuthConfigId: string;
   /** The trace ID (UUID) for tracking the authentication request. */
   traceId: UUID;
-  /** CopilotHost launching the API */
-  copilotHost: CopilotHost;
   /** Optional parameters for the OAuth sign-in window. */
   windowParameters?: OauthWindowProperties;
 }
@@ -696,7 +676,6 @@ export class SerializableConnectorParameters implements ISerializable {
       connectorId: this.param.connectorId,
       oAuthConfigId: this.param.oAuthConfigId,
       traceId: this.param.traceId?.toString?.() ?? this.param.traceId,
-      copilotHost: this.param.copilotHost,
       windowParameters: this.param.windowParameters ? { ...this.param.windowParameters } : undefined,
     };
   }
@@ -748,11 +727,11 @@ export function authenticateWithConnector(input: ConnectorParameters): Promise<v
  */
 export enum UserAuthenticationState {
   /** The authentication state is invalid or not established. */
-  Invalid,
+  Invalid = 'Invalid',
   /** The authentication state is valid and the user is authenticated. */
-  Valid,
+  Valid = 'Valid',
   /** The authentication state has expired and re-authentication is required. */
-  Expired,
+  Expired = 'Expired',
 }
 
 /**

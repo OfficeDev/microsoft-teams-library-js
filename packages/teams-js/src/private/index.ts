@@ -25,7 +25,7 @@ export { ConversationResponse, OpenConversationRequest } from './conversations';
 export * as copilot from './copilot/copilot';
 export * as sidePanelInterfaces from './copilot/sidePanelInterfaces';
 export * as externalAppAuthentication from './externalAppAuthentication';
-export { CopilotHost, ConnectorParameters, UserAuthenticationState } from './externalAppAuthentication';
+export { ConnectorParameters, UserAuthenticationState } from './externalAppAuthentication';
 export * as externalAppAuthenticationForCEA from './externalAppAuthenticationForCEA';
 export * as externalAppCardActions from './externalAppCardActions';
 export * as externalAppCardActionsForCEA from './externalAppCardActionsForCEA';
