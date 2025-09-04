@@ -646,19 +646,22 @@ export function authenticateWithPowerPlatformConnectorPlugins(
 }
 
 /**
- * Parameters required to authenticate with federated connectors or graph connectors.
- *
- * @beta
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- *
- * @property windowParameters - Optional parameters for the OAuth sign-in window.
+ * Enumeration of different Copilot host environments that can launch authentication APIs.
+ * This enum identifies the specific Microsoft Copilot application context where the authentication request originates.
  */
-export type AuthenticateWithConnectorParameters = ConnectorParameters & {
-  /** Optional parameters for the OAuth sign-in window. */
-  windowParameters?: OauthWindowProperties;
-};
+export enum CopilotHost {
+  /** Microsoft 365 Business Chat - The general business chat experience in Microsoft 365 */
+  BizChat = 'BizChat',
+
+  /** Application-specific Chat - Chat experiences within specific Microsoft 365 applications */
+  AppChat = 'AppChat',
+
+  /** Teams Meeting Copilot - Copilot experience during Microsoft Teams meetings */
+  TeamsMeetingCopilot = 'TeamsMeetingCopilot',
+
+  /** One Copilot Mobile - Mobile integration for Copilot experiences (native mobile apps only) */
+  OneCopilotMobile = 'OneCopilotMobile',
+}
 
 /**
  * Parameters required to authenticate with connectors.
@@ -672,13 +675,31 @@ export type AuthenticateWithConnectorParameters = ConnectorParameters & {
  * @property oauthConfigId - The OAuth configuration ID associated with the connector.
  * @property correlationVector - The correlation vector (UUID) for tracking the authentication request. If not provided, one will be generated.
  */
-export interface ConnectorParameters extends ISerializable {
+export interface ConnectorParameters {
   /** The unique identifier for the connector. */
   connectorId: string;
   /** The OAuth configuration ID associated with the connector. */
   oAuthConfigId: string;
-  /** The correlation vector (UUID) for tracking the authentication request. */
-  correlationVector: UUID;
+  /** The trace ID (UUID) for tracking the authentication request. */
+  traceId: UUID;
+  /** CopilotHost launching the API */
+  copilotHost: CopilotHost;
+  /** Optional parameters for the OAuth sign-in window. */
+  windowParameters?: OauthWindowProperties;
+}
+
+export class SerializableConnectorParameters implements ISerializable {
+  public constructor(private param: ConnectorParameters) {}
+
+  public serialize(): object {
+    return {
+      connectorId: this.param.connectorId,
+      oAuthConfigId: this.param.oAuthConfigId,
+      traceId: this.param.traceId?.toString?.() ?? this.param.traceId,
+      copilotHost: this.param.copilotHost,
+      windowParameters: this.param.windowParameters ? { ...this.param.windowParameters } : undefined,
+    };
+  }
 }
 
 /**
@@ -693,7 +714,7 @@ export interface ConnectorParameters extends ISerializable {
  * @returns A promise that resolves when authentication succeeds and rejects with InvokeError on failure.
  * @throws Error if {@linkcode app.initialize} has not successfully completed
  */
-export function authenticateWithFederatedConnectors(input: AuthenticateWithConnectorParameters): Promise<void> {
+export function authenticateWithConnector(input: ConnectorParameters): Promise<void> {
   ensureInitialized(runtime, FrameContexts.content);
 
   if (!isSupported()) {
@@ -705,7 +726,7 @@ export function authenticateWithFederatedConnectors(input: AuthenticateWithConne
 
   return callFunctionInHost(
     ApiName.ExternalAppAuthentication_AuthenticateWithConnector,
-    [input],
+    [new SerializableConnectorParameters(input)],
     getApiVersionTag(
       externalAppAuthenticationTelemetryVersionNumber,
       ApiName.ExternalAppAuthentication_AuthenticateWithConnector,
@@ -787,7 +808,7 @@ export function getUserAuthenticationStateForConnector(input: ConnectorParameter
 
   return callFunctionInHostAndHandleResponse<UserAuthenticationState, UserAuthenticationState>(
     ApiName.ExternalAppAuthentication_GetUserAuthenticationStateForConnector,
-    [input],
+    [new SerializableConnectorParameters(input)],
     new UserAuthenticationStateResponseHandler(),
     getApiVersionTag(
       externalAppAuthenticationTelemetryVersionNumber,
