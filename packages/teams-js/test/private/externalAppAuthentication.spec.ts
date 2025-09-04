@@ -929,20 +929,18 @@ describe('externalAppAuthentication', () => {
     });
   });
 
-  describe('authenticateWithConnector', () => {
+  describe('getUserAuthenticationStateForConnector', () => {
     const allowedFrameContexts = [FrameContexts.content];
     const testConnectorId = 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe';
     const testOAuthConfigId = 'testOauthConfigId';
-    const testWindowParameters = { width: 500, height: 400, isExternal: false };
 
     it('should not allow calls before initialization', () => {
       const trace = new UUID('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a');
       return expect(() =>
-        externalAppAuthentication.authenticateWithConnector({
+        externalAppAuthentication.getUserAuthenticationStateForConnector({
           connectorId: testConnectorId,
           oAuthConfigId: testOAuthConfigId,
           traceId: trace,
-          windowParameters: testWindowParameters,
         }),
       ).toThrowError(new Error(errorLibraryNotInitialized));
     });
@@ -953,11 +951,10 @@ describe('externalAppAuthentication', () => {
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
       expect.assertions(1);
       try {
-        await externalAppAuthentication.authenticateWithConnector({
+        await externalAppAuthentication.getUserAuthenticationStateForConnector({
           connectorId: testConnectorId,
           oAuthConfigId: testOAuthConfigId,
           traceId: trace,
-          windowParameters: testWindowParameters,
         });
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
@@ -966,7 +963,7 @@ describe('externalAppAuthentication', () => {
 
     Object.values(FrameContexts).forEach((frameContext) => {
       if (allowedFrameContexts.includes(frameContext)) {
-        it(`should call host and resolve on success with context - ${frameContext}`, async () => {
+        it(`should call host and resolve it a userAuthenticationState with context - ${frameContext}`, async () => {
           expect.assertions(3);
           const trace = new UUID('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a');
           await utils.initializeWithContext(frameContext);
@@ -976,12 +973,11 @@ describe('externalAppAuthentication', () => {
             connectorId: testConnectorId,
             oAuthConfigId: testOAuthConfigId,
             traceId: trace,
-            windowParameters: testWindowParameters,
           };
 
-          const promise = externalAppAuthentication.authenticateWithConnector(params);
+          const promise = externalAppAuthentication.getUserAuthenticationStateForConnector(params);
 
-          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithConnector');
+          const message = utils.findMessageByFunc('externalAppAuthentication.getUserAuthenticationStateForConnector');
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([
@@ -989,14 +985,42 @@ describe('externalAppAuthentication', () => {
                 connectorId: params.connectorId,
                 oAuthConfigId: params.oAuthConfigId,
                 traceId: params.traceId.toString(),
-                windowParameters: params.windowParameters,
               },
             ]);
-            // callFunctionInHost expects an SdkError or undefined; respond with undefined to indicate success
-            utils.respondToMessage(message, undefined);
+            utils.respondToMessage(message, externalAppAuthentication.UserAuthenticationState.Valid);
           }
 
-          return expect(promise).resolves.toBeUndefined();
+          return expect(promise).resolves.toBe('Valid');
+        });
+
+        it(`should call host and rejects in error for an invalid userAuthenticationState with context - ${frameContext}`, async () => {
+          expect.assertions(3);
+          const trace = new UUID('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a');
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+
+          const params = {
+            connectorId: testConnectorId,
+            oAuthConfigId: testOAuthConfigId,
+            traceId: trace,
+          };
+
+          const promise = externalAppAuthentication.getUserAuthenticationStateForConnector(params);
+
+          const message = utils.findMessageByFunc('externalAppAuthentication.getUserAuthenticationStateForConnector');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              {
+                connectorId: params.connectorId,
+                oAuthConfigId: params.oAuthConfigId,
+                traceId: params.traceId.toString(),
+              },
+            ]);
+            utils.respondToMessage(message, 'invalidState');
+          }
+
+          return expect(promise).rejects.toThrow('500, message: Invalid response from host - "invalidState"');
         });
 
         it('should throw host SdkError', async () => {
@@ -1008,12 +1032,11 @@ describe('externalAppAuthentication', () => {
             connectorId: testConnectorId,
             oAuthConfigId: testOAuthConfigId,
             traceId: trace,
-            windowParameters: testWindowParameters,
           };
 
-          const promise = externalAppAuthentication.authenticateWithConnector(params);
+          const promise = externalAppAuthentication.getUserAuthenticationStateForConnector(params);
 
-          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithConnector');
+          const message = utils.findMessageByFunc('externalAppAuthentication.getUserAuthenticationStateForConnector');
           const testError = { errorCode: 'INTERNAL_ERROR', message: 'test error message' };
 
           if (message && message.args) {
@@ -1023,7 +1046,6 @@ describe('externalAppAuthentication', () => {
                 connectorId: params.connectorId,
                 oAuthConfigId: params.oAuthConfigId,
                 traceId: params.traceId.toString(),
-                windowParameters: params.windowParameters,
               },
             ]);
             utils.respondToMessage(message, testError);
@@ -1038,7 +1060,7 @@ describe('externalAppAuthentication', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           try {
-            await externalAppAuthentication.authenticateWithConnector({
+            await externalAppAuthentication.getUserAuthenticationStateForConnector({
               connectorId: 'invalidId<script>',
               oAuthConfigId: testOAuthConfigId,
               traceId: new UUID(),
@@ -1052,13 +1074,13 @@ describe('externalAppAuthentication', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           try {
-            await externalAppAuthentication.authenticateWithConnector({
+            await externalAppAuthentication.getUserAuthenticationStateForConnector({
               connectorId: testConnectorId,
               oAuthConfigId: 'invalidId<script>',
               traceId: new UUID(),
             });
           } catch (e) {
-            expect(e).toEqual(new Error('oauthConfigId is Invalid.'));
+            expect(e).toEqual(new Error('oAuthConfigId is Invalid.'));
           }
         });
       } else {
@@ -1066,7 +1088,7 @@ describe('externalAppAuthentication', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           return expect(() =>
-            externalAppAuthentication.authenticateWithConnector({
+            externalAppAuthentication.getUserAuthenticationStateForConnector({
               connectorId: testConnectorId,
               oAuthConfigId: testOAuthConfigId,
               traceId: new UUID(),
