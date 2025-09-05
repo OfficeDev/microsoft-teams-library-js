@@ -54,17 +54,12 @@ if (urlParams.has('precacheApp') && urlParams.get('precacheApp')) {
     app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
       // get the route from the context
       console.log(context.contentUrl);
-      // navigate to the correct path based on URL
-      // navigate(route.pathname);
       if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
         app.notifySuccess();
       }
     });
     app.notifySuccess();
   });
-
-  window.addEventListener('message', handleMessageFromMockedHost);
-  console.info('Test app listener is set to receive messages for precached app to load');
 }
 
 function handleMessageFromMockedHost(msg: MessageEvent): void {
