@@ -20,7 +20,7 @@ const validMessageOrigins: string[] | undefined = getOriginsParam ? getOriginsPa
 if (
   !urlParams.has('customInit') ||
   !urlParams.get('customInit') ||
-  !urlParams.has('customInit') ||
+  !urlParams.has('precacheApp') ||
   !urlParams.get('precacheApp')
 ) {
   if (isTestBackCompat()) {
