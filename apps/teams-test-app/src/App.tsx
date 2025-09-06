@@ -1,6 +1,6 @@
 import './App.css';
 
-import { app, appInitialization, initialize } from '@microsoft/teams-js';
+import { app, appInitialization, initialize, ResumeContext } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
@@ -17,7 +17,12 @@ const getOriginsParam = urlParams.has('origins') && urlParams.get('origins') ? u
 const validMessageOrigins: string[] | undefined = getOriginsParam ? getOriginsParam.split(',') : undefined;
 
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
-if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+if (
+  !urlParams.has('customInit') ||
+  !urlParams.get('customInit') ||
+  !urlParams.has('precacheApp') ||
+  !urlParams.get('precacheApp')
+) {
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
@@ -41,6 +46,25 @@ if (
     app.notifyAppLoaded();
     app.notifySuccess();
   }
+}
+
+if (urlParams.has('precacheApp') && urlParams.get('precacheApp')) {
+  app.initialize(validMessageOrigins).then(() => {
+    app.notifyAppLoaded();
+    app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
+      return new Promise<void>((resolve) => {
+        resolve();
+      });
+    });
+    app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
+      // get the route from the context
+      console.log(context.contentUrl);
+      if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+        app.notifySuccess();
+      }
+    });
+    app.notifySuccess();
+  });
 }
 
 function handleMessageFromMockedHost(msg: MessageEvent): void {
