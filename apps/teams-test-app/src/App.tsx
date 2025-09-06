@@ -17,7 +17,12 @@ const getOriginsParam = urlParams.has('origins') && urlParams.get('origins') ? u
 const validMessageOrigins: string[] | undefined = getOriginsParam ? getOriginsParam.split(',') : undefined;
 
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
-if (!urlParams.has('customInit') || !urlParams.get('customInit') || !urlParams.get('precacheApp')) {
+if (
+  !urlParams.has('customInit') ||
+  !urlParams.get('customInit') ||
+  !urlParams.has('customInit') ||
+  !urlParams.get('precacheApp')
+) {
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
