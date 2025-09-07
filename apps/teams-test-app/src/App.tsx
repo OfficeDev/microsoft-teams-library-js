@@ -38,7 +38,7 @@ if (
 ) {
   window.addEventListener('message', handleMessageFromMockedHost);
   console.info('Not calling appInitialization because part of App Initialization Test run');
-} else {
+} else if (!urlParams.has('precacheApp') || !urlParams.get('precacheApp')) {
   if (isTestBackCompat()) {
     appInitialization.notifyAppLoaded();
     appInitialization.notifySuccess();
