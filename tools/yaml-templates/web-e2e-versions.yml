@@ -14,7 +14,7 @@ jobs:
       teamsJsReferenceType: 'npm'
       testPrefixPatternGroups:
         [
-          'app(?=\\.)',
+          'app(?=\.)',
           '{appE,appI,appS,auth}',
           '{[B],[b]}',
           '{[C-D],[c-d]}',
@@ -31,7 +31,7 @@ jobs:
       teamsJsReferenceType: 'scriptTag'
       testPrefixPatternGroups:
         [
-          'app(?=\\.)',
+          'app(?=\.)',
           '{appE,appI,appS,auth}',
           '{[B],[b]}',
           '{[C-D],[c-d]}',
