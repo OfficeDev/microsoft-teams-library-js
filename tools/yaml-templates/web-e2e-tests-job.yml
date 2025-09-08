@@ -1,19 +1,5 @@
 # This template handles running E2E tests (including all necessary setup steps) from the host SDK repo for various environments.
 # It will run one E2E job for each testPrefixPattern selector in the testPrefixPatternGroups parameter.
-variables:
-  - sanitizedTestPrefix: ${{ replace(
-      replace(
-      replace(
-      replace(
-      replace(
-      replace(
-      replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
-      '*', 'STAR'),
-      '?', 'QMARK'),
-      '\', 'BS'),
-      '.', 'DOT'),
-      '(', 'LP'),
-      ')', 'RP') }}
 
 parameters:
   - name: AppHostingSdk
@@ -37,57 +23,71 @@ parameters:
     default: none
 
 jobs:
-  - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
-      # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
-      # Sadly ADO does not support regex matching here at this time.
-      - job: E2ETestsWeb_${{ parameters.versionBranch }}_${{ parameters.teamsJsReferenceType }}_${{ sanitizedTestPrefix }}
+  variables:
+    - sanitizedTestPrefix: ${{ replace(
+        replace(
+        replace(
+        replace(
+        replace(
+        replace(
+        replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
+        '*', 'STAR'),
+        '?', 'QMARK'),
+        '\', 'BS'),
+        '.', 'DOT'),
+        '(', 'LP'),
+        ')', 'RP') }}
+    - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
+        # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
+        # Sadly ADO does not support regex matching here at this time.
+        - job: E2ETestsWeb_${{ parameters.versionBranch }}_${{ parameters.teamsJsReferenceType }}_${{ sanitizedTestPrefix }}
 
-        displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
-        pool:
-          name: Azure-Pipelines-1ESPT-ExDShared
-          image: 'ubuntu-latest'
-          os: linux
-        variables:
-          - name: envType
-            ${{ if eq(parameters.teamsJsReferenceType, 'npm') }}:
-              value: 'test'
-            ${{ else }}:
-              value: 'localScriptTag'
-        steps:
-          - template: build-app-host.yml
-            parameters:
-              appHostGitPath: AppHostingSdk
+          displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
+          pool:
+            name: Azure-Pipelines-1ESPT-ExDShared
+            image: 'ubuntu-latest'
+            os: linux
+          variables:
+            - name: envType
+              ${{ if eq(parameters.teamsJsReferenceType, 'npm') }}:
+                value: 'test'
+              ${{ else }}:
+                value: 'localScriptTag'
+          steps:
+            - template: build-app-host.yml
+              parameters:
+                appHostGitPath: AppHostingSdk
 
-          - task: CmdLine@2
-            displayName: 'Build Local Test App to Reference via Script Tag'
-            condition: and(succeeded(), eq('${{ parameters.teamsJsReferenceType }}', 'scriptTag'))
-            inputs:
-              script: |
-                pnpm build-test-app-local
-              workingDirectory: '$(ClientSdkProjectDirectory)'
+            - task: CmdLine@2
+              displayName: 'Build Local Test App to Reference via Script Tag'
+              condition: and(succeeded(), eq('${{ parameters.teamsJsReferenceType }}', 'scriptTag'))
+              inputs:
+                script: |
+                  pnpm build-test-app-local
+                workingDirectory: '$(ClientSdkProjectDirectory)'
 
-          - bash: >
-              pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
-              --useDataFromLocal=true
-              --testPrefixPattern "${{testPrefixPattern}}"
-              --envType=${{ variables.envType }}
-            displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
-            condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
-            workingDirectory: '$(AppHostingSdkProjectDirectory)'
+            - bash: >
+                pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
+                --useDataFromLocal=true
+                --testPrefixPattern "${{testPrefixPattern}}"
+                --envType=${{ variables.envType }}
+              displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
+              condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
+              workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-          - bash: |
-              pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=test --serverUrl=https://localhost:4000/
-              pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=orange --serverUrl=https://local.teams.office.com:8080
-              # This runs the Electron-integration layer tests, which currently cannot be filtered
-              pnpm exec xvfb-maybe playwright test
-            displayName: 'Run Electron-Integration Layer tests'
-            condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
-            workingDirectory: '$(AppHostingSdkProjectDirectory)'
+            - bash: |
+                pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=test --serverUrl=https://localhost:4000/
+                pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=orange --serverUrl=https://local.teams.office.com:8080
+                # This runs the Electron-integration layer tests, which currently cannot be filtered
+                pnpm exec xvfb-maybe playwright test
+              displayName: 'Run Electron-Integration Layer tests'
+              condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
+              workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/e2e-tests-report*.xml'
-              testRunTitle: 'E2E Tests - Default'
-              mergeTestResults: true
-            condition: succeededOrFailed()
+            - task: PublishTestResults@2
+              inputs:
+                testResultsFormat: 'JUnit'
+                testResultsFiles: '**/e2e-tests-report*.xml'
+                testRunTitle: 'E2E Tests - Default'
+                mergeTestResults: true
+              condition: succeededOrFailed()
