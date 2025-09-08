@@ -21,24 +21,26 @@ parameters:
   - name: versionBranch
     type: string
     default: none
+variables:
+  - sanitizedTestPrefix: ${{ replace(
+      replace(
+      replace(
+      replace(
+      replace(
+      replace(
+      replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
+      '*', 'STAR'),
+      '?', 'QMARK'),
+      '\', 'BS'),
+      '.', 'DOT'),
+      '(', 'LP'),
+      ')', 'RP') }}
 
 jobs:
   - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
       # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
       # Sadly ADO does not support regex matching here at this time.
-      - job: E2ETestsWeb_${{ parameters.versionBranch }}_${{ parameters.teamsJsReferenceType }}_${{ replace(
-          replace(
-          replace(
-          replace(
-          replace(
-          replace(
-          replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
-          '*', 'STAR'),
-          '?', 'QMARK'),
-          '\', 'BS'),
-          '.', 'DOT'),
-          '(', 'LP'),
-          ')', 'RP') }}
+      - job: E2ETestsWeb_${{ parameters.versionBranch }}_${{ parameters.teamsJsReferenceType }}_${{ sanitizedTestPrefix }}
 
         displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
         pool:
