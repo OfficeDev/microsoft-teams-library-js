@@ -26,7 +26,8 @@ jobs:
   - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
       # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
       # Sadly ADO does not support regex matching here at this time.
-      - job: E2ETestsWeb_${{parameters.versionBranch}}_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'), ']', 'RB'), '{', 'LC'), '}', 'RC'), ',', 'COMMA'), '-', 'DASH'), '*', 'STAR'), '?', 'QMARK'), '\', 'BS'), '.', 'DOT') }}
+      - job: E2ETestsWeb_${{parameters.versionBranch}}_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'), ']', 'RB'), '{', 'LC'), '}', 'RC'), ',', 'COMMA'), '-', 'DASH'), '*', 'STAR'), '?', 'QMARK'), '\\', 'BS'), '.', 'DOT'), '(', 'LP'), ')', 'RP') }}
+
         displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
         pool:
           name: Azure-Pipelines-1ESPT-ExDShared
