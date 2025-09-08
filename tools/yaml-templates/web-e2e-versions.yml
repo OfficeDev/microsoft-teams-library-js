@@ -13,15 +13,7 @@ jobs:
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'npm'
       testPrefixPatternGroups:
-        [
-          'app.',
-          '{appE,appI,appS,auth}',
-          '{[B],[b]}',
-          '{[C-D],[c-d]}',
-          '{[E],[e]}',
-          '{[F-M],[f-m]}',
-          '{[N-Z],[n-z]}',
-        ]
+        ['app_', '{appE,appI,appS,auth}', '{[B],[b]}', '{[C-D],[c-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
       versionBranch: ${{parameters.versionBranch}}
 
   - template: web-e2e-tests-job.yml@self
@@ -30,15 +22,7 @@ jobs:
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'scriptTag'
       testPrefixPatternGroups:
-        [
-          'app.',
-          '{appE,appI,appS,auth}',
-          '{[B],[b]}',
-          '{[C-D],[c-d]}',
-          '{[E],[e]}',
-          '{[F-M],[f-m]}',
-          '{[N-Z],[n-z]}',
-        ]
+        ['app_', '{appE,appI,appS,auth}', '{[B],[b]}', '{[C-D],[c-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
       versionBranch: ${{parameters.versionBranch}}
 
   - template: web-e2e-tests-job.yml@self
