@@ -35,7 +35,7 @@ jobs:
           replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
           '*', 'STAR'),
           '?', 'QMARK'),
-          '\\', 'BS'),
+          '\', 'BS'),
           '.', 'DOT'),
           '(', 'LP'),
           ')', 'RP') }}
