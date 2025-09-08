@@ -38,7 +38,8 @@ jobs:
           '\', 'BS'),
           '.', 'DOT'),
           '(', 'LP'),
-          ')', 'RP') }}
+          ')', 'RP'),
+          '=', 'EQUALS') }}
 
         displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - $(sanitizedTestPrefix)'
         pool:
