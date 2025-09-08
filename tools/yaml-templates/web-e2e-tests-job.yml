@@ -33,7 +33,10 @@ jobs:
           replace(
           replace(
           replace(
-          replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
+          replace(
+          replace(
+          replace(
+          replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
           '*', 'STAR'),
           '?', 'QMARK'),
           '\', 'BS'),
@@ -42,7 +45,7 @@ jobs:
           ')', 'RP'),
           '=', 'EQUALS') }}
 
-        displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{ sanitizedTestPrefix }}'
+        displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - $(variables.sanitizedTestPrefix)'
         pool:
           name: Azure-Pipelines-1ESPT-ExDShared
           image: 'ubuntu-latest'
@@ -61,7 +64,8 @@ jobs:
               '\', 'BS'),
               '.', 'DOT'),
               '(', 'LP'),
-              ')', 'RP') }}
+              ')', 'RP'),
+              '=', 'EQUALS')}}
           - name: envType
             ${{ if eq(parameters.teamsJsReferenceType, 'npm') }}:
               value: 'test'
