@@ -1,5 +1,19 @@
 # This template handles running E2E tests (including all necessary setup steps) from the host SDK repo for various environments.
 # It will run one E2E job for each testPrefixPattern selector in the testPrefixPatternGroups parameter.
+variables:
+  - sanitizedTestPrefix: ${{ replace(
+      replace(
+      replace(
+      replace(
+      replace(
+      replace(
+      replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
+      '*', 'STAR'),
+      '?', 'QMARK'),
+      '\', 'BS'),
+      '.', 'DOT'),
+      '(', 'LP'),
+      ')', 'RP') }}
 
 parameters:
   - name: AppHostingSdk
@@ -21,20 +35,6 @@ parameters:
   - name: versionBranch
     type: string
     default: none
-variables:
-  - sanitizedTestPrefix: ${{ replace(
-      replace(
-      replace(
-      replace(
-      replace(
-      replace(
-      replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
-      '*', 'STAR'),
-      '?', 'QMARK'),
-      '\', 'BS'),
-      '.', 'DOT'),
-      '(', 'LP'),
-      ')', 'RP') }}
 
 jobs:
   - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
