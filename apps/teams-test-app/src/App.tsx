@@ -18,10 +18,8 @@ const validMessageOrigins: string[] | undefined = getOriginsParam ? getOriginsPa
 
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
 if (
-  !urlParams.has('customInit') ||
-  !urlParams.get('customInit') ||
-  !urlParams.has('precacheApp') ||
-  !urlParams.get('precacheApp')
+  (!urlParams.has('customInit') || !urlParams.get('customInit')) &&
+  (!urlParams.has('precacheApp') || !urlParams.get('precacheApp'))
 ) {
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
@@ -34,11 +32,16 @@ if (
 // we do it by adding appInitializationTest=true to query string
 if (
   (urlParams.has('customInit') && urlParams.get('customInit')) ||
-  (urlParams.has(appInitializationTestQueryParameter) && urlParams.get(appInitializationTestQueryParameter))
+  (urlParams.has(appInitializationTestQueryParameter) &&
+    urlParams.get(appInitializationTestQueryParameter) &&
+    (!urlParams.has('precacheApp') || !urlParams.get('precacheApp')))
 ) {
   window.addEventListener('message', handleMessageFromMockedHost);
   console.info('Not calling appInitialization because part of App Initialization Test run');
-} else if (!urlParams.has('precacheApp') || !urlParams.get('precacheApp')) {
+} else if (
+  (!urlParams.has('precacheApp') || !urlParams.get('precacheApp')) &&
+  (!urlParams.has('customInit') || !urlParams.get('customInit'))
+) {
   if (isTestBackCompat()) {
     appInitialization.notifyAppLoaded();
     appInitialization.notifySuccess();
