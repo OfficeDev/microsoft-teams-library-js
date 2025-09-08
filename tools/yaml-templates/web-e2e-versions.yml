@@ -13,15 +13,7 @@ jobs:
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'npm'
       testPrefixPatternGroups:
-        [
-          '{[0-9],app(?=\.)}',
-          '{[APP[EIS]*, AUTH*],[app[EIS]*, auth*]}',
-          '{[B],[b]}',
-          '{[C-D],[c-d]}',
-          '{[E],[e]}',
-          '{[F-M],[f-m]}',
-          '{[N-Z],[n-z]}',
-        ]
+        ['app(?=\.)', '{app[EIS]*,auth*}', '{[B],[b]}', '{[C-D],[c-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
       versionBranch: ${{parameters.versionBranch}}
 
   - template: web-e2e-tests-job.yml@self
