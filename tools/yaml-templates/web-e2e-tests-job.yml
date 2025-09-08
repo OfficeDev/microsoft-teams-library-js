@@ -51,22 +51,6 @@ jobs:
           image: 'ubuntu-latest'
           os: linux
         variables:
-          - name: sanitizedTestPrefix
-            value: ${{ replace(
-              replace(
-              replace(
-              replace(
-              replace(
-              replace(
-              replace(
-              replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
-              '*', 'STAR'),
-              '?', 'QMARK'),
-              '\', 'BS'),
-              '.', 'DOT'),
-              '(', 'LP'),
-              ')', 'RP'),
-              '=', 'EQUALS')}}
           - name: envType
             ${{ if eq(parameters.teamsJsReferenceType, 'npm') }}:
               value: 'test'
