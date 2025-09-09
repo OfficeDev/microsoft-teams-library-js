@@ -16,32 +16,31 @@ export const urlParams = new URLSearchParams(window.location.search);
 const getOriginsParam = urlParams.has('origins') && urlParams.get('origins') ? urlParams.get('origins') : '';
 const validMessageOrigins: string[] | undefined = getOriginsParam ? getOriginsParam.split(',') : undefined;
 
-// This is added for custom initialization when app can be initialized based upon a trigger/click.
-if (
-  (!urlParams.has('customInit') || !urlParams.get('customInit')) &&
-  (!urlParams.has('precacheApp') || !urlParams.get('precacheApp'))
-) {
+const hasCustomInit = urlParams.has('customInit') && urlParams.get('customInit');
+const hasPrecacheApp = urlParams.has('precacheApp') && urlParams.get('precacheApp');
+const hasAppInitTest =
+  urlParams.has(appInitializationTestQueryParameter) && urlParams.get(appInitializationTestQueryParameter);
+
+const noCustomInit = !hasCustomInit;
+const noPrecacheApp = !hasPrecacheApp;
+
+if (noCustomInit && noPrecacheApp) {
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
     app.initialize(validMessageOrigins);
   }
+
+  app.notifyAppLoaded();
+  app.notifySuccess();
 }
 
 // for AppInitialization tests we need a way to stop the Test App from sending these
 // we do it by adding appInitializationTest=true to query string
-if (
-  (urlParams.has('customInit') && urlParams.get('customInit')) ||
-  (urlParams.has(appInitializationTestQueryParameter) &&
-    urlParams.get(appInitializationTestQueryParameter) &&
-    (!urlParams.has('precacheApp') || !urlParams.get('precacheApp')))
-) {
+if (hasCustomInit || (hasAppInitTest && noPrecacheApp)) {
   window.addEventListener('message', handleMessageFromMockedHost);
   console.info('Not calling appInitialization because part of App Initialization Test run');
-} else if (
-  (!urlParams.has('precacheApp') || !urlParams.get('precacheApp')) &&
-  (!urlParams.has('customInit') || !urlParams.get('customInit'))
-) {
+} else if (noPrecacheApp && noCustomInit) {
   if (isTestBackCompat()) {
     appInitialization.notifyAppLoaded();
     appInitialization.notifySuccess();
@@ -51,7 +50,7 @@ if (
   }
 }
 
-if (urlParams.has('precacheApp') && urlParams.get('precacheApp')) {
+if (hasPrecacheApp) {
   app.initialize(validMessageOrigins).then(() => {
     app.notifyAppLoaded();
     app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
@@ -62,7 +61,7 @@ if (urlParams.has('precacheApp') && urlParams.get('precacheApp')) {
     app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
       // get the route from the context
       console.log(context.contentUrl);
-      if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+      if (noCustomInit) {
         app.notifySuccess();
       }
     });
