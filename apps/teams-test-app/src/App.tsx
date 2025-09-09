@@ -30,9 +30,6 @@ if (noCustomInit && noPrecacheApp) {
   } else {
     app.initialize(validMessageOrigins);
   }
-
-  app.notifyAppLoaded();
-  app.notifySuccess();
 }
 
 // for AppInitialization tests we need a way to stop the Test App from sending these
