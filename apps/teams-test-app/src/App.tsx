@@ -24,7 +24,24 @@ if (
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
-    app.initialize(validMessageOrigins);
+    app.initialize(validMessageOrigins).then(() => {
+      app.notifyAppLoaded();
+      app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
+        return new Promise<void>((resolve) => {
+          resolve();
+        });
+      });
+      app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
+        // get the route from the context
+        console.log(context.contentUrl);
+        // navigate to the correct path based on URL
+        // navigate(route.pathname);
+        if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+          app.notifySuccess();
+        }
+      });
+      app.notifySuccess();
+    });
   }
 }
 
@@ -46,8 +63,7 @@ if (
     appInitialization.notifyAppLoaded();
     appInitialization.notifySuccess();
   } else {
-    app.notifyAppLoaded();
-    app.notifySuccess();
+    //
   }
 }
 
