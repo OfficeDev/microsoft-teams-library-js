@@ -131,6 +131,8 @@ export const enum ApiName {
   ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest = 'externalAppAuthentication.authenticateWithSSOAndResendRequest',
   ExternalAppAuthentication_AuthenticateWithOauth2 = 'externalAppAuthentication.authenticateWithOauth2',
   ExternalAppAuthentication_AuthenticateWithPowerPlatformConnectorPlugins = 'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
+  ExternalAppAuthentication_AuthenticateWithConnector = 'externalAppAuthentication.authenticateWithConnector',
+  ExternalAppAuthentication_GetUserAuthenticationStateForConnector = 'externalAppAuthentication.getUserAuthenticationStateForConnector',
   ExternalAppAuthenticationForCEA_AuthenticateWithOauth = 'externalAppAuthenticationForCEA.authenticateWithOauth',
   ExternalAppAuthenticationForCEA_AuthenticateWithSSO = 'externalAppAuthenticationForCEA.authenticateWithSSO',
   ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest = 'externalAppAuthenticationForCEA.authenticateAndResendRequest',
