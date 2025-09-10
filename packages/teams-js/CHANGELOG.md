@@ -1,8 +1,21 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 27 Aug 2025 21:57:44 GMT and should not be manually modified.
+This log was last generated on Wed, 10 Sep 2025 22:10:41 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.45.0
+
+Wed, 10 Sep 2025 22:10:41 GMT
+
+### Minor changes
+
+- Added `{authenticateWithConnector}  and { getUserAuthenticationStateForConnector}` to  `externalAppAuthentication` capability that will authenticate the user and get user authentication status for copilot connectors. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Added `sidePanel` to `openFilePreview`'s ensureInitialized FrameContexts
 
 ## 2.44.0
 
