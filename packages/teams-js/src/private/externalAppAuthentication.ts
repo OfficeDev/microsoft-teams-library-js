@@ -807,7 +807,7 @@ export function getUserAuthenticationStateForConnector(input: ConnectorParameter
  *
  * @param connectorId - The unique identifier for the federated connector.
  * @param oauthConfigId - The OAuth configuration ID associated with the connector.
- * @returns A promise that resolves to the user's authentication state for the federated connector.
+ * @returns A promise that resolves when the connector is successfully disconnected and rejects with InvokeError on failure.
  * @throws Error if the capability is not supported or if initialization has not completed.
  */
 export function disconnectConnector(input: ConnectorParameters): Promise<void> {
