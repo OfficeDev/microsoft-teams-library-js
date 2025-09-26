@@ -185,6 +185,38 @@ const GetUserAuthenticationStateForConnector = (): React.ReactElement =>
     }),
   });
 
+const DisconnectConnector = (): React.ReactElement =>
+  ApiWithTextInput<{
+    connectorId: string;
+    oAuthConfigId: string;
+    traceId: UUID;
+  }>({
+    name: 'disconnectConnector',
+    title: 'Disconnect Connector',
+    onClick: {
+      validateInput: (input) => {
+        if (!input.connectorId) {
+          throw new Error('connectorId is required');
+        }
+        if (!input.oAuthConfigId) {
+          throw new Error('oauthConfigId is required');
+        }
+        if (!input.traceId) {
+          throw new Error('traceId is required');
+        }
+      },
+      submit: async (input) => {
+        await externalAppAuthentication.disconnectConnector(input);
+        return 'success';
+      },
+    },
+    defaultInput: JSON.stringify({
+      connectorId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
+      oAuthConfigId: 'testOauthConfigId',
+      traceId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+    }),
+  });
+
 const AuthenticateWithPPC = (): React.ReactElement =>
   ApiWithTextInput<{
     titleId: string;
@@ -305,6 +337,7 @@ const ExternalAppAuthenticationAPIs = (): React.ReactElement => (
     <AuthenticateWithOauth2 />
     <AuthenticateWithConnector />
     <GetUserAuthenticationStateForConnector />
+    <DisconnectConnector />
     <AuthenticateWithPPC />
     <AuthenticateWithSSO />
     <AuthenticateWithSSOAndResendRequest />
