@@ -929,6 +929,159 @@ describe('externalAppAuthentication', () => {
     });
   });
 
+  describe('disconnectConnector', () => {
+    const allowedFrameContexts = [FrameContexts.content];
+    const testConnectorId = 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe';
+    const testOAuthConfigId = 'testOauthConfigId';
+    const testWindowParameters = { width: 500, height: 400, isExternal: false };
+
+    it('should not allow calls before initialization', () => {
+      const trace = new UUID('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a');
+      return expect(() =>
+        externalAppAuthentication.disconnectConnector({
+          connectorId: testConnectorId,
+          oAuthConfigId: testOAuthConfigId,
+          traceId: trace,
+          windowParameters: testWindowParameters,
+        }),
+      ).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('should throw error when externalAppAuthentication is not supported in runtime config.', async () => {
+      const trace = new UUID('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a');
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+      expect.assertions(1);
+      try {
+        await externalAppAuthentication.disconnectConnector({
+          connectorId: testConnectorId,
+          oAuthConfigId: testOAuthConfigId,
+          traceId: trace,
+          windowParameters: testWindowParameters,
+        });
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
+
+    Object.values(FrameContexts).forEach((frameContext) => {
+      if (allowedFrameContexts.includes(frameContext)) {
+        it(`should call host and resolve on success with context - ${frameContext}`, async () => {
+          expect.assertions(3);
+          const trace = new UUID('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a');
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+
+          const params = {
+            connectorId: testConnectorId,
+            oAuthConfigId: testOAuthConfigId,
+            traceId: trace,
+            windowParameters: testWindowParameters,
+          };
+
+          const promise = externalAppAuthentication.disconnectConnector(params);
+
+          const message = utils.findMessageByFunc('externalAppAuthentication.disconnectConnector');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              {
+                connectorId: params.connectorId,
+                oAuthConfigId: params.oAuthConfigId,
+                traceId: params.traceId.toString(),
+                windowParameters: params.windowParameters,
+              },
+            ]);
+            // callFunctionInHost expects an SdkError or undefined; respond with undefined to indicate success
+            utils.respondToMessage(message, undefined);
+          }
+
+          return expect(promise).resolves.toBeUndefined();
+        });
+
+        it('should throw host SdkError', async () => {
+          const trace = new UUID('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a');
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+
+          const params = {
+            connectorId: testConnectorId,
+            oAuthConfigId: testOAuthConfigId,
+            traceId: trace,
+            windowParameters: testWindowParameters,
+          };
+
+          const promise = externalAppAuthentication.disconnectConnector(params);
+
+          const message = utils.findMessageByFunc('externalAppAuthentication.disconnectConnector');
+          const testError = { errorCode: 'INTERNAL_ERROR', message: 'test error message' };
+
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              {
+                connectorId: params.connectorId,
+                oAuthConfigId: params.oAuthConfigId,
+                traceId: params.traceId.toString(),
+                windowParameters: params.windowParameters,
+              },
+            ]);
+            utils.respondToMessage(message, testError);
+          }
+
+          await expect(promise).rejects.toThrowError(
+            new Error(`${testError.errorCode}, message: ${testError.message}`),
+          );
+        });
+
+        it(`should throw error on invalid connectorId - ${frameContext}`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          try {
+            await externalAppAuthentication.disconnectConnector({
+              connectorId: 'invalidId<script>',
+              oAuthConfigId: testOAuthConfigId,
+              traceId: new UUID(),
+            });
+          } catch (e) {
+            expect(e).toEqual(new Error('connectorId is Invalid.'));
+          }
+        });
+
+        it(`should throw error on invalid oAuthConfigId - ${frameContext}`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          try {
+            await externalAppAuthentication.disconnectConnector({
+              connectorId: testConnectorId,
+              oAuthConfigId: 'invalidId<script>',
+              traceId: new UUID(),
+            });
+          } catch (e) {
+            expect(e).toEqual(new Error('oauthConfigId is Invalid.'));
+          }
+        });
+      } else {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          return expect(() =>
+            externalAppAuthentication.disconnectConnector({
+              connectorId: testConnectorId,
+              oAuthConfigId: testOAuthConfigId,
+              traceId: new UUID(),
+            }),
+          ).toThrowError(
+            new Error(
+              `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
+                `Current context: "${frameContext}".`,
+            ),
+          );
+        });
+      }
+    });
+  });
+
   describe('getUserAuthenticationStateForConnector', () => {
     const allowedFrameContexts = [FrameContexts.content];
     const testConnectorId = 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe';

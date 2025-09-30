@@ -798,6 +798,40 @@ export function getUserAuthenticationStateForConnector(input: ConnectorParameter
 }
 
 /**
+ * @beta
+ * @hidden
+ * Retrieves the authentication state for a user for a given federated connector.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @param connectorId - The unique identifier for the federated connector.
+ * @param oauthConfigId - The OAuth configuration ID associated with the connector.
+ * @returns A promise that resolves when the connector is successfully disconnected and rejects with InvokeError on failure.
+ * @throws Error if the capability is not supported or if initialization has not completed.
+ */
+export function disconnectConnector(input: ConnectorParameters): Promise<void> {
+  ensureInitialized(runtime, FrameContexts.content);
+
+  if (!isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+
+  validateId(input.connectorId, new Error('connectorId is Invalid.'));
+  validateId(input.oAuthConfigId, new Error('oauthConfigId is Invalid.'));
+
+  return callFunctionInHost(
+    ApiName.ExternalAppAuthentication_DisconnectConnector,
+    [new SerializableConnectorParameters(input)],
+    getApiVersionTag(
+      externalAppAuthenticationTelemetryVersionNumber,
+      ApiName.ExternalAppAuthentication_DisconnectConnector,
+    ),
+    isInvokeError,
+  );
+}
+
+/**
  * @hidden
  * Checks if the externalAppAuthentication capability is supported by the host
  * @returns boolean to represent whether externalAppAuthentication capability is supported
