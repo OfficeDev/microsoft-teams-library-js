@@ -1,8 +1,17 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 10 Sep 2025 22:10:41 GMT and should not be manually modified.
+This log was last generated on Wed, 01 Oct 2025 22:58:28 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.46.0
+
+Wed, 01 Oct 2025 22:58:28 GMT
+
+### Minor changes
+
+- Added `disconnectConnector` to `{externalAppAuthentication}` capability that will disconnect the external app connector. The capability is still awaiting support in one or more host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ## 2.45.0
 
