@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Merged 2.45.0 release into main",
+  "comment": "merging the 2.46.0 release back into main",
   "packageName": "@microsoft/teams-js",
   "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
   "dependentChangeType": "none"
