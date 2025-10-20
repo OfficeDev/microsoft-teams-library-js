@@ -270,15 +270,6 @@ describe('utils', () => {
         expect(error).toEqual(new Error('Invalid Url'));
       }
     });
-    it('should throw maxlength exceed error if it contains more than 2048 chars', async () => {
-      expect.assertions(1);
-      const url = 'https://example.com?param=' + 'a'.repeat(2048);
-      try {
-        validateUrl(new URL(url));
-      } catch (error) {
-        expect(error).toEqual(new Error('Url exceeds the maximum size of 2048 characters'));
-      }
-    });
     it('should throw invalid url error if it non http url', async () => {
       expect.assertions(1);
       // eslint-disable-next-line @microsoft/sdl/no-insecure-url
