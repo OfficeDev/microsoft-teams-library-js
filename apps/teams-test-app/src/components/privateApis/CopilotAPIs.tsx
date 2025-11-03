@@ -83,17 +83,31 @@ const CopilotAPIs = (): ReactElement => {
       },
       defaultInput: JSON.stringify({
         localEndpointInfo: 'read',
+        correlationId: 'testValue',
       }),
     });
 
   const PreCheckUserConsent = (): ReactElement =>
-    ApiWithoutInput({
+    ApiWithTextInput<sidePanelInterfaces.UserConsentRequest>({
       name: 'preCheckUserConsent',
       title: 'Get User Consent',
-      onClick: async () => {
-        const result = await copilot.sidePanel.preCheckUserConsent();
-        return JSON.stringify(result);
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        validateInput: (_input) => {},
+        submit: async (input) => {
+          try {
+            const result = input
+              ? await copilot.sidePanel.preCheckUserConsent(input)
+              : await copilot.sidePanel.preCheckUserConsent();
+            return JSON.stringify(result);
+          } catch (error) {
+            return `Error: ${error}`;
+          }
+        },
       },
+      defaultInput: JSON.stringify({
+        isMultiTabEnabled: true,
+      }),
     });
 
   const RegisterUserActionContentSelect = (): React.ReactElement =>
