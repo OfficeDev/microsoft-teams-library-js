@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `disconnectConnector` to `{externalAppAuthentication}` capability that will disconnect the external app connector. The capability is still awaiting support in one or more host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
-  "packageName": "@microsoft/teams-js",
-  "email": "niharikad@microsoft.com",
-  "dependentChangeType": "patch"
-}
