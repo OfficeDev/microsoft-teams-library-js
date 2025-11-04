@@ -473,7 +473,7 @@ export interface ContentRequest {
   /**
    * @deprecated Use the index signature `[key: string]: unknown` instead to pass custom properties.
    */
-  localEndpointInfo: string; // local endpoint information for the request - used by Edge
+  localEndpointInfo?: string; // local endpoint information for the request - used by Edge
   [key: string]: unknown;
 }
 
