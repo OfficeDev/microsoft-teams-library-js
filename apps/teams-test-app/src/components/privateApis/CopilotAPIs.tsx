@@ -81,6 +81,7 @@ const CopilotAPIs = (): ReactElement => {
           }
         },
       },
+      isInputOptional: true,
       defaultInput: JSON.stringify({
         localEndpointInfo: 'read',
         correlationId: 'testValue',
@@ -105,6 +106,7 @@ const CopilotAPIs = (): ReactElement => {
           }
         },
       },
+      isInputOptional: true,
       defaultInput: JSON.stringify({
         isMultiTabEnabled: true,
       }),
