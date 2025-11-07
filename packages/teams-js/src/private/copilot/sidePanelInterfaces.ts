@@ -470,7 +470,23 @@ export interface Content {
  * Limited to Microsoft-internal use
  */
 export interface ContentRequest {
-  localEndpointInfo: string; // local endpoint information for the request- used by Edge
+  /**
+   * @deprecated Use the index signature `[key: string]: unknown` instead to pass custom properties.
+   */
+  localEndpointInfo?: string; // local endpoint information for the request - used by Edge
+  [key: string]: unknown;
+}
+
+/**
+ * @hidden
+ *
+ * The UserConsentRequest interface represents the request params sent to the hub to get user consent.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface UserConsentRequest {
+  [key: string]: unknown;
 }
 
 /**
