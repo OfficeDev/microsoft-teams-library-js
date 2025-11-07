@@ -23,6 +23,7 @@ import {
   SidePanelError,
   SidePanelErrorCode,
   SidePanelErrorImpl,
+  UserConsentRequest,
 } from './sidePanelInterfaces';
 
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
@@ -95,11 +96,12 @@ export async function getContent(request?: ContentRequest): Promise<Content> {
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function preCheckUserConsent(): Promise<PreCheckContextResponse> {
+export async function preCheckUserConsent(request?: UserConsentRequest): Promise<PreCheckContextResponse> {
   ensureInitialized(runtime);
+  const input = request ? [new SerializableUserConsentRequest(request)] : [];
   return callFunctionInHostAndHandleResponse(
     ApiName.Copilot_SidePanel_PreCheckUserConsent,
-    [],
+    input,
     new PreCheckContextResponseHandler(),
     getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_SidePanel_PreCheckUserConsent),
     isResponseAReportableError,
@@ -168,5 +170,12 @@ class SerializableContentRequest implements ISerializable {
   public constructor(private contentRequest: ContentRequest) {}
   public serialize(): object {
     return this.contentRequest;
+  }
+}
+
+class SerializableUserConsentRequest implements ISerializable {
+  public constructor(private userConsentRequest: UserConsentRequest) {}
+  public serialize(): object {
+    return this.userConsentRequest;
   }
 }
