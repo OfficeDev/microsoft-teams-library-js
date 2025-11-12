@@ -7,15 +7,22 @@
  * @module
  */
 
-import { callFunctionInHostAndHandleResponse } from '../../internal/communication';
+import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../../internal/communication';
 import { ensureInitializeCalled, ensureInitialized } from '../../internal/internalAPIs';
 import { ResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { ISerializable, SdkError } from '../../public';
 import { isSdkError } from '../../public/interfaces';
 import { runtime } from '../../public/runtime';
-import { isResponseAReportableError } from '../copilot/sidePanel';
-import { IExternalAppWidgetContext, IToolInput, IToolOutput, WidgetError, WidgetErrorCode } from './widgetContext';
+import {
+  DisplayMode,
+  IExternalAppWidgetContext,
+  IToolInput,
+  IToolOutput,
+  UnknownObject,
+  WidgetError,
+  WidgetErrorCode,
+} from './widgetContext';
 
 const widgetHostingVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1; // TODO: Ask Kangxuan for this version number
 const widgetHostingLogger = getLogger('widgetHosting');
@@ -52,7 +59,7 @@ export async function getWidgetData(): Promise<IExternalAppWidgetContext> {
   );
 }
 
-export async function callTool(input: IToolInput): Promise<IToolOutput> { 
+export async function callTool(input: IToolInput): Promise<IToolOutput> {
   ensureInitializeCalled();
   widgetHostingLogger('Calling tool with input: ', input);
   return callFunctionInHostAndHandleResponse(
@@ -61,6 +68,91 @@ export async function callTool(input: IToolInput): Promise<IToolOutput> {
     new CallToolResponseHandler(),
     getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_CallTool),
     isWidgetResponseAReportableError,
+  );
+}
+
+/**
+ * @beta
+ * @hidden
+ * Sends a follow-up message to the host
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export async function sendFollowUpMessage(args: { prompt: string }): Promise<void> {
+  ensureInitializeCalled();
+  widgetHostingLogger('Sending follow-up message with prompt: ', args.prompt);
+  return callFunctionInHost(
+    ApiName.WidgetHosting_SendFollowUpMessage,
+    [new SerializableFollowUpMessageArgs(args)],
+    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_SendFollowUpMessage),
+  );
+}
+
+/**
+ * @beta
+ * @hidden
+ * Requests a specific display mode for the widget
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export async function requestDisplayMode(args: { mode: DisplayMode }): Promise<{ mode: DisplayMode }> {
+  ensureInitializeCalled();
+  widgetHostingLogger('Requesting display mode: ', args.mode);
+  return callFunctionInHostAndHandleResponse(
+    ApiName.WidgetHosting_RequestDisplayMode,
+    [new SerializableDisplayModeArgs(args)],
+    new RequestDisplayModeResponseHandler(),
+    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_RequestDisplayMode),
+    isWidgetResponseAReportableError,
+  );
+}
+/**
+ * @beta
+ * @hidden
+ * Sets the widget state
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export async function setWidgetState(state: UnknownObject): Promise<void> {
+  ensureInitializeCalled();
+  widgetHostingLogger('Setting widget state: ', state);
+  return callFunctionInHost(
+    ApiName.WidgetHosting_SetWidgetState,
+    [new SerializableWidgetState(state)],
+    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_SetWidgetState),
+  );
+}
+
+/**
+ * @beta
+ * @hidden
+ * Opens an external URL
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function openExternal(payload: { href: string }): void {
+  ensureInitializeCalled();
+  widgetHostingLogger('Opening external URL: ', payload.href);
+  callFunctionInHost(
+    ApiName.WidgetHosting_OpenExternal,
+    [new SerializableOpenExternalArgs(payload)],
+    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_OpenExternal),
+  );
+}
+/**
+ * @beta
+ * @hidden
+ * Notifies the host about content size changes
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function contentSizeChanged(width: number, height: number): void {
+  ensureInitializeCalled();
+  widgetHostingLogger('Content size changed: ', { width, height });
+  callFunctionInHost(
+    ApiName.WidgetHosting_ContentSizeChanged,
+    [new SerializableContentSizeArgs(width, height)],
+    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_ContentSizeChanged),
   );
 }
 
@@ -118,6 +210,84 @@ class SerializableToolInput implements ISerializable {
     return {
       name: this.toolInput.name,
       arguments: this.toolInput.arguments,
+    };
+  }
+}
+
+class RequestDisplayModeResponseHandler extends ResponseHandler<{ mode: DisplayMode }, { mode: DisplayMode }> {
+  public validate(response: { mode: DisplayMode }): boolean {
+    return response !== null && typeof response === 'object' && typeof response.mode === 'string';
+  }
+
+  public deserialize(response: { mode: DisplayMode }): { mode: DisplayMode } {
+    return response;
+  }
+}
+
+// Add the serializable classes after the existing SerializableToolInput:
+
+/**
+ * Serializable wrapper for follow-up message arguments
+ */
+class SerializableFollowUpMessageArgs implements ISerializable {
+  public constructor(private readonly args: { prompt: string }) {}
+
+  public serialize(): object {
+    return {
+      prompt: this.args.prompt,
+    };
+  }
+}
+/**
+ * Serializable wrapper for display mode arguments
+ */
+class SerializableDisplayModeArgs implements ISerializable {
+  public constructor(private readonly args: { mode: DisplayMode }) {}
+
+  public serialize(): object {
+    return {
+      mode: this.args.mode,
+    };
+  }
+}
+
+/**
+ * Serializable wrapper for widget state
+ */
+class SerializableWidgetState implements ISerializable {
+  public constructor(private readonly state: UnknownObject) {}
+
+  public serialize(): object {
+    return this.state;
+  }
+}
+
+/**
+ * Serializable wrapper for external URL arguments
+ */
+class SerializableOpenExternalArgs implements ISerializable {
+  public constructor(private readonly payload: { href: string }) {}
+
+  public serialize(): object {
+    return {
+      href: this.payload.href,
+    };
+  }
+}
+
+/**
+ * Serializable wrapper for content size arguments
+ */
+class SerializableContentSizeArgs implements ISerializable {
+  public constructor(
+    private readonly width: number,
+    private readonly height: number,
+  ) {}
+
+  public serialize(): object {
+    return {
+      width: this.width,
+      height: this.height,
     };
   }
 }
