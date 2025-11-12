@@ -11,11 +11,11 @@ import { callFunctionInHostAndHandleResponse } from '../../internal/communicatio
 import { ensureInitializeCalled, ensureInitialized } from '../../internal/internalAPIs';
 import { ResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
-import { SdkError } from '../../public';
+import { ISerializable, SdkError } from '../../public';
 import { isSdkError } from '../../public/interfaces';
 import { runtime } from '../../public/runtime';
 import { isResponseAReportableError } from '../copilot/sidePanel';
-import { IExternalAppWidgetContext, WidgetError, WidgetErrorCode } from './widgetContext';
+import { IExternalAppWidgetContext, IToolInput, IToolOutput, WidgetError, WidgetErrorCode } from './widgetContext';
 
 const widgetHostingVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1; // TODO: Ask Kangxuan for this version number
 const widgetHostingLogger = getLogger('widgetHosting');
@@ -48,7 +48,19 @@ export async function getWidgetData(): Promise<IExternalAppWidgetContext> {
     [],
     new GetWidgetDataResponseHandler(),
     getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_GetWidgetData),
-    isResponseAReportableError,
+    isWidgetResponseAReportableError,
+  );
+}
+
+export async function callTool(input: IToolInput): Promise<IToolOutput> { 
+  ensureInitializeCalled();
+  widgetHostingLogger('Calling tool with input: ', input);
+  return callFunctionInHostAndHandleResponse(
+    ApiName.WidgetHosting_CallTool,
+    [new SerializableToolInput(input)],
+    new CallToolResponseHandler(),
+    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_CallTool),
+    isWidgetResponseAReportableError,
   );
 }
 
@@ -81,5 +93,31 @@ class GetWidgetDataResponseHandler extends ResponseHandler<IExternalAppWidgetCon
 
   public deserialize(response: IExternalAppWidgetContext): IExternalAppWidgetContext {
     return response;
+  }
+}
+class CallToolResponseHandler extends ResponseHandler<IToolOutput, IToolOutput> {
+  public validate(response: IToolOutput): boolean {
+    return response !== null && typeof response === 'object';
+  }
+
+  public deserialize(response: IToolOutput): IToolOutput {
+    return response;
+  }
+}
+/**
+ * Serializable wrapper for IToolInput to enable host communication
+ */
+class SerializableToolInput implements ISerializable {
+  public constructor(private readonly toolInput: IToolInput) {}
+
+  /**
+   * Serializes the tool input to a JSON-compliant format for host communication.
+   * @returns JSON representation of the tool input.
+   */
+  public serialize(): object {
+    return {
+      name: this.toolInput.name,
+      arguments: this.toolInput.arguments,
+    };
   }
 }

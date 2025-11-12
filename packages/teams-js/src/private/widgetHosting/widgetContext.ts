@@ -34,7 +34,7 @@ export type DisplayMode = 'pip' | 'inline' | 'fullscreen';
 /**
  * MCP-compatible tool input structure following OpenAI MCP server specification
  */
-export interface IToolInput extends UnknownObject {
+export interface IToolInput {
   /** The name of the tool to call */
   name: string;
   /** Arguments passed to the tool as key-value pairs */

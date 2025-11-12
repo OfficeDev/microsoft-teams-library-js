@@ -388,4 +388,5 @@ export const enum ApiName {
   VisualMedia_RequestPermission = 'visualMedia.requestPermission',
   WebStorage_IsWebStorageClearedOnUserLogOut = 'webStorage.isWebStorageClearedOnUserLogOut',
   WidgetHosting_GetWidgetData = 'widgetHosting.getWidgetData',
+  WidgetHosting_CallTool = 'widgetHosting.callTool',
 }
