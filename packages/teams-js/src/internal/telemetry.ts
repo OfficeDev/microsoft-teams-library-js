@@ -387,4 +387,11 @@ export const enum ApiName {
   VisualMedia_Image_RetrieveImages = 'visualMedia.image.retrieveImages',
   VisualMedia_RequestPermission = 'visualMedia.requestPermission',
   WebStorage_IsWebStorageClearedOnUserLogOut = 'webStorage.isWebStorageClearedOnUserLogOut',
+  WidgetHosting_GetWidgetData = 'widgetHosting.getWidgetData',
+  WidgetHosting_CallTool = 'widgetHosting.callTool',
+  WidgetHosting_SendFollowUpMessage = 'widgetHosting.sendFollowUpMessage',
+  WidgetHosting_RequestDisplayMode = 'widgetHosting.requestDisplayMode',
+  WidgetHosting_SetWidgetState = 'widgetHosting.setWidgetState',
+  WidgetHosting_OpenExternal = 'widgetHosting.openExternal',
+  WidgetHosting_ContentSizeChanged = 'widgetHosting.contentSizeChanged',
 }
