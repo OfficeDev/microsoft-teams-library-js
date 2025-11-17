@@ -135,6 +135,9 @@ const RegisterBeforeSuspendOrTerminateHandler = (): React.ReactElement =>
               setResult('beforeSuspendOrTerminate received');
               resolve();
             }, delay);
+            setTimeout(() => {
+              window.location.reload();
+            }, 10000);
           });
         });
         return 'registered';

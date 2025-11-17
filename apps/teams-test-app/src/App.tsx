@@ -24,7 +24,22 @@ if (
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
-    app.initialize(validMessageOrigins);
+    app.initialize(validMessageOrigins).then(() => {
+      app.notifyAppLoaded();
+      app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
+        return new Promise<void>((resolve) => {
+          setTimeout(() => {
+            window.location.reload();
+          }, 10000);
+          resolve();
+        });
+      });
+
+      app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
+        app.notifySuccess();
+      });
+      app.notifySuccess();
+    });
   }
 }
 
