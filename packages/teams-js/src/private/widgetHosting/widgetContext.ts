@@ -1,9 +1,10 @@
+import { RenderingSurfaces } from '../../public';
+
 export interface ISecurityPolicy {
   connectDomains?: string[];
   resourceDomains?: string[];
   isTrusted?: boolean;
 }
-export type UnknownObject = Record<string, unknown>;
 
 export type Theme = 'light' | 'dark';
 
@@ -28,6 +29,38 @@ export type UserAgent = {
   };
 };
 
+/**
+ * Options for requesting a modal dialog
+ */
+export interface IModalOptions {
+  /** Unique identifier for the modal */
+  id: string;
+  /** Title at the top of the modal window */
+  title?: string;
+  /** Inner HTML string inserted into the modal's body */
+  content: string;
+  /** Preferred modal width in pixels */
+  width?: number;
+  /** Preferred modal height in pixels */
+  height?: number;
+}
+
+/**
+ * Response from requesting a modal dialog
+ */
+export interface IModalResponse {
+  /** A DOM element representing the modal's root */
+  modalElement: HTMLElement;
+}
+
+/** Declare generic JSON - serializable structure */
+export interface JSONObject {
+  [key: string]: JSONValue;
+}
+export interface JSONArray extends Array<JSONValue> {}
+
+export type JSONValue = string | number | boolean | null | JSONObject | JSONArray;
+
 /** Display mode */
 export type DisplayMode = 'pip' | 'inline' | 'fullscreen';
 
@@ -44,7 +77,7 @@ export interface IToolInput {
 /**
  * MCP-compatible tool output structure matching exact MCP schema
  */
-export interface IToolOutput extends UnknownObject {
+export interface IToolOutput {
   /** Whether the tool call resulted in an error */
   isError?: boolean;
   /** Array of content blocks returned by the tool */
@@ -76,10 +109,10 @@ export interface IToolOutput extends UnknownObject {
 /**
  * Widget context similar to IWidgetHost structure - simplified for widget rendering
  */
-export interface IExternalAppWidgetContext {
+export interface IWidgetContext {
   /** Unique identifier for the widget instance */
   widgetId: string;
-  /** Widget HTML content to render */
+  /** Widget HTML contentk,l;; to render */
   html: string;
   /** widget domain that developer has registered their app to */
   domain: string;
@@ -94,20 +127,10 @@ export interface IExternalAppWidgetContext {
     displayMode?: DisplayMode;
     safeArea?: SafeArea;
     maxHeight?: number;
+    view?: RenderingSurfaces; // need to convert this to view types supported by the openAI apps.
 
-    // Widget state and data
-    toolInput?: IToolInput;
-    toolOutput?: IToolOutput;
-    toolResponseMetadata?: UnknownObject | null;
-    widgetState?: UnknownObject | null;
-
-    // API functions
-    callTool?: (name: string, args: Record<string, unknown>) => Promise<IToolOutput>;
-    sendFollowUpMessage?: (args: { prompt: string }) => Promise<void>;
-    requestDisplayMode?: (args: { mode: DisplayMode }) => Promise<{ mode: DisplayMode }>;
-    setWidgetState?: (state: UnknownObject) => Promise<void>;
-    openExternal?: (payload: { href: string }) => void;
-    contentSizeChanged?: (width: number, height: number) => void;
+    // Widget state and data // TODO: dunno if this should be part of the widgetContext
+    widgetState?: JSONValue;
   };
 }
 

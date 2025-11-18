@@ -8,6 +8,7 @@
  */
 
 import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../../internal/communication';
+import { registerHandlerHelper } from '../../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../../internal/internalAPIs';
 import { ResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
@@ -16,10 +17,12 @@ import { isSdkError } from '../../public/interfaces';
 import { runtime } from '../../public/runtime';
 import {
   DisplayMode,
-  IExternalAppWidgetContext,
+  IModalOptions,
+  IModalResponse,
   IToolInput,
   IToolOutput,
-  UnknownObject,
+  IWidgetContext,
+  JSONValue,
   WidgetError,
   WidgetErrorCode,
 } from './widgetContext';
@@ -47,7 +50,7 @@ export function isSupported(): boolean {
  * Limited to Microsoft-internal use
  * @beta
  */
-export async function getWidgetData(): Promise<IExternalAppWidgetContext> {
+export async function getWidgetData(): Promise<IWidgetContext> {
   ensureInitializeCalled();
   widgetHostingLogger('Calling Hub to retrieve the widget data');
   return callFunctionInHostAndHandleResponse(
@@ -95,17 +98,54 @@ export async function sendFollowUpMessage(args: { prompt: string }): Promise<voi
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function requestDisplayMode(args: { mode: DisplayMode }): Promise<{ mode: DisplayMode }> {
+export async function requestDisplayMode(args: { mode: DisplayMode }): Promise<void> {
   ensureInitializeCalled();
   widgetHostingLogger('Requesting display mode: ', args.mode);
-  return callFunctionInHostAndHandleResponse(
+  return callFunctionInHost(
     ApiName.WidgetHosting_RequestDisplayMode,
     [new SerializableDisplayModeArgs(args)],
-    new RequestDisplayModeResponseHandler(),
     getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_RequestDisplayMode),
+  );
+}
+
+/**
+ * @beta
+ * @hidden
+ * Requests a modal dialog to be displayed
+ * @internal
+ * Limited to Microsoft-internal use
+ * @param options - Configuration options for the modal
+ * @returns A DOM element representing the modal's root
+ */
+export async function requestModal(options: IModalOptions): Promise<IModalResponse> {
+  ensureInitializeCalled();
+  widgetHostingLogger('Requesting modal with options: ', options);
+  return callFunctionInHostAndHandleResponse(
+    ApiName.WidgetHosting_RequestModal,
+    [new SerializableModalOptions(options)],
+    new RequestModalResponseHandler(),
+    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_RequestModal),
     isWidgetResponseAReportableError,
   );
 }
+
+/**
+ * @beta
+ * @hidden
+ * Notifies the host about the intrinsic height of the widget content
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function notifyIntrinsicHeight(height: number): void {
+  ensureInitializeCalled();
+  widgetHostingLogger('Notifying intrinsic height: ', height);
+  callFunctionInHost(
+    ApiName.WidgetHosting_NotifyIntrinsicHeight,
+    [new SerializableIntrinsicHeightArgs(height)],
+    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_NotifyIntrinsicHeight),
+  );
+}
+
 /**
  * @beta
  * @hidden
@@ -113,7 +153,7 @@ export async function requestDisplayMode(args: { mode: DisplayMode }): Promise<{
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function setWidgetState(state: UnknownObject): Promise<void> {
+export async function setWidgetState(state: JSONValue): Promise<void> {
   ensureInitializeCalled();
   widgetHostingLogger('Setting widget state: ', state);
   return callFunctionInHost(
@@ -139,20 +179,58 @@ export function openExternal(payload: { href: string }): void {
     getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_OpenExternal),
   );
 }
+
+/** Modal close handler function type */
+export type ModalCloseHandlerType = (modalId: string) => void;
+
 /**
- * @beta
  * @hidden
- * Notifies the host about content size changes
+ * @beta
+ * Registers a handler to be called when a modal is closed.
+ * This handler will be called when the user closes a modal or when .close() is invoked.
+ * @param handler - The handler for modal close events.
+ *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function contentSizeChanged(width: number, height: number): void {
-  ensureInitializeCalled();
-  widgetHostingLogger('Content size changed: ', { width, height });
-  callFunctionInHost(
-    ApiName.WidgetHosting_ContentSizeChanged,
-    [new SerializableContentSizeArgs(width, height)],
-    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_ContentSizeChanged),
+export function registerModalCloseHandler(handler: ModalCloseHandlerType): void {
+  registerHandlerHelper(
+    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_RegisterModalCloseHandler),
+    'widgetHosting.modalClose',
+    handler,
+    [],
+    () => {
+      if (!isSupported()) {
+        throw new Error('Widget Hosting is not supported on this platform');
+      }
+    },
+  );
+}
+
+/** Widget update handler function type */
+export type WidgetUpdateHandlerType = (updateData: IWidgetContext) => void;
+
+/**
+ * @hidden
+ * @beta
+ * Registers a handler to be called when the widget data is updated.
+ * This handler will be called when the host sends updated widget context data.
+ * @param handler - The handler for widget update events.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerWidgetUpdateHandler(handler: WidgetUpdateHandlerType): void {
+  registerHandlerHelper(
+    getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_RegisterWidgetUpdateHandler),
+    'widgetHosting.widgetUpdate',
+    handler,
+    [],
+    () => {
+      if (!isSupported()) {
+        throw new Error('Widget Hosting is not supported on this platform');
+      }
+    },
   );
 }
 
@@ -178,12 +256,12 @@ export function isWidgetResponseAReportableError(err: unknown): err is WidgetErr
   );
 }
 
-class GetWidgetDataResponseHandler extends ResponseHandler<IExternalAppWidgetContext, IExternalAppWidgetContext> {
-  public validate(response: IExternalAppWidgetContext): boolean {
+class GetWidgetDataResponseHandler extends ResponseHandler<IWidgetContext, IWidgetContext> {
+  public validate(response: IWidgetContext): boolean {
     return response !== null && typeof response === 'object';
   }
 
-  public deserialize(response: IExternalAppWidgetContext): IExternalAppWidgetContext {
+  public deserialize(response: IWidgetContext): IWidgetContext {
     return response;
   }
 }
@@ -211,16 +289,6 @@ class SerializableToolInput implements ISerializable {
       name: this.toolInput.name,
       arguments: this.toolInput.arguments,
     };
-  }
-}
-
-class RequestDisplayModeResponseHandler extends ResponseHandler<{ mode: DisplayMode }, { mode: DisplayMode }> {
-  public validate(response: { mode: DisplayMode }): boolean {
-    return response !== null && typeof response === 'object' && typeof response.mode === 'string';
-  }
-
-  public deserialize(response: { mode: DisplayMode }): { mode: DisplayMode } {
-    return response;
   }
 }
 
@@ -252,17 +320,6 @@ class SerializableDisplayModeArgs implements ISerializable {
 }
 
 /**
- * Serializable wrapper for widget state
- */
-class SerializableWidgetState implements ISerializable {
-  public constructor(private readonly state: UnknownObject) {}
-
-  public serialize(): object {
-    return this.state;
-  }
-}
-
-/**
  * Serializable wrapper for external URL arguments
  */
 class SerializableOpenExternalArgs implements ISerializable {
@@ -276,18 +333,53 @@ class SerializableOpenExternalArgs implements ISerializable {
 }
 
 /**
- * Serializable wrapper for content size arguments
+ * Serializable wrapper for widget state
  */
-class SerializableContentSizeArgs implements ISerializable {
-  public constructor(
-    private readonly width: number,
-    private readonly height: number,
-  ) {}
+class SerializableWidgetState implements ISerializable {
+  public constructor(private readonly state: JSONValue) {}
 
   public serialize(): object {
     return {
-      width: this.width,
+      state: this.state,
+    };
+  }
+}
+/**
+ * Serializable wrapper for intrinsic height arguments
+ */
+class SerializableIntrinsicHeightArgs implements ISerializable {
+  public constructor(private readonly height: number) {}
+
+  public serialize(): object {
+    return {
       height: this.height,
+    };
+  }
+}
+class RequestModalResponseHandler extends ResponseHandler<IModalResponse, IModalResponse> {
+  public validate(response: IModalResponse): boolean {
+    return response !== null && typeof response === 'object' && response.modalElement !== undefined;
+  }
+
+  public deserialize(response: IModalResponse): IModalResponse {
+    return response;
+  }
+}
+/**
+ * Serializable wrapper for modal options
+ */
+class SerializableModalOptions implements ISerializable {
+  public constructor(private readonly options: IModalOptions) {}
+
+  public serialize(): object {
+    // Note: onClose callback cannot be serialized across the bridge
+    // It should be handled on the client side after receiving the response
+    return {
+      title: this.options.title,
+      content: this.options.content,
+      width: this.options.width,
+      height: this.options.height,
+      // onClose is not serialized - will be handled locally
     };
   }
 }

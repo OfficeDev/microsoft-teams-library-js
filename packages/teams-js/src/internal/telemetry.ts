@@ -393,5 +393,8 @@ export const enum ApiName {
   WidgetHosting_RequestDisplayMode = 'widgetHosting.requestDisplayMode',
   WidgetHosting_SetWidgetState = 'widgetHosting.setWidgetState',
   WidgetHosting_OpenExternal = 'widgetHosting.openExternal',
-  WidgetHosting_ContentSizeChanged = 'widgetHosting.contentSizeChanged',
+  WidgetHosting_NotifyIntrinsicHeight = 'widgetHosting.notifyIntrinsicHeight',
+  WidgetHosting_RequestModal = 'widgetHosting.requestModal',
+  WidgetHosting_RegisterModalCloseHandler = 'widgetHosting.registerModalCloseHandler',
+  WidgetHosting_RegisterWidgetUpdateHandler = 'widgetHosting.registerWidgetUpdateHandler',
 }

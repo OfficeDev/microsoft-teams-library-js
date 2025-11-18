@@ -104,7 +104,7 @@ const WidgetHostingAPIs = (): ReactElement => {
     });
 
   const SetWidgetState = (): ReactElement =>
-    ApiWithTextInput<widgetContext.UnknownObject>({
+    ApiWithTextInput<widgetContext.JSONValue>({
       name: 'setWidgetState',
       title: 'Set Widget State',
       onClick: {
@@ -157,40 +157,84 @@ const WidgetHostingAPIs = (): ReactElement => {
         href: 'https://www.microsoft.com',
       }),
     });
-
-  interface ContentSizeInput {
-    width: number;
-    height: number;
-  }
-
-  const ContentSizeChanged = (): ReactElement =>
-    ApiWithTextInput<ContentSizeInput>({
-      name: 'contentSizeChanged',
-      title: 'Notify Content Size Changed',
+  const RequestModal = (): ReactElement =>
+    ApiWithTextInput<widgetContext.IModalOptions>({
+      name: 'requestModal',
+      title: 'Request Modal',
       onClick: {
         validateInput: (input) => {
-          if (typeof input.width !== 'number' || typeof input.height !== 'number') {
-            throw new Error('Width and height must be numbers');
-          }
-          if (input.width <= 0 || input.height <= 0) {
-            throw new Error('Width and height must be positive numbers');
+          if (!input.id || !input.content) {
+            throw new Error('Modal id and content are required');
           }
         },
         submit: async (input) => {
           try {
-            widgetHosting.contentSizeChanged(input.width, input.height);
-            return `Content size changed to ${input.width}x${input.height}`;
+            const result = await widgetHosting.requestModal(input);
+            return `Modal opened successfully. Modal element: ${JSON.stringify(result, null, 2)}`;
           } catch (error) {
             return `Error: ${error}`;
           }
         },
       },
       defaultInput: JSON.stringify({
-        width: 300,
-        height: 200,
+        id: 'modal-123',
+        title: 'Example Modal',
+        content: '<div><h2>Modal Content</h2><p>This is an example modal content.</p></div>',
+        width: 600,
+        height: 400,
       }),
     });
 
+  const NotifyIntrinsicHeight = (): ReactElement =>
+    ApiWithTextInput<{ height: number }>({
+      name: 'notifyIntrinsicHeight',
+      title: 'Notify Intrinsic Height',
+      onClick: {
+        validateInput: (input) => {
+          if (typeof input.height !== 'number' || input.height <= 0) {
+            throw new Error('Height must be a positive number');
+          }
+        },
+        submit: async (input) => {
+          try {
+            widgetHosting.notifyIntrinsicHeight(input.height);
+            return `Intrinsic height notified: ${input.height}px`;
+          } catch (error) {
+            return `Error: ${error}`;
+          }
+        },
+      },
+      defaultInput: JSON.stringify({
+        height: 500,
+      }),
+    });
+  const RegisterModalCloseHandler = (): React.ReactElement =>
+    ApiWithoutInput({
+      name: 'registerModalCloseHandler',
+      title: 'Register Modal Close Handler',
+      onClick: async (setResult) => {
+        const handler = (modalId: string): void => {
+          const res = `Modal Close Handler called with modalId: ${modalId}`;
+          setResult(res);
+        };
+        widgetHosting.registerModalCloseHandler(handler);
+        return 'done';
+      },
+    });
+
+  const RegisterWidgetUpdateHandler = (): React.ReactElement =>
+    ApiWithoutInput({
+      name: 'registerWidgetUpdateHandler',
+      title: 'Register Widget Update Handler',
+      onClick: async (setResult) => {
+        const handler = (updateData: widgetContext.IWidgetContext): void => {
+          const res = `Widget Update Handler called with data: ${JSON.stringify(updateData, null, 2)}`;
+          setResult(res);
+        };
+        widgetHosting.registerWidgetUpdateHandler(handler);
+        return 'done';
+      },
+    });
   return (
     <>
       <ModuleWrapper title="Widget Hosting - Core">
@@ -204,13 +248,19 @@ const WidgetHostingAPIs = (): ReactElement => {
       </ModuleWrapper>
 
       <ModuleWrapper title="Widget Hosting - Display & State">
+        <NotifyIntrinsicHeight />
         <RequestDisplayMode />
+        <RequestModal />
         <SetWidgetState />
       </ModuleWrapper>
 
       <ModuleWrapper title="Widget Hosting - External Actions">
         <OpenExternal />
-        <ContentSizeChanged />
+      </ModuleWrapper>
+
+      <ModuleWrapper title="Widget Hosting - Event Handlers">
+        <RegisterModalCloseHandler />
+        <RegisterWidgetUpdateHandler />
       </ModuleWrapper>
     </>
   );
