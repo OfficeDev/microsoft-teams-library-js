@@ -112,7 +112,7 @@ export interface IToolOutput {
 export interface IWidgetContext {
   /** Unique identifier for the widget instance */
   widgetId: string;
-  /** Widget HTML contentk,l;; to render */
+  /** Widget HTML content to render */
   html: string;
   /** widget domain that developer has registered their app to */
   domain: string;
@@ -127,9 +127,9 @@ export interface IWidgetContext {
     displayMode?: DisplayMode;
     safeArea?: SafeArea;
     maxHeight?: number;
-    view?: RenderingSurfaces; // need to convert this to view types supported by the openAI apps.
+    view?: RenderingSurfaces; // TODO: need to convert this to view types supported by the openAI apps in the WHS app.
 
-    // Widget state and data // TODO: dunno if this should be part of the widgetContext
+    // Widget state and data
     widgetState?: JSONValue;
   };
 }

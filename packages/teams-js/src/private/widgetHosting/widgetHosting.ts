@@ -40,7 +40,7 @@ const widgetHostingLogger = getLogger('widgetHosting');
  * @throws Error if {@linkcode app.initialize} has not successfully completed
  */
 export function isSupported(): boolean {
-  return ensureInitialized(runtime) && !!runtime.isWidgetHostingSupported;
+  return ensureInitialized(runtime) && !!runtime.supports.widgetHosting;
 }
 /**
  * Sends custom telemetry data to the host.
@@ -196,7 +196,7 @@ export type ModalCloseHandlerType = (modalId: string) => void;
 export function registerModalCloseHandler(handler: ModalCloseHandlerType): void {
   registerHandlerHelper(
     getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_RegisterModalCloseHandler),
-    'widgetHosting.modalClose',
+    'widgetHosting.closeWidgetModal',
     handler,
     [],
     () => {

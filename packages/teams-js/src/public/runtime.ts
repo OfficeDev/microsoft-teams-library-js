@@ -223,7 +223,6 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly isNAAChannelRecommended?: boolean;
   readonly canParentManageNAATrustedOrigins?: boolean;
   readonly isDeeplyNestedAuthSupported?: boolean;
-  readonly isWidgetHostingSupported?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly app?: {
@@ -319,6 +318,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly image?: {};
     };
     readonly webStorage?: {};
+    readonly widgetHosting?: {};
   };
 }
 // Constant used to set the runtime configuration
