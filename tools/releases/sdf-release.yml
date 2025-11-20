@@ -44,28 +44,29 @@ extends:
                 inputs:
                   ArrowServiceConnection: $(arrowServiceConnectionId)
                   IsShipped: true
-              - task: AzureKeyVault@2
-                displayName: 'Azure Key Vault: $(keyVaultName)'
-                inputs:
-                  ConnectedServiceName: $(serviceConnectionId)
-                  KeyVaultName: $(keyVaultName)
-                  SecretsFilter: $(keyVaultSecretsFilter)
               - task: NodeTool@0
                 displayName: Use Node 18.x
                 inputs:
                   versionSpec: 18.x
-              - task: PowerShell@2
-                displayName: Update npmrc with NPM-TOKEN
+              - task: EsrpRelease@10
+                displayName: Publish to npm (tag beta) - ESRP release
                 inputs:
-                  targetType: 'inline'
-                  script: Set-Content -Path $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed/.npmrc -Value "//registry.npmjs.org/:_authToken=$(NPM-TOKEN)"
-              - task: Npm@1
-                displayName: Publish to npm (tag beta) KV
-                inputs:
-                  command: custom
-                  workingDir: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed
-                  verbose: false
-                  customCommand: publish  --tag beta
+                  connectedservicename: '$(connectedServiceName)'
+                  usemanagedidentity: true
+                  keyvaultname: '$(keyVaultName)'
+                  signcertname: '$(signCertName)'
+                  clientid: '$(clientId)'
+                  intent: 'PackageDistribution'
+                  contenttype: 'npm'
+                  contentsource: 'Folder'
+                  folderlocation: '$(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed'
+                  waitforreleasecompletion: true
+                  owners: $(owners)
+                  approvers: $(approvers)
+                  serviceendpointurl: '$(serviceEndpointUrl)'
+                  mainpublisher: '$(mainPublisher)'
+                  domaintenantid: '$(domainTenantId)'
+                  productstate: 'Beta'
               - task: M365CdnAssetsUpload@3
                 displayName: Push teams-js to M365 1CDN (SDF)
                 inputs:
