@@ -44,4 +44,22 @@ export * as videoEffectsEx from './videoEffectsEx';
 export * as hostEntity from './hostEntity/hostEntity';
 export * as store from './store';
 export * as widgetHosting from './widgetHosting/widgetHosting';
-export * as widgetContext from './widgetHosting/widgetContext';
+export {
+  ISecurityPolicy,
+  Theme,
+  SafeAreaInsets,
+  SafeArea,
+  DeviceType,
+  UserAgent,
+  IModalOptions,
+  IModalResponse,
+  JSONObject,
+  JSONArray,
+  JSONValue,
+  DisplayMode,
+  IToolInput,
+  IToolOutput,
+  IWidgetContext,
+  WidgetErrorCode,
+  WidgetError,
+} from './widgetHosting/widgetContext';

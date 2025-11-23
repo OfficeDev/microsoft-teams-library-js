@@ -396,5 +396,5 @@ export const enum ApiName {
   WidgetHosting_NotifyIntrinsicHeight = 'widgetHosting.notifyIntrinsicHeight',
   WidgetHosting_RequestModal = 'widgetHosting.requestModal',
   WidgetHosting_RegisterModalCloseHandler = 'widgetHosting.registerModalCloseHandler',
-  WidgetHosting_RegisterWidgetUpdateHandler = 'widgetHosting.registerWidgetUpdateHandler',
+  WidgetHosting_ContentSizeChanged = 'widgetHosting.contentSizeChanged',
 }

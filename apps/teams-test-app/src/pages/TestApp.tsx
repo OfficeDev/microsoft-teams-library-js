@@ -99,7 +99,6 @@ export const TestApp: React.FC = () => {
   // List of sections dynamically created from React elements
   const sections = useMemo(
     () => [
-      { name: 'WidgetHostingAPIs', component: <WidgetHostingAPIs /> },
       { name: 'AppAPIs', component: <AppAPIs /> },
       { name: 'AppInitializationAPIs', component: <AppInitializationAPIs /> },
       { name: 'AppInstallDialogAPIs', component: <AppInstallDialogAPIs /> },
@@ -171,6 +170,7 @@ export const TestApp: React.FC = () => {
       { name: 'VideoExAPIs', component: <VideoExAPIs /> },
       { name: 'VisualMediaAPIs', component: <VisualMediaAPIs /> },
       { name: 'StoreAPIs', component: <StoreAPIs /> },
+      { name: 'WidgetHostingAPIs', component: <WidgetHostingAPIs /> },
     ],
     [],
   );
