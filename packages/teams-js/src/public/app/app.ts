@@ -235,6 +235,11 @@ export interface AppHostInfo {
    * Current ring ID
    */
   ringId?: string;
+
+  /**
+   * List of ancestor hosts
+   */
+  ancestors?: string[];
 }
 
 /**
@@ -835,6 +840,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
         clientType: legacyContext.hostClientType ? legacyContext.hostClientType : HostClientType.web,
         sessionId: legacyContext.sessionId ? legacyContext.sessionId : '',
         ringId: legacyContext.ringId,
+        ancestors: legacyContext.hostAncestors,
       },
       appLaunchId: legacyContext.appLaunchId,
       appId: legacyContext.appId ? new AppId(legacyContext.appId) : undefined,
