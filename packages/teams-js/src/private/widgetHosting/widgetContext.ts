@@ -145,7 +145,8 @@ export interface IWidgetContext {
 export enum WidgetErrorCode {
   NotSupportedOnPlatform = 'NotSupportedOnPlatform',
   UnknownError = 'UnknownError',
-  InvalidResponseFormat = 'InvalidResponseFormat',
+  InvalidParameters = 'InvalidParameters',
+  PermissionDenied = 'PermissionDenied',
   InternalError = 'InternalError',
 }
 
