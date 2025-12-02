@@ -330,7 +330,7 @@ describe('Testing teams capabillity', () => {
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        await utils.respondToMessage(getConfigSettingMessage, {});
+        await utils.respondToMessage(getConfigSettingMessage!, {});
         return expect(promise).resolves;
       });
 
@@ -341,30 +341,46 @@ describe('Testing teams capabillity', () => {
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        await utils.respondToMessage(getConfigSettingMessage, {});
+        await utils.respondToMessage(getConfigSettingMessage!, {});
         expect(promise).resolves;
       });
 
-      it('should allow a null key', async () => {
+      it('should properly get the response in first value of response', async () => {
         await utils.initializeWithContext('content');
 
-        const promise = teams.fullTrust.getConfigSetting(null);
+        const promise = teams.fullTrust.getConfigSetting('');
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        await utils.respondToMessage(getConfigSettingMessage, {});
-        expect(promise).resolves;
+        await utils.respondToMessage(getConfigSettingMessage!, 'setting');
+        const value = await promise;
+        expect(value).toBe('setting');
       });
 
-      it('should allow an undefined key', async () => {
+      it('should get undefined if list is empty', async () => {
         await utils.initializeWithContext('content');
 
-        const promise = teams.fullTrust.getConfigSetting(undefined);
+        const promise = teams.fullTrust.getConfigSetting('');
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        await utils.respondToMessage(getConfigSettingMessage, {});
-        expect(promise).resolves;
+        await utils.respondToMessage(getConfigSettingMessage!);
+        const value = await promise;
+        expect(value).toBe(undefined);
+      });
+
+      it('should throw error if host returns Sdk Error', async () => {
+        await utils.initializeWithContext('content');
+
+        const promise = teams.fullTrust.getConfigSetting('');
+
+        const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
+        expect(getConfigSettingMessage).not.toBeNull();
+        await utils.respondToMessage(getConfigSettingMessage!, {
+          errorCode: 500,
+          message: 'SDK Error',
+        });
+        expect(promise).rejects.toBeTruthy();
       });
     });
   });

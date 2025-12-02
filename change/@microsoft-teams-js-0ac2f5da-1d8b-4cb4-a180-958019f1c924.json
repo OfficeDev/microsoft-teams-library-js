@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Updated Copilot `preCheckUserConsent` function to accept an optional `UserConsentRequest` parameter and updated `ContentRequest` interface to support flexible properties via index signature. Deprecated `localEndpointInfo` property in favor of the index signature approach.",
-  "packageName": "@microsoft/teams-js",
-  "email": "98852890+vhuseinova-msft@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

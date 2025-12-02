@@ -1,8 +1,17 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 01 Oct 2025 22:58:28 GMT and should not be manually modified.
+This log was last generated on Wed, 12 Nov 2025 19:23:55 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.47.0
+
+Wed, 12 Nov 2025 19:23:55 GMT
+
+### Minor changes
+
+- Updated Copilot `preCheckUserConsent` function to accept an optional `UserConsentRequest` parameter and updated `ContentRequest` interface to support flexible properties via index signature. Deprecated `localEndpointInfo` property in favor of the index signature approach.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ## 2.46.0
 
