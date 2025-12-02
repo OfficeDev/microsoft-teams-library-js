@@ -3,6 +3,7 @@ import {
   Context,
   executeDeepLink,
   getContext,
+  HostMemoryMetrics,
   HostToAppPerformanceMetrics,
   registerOnThemeChangeHandler,
   ResumeContext,
@@ -80,6 +81,19 @@ const RegisterHostToAppPerformanceMetricsHandler = (): ReactElement =>
     },
   });
 
+const RegisterHostMemoryMetricsHandler = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'registerHostMemoryMetricsHandler',
+    title: 'Register Host Memory Metrics Handler',
+    onClick: async (setResult) => {
+      const handler = (v: HostMemoryMetrics): void => {
+        setResult(JSON.stringify(v));
+      };
+      app.registerHostMemoryMetricsHandler(handler);
+      return 'Registered callback!';
+    },
+  });
+
 const RegisterOnThemeChangeHandler = (): ReactElement =>
   ApiWithoutInput({
     name: 'registerOnThemeChangeHandler',
@@ -147,6 +161,7 @@ const AppAPIs = (): ReactElement => (
     <GetContext />
     <OpenLink />
     <RegisterHostToAppPerformanceMetricsHandler />
+    <RegisterHostMemoryMetricsHandler />
     <RegisterOnThemeChangeHandler />
     <RegisterBeforeSuspendOrTerminateHandler />
     <RegisterOnResumeHandler />

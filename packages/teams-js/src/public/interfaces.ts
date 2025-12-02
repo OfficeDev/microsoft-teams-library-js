@@ -1392,3 +1392,68 @@ export interface HostToAppPerformanceMetrics {
   /** The time when the request was dispatched */
   requestStartedAt: number;
 }
+
+/**
+ * Memory metrics for a specific frame within the app.
+ */
+export type HostToAppFrameMemoryMetrics = {
+  /**
+   * The amount of RAM consumed by this frame of the app (in KB).
+   */
+  workingSetSizeKB: number;
+
+  /**
+   * The amount of memory allocated by this frame of the app (in KB).
+   */
+  commitSizeKB: number;
+
+  /**
+   * Identifies the frame by host and path, e.g. https://example.com/path/.
+   */
+  hostAndPath: string;
+
+  /**
+   * Identifies the frame by the process hosting its web contents.
+   */
+  processId: number;
+
+  /**
+   * The nesting level of this frame within the app frame. The top-level frame is 0.
+   */
+  treeLevel: number;
+};
+
+/**
+ * Memory metrics provided by the host for the app.
+ */
+export type HostMemoryMetrics = {
+  /**
+   * Indicates if the app is in a hidden state to accelerate future launches.
+   */
+  isCached: boolean;
+
+  /**
+   * Indicates if the app is in a preloaded state to accelerate its first launch in the session.
+   */
+  isPrecached: boolean;
+
+  /**
+   * Indicates whether the app is sharing its hosting process (and therefore its memory metrics) with another top-level app frame.
+   */
+  isSharingProcess: boolean;
+
+  /**
+   * The amount of RAM currently consumed by all frames of the app (in KB).
+   */
+  totalFrameWorkingSetSizeKB: number;
+
+  /**
+   * The amount of memory allocated by all frames of the app (in KB).
+   */
+  totalFrameCommitSizeKB: number;
+
+  /**
+   * A breakdown of the memory metrics by each frame.
+   */
+  frameMemoryMetrics: HostToAppFrameMemoryMetrics[];
+};
