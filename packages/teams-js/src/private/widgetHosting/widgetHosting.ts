@@ -12,19 +12,10 @@ import { registerHandlerHelper } from '../../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../../internal/internalAPIs';
 import { ResponseHandler } from '../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
-import { ISerializable, SdkError } from '../../public';
+import { ISerializable } from '../../public';
 import { isSdkError } from '../../public/interfaces';
 import { runtime } from '../../public/runtime';
-import {
-  DisplayMode,
-  IModalOptions,
-  IModalResponse,
-  IToolInput,
-  IToolOutput,
-  JSONValue,
-  WidgetError,
-  WidgetErrorCode,
-} from './widgetContext';
+import { DisplayMode, IModalOptions, IModalResponse, IToolInput, IToolOutput, JSONValue } from './widgetContext';
 
 const widgetHostingVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1; // TODO: Ask Kangxuan for this version number
 const widgetHostingLogger = getLogger('widgetHosting');
@@ -50,7 +41,7 @@ export async function callTool(widgetId: string, input: IToolInput): Promise<ITo
     [new SerializableToolInput(widgetId, input)],
     new CallToolResponseHandler(),
     getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_CallTool),
-    isWidgetResponseAReportableError,
+    isSdkError,
   );
 }
 
@@ -106,7 +97,7 @@ export async function requestModal(widgetId: string, options: IModalOptions): Pr
     [new SerializableModalOptions(widgetId, options)],
     new RequestModalResponseHandler(),
     getApiVersionTag(widgetHostingVersionNumber, ApiName.WidgetHosting_RequestModal),
-    isWidgetResponseAReportableError,
+    isSdkError,
   );
 }
 
@@ -205,28 +196,6 @@ export function registerModalCloseHandler(handler: ModalCloseHandlerType): void 
         throw new Error('Widget Hosting is not supported on this platform');
       }
     },
-  );
-}
-
-/**
- * @beta
- * @hidden
- * Determines if the provided error object is an instance of WidgetError or SdkError.
- * @internal
- * Limited to Microsoft-internal use
- * @param err The error object to check whether it is of WidgetError type
- */
-export function isWidgetResponseAReportableError(err: unknown): err is WidgetError | SdkError {
-  if (typeof err !== 'object' || err === null) {
-    return false;
-  }
-
-  const error = err as WidgetError;
-
-  return (
-    (Object.values(WidgetErrorCode).includes(error.errorCode as WidgetErrorCode) &&
-      (error.message === undefined || typeof error.message === 'string')) ||
-    isSdkError(err) // If the error is an SdkError, it can be considered a WidgetError
   );
 }
 
@@ -368,6 +337,7 @@ class SerializableModalOptions implements ISerializable {
   public serialize(): object {
     return {
       widgetId: this.widgetId,
+      id: this.options.id,
       title: this.options.title,
       content: this.options.content,
       width: this.options.width,

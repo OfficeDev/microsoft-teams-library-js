@@ -60,6 +60,4 @@ export {
   IToolInput,
   IToolOutput,
   IWidgetContext,
-  WidgetErrorCode,
-  WidgetError,
 } from './widgetHosting/widgetContext';

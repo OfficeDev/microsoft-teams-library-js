@@ -133,33 +133,3 @@ export interface IWidgetContext {
     widgetState?: JSONValue;
   };
 }
-
-/**
- * @hidden
- *
- * WidgetErrorCodes enum representing various error scenarios related to widget operations.
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export enum WidgetErrorCode {
-  NotSupportedOnPlatform = 'NotSupportedOnPlatform',
-  UnknownError = 'UnknownError',
-  InvalidParameters = 'InvalidParameters',
-  PermissionDenied = 'PermissionDenied',
-  InternalError = 'InternalError',
-}
-
-/**
- * @hidden
- *
- * Interface for errors related to widget operations.
- * Contains an error code and an optional message.
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export interface WidgetError {
-  errorCode: WidgetErrorCode;
-  message?: string;
-}

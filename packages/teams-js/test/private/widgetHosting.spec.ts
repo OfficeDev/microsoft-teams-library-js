@@ -6,8 +6,6 @@ import {
   IToolInput,
   IToolOutput,
   JSONValue,
-  WidgetError,
-  WidgetErrorCode,
 } from '../../src/private/widgetHosting/widgetContext';
 import * as widgetHosting from '../../src/private/widgetHosting/widgetHosting';
 import { ErrorCode, SdkError } from '../../src/public';
@@ -117,8 +115,8 @@ describe('Testing widgetHosting module', () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(widgetHostingRuntimeConfig);
 
-      const widgetError: WidgetError = {
-        errorCode: WidgetErrorCode.InternalError,
+      const widgetError: SdkError = {
+        errorCode: ErrorCode.INTERNAL_ERROR,
         message: 'Tool execution failed',
       };
 
@@ -284,8 +282,8 @@ describe('Testing widgetHosting module', () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(widgetHostingRuntimeConfig);
 
-      const widgetError: WidgetError = {
-        errorCode: WidgetErrorCode.InvalidParameters,
+      const widgetError: SdkError = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
         message: 'Invalid modal options',
       };
 
@@ -509,57 +507,6 @@ describe('Testing widgetHosting module', () => {
       expect(() => widgetHosting.registerModalCloseHandler(() => {})).toThrowError(
         'Widget Hosting is not supported on this platform',
       );
-    });
-  });
-
-  describe('isWidgetResponseAReportableError', () => {
-    it('should return true for valid WidgetError', () => {
-      const widgetError: WidgetError = {
-        errorCode: WidgetErrorCode.InternalError,
-        message: 'Test error',
-      };
-      expect(widgetHosting.isWidgetResponseAReportableError(widgetError)).toBe(true);
-    });
-
-    it('should return true for WidgetError without message', () => {
-      const widgetError = {
-        errorCode: WidgetErrorCode.InvalidParameters,
-      };
-      expect(widgetHosting.isWidgetResponseAReportableError(widgetError)).toBe(true);
-    });
-
-    it('should return true for SdkError', () => {
-      const sdkError: SdkError = {
-        errorCode: ErrorCode.INTERNAL_ERROR,
-        message: 'SDK error',
-      };
-      expect(widgetHosting.isWidgetResponseAReportableError(sdkError)).toBe(true);
-    });
-
-    it('should return false for non-error objects', () => {
-      expect(widgetHosting.isWidgetResponseAReportableError({ foo: 'bar' })).toBe(false);
-    });
-
-    it('should return false for null', () => {
-      expect(widgetHosting.isWidgetResponseAReportableError(null)).toBe(false);
-    });
-
-    it('should return false for undefined', () => {
-      expect(widgetHosting.isWidgetResponseAReportableError(undefined)).toBe(false);
-    });
-
-    it('should return false for primitive values', () => {
-      expect(widgetHosting.isWidgetResponseAReportableError('string')).toBe(false);
-      expect(widgetHosting.isWidgetResponseAReportableError(123)).toBe(false);
-      expect(widgetHosting.isWidgetResponseAReportableError(true)).toBe(false);
-    });
-
-    it('should return false for invalid error code', () => {
-      const invalidError = {
-        code: 'INVALID_CODE',
-        message: 'Test',
-      };
-      expect(widgetHosting.isWidgetResponseAReportableError(invalidError)).toBe(false);
     });
   });
 });
