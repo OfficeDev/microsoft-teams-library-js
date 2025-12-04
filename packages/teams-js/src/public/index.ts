@@ -27,6 +27,8 @@ export {
   FileOpenPreference,
   FrameContext,
   FrameInfo,
+  HostMemoryMetrics,
+  HostToAppFrameMemoryMetrics,
   HostToAppPerformanceMetrics,
   LoadContext,
   LocaleInfo,

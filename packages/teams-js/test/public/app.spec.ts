@@ -917,6 +917,68 @@ describe('Testing app capability', () => {
       });
     });
 
+    describe('Testing hostMemoryMetricsHandler', () => {
+      it('app.registerHostMemoryMetricsHandler should not allow calls before initialization', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        expect(() => app.registerHostMemoryMetricsHandler(() => {})).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      it('app.registerHostMemoryMetricsHandler registered function should get called when host sends memory metrics', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostMemoryMetricsHandler(handler);
+
+        const mockMemoryMetrics = {
+          isCached: false,
+          isPrecached: false,
+          isSharingProcess: false,
+          totalFrameWorkingSetSizeKB: 1024,
+          totalFrameCommitSizeKB: 2048,
+          frameMemoryMetrics: [],
+        };
+
+        await utils.sendMessage('app.hostMemoryMetrics', mockMemoryMetrics);
+        expect(handler).toBeCalledWith(mockMemoryMetrics);
+      });
+
+      it('app.registerHostMemoryMetricsHandler should replace previously registered handler', async () => {
+        await utils.initializeWithContext('content');
+
+        const handlerOne = jest.fn();
+        app.registerHostMemoryMetricsHandler(handlerOne);
+        const handlerTwo = jest.fn();
+        app.registerHostMemoryMetricsHandler(handlerTwo);
+
+        const mockMemoryMetrics = {
+          isCached: false,
+          isPrecached: false,
+          isSharingProcess: false,
+          totalFrameWorkingSetSizeKB: 1024,
+          totalFrameCommitSizeKB: 2048,
+          frameMemoryMetrics: [],
+        };
+
+        await utils.sendMessage('app.hostMemoryMetrics', mockMemoryMetrics);
+        expect(handlerTwo).toBeCalledWith(mockMemoryMetrics);
+        expect(handlerOne).not.toBeCalled();
+      });
+
+      it('app.registerHostMemoryMetricsHandler should send registerHandler message to host', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostMemoryMetricsHandler(handler);
+
+        const registerHandlerMessage = utils.findMessageByFunc('registerHandler');
+        expect(registerHandlerMessage).not.toBeNull();
+        expect(registerHandlerMessage!.args!.length).toBe(1);
+        expect(registerHandlerMessage!.args![0]).toBe('app.hostMemoryMetrics');
+      });
+    });
+
     describe('Testing app.registerOnThemeChangeHandler function', () => {
       it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -1828,6 +1890,78 @@ describe('Testing app capability', () => {
         await utils.respondToMessage(getContextMessage, {});
         expect(handlerTwo).toBeCalled();
         expect(handlerOne).not.toBeCalled();
+      });
+    });
+
+    describe('Testing hostMemoryMetricsHandler', () => {
+      it('app.registerHostMemoryMetricsHandler should not allow calls before initialization', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        expect(() => app.registerHostMemoryMetricsHandler(() => {})).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      it('app.registerHostMemoryMetricsHandler registered function should get called when host sends memory metrics', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostMemoryMetricsHandler(handler);
+
+        const mockMemoryMetrics = {
+          isCached: false,
+          isPrecached: false,
+          isSharingProcess: false,
+          totalFrameWorkingSetSizeKB: 1024,
+          totalFrameCommitSizeKB: 2048,
+          frameMemoryMetrics: [],
+        };
+
+        utils.respondToFramelessMessage({
+          data: {
+            func: 'app.hostMemoryMetrics',
+            args: [mockMemoryMetrics],
+          },
+        } as DOMMessageEvent);
+        expect(handler).toBeCalledWith(mockMemoryMetrics);
+      });
+
+      it('app.registerHostMemoryMetricsHandler should replace previously registered handler', async () => {
+        await utils.initializeWithContext('content');
+
+        const handlerOne = jest.fn();
+        app.registerHostMemoryMetricsHandler(handlerOne);
+        const handlerTwo = jest.fn();
+        app.registerHostMemoryMetricsHandler(handlerTwo);
+
+        const mockMemoryMetrics = {
+          isCached: false,
+          isPrecached: false,
+          isSharingProcess: false,
+          totalFrameWorkingSetSizeKB: 1024,
+          totalFrameCommitSizeKB: 2048,
+          frameMemoryMetrics: [],
+        };
+
+        utils.respondToFramelessMessage({
+          data: {
+            func: 'app.hostMemoryMetrics',
+            args: [mockMemoryMetrics],
+          },
+        } as DOMMessageEvent);
+        expect(handlerTwo).toBeCalledWith(mockMemoryMetrics);
+        expect(handlerOne).not.toBeCalled();
+      });
+
+      it('app.registerHostMemoryMetricsHandler should send registerHandler message to host', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostMemoryMetricsHandler(handler);
+
+        const registerHandlerMessage = utils.findMessageByFunc('registerHandler');
+        expect(registerHandlerMessage).not.toBeNull();
+        expect(registerHandlerMessage!.args!.length).toBe(1);
+        expect(registerHandlerMessage!.args![0]).toBe('app.hostMemoryMetrics');
       });
     });
 
