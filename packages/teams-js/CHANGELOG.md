@@ -1,8 +1,17 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 12 Nov 2025 19:23:55 GMT and should not be manually modified.
+This log was last generated on Wed, 03 Dec 2025 21:10:55 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.47.1
+
+Wed, 03 Dec 2025 21:10:55 GMT
+
+### Patches
+
+- Fixed error handling in `getConfigSetting` teams full trust api.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
 
 ## 2.47.0
 
