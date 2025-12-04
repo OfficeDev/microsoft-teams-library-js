@@ -57,7 +57,7 @@ extends:
                   signcertname: '$(signCertName)'
                   clientid: '$(clientId)'
                   intent: 'PackageDistribution'
-                  contenttype: 'npm'
+                  contenttype: 'pypi'
                   contentsource: 'Folder'
                   folderlocation: '$(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed'
                   waitforreleasecompletion: true
