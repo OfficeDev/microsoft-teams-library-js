@@ -232,6 +232,11 @@ export function registerOnThemeChangeHandlerHelper(apiVersionTag: string, handle
   Handlers.registerOnThemeChangeHandler(apiVersionTag, handler);
 }
 
+export function registerOnContextChangeHandlerHelper(apiVersionTag: string, handler: app.contextHandler): void {
+  !isNullOrUndefined(handler) && ensureInitializeCalled();
+  Handlers.registerOnContextChangeHandler(apiVersionTag, handler);
+}
+
 export function openLinkHelper(apiVersionTag: string, deepLink: string): Promise<void> {
   return new Promise<void>((resolve) => {
     ensureInitialized(
