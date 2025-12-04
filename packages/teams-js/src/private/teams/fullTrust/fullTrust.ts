@@ -5,8 +5,9 @@
  * Limited to Microsoft-internal use
  */
 
-import { sendAndUnwrap } from '../../../internal/communication';
+import { callFunctionInHostAndHandleResponse } from '../../../internal/communication';
 import { ensureInitialized } from '../../../internal/internalAPIs';
+import { SimpleTypeResponseHandler } from '../../../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../../internal/telemetry';
 import { errorNotSupportedOnPlatform } from '../../../public/constants';
 import { runtime } from '../../../public/runtime';
@@ -27,20 +28,17 @@ const teamsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
  * @internal
  * Limited to Microsoft-internal use
  */
-export function getConfigSetting(key: string): Promise<string> {
-  return new Promise<string>((resolve) => {
-    ensureInitialized(runtime);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    resolve(
-      sendAndUnwrap(
-        getApiVersionTag(teamsTelemetryVersionNumber, ApiName.Teams_FullTrust_GetConfigSetting),
-        'getConfigSetting',
-        key,
-      ),
-    );
-  });
+export async function getConfigSetting(key: string): Promise<string> {
+  ensureInitialized(runtime);
+  if (!isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  return callFunctionInHostAndHandleResponse(
+    'getConfigSetting',
+    [key],
+    new SimpleTypeResponseHandler(),
+    getApiVersionTag(teamsTelemetryVersionNumber, ApiName.Teams_FullTrust_GetConfigSetting),
+  );
 }
 
 /**
