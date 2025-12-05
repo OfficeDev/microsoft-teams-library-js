@@ -41,7 +41,7 @@
     "@babel/runtime": "^7.24.4",
     "@microsoft/eslint-plugin-sdl": "^0.2.2",
     "@mixer/webpack-bundle-compare": "^0.1.1",
-    "@next/eslint-plugin-next": "^15.2.3",
+    "@next/eslint-plugin-next": "^15.5.7",
     "@octokit/core": "^3.6.0",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-json": "^6.1.0",
