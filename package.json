@@ -126,9 +126,9 @@
       "merge": "^2.1.1",
       "micromatch": ">=4.0.8",
       "minimist": "^0.2.4",
-      "nanoid": ">=3.3.8",
+      "nanoid": "3.3.8",
       "nth-check": ">=2.0.1",
-      "postcss": "^8.4.31",
+      "postcss": "8.4.31",
       "semver": "^7.5.2",
       "serialize-javascript": "^3.1.0",
       "set-value": "^2.0.1",
@@ -148,7 +148,8 @@
       "express": "There is a vulnerability in older versions of the express package that is consumed by webpack-dev-server, this has been patched in a later version of express that webpack-dev-server has not updated yet. Once they update this package, we can remove this override",
       "follow-redirects": "There is a vulnerability in the follow-redirects package, and a fix has been provided. However, we consume the follow-redirects package via webpack-dev-server, Lerna, and wait-on, eventually. We are using this newer version of follow-redirects to avoid the vulnerability. If webpack-dev-server, Lerna, and wait-on packages are ever updated to a version of follow-redirects that fixes the vulnerability, we can remove this override and update the three packages accordingly.",
       "micromatch": "There is a vulnerability with micromatch versions less than 4.0.8 This package is currently being consumed in @types/webpack and needs to be updated there. For now we will override this until that is fixed.",
-      "nanoid": "There is a vulnerability with nanoid versions less than 3.3.8 This package is currently being consumed in @types/webpack and needs to be updated there. For now we will override this until that is fixed.",
+      "nanoid": "New nanoid 5.x releases are ESM-only and break our webpack/css-loader stack that still uses require(), so we pin to 3.3.8 (last CJS release with the vulnerability fix).",
+      "postcss": "Pinned to 8.4.31 to avoid pulling in nanoid 5.x (ESM-only) via newer releases, which breaks CSS loaders running under CommonJS in our tooling until upstream fixes land.",
       "socks": "There is a vulnerability in the ip package which has no fix. We consume ip via socks (eventually via lerna). Socks released a new version that removed the ip dependency. We are using this newer version of socks to avoid the vulnerability. If ip is ever updated or lerna (or any package in the chain) eventually updates to a version of socks that doesn't depend on ip, we can remove this override",
       "tar": "There is a vulnerability in the tar package which is being used by lerna that hasn't yet been updated. Once this is patched in lerna we can remove this override"
     }
