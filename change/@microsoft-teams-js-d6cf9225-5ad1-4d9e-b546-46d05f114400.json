@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Adding osLocaleInfoHandler for the app module to handle OS locale info changes.",
+  "packageName": "@microsoft/teams-js",
+  "email": "ravasili@microsoft.com_msteamsmdb",
+  "dependentChangeType": "patch"
+}
