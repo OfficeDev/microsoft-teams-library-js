@@ -584,6 +584,10 @@ export interface Context {
  * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
  */
 export type themeHandler = (theme: string) => void;
+/**
+ * This function is passed to registerOnOsLocaleInfoChangeHandler. It is called every time the host updates the OS locale info.
+ */
+export type osLocaleInfoHandler = (info: LocaleInfo) => void;
 
 /**
  * This function is passed to registerHostToAppPerformanceMetricsHandler. It is called every time a response is received from the host with metrics for analyzing message delay. See {@link HostToAppPerformanceMetrics} to see which metrics are passed to the handler.
@@ -755,6 +759,21 @@ export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRe
 export function registerOnThemeChangeHandler(handler: themeHandler): void {
   appHelpers.registerOnThemeChangeHandlerHelper(
     getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnThemeChangeHandler),
+    handler,
+  );
+}
+
+/**
+ * Registers a handler for OS locale info changes.
+ *
+ * @remarks
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ *
+ * @param handler - The handler to invoke when the OS locale info changes.
+ */
+export function registerOnOsLocaleInfoChangeHandler(handler: osLocaleInfoHandler): void {
+  appHelpers.registerOnOsLocaleInfoChangeHandlerHelper(
+    getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnOsLocaleInfoChangeHandler),
     handler,
   );
 }

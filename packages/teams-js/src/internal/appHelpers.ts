@@ -23,6 +23,7 @@ import {
 import * as app from '../public/app/app';
 import { FrameContexts } from '../public/constants';
 import * as dialog from '../public/dialog/dialog';
+import { LocaleInfo } from '../public/interfaces';
 import * as menus from '../public/menus';
 import * as pages from '../public/pages/pages';
 import {
@@ -230,6 +231,15 @@ export function registerOnThemeChangeHandlerHelper(apiVersionTag: string, handle
   // allow for registration cleanup even when not called initialize
   !isNullOrUndefined(handler) && ensureInitializeCalled();
   Handlers.registerOnThemeChangeHandler(apiVersionTag, handler);
+}
+
+export function registerOnOsLocaleInfoChangeHandlerHelper(
+  apiVersionTag: string,
+  handler: (info: LocaleInfo) => void,
+): void {
+  // allow for registration cleanup even when not called initialize
+  !isNullOrUndefined(handler) && ensureInitializeCalled();
+  Handlers.registerOnOsLocaleInfoChangeHandler(apiVersionTag, handler);
 }
 
 export function openLinkHelper(apiVersionTag: string, deepLink: string): Promise<void> {

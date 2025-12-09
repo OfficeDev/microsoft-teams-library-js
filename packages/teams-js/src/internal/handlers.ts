@@ -2,7 +2,7 @@
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
-import { HostToAppPerformanceMetrics, LoadContext, ResumeContext } from '../public/interfaces';
+import { HostToAppPerformanceMetrics, LoadContext, LocaleInfo, ResumeContext } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { sendMessageEventToChild, shouldEventBeRelayedToChild } from './childCommunication';
 import { sendMessageToParent } from './communication';
@@ -33,6 +33,7 @@ class HandlersPrivate {
   public static beforeSuspendOrTerminateHandler: null | (() => Promise<void>) = null;
   public static resumeHandler: null | ((context: ResumeContext) => void) = null;
   public static hostToAppPerformanceMetricsHandler: null | ((metrics: HostToAppPerformanceMetrics) => void) = null;
+  public static osLocaleInfoChangeHandler: null | ((info: LocaleInfo) => void) = null;
 
   /**
    * @internal
@@ -42,6 +43,7 @@ class HandlersPrivate {
   public static initializeHandlers(): void {
     // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
     HandlersPrivate.handlers['themeChange'] = handleThemeChange;
+    HandlersPrivate.handlers['osLocaleInfoChange'] = handleOsLocaleInfoChange;
     HandlersPrivate.handlers['load'] = handleLoad;
     HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
     initializeBackStackHelper();
@@ -55,6 +57,7 @@ class HandlersPrivate {
   public static uninitializeHandlers(): void {
     HandlersPrivate.handlers = {};
     HandlersPrivate.themeChangeHandler = null;
+    HandlersPrivate.osLocaleInfoChangeHandler = null;
     HandlersPrivate.loadHandler = null;
     HandlersPrivate.beforeUnloadHandler = null;
     HandlersPrivate.beforeSuspendOrTerminateHandler = null;
@@ -174,6 +177,15 @@ export function registerOnThemeChangeHandler(apiVersionTag: string, handler: (th
  * @internal
  * Limited to Microsoft-internal use
  */
+export function registerOnOsLocaleInfoChangeHandler(apiVersionTag: string, handler: (info: LocaleInfo) => void): void {
+  HandlersPrivate.osLocaleInfoChangeHandler = handler;
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['osLocaleInfoChange']);
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function handleThemeChange(theme: string): void {
   if (HandlersPrivate.themeChangeHandler) {
     HandlersPrivate.themeChangeHandler(theme);
@@ -181,6 +193,20 @@ export function handleThemeChange(theme: string): void {
 
   if (shouldEventBeRelayedToChild()) {
     sendMessageEventToChild('themeChange', [theme]);
+  }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function handleOsLocaleInfoChange(info: LocaleInfo): void {
+  if (HandlersPrivate.osLocaleInfoChangeHandler) {
+    HandlersPrivate.osLocaleInfoChangeHandler(info);
+  }
+
+  if (shouldEventBeRelayedToChild()) {
+    sendMessageEventToChild('osLocaleInfoChange', [info]);
   }
 }
 
