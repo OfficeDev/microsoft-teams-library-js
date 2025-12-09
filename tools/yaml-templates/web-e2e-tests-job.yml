@@ -44,7 +44,8 @@ jobs:
           '(', 'LP'),
           ')', 'RP'),
           '=', 'EQUALS') }}
-
+        
+        timeoutInMinutes: 120
         displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
         pool:
           name: Azure-Pipelines-1ESPT-ExDShared
