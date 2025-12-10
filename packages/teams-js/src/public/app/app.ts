@@ -11,7 +11,7 @@ import * as appHelpers from '../../internal/appHelpers';
 import { Communication, sendAndUnwrap, uninitializeCommunication } from '../../internal/communication';
 import { GlobalVars } from '../../internal/globalVars';
 import * as Handlers from '../../internal/handlers'; // Conflict with some names
-import { ensureInitializeCalled, ensureInitialized } from '../../internal/internalAPIs';
+import { ensureInitializeCalled } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { inServerSideRenderingEnvironment } from '../../internal/utils';
 import * as messageChannels from '../../private/messageChannels/messageChannels';
@@ -29,11 +29,9 @@ import {
   ActionInfo,
   Context as LegacyContext,
   FileOpenPreference,
-  HostMemoryMetrics,
   HostToAppPerformanceMetrics,
   LocaleInfo,
 } from '../interfaces';
-import { runtime } from '../runtime';
 import { version } from '../version';
 import * as lifecycle from './lifecycle';
 
@@ -593,11 +591,6 @@ export type themeHandler = (theme: string) => void;
 export type HostToAppPerformanceMetricsHandler = (metrics: HostToAppPerformanceMetrics) => void;
 
 /**
- * This function is passed to registerHostMemoryMetricsHandler. See {@link HostMemoryMetrics} to see which metrics are passed to the handler during a certain interval of time.
- */
-export type HostMemoryMetricsHandler = (metrics: HostMemoryMetrics) => void;
-
-/**
  * Checks whether the Teams client SDK has been initialized.
  * @returns whether the Teams client SDK has been initialized.
  */
@@ -776,24 +769,6 @@ export function registerOnThemeChangeHandler(handler: themeHandler): void {
  */
 export function registerHostToAppPerformanceMetricsHandler(handler: HostToAppPerformanceMetricsHandler): void {
   Handlers.registerHostToAppPerformanceMetricsHandler(handler);
-}
-
-/**
- * @beta
- * Registers a function to handle memory metrics heartbeat sent from the host periodically.
- *
- * @remarks
- * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
- *
- * @param handler - The handler to invoke each time memory metrics heartbeat is received from the host.
- */
-export function registerHostMemoryMetricsHandler(handler: HostMemoryMetricsHandler): void {
-  ensureInitialized(runtime);
-  Handlers.registerHandler(
-    getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterHostMemoryMetricsHandler),
-    'app.hostMemoryMetrics',
-    handler,
-  );
 }
 
 /**

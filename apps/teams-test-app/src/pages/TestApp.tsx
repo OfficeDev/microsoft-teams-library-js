@@ -5,6 +5,7 @@ import AppAPIs from '../components/AppAPIs';
 import AppEntityAPIs from '../components/AppEntityAPIs';
 import AppInitializationAPIs from '../components/AppInitialization';
 import AppInstallDialogAPIs from '../components/AppInstallDialog';
+import AppPerformanceMetricsAPIs from '../components/AppPerformanceMetrics';
 import AuthenticationAPIs from '../components/AuthenticationAPIs';
 import BarCodeAPIs from '../components/BarCodeAPIs';
 import CalendarAPIs from '../components/CalendarAPIs';
@@ -101,6 +102,7 @@ export const TestApp: React.FC = () => {
       { name: 'AppAPIs', component: <AppAPIs /> },
       { name: 'AppInitializationAPIs', component: <AppInitializationAPIs /> },
       { name: 'AppInstallDialogAPIs', component: <AppInstallDialogAPIs /> },
+      { name: 'AppPerformanceMetricsAPIs', component: <AppPerformanceMetricsAPIs /> },
       { name: 'AuthenticationAPIs', component: <AuthenticationAPIs /> },
       { name: 'AppEntityAPIs', component: <AppEntityAPIs /> },
       { name: 'BarCodeAPIs', component: <BarCodeAPIs /> },

@@ -230,6 +230,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
+    readonly appPerformanceMetrics?: {};
     readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};

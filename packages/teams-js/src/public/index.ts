@@ -47,6 +47,7 @@ export {
 } from './interfaces';
 export * as app from './app/app';
 export { AppId } from './appId';
+export * as appPerformanceMetrics from './appPerformanceMetrics';
 export { EmailAddress } from './emailAddress';
 export * as appInstallDialog from './appInstallDialog';
 export * as barCode from './barCode';
