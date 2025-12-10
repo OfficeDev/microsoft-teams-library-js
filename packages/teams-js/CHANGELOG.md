@@ -1,8 +1,16 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 03 Dec 2025 21:10:55 GMT and should not be manually modified.
+This log was last generated on Wed, 10 Dec 2025 19:42:31 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.47.2
+
+Wed, 10 Dec 2025 19:42:31 GMT
+
+### Patches
+
+- Upgraded Next dependency in SSR test app to resolve security alert.
 
 ## 2.47.1
 

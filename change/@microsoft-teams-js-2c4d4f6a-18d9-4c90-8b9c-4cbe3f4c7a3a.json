@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Updated test app dependency to address vulnerability.",
-  "packageName": "@microsoft/teams-js",
-  "email": "teamsjs@microsoft.com",
-  "dependentChangeType": "none"
-}
