@@ -7,17 +7,17 @@
 trigger: none
 resources:
   repositories:
-  - repository: CustomPipelineTemplates
-    type: git
-    name: 1ESPipelineTemplates/OfficePipelineTemplates
-    ref: refs/tags/release
+    - repository: CustomPipelineTemplates
+      type: git
+      name: 1ESPipelineTemplates/OfficePipelineTemplates
+      ref: refs/tags/release
   pipelines:
-  - pipeline: microsoft-teams-library-js-pipeline
-    source: 'microsoft-teams-library-js/M365 Platform/App SDK/OfficeDev.microsoft-teams-library-js'
-    project: ISS
+    - pipeline: microsoft-teams-library-js-pipeline
+      source: 'microsoft-teams-library-js/M365 Platform/App SDK/OfficeDev.microsoft-teams-library-js'
+      project: ISS
 variables:
-- name: System.Debug
-  value: true
+  - name: System.Debug
+    value: true
 extends:
   template: v1/Office.Official.PipelineTemplate.yml@CustomPipelineTemplates
   parameters:
@@ -27,78 +27,84 @@ extends:
       os: windows
     serviceTreeId: $(serviceTreeId)
     customBuildTags:
-    - ES365AIMigrationTooling-Release-MOBR
+      - ES365AIMigrationTooling-Release-MOBR
     stages:
-    - stage: Prod_Lockbox_Approval_Deployment
-      displayName: Lockbox Approval/Deployment
-      dependsOn: []
-      templateContext:
-        cloud: Public
-        isProduction: false
-        approval:
-          workflow: lockbox
-          scope:
-            serviceGroupName: Platform
-            subscriptionIds:
-            - $(subscriptionId)
-      jobs:
-      - job: Agent_job
+      - stage: Prod_Lockbox_Approval_Deployment
+        displayName: Lockbox Approval/Deployment
+        dependsOn: []
         templateContext:
-          type: releaseJob
-          workflow: m365-custom
-          inputs:
-          - input: pipelineArtifact
-            pipeline: microsoft-teams-library-js-pipeline
-            targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/drop
-        steps:
-        - task: prepare-deployment@1
-          displayName: 
-          inputs:
-            taskType: credentialFetchTaskAzureRM
-            armserviceconnection: $(serviceConnectionId)
-            subscriptionid: $(subscriptionId)
-        - task: AssetRetention@3
-          displayName: ARtifact Retention Orchestrator Workflow (ARROW)
-          inputs:
-            ArrowServiceConnection: $(arrowServiceConnectionId)
-            IsShipped: true
-        - task: NodeTool@0
-          displayName: Use Node 18.x
-          inputs:
-            versionSpec: 18.x
-        - task: EsrpRelease@10
-          displayName: Publish to npm (tag beta) - ESRP release
-          inputs:
-            connectedservicename: '$(connectedServiceName)'
-            usemanagedidentity: true
-            keyvaultname: '$(keyVaultName)'
-            signcertname: '$(signCertName)'
-            clientid: '$(clientId)'
-            intent: 'PackageDistribution'
-            contenttype: 'pypi'
-            contentsource: 'Folder'
-            folderlocation: '$(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed'
-            waitforreleasecompletion: true
-            owners: $(owners)
-            approvers: $(approvers)
-            serviceendpointurl: '$(serviceEndpointUrl)'
-            mainpublisher: '$(mainPublisher)'
-            domaintenantid: '$(domainTenantId)'
-            productstate: 'Beta'
-        - task: M365CdnAssetsUpload@3
-          displayName: Push teams-js to M365 1CDN (SDF)
-          inputs:
-            SourcePath: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/CDNFeed/*
-            ConnectedServiceNameARM: $(serviceConnectionId)
-            Environment: PublicCloudSDF
-            ContainerName: teams-js
-            AdditionalArgumentsForBlobCopy: --overwrite=false --log-level=INFO --recursive
-        - task: PowerShell@2
-          displayName: View Published Package URLs
-          inputs:
-            targetType: 'inline'
-            script: |
-              $version = Get-ChildItem -Path $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/CDNFeed -Directory -Name -Exclude _*
-              Write-Host "Releasing version $version"
-              Write-Host "CDN: https://res-sdf.cdn.office.net/teams-js/$version/js/MicrosoftTeams.min.js"
-              Write-Host "NPM: https://www.npmjs.com/package/@microsoft/teams-js/v/$version"
+          cloud: Public
+          isProduction: false
+          approval:
+            workflow: lockbox
+            scope:
+              serviceGroupName: Platform
+              subscriptionIds:
+                - $(subscriptionId)
+        jobs:
+          - job: Agent_job
+            templateContext:
+              type: releaseJob
+              workflow: m365-custom
+              inputs:
+                - input: pipelineArtifact
+                  pipeline: microsoft-teams-library-js-pipeline
+                  artifactName: NPMFeed
+                  targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/NPMFeed
+                - input: pipelineArtifact
+                  pipeline: microsoft-teams-library-js-pipeline
+                  artifactName: CDNFeed
+                  targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/CDNFeed
+
+            steps:
+              - task: prepare-deployment@1
+                displayName:
+                inputs:
+                  taskType: credentialFetchTaskAzureRM
+                  armserviceconnection: $(serviceConnectionId)
+                  subscriptionid: $(subscriptionId)
+              - task: AssetRetention@3
+                displayName: ARtifact Retention Orchestrator Workflow (ARROW)
+                inputs:
+                  ArrowServiceConnection: $(arrowServiceConnectionId)
+                  IsShipped: true
+              - task: NodeTool@0
+                displayName: Use Node 18.x
+                inputs:
+                  versionSpec: 18.x
+              - task: EsrpRelease@10
+                displayName: Publish to npm (tag beta) - ESRP release
+                inputs:
+                  connectedservicename: '$(connectedServiceName)'
+                  usemanagedidentity: true
+                  keyvaultname: '$(keyVaultName)'
+                  signcertname: '$(signCertName)'
+                  clientid: '$(clientId)'
+                  intent: 'PackageDistribution'
+                  contenttype: 'pypi'
+                  contentsource: 'Folder'
+                  folderlocation: '$(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed'
+                  waitforreleasecompletion: true
+                  owners: $(owners)
+                  approvers: $(approvers)
+                  serviceendpointurl: '$(serviceEndpointUrl)'
+                  mainpublisher: '$(mainPublisher)'
+                  domaintenantid: '$(domainTenantId)'
+                  productstate: 'Beta'
+              - task: M365CdnAssetsUpload@3
+                displayName: Push teams-js to M365 1CDN (SDF)
+                inputs:
+                  SourcePath: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/CDNFeed/*
+                  ConnectedServiceNameARM: $(serviceConnectionId)
+                  Environment: PublicCloudSDF
+                  ContainerName: teams-js
+                  AdditionalArgumentsForBlobCopy: --overwrite=false --log-level=INFO --recursive
+              - task: PowerShell@2
+                displayName: View Published Package URLs
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    $version = Get-ChildItem -Path $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/CDNFeed -Directory -Name -Exclude _*
+                    Write-Host "Releasing version $version"
+                    Write-Host "CDN: https://res-sdf.cdn.office.net/teams-js/$version/js/MicrosoftTeams.min.js"
+                    Write-Host "NPM: https://www.npmjs.com/package/@microsoft/teams-js/v/$version"
