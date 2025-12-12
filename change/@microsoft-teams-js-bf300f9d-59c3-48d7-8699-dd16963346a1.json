@@ -1,6 +1,6 @@
 {
-  "type": "patch",
-  "comment": "add host ancestor to context",
+  "type": "minor",
+  "comment": "Added host ancestors to app context.",
   "packageName": "@microsoft/teams-js",
   "email": "samde@microsoft.com",
   "dependentChangeType": "patch"
