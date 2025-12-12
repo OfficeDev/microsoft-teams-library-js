@@ -542,7 +542,7 @@ export interface Context {
 
   /**
    * Info about the currently logged in user running the app.
-   * If the current user is not logged in/authenticated (e.g. a meeting app running for an anonymously-joined partcipant) this will be `undefined`.
+   * If the current user is not logged in/authenticated (e.g. a meeting app running for an anonymously-joined participant) this will be `undefined`.
    */
   user?: UserInfo;
 
@@ -591,6 +591,11 @@ export interface Context {
  * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
  */
 export type themeHandler = (theme: string) => void;
+
+/**
+ * This function is passed to registerOnContextChangeHandler. It is called every time the user changes their context.
+ */
+export type contextHandler = (context: Context) => void;
 
 /**
  * This function is passed to registerHostToAppPerformanceMetricsHandler. It is called every time a response is received from the host with metrics for analyzing message delay. See {@link HostToAppPerformanceMetrics} to see which metrics are passed to the handler.
@@ -762,6 +767,21 @@ export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRe
 export function registerOnThemeChangeHandler(handler: themeHandler): void {
   appHelpers.registerOnThemeChangeHandlerHelper(
     getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnThemeChangeHandler),
+    handler,
+  );
+}
+
+/**
+ * Registers a handler for content (context) changes.
+ *
+ * @remarks
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ *
+ * @param handler - The handler to invoke when the app's content context changes.
+ */
+export function registerOnContextChangeHandler(handler: contextHandler): void {
+  appHelpers.registerOnContextChangeHandlerHelper(
+    getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnContextChangeHandler),
     handler,
   );
 }
