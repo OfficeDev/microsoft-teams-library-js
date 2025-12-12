@@ -237,7 +237,9 @@ export interface AppHostInfo {
   ringId?: string;
 
   /**
-   * List of ancestor hosts
+   * An array representing the hierarchy of ancestor hosts that the app is embedded inside of.
+   * The array is ordered from immediate parent to root host.
+   * For example, if Bizchat is running in Calendar in Teams, this would be ["Calendar", "Teams"].
    */
   ancestors?: string[];
 }
