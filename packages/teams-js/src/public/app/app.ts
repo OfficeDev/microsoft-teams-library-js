@@ -235,6 +235,13 @@ export interface AppHostInfo {
    * Current ring ID
    */
   ringId?: string;
+
+  /**
+   * An array representing the hierarchy of ancestor hosts that the app is embedded inside of.
+   * The array is ordered from immediate parent to root host.
+   * For example, if Bizchat is running in Calendar in Teams, this would be ["Calendar", "Teams"].
+   */
+  ancestors?: string[];
 }
 
 /**
@@ -855,6 +862,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
         clientType: legacyContext.hostClientType ? legacyContext.hostClientType : HostClientType.web,
         sessionId: legacyContext.sessionId ? legacyContext.sessionId : '',
         ringId: legacyContext.ringId,
+        ancestors: legacyContext.hostAncestors,
       },
       appLaunchId: legacyContext.appLaunchId,
       appId: legacyContext.appId ? new AppId(legacyContext.appId) : undefined,
