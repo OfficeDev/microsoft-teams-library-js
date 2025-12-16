@@ -96,6 +96,19 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
     },
   });
 
+const RegisterOnChangeHandler = (): React.ReactElement => {
+  return ApiWithoutInput({
+    name: 'RegisterOnChangeHandler',
+    title: 'Register On Change Handler',
+    onClick: async (setResult) => {
+      app.registerOnContextChangeHandler((context: app.Context): void => {
+        setResult('successfully called with context:' + JSON.stringify(context));
+      });
+      return 'registered';
+    },
+  });
+};
+
 const RegisterOnResumeHandler = (): React.ReactElement => {
   const navigate = useNavigate();
   return ApiWithoutInput({
@@ -150,6 +163,7 @@ const AppAPIs = (): ReactElement => (
     <RegisterOnThemeChangeHandler />
     <RegisterBeforeSuspendOrTerminateHandler />
     <RegisterOnResumeHandler />
+    <RegisterOnChangeHandler />
   </ModuleWrapper>
 );
 

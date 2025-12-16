@@ -318,6 +318,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly image?: {};
     };
     readonly webStorage?: {};
+    readonly widgetHosting?: {};
   };
 }
 // Constant used to set the runtime configuration

@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated valid domains list for M365 Copilot SSR end points.",
+  "packageName": "@microsoft/teams-js",
+  "email": "niharikad@microsoft.com",
+  "dependentChangeType": "patch"
+}
