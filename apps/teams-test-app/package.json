@@ -16,7 +16,7 @@
     "start:bundle": "webpack serve",
     "start:CDN": "webpack serve --config webpack.cdn.config.js",
     "start:local": "webpack serve --config webpack.local.config.js",
-    "validate-test-schema": "cd ../.. && pnpm validate-test-schema"
+    "validate-test-schema": "pnpm -C ../.. validate-test-schema"
   },
   "dependencies": {
     "react": "^17.0.1",
