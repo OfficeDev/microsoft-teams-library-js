@@ -49,13 +49,13 @@
     "fa000000124.officeapps.live.com",
     "fa000000128.officeapps.live.com",
     "fa000000136.mro1cdnstorage.public.onecdn.static.microsoft",
-    "https://substrate-msb-bizchatvnext-service.sdf01.substrate-msb-bingatwork.eastus2-sdf.cosmic-ppe.office.net",
-    "https://office-home-m365copilotapp.wus2sdf1.office-home-m365copilotapp.westus2-sdf.cosmic-ppe.office.net",
-    "https://office-home-m365copilotapp.wus2test1.office-home-m365copilotapp.westus2-test.cosmic-int.office.net",
-    "https://m365copilotapp.svc.cloud.microsoft",
-    "https://m365copilotapp.svc.cloud.dev.microsoft",
-    "https://ffc-copilot.officeapps.live.com",
-    "https://m365.cloud.dev.microsoft",
-    "https://m365.cloud.dev.microsoft:3001"
+    "substrate-msb-bizchatvnext-service.sdf01.substrate-msb-bingatwork.eastus2-sdf.cosmic-ppe.office.net",
+    "office-home-m365copilotapp.wus2sdf1.office-home-m365copilotapp.westus2-sdf.cosmic-ppe.office.net",
+    "office-home-m365copilotapp.wus2test1.office-home-m365copilotapp.westus2-test.cosmic-int.office.net",
+    "m365copilotapp.svc.cloud.microsoft",
+    "m365copilotapp.svc.cloud.dev.microsoft",
+    "ffc-copilot.officeapps.live.com",
+    "m365.cloud.dev.microsoft",
+    "m365.cloud.dev.microsoft:3001"
   ]
 }
