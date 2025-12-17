@@ -1,0 +1,1 @@
+Set-Content -Path $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed/.npmrc -Value "//registry.npmjs.org/:_authToken=$(NPM-TOKEN)"
