@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Fixed formatting on some domains in valid domains list.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "patch"
+}
