@@ -59,7 +59,7 @@ extends:
                 inputs:
                   targetType: 'filePath'
                   filePath: 'tools/releases/powershell-commands/update-npmrc-with-npm-token.ps1'
-                  arguments: '-Path $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed/.npmrc -Value "//registry.npmjs.org/:_authToken=$(NPM-TOKEN)"'
+                  arguments: '-PIPELINE_WORKSPACE $(PIPELINE.WORKSPACE) -NPM_TOKEN $(NPM-TOKEN)'
 
               # TODO: Remove this test step when merging in.
               # Test that we wrote to .npmrc correctly and the token works
