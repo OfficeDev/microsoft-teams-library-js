@@ -59,7 +59,7 @@ extends:
                 inputs:
                   targetType: 'filePath'
                   filePath: 'tools/releases/powershell-commands/update-npmrc-with-npm-token.ps1'
-                  arguments: '-PIPELINE_WORKSPACE $(PIPELINE.WORKSPACE) -NPM_TOKEN $(NPM-TOKEN)'
+                  arguments: -PIPELINE_WORKSPACE $(PIPELINE.WORKSPACE) -NPM_TOKEN $(NPM-TOKEN)
 
               # TODO: Remove this test step when merging in.
               # Test that we wrote to .npmrc correctly and the token works
@@ -67,7 +67,7 @@ extends:
                 displayName: Test token was updated
                 inputs:
                   targetType: 'filePath'
-                  filePath: 'tools/releases/powershell-commands/test-npm-token.ps1'
+                  filePath: 'tools/releases/powershell-commands/test-token-update.ps1'
 
               # - task: Npm@1
               #   displayName: Publish to npm (tag beta) KV
@@ -84,9 +84,9 @@ extends:
               #     Environment: PublicCloudSDF
               #     ContainerName: teams-js
               #     AdditionalArgumentsForBlobCopy: --overwrite=false --log-level=INFO --recursive
-              # - task: PowerShell@2
-              #   displayName: View Published Package URLs
-              #   inputs:
-              #     targetType: 'filePath'
-              #     filePath: 'tools/releases/powershell-commands/view-published-pkg-urls.ps1'
-              #     arguments: -Path $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/CDNFeed -Directory -Name -Exclude _*
+              - task: PowerShell@2
+                displayName: View Published Package URLs
+                inputs:
+                  targetType: 'filePath'
+                  filePath: 'tools/releases/powershell-commands/view-published-pkg-urls.ps1'
+                  arguments: -PIPELINE_WORKSPACE $(PIPELINE.WORKSPACE)
