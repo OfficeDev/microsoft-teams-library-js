@@ -96,12 +96,14 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
     },
   });
 
-const RegisterOnChangeHandler = (): React.ReactElement => {
+const RegisterOnContextChangeHandler = (): React.ReactElement => {
   return ApiWithoutInput({
-    name: 'RegisterOnChangeHandler',
-    title: 'Register On Change Handler',
+    name: 'RegisterOnContextChangeHandler',
+    title: 'Register OnContextChange Handler',
     onClick: async (setResult) => {
+      console.log('[RegisterOnContextChangeHandler] Registering handler, setResult:', typeof setResult);
       app.registerOnContextChangeHandler((context: app.Context): void => {
+        console.log('[RegisterOnContextChangeHandler] Handler called with context:', context);
         setResult('successfully called with context:' + JSON.stringify(context));
       });
       return 'registered';
@@ -163,7 +165,7 @@ const AppAPIs = (): ReactElement => (
     <RegisterOnThemeChangeHandler />
     <RegisterBeforeSuspendOrTerminateHandler />
     <RegisterOnResumeHandler />
-    <RegisterOnChangeHandler />
+    <RegisterOnContextChangeHandler />
   </ModuleWrapper>
 );
 
