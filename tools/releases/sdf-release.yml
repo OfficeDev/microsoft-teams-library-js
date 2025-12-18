@@ -60,30 +60,21 @@ extends:
                   targetType: 'filePath'
                   filePath: 'tools/releases/powershell-commands/update-npmrc-with-npm-token.ps1'
                   arguments: -PIPELINE_WORKSPACE $(PIPELINE.WORKSPACE) -NPM_TOKEN $(NPM-TOKEN)
-
-              # TODO: Remove this test step when merging in.
-              # Test that we wrote to .npmrc correctly and the token works
-              - task: PowerShell@2
-                displayName: Test token was updated
+              - task: Npm@1
+                displayName: Publish to npm (tag beta) KV
                 inputs:
-                  targetType: 'filePath'
-                  filePath: 'tools/releases/powershell-commands/test-token-update.ps1'
-
-              # - task: Npm@1
-              #   displayName: Publish to npm (tag beta) KV
-              #   inputs:
-              #     command: custom
-              #     workingDir: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed
-              #     verbose: false
-              #     customCommand: publish  --tag beta
-              # - task: M365CdnAssetsUpload@3
-              #   displayName: Push teams-js to M365 1CDN (SDF)
-              #   inputs:
-              #     SourcePath: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/CDNFeed/*
-              #     ConnectedServiceNameARM: $(serviceConnectionId)
-              #     Environment: PublicCloudSDF
-              #     ContainerName: teams-js
-              #     AdditionalArgumentsForBlobCopy: --overwrite=false --log-level=INFO --recursive
+                  command: custom
+                  workingDir: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed
+                  verbose: false
+                  customCommand: publish  --tag beta
+              - task: M365CdnAssetsUpload@3
+                displayName: Push teams-js to M365 1CDN (SDF)
+                inputs:
+                  SourcePath: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/CDNFeed/*
+                  ConnectedServiceNameARM: $(serviceConnectionId)
+                  Environment: PublicCloudSDF
+                  ContainerName: teams-js
+                  AdditionalArgumentsForBlobCopy: --overwrite=false --log-level=INFO --recursive
               - task: PowerShell@2
                 displayName: View Published Package URLs
                 inputs:

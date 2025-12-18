@@ -1,1 +1,0 @@
-npm whoami --registry=https://registry.npmjs.org/
