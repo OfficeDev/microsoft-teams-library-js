@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { Context } from '../public/app/app';
 import { FrameContexts } from '../public/constants';
 import { HostToAppPerformanceMetrics, LoadContext, ResumeContext } from '../public/interfaces';
 import { runtime } from '../public/runtime';
@@ -33,6 +34,7 @@ class HandlersPrivate {
   public static beforeSuspendOrTerminateHandler: null | (() => Promise<void>) = null;
   public static resumeHandler: null | ((context: ResumeContext) => void) = null;
   public static hostToAppPerformanceMetricsHandler: null | ((metrics: HostToAppPerformanceMetrics) => void) = null;
+  public static contextChangeHandler: null | ((context: Context) => void) = null;
 
   /**
    * @internal
@@ -42,6 +44,7 @@ class HandlersPrivate {
   public static initializeHandlers(): void {
     // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
     HandlersPrivate.handlers['themeChange'] = handleThemeChange;
+    HandlersPrivate.handlers['contextChange'] = handleContextChange;
     HandlersPrivate.handlers['load'] = handleLoad;
     HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
     initializeBackStackHelper();
@@ -50,15 +53,15 @@ class HandlersPrivate {
   /**
    * @internal
    * Limited to Microsoft-internal use
-   * Uninitializes the handlers.
+   * Uninitialize the handlers.
    */
   public static uninitializeHandlers(): void {
     HandlersPrivate.handlers = {};
     HandlersPrivate.themeChangeHandler = null;
-    HandlersPrivate.loadHandler = null;
     HandlersPrivate.beforeUnloadHandler = null;
     HandlersPrivate.beforeSuspendOrTerminateHandler = null;
     HandlersPrivate.resumeHandler = null;
+    HandlersPrivate.contextChangeHandler = null;
   }
 }
 
@@ -174,6 +177,14 @@ export function registerOnThemeChangeHandler(apiVersionTag: string, handler: (th
  * @internal
  * Limited to Microsoft-internal use
  */
+export function registerOnContextChangeHandler(apiVersionTag: string, handler: (context: Context) => void): void {
+  HandlersPrivate.contextChangeHandler = handler;
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['contextChange']);
+}
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function handleThemeChange(theme: string): void {
   if (HandlersPrivate.themeChangeHandler) {
     HandlersPrivate.themeChangeHandler(theme);
@@ -181,6 +192,20 @@ export function handleThemeChange(theme: string): void {
 
   if (shouldEventBeRelayedToChild()) {
     sendMessageEventToChild('themeChange', [theme]);
+  }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function handleContextChange(context: Context): void {
+  if (HandlersPrivate.contextChangeHandler) {
+    HandlersPrivate.contextChangeHandler(context);
+  }
+
+  if (shouldEventBeRelayedToChild()) {
+    sendMessageEventToChild('contextChange', [context]);
   }
 }
 

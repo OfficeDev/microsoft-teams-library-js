@@ -826,6 +826,15 @@ export interface Context {
    * The version of the manifest that the app is running.
    */
   manifestVersion?: string;
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppHostInfo.ancestors | app.Context.app.host.ancestors} instead
+   * An array representing the hierarchy of ancestor hosts that the app is embedded inside of.
+   * The array is ordered from immediate parent to root host.
+   * For example, if Bizchat is running in Calendar in Teams, this would be ["Calendar", "Teams"].
+   */
+  hostAncestors?: string[];
 }
 
 /** Represents the parameters used to share a deep link. */
