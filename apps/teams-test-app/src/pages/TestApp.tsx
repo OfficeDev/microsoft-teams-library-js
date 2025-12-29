@@ -55,6 +55,7 @@ import NotificationAPIs from '../components/privateApis/NotificationAPIs';
 import PrivateAPIs from '../components/privateApis/PrivateAPIs';
 import TeamsAPIs from '../components/privateApis/TeamsAPIs';
 import VideoExAPIs from '../components/privateApis/VideoEffectsExAPIs';
+import WidgetHostingAPIs from '../components/privateApis/WidgetHostingAPIs';
 import ProfileAPIs from '../components/ProfileAPIs';
 import RemoteCameraAPIs from '../components/RemoteCameraAPIs';
 import SearchAPIs from '../components/SearchAPIs';
@@ -171,6 +172,7 @@ export const TestApp: React.FC = () => {
       { name: 'VideoExAPIs', component: <VideoExAPIs /> },
       { name: 'VisualMediaAPIs', component: <VisualMediaAPIs /> },
       { name: 'StoreAPIs', component: <StoreAPIs /> },
+      { name: 'WidgetHostingAPIs', component: <WidgetHostingAPIs /> },
     ],
     [],
   );
