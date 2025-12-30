@@ -57,8 +57,9 @@ extends:
               - task: PowerShell@2
                 displayName: Update npmrc with NPM-TOKEN
                 inputs:
-                  targetType: 'inline'
-                  script: Set-Content -Path $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed/.npmrc -Value "//registry.npmjs.org/:_authToken=$(NPM-TOKEN)"
+                  targetType: 'filePath'
+                  filePath: 'tools/releases/powershell-commands/update-npmrc-with-npm-token.ps1'
+                  arguments: -PIPELINE_WORKSPACE $(PIPELINE.WORKSPACE) -NPM_TOKEN $(NPM-TOKEN)
               - task: Npm@1
                 displayName: Publish to npm (tag beta) KV
                 inputs:
@@ -77,9 +78,6 @@ extends:
               - task: PowerShell@2
                 displayName: View Published Package URLs
                 inputs:
-                  targetType: 'inline'
-                  script: |
-                    $version = Get-ChildItem -Path $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/CDNFeed -Directory -Name -Exclude _*
-                    Write-Host "Releasing version $version"
-                    Write-Host "CDN: https://res-sdf.cdn.office.net/teams-js/$version/js/MicrosoftTeams.min.js"
-                    Write-Host "NPM: https://www.npmjs.com/package/@microsoft/teams-js/v/$version"
+                  targetType: 'filePath'
+                  filePath: 'tools/releases/powershell-commands/view-published-pkg-urls.ps1'
+                  arguments: -PIPELINE_WORKSPACE $(PIPELINE.WORKSPACE)
