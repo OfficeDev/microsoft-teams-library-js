@@ -65,7 +65,9 @@ mkcert localhost
 
 ```bash
 # From monorepo root
-pnpm start-ssr-app:https
+pnpm start-ssr-app:https-dev  # for development
+# or
+pnpm start-ssr-app:https      # for production (requires pnpm build first)
 
 # Or from the ssr-test-app directory
 pnpm dev:https   # for development
