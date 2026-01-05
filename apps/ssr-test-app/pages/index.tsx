@@ -35,7 +35,7 @@ export default function IndexPage(props: SSRProps): ReactElement {
         <h1 id="ctime">The client render time is {clientTime.substring(12, 24)}</h1>
         {props.postBody && (
           <pre>
-            <b>POST Body:</b> {JSON.stringify(JSON.parse(props.postBody), null, 2)}
+            <b>POST Body:</b> {props.postBody}
           </pre>
         )}
         <pre>
@@ -48,6 +48,7 @@ export default function IndexPage(props: SSRProps): ReactElement {
 
 /**
  * Parse request body manually from the HTTP stream
+ * Handles form-encoded data (application/x-www-form-urlencoded)
  * In getServerSideProps, the request body arrives as a stream of chunks,
  * unlike API Routes where Next.js automatically parses req.body
  */
@@ -64,7 +65,21 @@ async function parseBody(req: IncomingMessage): Promise<string> {
 
     // Listen for the end event - fires when all data has been received
     req.on('end', () => {
-      resolve(body);
+      // Parse form data (application/x-www-form-urlencoded)
+      // Format: key1=value1&key2=value2
+      const formData: Record<string, string> = {};
+      if (body) {
+        const pairs = body.split('&');
+        pairs.forEach((pair) => {
+          const [key, value] = pair.split('=');
+          if (key) {
+            formData[decodeURIComponent(key)] = decodeURIComponent(value || '');
+          }
+        });
+      }
+
+      // Return formatted JSON string for display
+      resolve(JSON.stringify(formData, null, 2));
     });
   });
 }
