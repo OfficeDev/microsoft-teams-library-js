@@ -44,6 +44,7 @@ class HandlersPrivate {
   public static initializeHandlers(): void {
     // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
     HandlersPrivate.handlers['themeChange'] = handleThemeChange;
+    HandlersPrivate.handlers['contextChange'] = handleContextChange;
     HandlersPrivate.handlers['load'] = handleLoad;
     HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
     initializeBackStackHelper();
@@ -191,6 +192,20 @@ export function handleThemeChange(theme: string): void {
 
   if (shouldEventBeRelayedToChild()) {
     sendMessageEventToChild('themeChange', [theme]);
+  }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function handleContextChange(context: Context): void {
+  if (HandlersPrivate.contextChangeHandler) {
+    HandlersPrivate.contextChangeHandler(context);
+  }
+
+  if (shouldEventBeRelayedToChild()) {
+    sendMessageEventToChild('contextChange', [context]);
   }
 }
 
