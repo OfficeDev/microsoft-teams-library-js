@@ -13,14 +13,15 @@ jobs:
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'npm'
       testPrefixPatternGroups: [
-          # 'app(?=\.)',// disable because of timeout issue
+          'app(?=\.)',
           '{appE,appI,appS,auth}',
           '{[B],[b]}',
           '{[C-D],[c-d]}',
-          '{[E],[e]}',
+          'externalAppAuthentication.ts', # Separate out known bottleneck test externalAppAuthenticationFor* to avoid timeouts
+          '{[E],[e],!externalAppAuthentication.ts}',
           '{[F-M],[f-m]}',
           '{[N-R],[n-r]}',
-          # '{[S],[s]}',// disable because of timeout issue
+          '{[S],[s]}',
           '{[T-Z],[t-z]}',
         ]
       versionBranch: ${{parameters.versionBranch}}
@@ -31,14 +32,15 @@ jobs:
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'scriptTag'
       testPrefixPatternGroups: [
-          # 'app(?=\.)',// disable because of timeout issue
+          'app(?=\.)',
           '{appE,appI,appS,auth}',
           '{[B],[b]}',
           '{[C-D],[c-d]}',
-          '{[E],[e]}',
+          'externalAppAuthentication.ts', # Separate out known bottleneck test externalAppAuthenticationFor* to avoid timeouts
+          '{[E],[e],!externalAppAuthentication.ts}',
           '{[F-M],[f-m]}',
           '{[N-R],[n-r]}',
-          # '{[S],[s]}',// disable because of timeout issue
+          '{[S],[s]}',
           '{[T-Z],[t-z]}',
         ]
       versionBranch: ${{parameters.versionBranch}}
