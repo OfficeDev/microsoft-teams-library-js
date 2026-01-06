@@ -199,6 +199,11 @@ export interface LocaleInfo {
    * @example 10:10:42 AM
    */
   longTime: string;
+  /**
+   * A string representing the timezone of the user's locale in IANA format
+   * @example 'America/Los_Angeles'
+   */
+  timezone?: string;
 }
 
 /**
