@@ -17,8 +17,8 @@ jobs:
           '{appE,appI,appS,auth}',
           '{[B],[b]}',
           '{[C-D],[c-d]}',
-          'externalAppAuthentication.ts', # Separate out known bottleneck test externalAppAuthenticationFor* to avoid timeouts
-          '{[E],[e],!externalAppAuthentication.ts}',
+          'externalAppAuthentication.ts',
+          '{externalAppAuthenticationFor*,externalAppC*,e[^x]*,E[^x]*}', # Separate out known bottleneck test externalAppAuthenticationFor
           '{[F-M],[f-m]}',
           '{[N-R],[n-r]}',
           '{[S],[s]}',
@@ -36,8 +36,8 @@ jobs:
           '{appE,appI,appS,auth}',
           '{[B],[b]}',
           '{[C-D],[c-d]}',
-          'externalAppAuthentication.ts', # Separate out known bottleneck test externalAppAuthenticationFor* to avoid timeouts
-          '{[E],[e],!externalAppAuthentication.ts}',
+          'externalAppAuthentication.ts',
+          '{externalAppAuthenticationFor*,externalAppC*,e[^x]*,E[^x]*}', # Separate out known bottleneck test externalAppAuthenticationFor
           '{[F-M],[f-m]}',
           '{[N-R],[n-r]}',
           '{[S],[s]}',
