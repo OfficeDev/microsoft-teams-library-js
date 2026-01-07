@@ -49,6 +49,7 @@ export default function IndexPage(props: SSRProps): ReactElement {
 /**
  * Parse request body manually from the HTTP stream
  * Handles form-encoded data (application/x-www-form-urlencoded)
+ * Values that are valid JSON strings will be parsed into objects
  * In getServerSideProps, the request body arrives as a stream of chunks,
  * unlike API Routes where Next.js automatically parses req.body
  */
@@ -67,13 +68,26 @@ async function parseBody(req: IncomingMessage): Promise<string> {
     req.on('end', () => {
       // Parse form data (application/x-www-form-urlencoded)
       // Format: key1=value1&key2=value2
-      const formData: Record<string, string> = {};
+      // Values can be JSON strings that will be parsed into objects
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const formData: Record<string, any> = {};
       if (body) {
         const pairs = body.split('&');
         pairs.forEach((pair) => {
           const [key, value] = pair.split('=');
-          if (key) {
-            formData[decodeURIComponent(key)] = decodeURIComponent(value || '');
+          if (!key) {
+            return;
+          }
+
+          const decodedKey = decodeURIComponent(key);
+          const decodedValue = decodeURIComponent(value || '');
+
+          // Try to parse value as JSON, if it fails, use as string
+          try {
+            formData[decodedKey] = JSON.parse(decodedValue);
+          } catch {
+            // Not valid JSON, keep as string
+            formData[decodedKey] = decodedValue;
           }
         });
       }
