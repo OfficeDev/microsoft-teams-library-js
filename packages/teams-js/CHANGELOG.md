@@ -1,8 +1,28 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 10 Dec 2025 19:42:31 GMT and should not be manually modified.
+This log was last generated on Thu, 08 Jan 2026 23:04:26 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.48.0
+
+Thu, 08 Jan 2026 23:04:26 GMT
+
+### Minor changes
+
+- Added domain to valid domains list.
+- Added opt-in event handler to receive memory usage heartbeat periodically.
+- Fixed formatting on some domains in valid domains list.
+- Added valid domain for UnifiedStore SDX.
+- Added host ancestors to app context.
+- Added `widgetHosting` capability that will enable hosting of widgets within M365 hubs. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added timezone property to LocaleInfo interface that will allow applications to access the user's timezone information. 
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Fixed a bug on RegisterOnContextChangeHandler where the handler was not being called when the context changed due to theme change.
+- Updated valid domains list for M365 Copilot SSR end points.
 
 ## 2.47.2
 
