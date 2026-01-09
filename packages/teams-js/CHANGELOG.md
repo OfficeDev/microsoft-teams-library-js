@@ -1,8 +1,115 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 06 Jun 2025 17:53:12 GMT and should not be manually modified.
+This log was last generated on Wed, 10 Dec 2025 19:42:31 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.47.2
+
+Wed, 10 Dec 2025 19:42:31 GMT
+
+### Patches
+
+- Upgraded Next dependency in SSR test app to resolve security alert.
+
+## 2.47.1
+
+Wed, 03 Dec 2025 21:10:55 GMT
+
+### Patches
+
+- Fixed error handling in `getConfigSetting` teams full trust api.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.47.0
+
+Wed, 12 Nov 2025 19:23:55 GMT
+
+### Minor changes
+
+- Updated Copilot `preCheckUserConsent` function to accept an optional `UserConsentRequest` parameter and updated `ContentRequest` interface to support flexible properties via index signature. Deprecated `localEndpointInfo` property in favor of the index signature approach.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.46.0
+
+Wed, 01 Oct 2025 22:58:28 GMT
+
+### Minor changes
+
+- Added `disconnectConnector` to `{externalAppAuthentication}` capability that will disconnect the external app connector. The capability is still awaiting support in one or more host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.45.0
+
+Wed, 10 Sep 2025 22:10:41 GMT
+
+### Minor changes
+
+- Added `{authenticateWithConnector}  and { getUserAuthenticationStateForConnector}` to  `externalAppAuthentication` capability that will authenticate the user and get user authentication status for copilot connectors. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Added `sidePanel` to `openFilePreview`'s ensureInitialized FrameContexts
+
+## 2.44.0
+
+Wed, 27 Aug 2025 21:57:44 GMT
+
+### Minor changes
+
+- Added optional `Settings` field to `AppEligibilityInformation` interface
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.43.0
+
+Tue, 19 Aug 2025 15:18:35 GMT
+
+### Minor changes
+
+- Added `shortcutRelay` capability to support host shortcuts in apps.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.42.0
+
+Thu, 07 Aug 2025 04:45:52 GMT
+
+### Minor changes
+
+- Updated validDomains list to support the catalyst consumer domains
+- Added `messageId` to app context.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Add Outlook DoD domains to validDomains
+- Fixed the typo from `NonAdult` to `NotAdult` in `LegalAgeGroupClassification` Enum.
+
+## 2.41.0
+
+Mon, 21 Jul 2025 20:57:12 GMT
+
+### Minor changes
+
+- Added view copilot API with function to close the side panel.
+- Bumped eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.40.0
+
+Mon, 07 Jul 2025 23:19:06 GMT
+
+### Minor changes
+
+- Added `contextType` in `TeamsContent` interface to `{copilot.sidePanel}` capability.
+- Added `TeamsContent` interface for `{copilot.sidePanel}` capability.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Removed message source check but kept origin validation in nested app auth standalone bridge
+- Added Outlook OCDI domain to validDomains.json
+- Updated valid domains CDN fetch logic to prevent duplicate requests.
+- Added `responseToEmailId` to `{copilot.sidePanel.DraftEmailContent}` capability.
 
 ## 2.39.0
 

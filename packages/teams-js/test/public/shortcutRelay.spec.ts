@@ -1,0 +1,123 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { GlobalVars } from '../../src/internal/globalVars';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { ApiName } from '../../src/internal/telemetry';
+import * as app from '../../src/public/app/app';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { latestRuntimeApiVersion } from '../../src/public/runtime';
+import * as shortcutRelay from '../../src/public/shortcutRelay';
+import { Utils } from '../utils';
+
+describe('shortcutRelay capability', () => {
+  describe('frameless', () => {
+    let utils: Utils = new Utils();
+    beforeEach(() => {
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      utils.messages = [];
+      GlobalVars.isFramelessWindow = false;
+    });
+    afterEach(() => {
+      app._uninitialize?.();
+    });
+
+    describe('isSupported()', () => {
+      it('returns false when runtime says it is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        expect(shortcutRelay.isSupported()).toBeFalsy();
+      });
+
+      it('returns true when runtime says it is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { shortcutRelay: {} } });
+        expect(shortcutRelay.isSupported()).toBeTruthy();
+      });
+
+      it('throws before initialization', () => {
+        utils.uninitializeRuntimeConfig();
+        expect(() => shortcutRelay.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+    });
+
+    describe('enableShortcutRelayCapability()', () => {
+      it('should reject before initialization', async () => {
+        await expect(shortcutRelay.enableShortcutRelayCapability()).rejects.toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      it('should reject when capability not supported in runtime', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: {} });
+
+        await expect(shortcutRelay.enableShortcutRelayCapability()).rejects.toEqual(errorNotSupportedOnPlatform);
+      });
+
+      it('forwards a matching non-overridden shortcut to host', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { shortcutRelay: {} } });
+
+        shortcutRelay.enableShortcutRelayCapability();
+
+        // simulate host response with shortcuts
+        const response = {
+          shortcuts: ['ctrl+s'],
+          overridableShortcuts: [],
+        };
+        const request = utils.findMessageByFunc(ApiName.ShortcutRelay_GetHostShortcuts);
+        utils.respondToFramelessMessage({
+          data: { id: request?.id, args: [response] },
+        } as DOMMessageEvent);
+
+        // fire keydown in next animation frame
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        const evt = new KeyboardEvent('keydown', { key: 's', ctrlKey: true, bubbles: true });
+        document.body.dispatchEvent(evt);
+
+        const fwd = utils.findMessageByFunc(ApiName.ShortcutRelay_ForwardShortcutEvent);
+        expect(fwd).not.toBeNull();
+      });
+
+      it('gives app chance to consume overridable shortcut', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { shortcutRelay: {} } });
+
+        const handler = jest.fn(() => true); // consume event
+        shortcutRelay.setOverridableShortcutHandler(handler);
+        shortcutRelay.enableShortcutRelayCapability();
+
+        const response = {
+          shortcuts: ['ctrl+p'],
+          overridableShortcuts: ['ctrl+p'],
+        };
+        const request = utils.findMessageByFunc(ApiName.ShortcutRelay_GetHostShortcuts);
+        utils.respondToFramelessMessage({
+          data: { id: request?.id, args: [response] },
+        } as DOMMessageEvent);
+
+        // fire keydown in next animation frame
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        const evt = new KeyboardEvent('keydown', { key: 'p', ctrlKey: true, bubbles: true });
+        document.body.dispatchEvent(evt);
+
+        expect(handler).toHaveBeenCalled();
+        const fwd = utils.findMessageByFunc(ApiName.ShortcutRelay_ForwardShortcutEvent);
+        expect(fwd).toBeNull(); // consumed, so not forwarded
+      });
+    });
+
+    describe('setOverridableShortcutHandler()', () => {
+      it('replaces and returns previous handler', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { shortcutRelay: {} } });
+
+        const noop = (): boolean => true;
+        shortcutRelay.setOverridableShortcutHandler(noop);
+        const next = (): boolean => false;
+        const prev = shortcutRelay.setOverridableShortcutHandler(next);
+        expect(prev).toBe(noop);
+      });
+    });
+  });
+});

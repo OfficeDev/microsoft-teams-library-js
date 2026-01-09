@@ -3,7 +3,7 @@
   "private": true,
   "author": "Microsoft Teams",
   "description": "Teams Test App utilizing Teams JavaScript client SDK to test Hosts",
-  "version": "2.39.0",
+  "version": "2.47.2",
   "scripts": {
     "build": "pnpm build:bundle",
     "build:bundle": "pnpm validate-test-schema && pnpm lint && webpack",
@@ -16,7 +16,7 @@
     "start:bundle": "webpack serve",
     "start:CDN": "webpack serve --config webpack.cdn.config.js",
     "start:local": "webpack serve --config webpack.local.config.js",
-    "validate-test-schema": "cd ../.. && pnpm validate-test-schema"
+    "validate-test-schema": "pnpm -C ../.. validate-test-schema"
   },
   "dependencies": {
     "react": "^17.0.1",

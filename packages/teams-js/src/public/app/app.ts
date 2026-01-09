@@ -180,6 +180,12 @@ export interface AppInfo {
   userClickTimeV2?: number;
 
   /**
+   * The ID of the message from which this task module was launched.
+   * This is only available in task modules launched from bot cards.
+   */
+  messageId?: string;
+
+  /**
    * The ID of the parent message from which this task module was launched.
    * This is only available in task modules launched from bot cards.
    */
@@ -229,6 +235,13 @@ export interface AppHostInfo {
    * Current ring ID
    */
   ringId?: string;
+
+  /**
+   * An array representing the hierarchy of ancestor hosts that the app is embedded inside of.
+   * The array is ordered from immediate parent to root host.
+   * For example, if Bizchat is running in Calendar in Teams, this would be ["Calendar", "Teams"].
+   */
+  ancestors?: string[];
 }
 
 /**
@@ -529,7 +542,7 @@ export interface Context {
 
   /**
    * Info about the currently logged in user running the app.
-   * If the current user is not logged in/authenticated (e.g. a meeting app running for an anonymously-joined partcipant) this will be `undefined`.
+   * If the current user is not logged in/authenticated (e.g. a meeting app running for an anonymously-joined participant) this will be `undefined`.
    */
   user?: UserInfo;
 
@@ -578,6 +591,11 @@ export interface Context {
  * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
  */
 export type themeHandler = (theme: string) => void;
+
+/**
+ * This function is passed to registerOnContextChangeHandler. It is called every time the user changes their context.
+ */
+export type contextHandler = (context: Context) => void;
 
 /**
  * This function is passed to registerHostToAppPerformanceMetricsHandler. It is called every time a response is received from the host with metrics for analyzing message delay. See {@link HostToAppPerformanceMetrics} to see which metrics are passed to the handler.
@@ -754,6 +772,21 @@ export function registerOnThemeChangeHandler(handler: themeHandler): void {
 }
 
 /**
+ * Registers a handler for content (context) changes.
+ *
+ * @remarks
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ *
+ * @param handler - The handler to invoke when the app's content context changes.
+ */
+export function registerOnContextChangeHandler(handler: contextHandler): void {
+  appHelpers.registerOnContextChangeHandlerHelper(
+    getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnContextChangeHandler),
+    handler,
+  );
+}
+
+/**
  * Registers a function for handling data of host to app message delay.
  *
  * @remarks
@@ -819,6 +852,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       theme: legacyContext.theme ? legacyContext.theme : 'default',
       iconPositionVertical: legacyContext.appIconPosition,
       osLocaleInfo: legacyContext.osLocaleInfo,
+      messageId: legacyContext.messageId,
       parentMessageId: legacyContext.parentMessageId,
       userClickTime: legacyContext.userClickTime,
       userClickTimeV2: legacyContext.userClickTimeV2,
@@ -828,6 +862,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
         clientType: legacyContext.hostClientType ? legacyContext.hostClientType : HostClientType.web,
         sessionId: legacyContext.sessionId ? legacyContext.sessionId : '',
         ringId: legacyContext.ringId,
+        ancestors: legacyContext.hostAncestors,
       },
       appLaunchId: legacyContext.appLaunchId,
       appId: legacyContext.appId ? new AppId(legacyContext.appId) : undefined,

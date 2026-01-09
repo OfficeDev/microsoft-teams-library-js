@@ -1,4 +1,4 @@
-import { externalAppAuthentication } from '@microsoft/teams-js';
+import { externalAppAuthentication, UUID } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput } from '../utils/ApiWithoutInput';
@@ -103,6 +103,117 @@ const AuthenticateWithOauth2 = (): React.ReactElement =>
         height: 400,
         isExternal: false,
       },
+    }),
+  });
+
+const AuthenticateWithConnector = (): React.ReactElement =>
+  ApiWithTextInput<{
+    connectorId: string;
+    oAuthConfigId: string;
+    windowParameters: {
+      width?: number;
+      height?: number;
+      isExternal?: boolean;
+    };
+    traceId: UUID;
+  }>({
+    name: 'authenticateWithConnector',
+    title: 'Authenticate With Connector',
+    onClick: {
+      validateInput: (input) => {
+        if (!input.connectorId) {
+          throw new Error('connectorId is required');
+        }
+        if (!input.oAuthConfigId) {
+          throw new Error('oauthConfigId is required');
+        }
+        if (!input.traceId) {
+          throw new Error('traceId is required');
+        }
+      },
+      submit: async (input) => {
+        await externalAppAuthentication.authenticateWithConnector(input);
+        return 'success';
+      },
+    },
+    defaultInput: JSON.stringify({
+      connectorId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
+      oAuthConfigId: 'testOauthConfigId',
+      windowParameters: {
+        width: 500,
+        height: 400,
+        isExternal: false,
+      },
+      traceId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+    }),
+  });
+
+const GetUserAuthenticationStateForConnector = (): React.ReactElement =>
+  ApiWithTextInput<{
+    connectorId: string;
+    oAuthConfigId: string;
+    traceId: UUID;
+  }>({
+    name: 'getUserAuthenticationStateForConnector',
+    title: 'Get User Authentication State For Connector',
+    onClick: {
+      validateInput: (input) => {
+        if (!input.connectorId) {
+          throw new Error('connectorId is required');
+        }
+        if (!input.oAuthConfigId) {
+          throw new Error('oauthConfigId is required');
+        }
+        if (!input.traceId) {
+          throw new Error('traceId is required');
+        }
+      },
+      submit: async (input) => {
+        const response = await externalAppAuthentication.getUserAuthenticationStateForConnector(input);
+        return JSON.stringify(response);
+      },
+    },
+    defaultInput: JSON.stringify({
+      connectorId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
+      oAuthConfigId: 'testOauthConfigId',
+      windowParameters: {
+        width: 500,
+        height: 400,
+        isExternal: false,
+      },
+      traceId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+    }),
+  });
+
+const DisconnectConnector = (): React.ReactElement =>
+  ApiWithTextInput<{
+    connectorId: string;
+    oAuthConfigId: string;
+    traceId: UUID;
+  }>({
+    name: 'disconnectConnector',
+    title: 'Disconnect Connector',
+    onClick: {
+      validateInput: (input) => {
+        if (!input.connectorId) {
+          throw new Error('connectorId is required');
+        }
+        if (!input.oAuthConfigId) {
+          throw new Error('oauthConfigId is required');
+        }
+        if (!input.traceId) {
+          throw new Error('traceId is required');
+        }
+      },
+      submit: async (input) => {
+        await externalAppAuthentication.disconnectConnector(input);
+        return 'success';
+      },
+    },
+    defaultInput: JSON.stringify({
+      connectorId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
+      oAuthConfigId: 'testOauthConfigId',
+      traceId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
     }),
   });
 
@@ -224,6 +335,9 @@ const ExternalAppAuthenticationAPIs = (): React.ReactElement => (
     <CheckExternalAppAuthenticationCapability />
     <AuthenticateAndResendRequest />
     <AuthenticateWithOauth2 />
+    <AuthenticateWithConnector />
+    <GetUserAuthenticationStateForConnector />
+    <DisconnectConnector />
     <AuthenticateWithPPC />
     <AuthenticateWithSSO />
     <AuthenticateWithSSOAndResendRequest />

@@ -112,9 +112,17 @@ export enum FrameContexts {
  */
 export enum RenderingSurfaces {
   /**
-   * The mode the copilot app rendered by the host.
+   * Copilot running as a side panel in the host application.
    */
   copilotSidePanel = 'copilotSidePanel',
+  /**
+   * Copilot running in the main pane of the host application.
+   */
+  copilotMainPane = 'copilotMainPane',
+  /**
+   * Copilot running in full screen mode as an embedded app in the host application.
+   */
+  copilotFullScreen = 'copilotFullScreen',
 }
 
 /**

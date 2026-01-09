@@ -199,6 +199,11 @@ export interface LocaleInfo {
    * @example 10:10:42 AM
    */
   longTime: string;
+  /**
+   * A string representing the timezone of the user's locale in IANA format
+   * @example 'America/Los_Angeles'
+   */
+  timezone?: string;
 }
 
 /**
@@ -624,6 +629,15 @@ export interface Context {
 
   /**
    * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.messageId | app.Context.app.messageId} instead
+   *
+   * The ID of the message from which this task module was launched.
+   * This is only available in task modules launched from bot cards.
+   */
+  messageId?: string;
+
+  /**
+   * @deprecated
    * As of TeamsJS v2.0.0, please use {@link app.AppInfo.parentMessageId | app.Context.app.parentMessageId} instead
    *
    * The ID of the parent message from which this task module was launched.
@@ -812,6 +826,15 @@ export interface Context {
    * The version of the manifest that the app is running.
    */
   manifestVersion?: string;
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppHostInfo.ancestors | app.Context.app.host.ancestors} instead
+   * An array representing the hierarchy of ancestor hosts that the app is embedded inside of.
+   * The array is ordered from immediate parent to root host.
+   * For example, if Bizchat is running in Calendar in Teams, this would be ["Calendar", "Teams"].
+   */
+  hostAncestors?: string[];
 }
 
 /** Represents the parameters used to share a deep link. */
@@ -1185,6 +1208,11 @@ export interface AppEligibilityInformation {
    * Education Eligibility Information for the app user
    */
   userClassification: UserClassification | null;
+  /**
+   * Describes settings available to the user.
+   * If this property is undefined, it indicates that the host is an older version that doesn't support this property.
+   */
+  settings?: AppSettings | null;
 }
 
 /**
@@ -1217,6 +1245,30 @@ export interface UserClassificationWithEduType {
    * Describes additional traits of the user that contribute to FRE experience, etc.
    */
   persona: Persona.Faculty | Persona.Student;
+}
+
+/**
+ * @hidden
+ * @beta
+ * Represents the settings set available to the user.
+ */
+export interface AppSettings {
+  /**
+   * Describes conversation settings available to the user.
+   */
+  conversationSettings?: AppConversationSettings | null;
+}
+
+/**
+ * @hidden
+ * @beta
+ * Represents the conversation settings available to the user.
+ */
+export interface AppConversationSettings {
+  /**
+   * Indicates OCE admin toggle
+   */
+  isOptionalConnectedExperiencesEnabled: boolean;
 }
 
 /**
@@ -1295,7 +1347,12 @@ export enum LegalAgeGroupClassification {
    * United Kingdom, European Union, or South Korea, and the user's age is between a minor and an adult age
    * (as stipulated based on country or region). Generally, this means that teenagers are considered as notAdult in regulated countries.
    */
-  NonAdult = 'nonAdult',
+  NotAdult = 'notAdult',
+  /**
+   * @deprecated To provide back compatibility for the NonAdult enum value coming from the hubs
+   */
+  //  eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
+  NonAdult = 'notAdult',
 }
 
 /**
@@ -1349,3 +1406,68 @@ export interface HostToAppPerformanceMetrics {
   /** The time when the request was dispatched */
   requestStartedAt: number;
 }
+
+/**
+ * Memory metrics for a specific frame within the app.
+ */
+export type HostToAppFrameMemoryMetrics = {
+  /**
+   * The amount of RAM consumed by this frame of the app (in KB).
+   */
+  workingSetSizeKB: number;
+
+  /**
+   * The amount of memory allocated by this frame of the app (in KB).
+   */
+  commitSizeKB: number;
+
+  /**
+   * Identifies the frame by host and path, e.g. https://example.com/path/.
+   */
+  hostAndPath: string;
+
+  /**
+   * Identifies the frame by the process hosting its web contents.
+   */
+  processId: number;
+
+  /**
+   * The nesting level of this frame within the app frame. The top-level frame is 0.
+   */
+  treeLevel: number;
+};
+
+/**
+ * Memory metrics provided by the host for the app.
+ */
+export type HostMemoryMetrics = {
+  /**
+   * Indicates if the app is in a hidden state to accelerate future launches.
+   */
+  isCached: boolean;
+
+  /**
+   * Indicates if the app is in a preloaded state to accelerate its first launch in the session.
+   */
+  isPrecached: boolean;
+
+  /**
+   * Indicates whether the app is sharing its hosting process (and therefore its memory metrics) with another top-level app frame.
+   */
+  isSharingProcess: boolean;
+
+  /**
+   * The amount of RAM currently consumed by all frames of the app (in KB).
+   */
+  totalFrameWorkingSetSizeKB: number;
+
+  /**
+   * The amount of memory allocated by all frames of the app (in KB).
+   */
+  totalFrameCommitSizeKB: number;
+
+  /**
+   * A breakdown of the memory metrics by each frame.
+   */
+  frameMemoryMetrics: HostToAppFrameMemoryMetrics[];
+};

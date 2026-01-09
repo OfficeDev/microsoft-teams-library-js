@@ -14,7 +14,12 @@ import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
-import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
+import {
+  compareSDKVersions,
+  inServerSideRenderingEnvironment,
+  normalizeAgeGroupValue,
+  runWithTimeout,
+} from '../internal/utils';
 import * as app from '../public/app/app';
 import { FrameContexts } from '../public/constants';
 import * as dialog from '../public/dialog/dialog';
@@ -149,12 +154,14 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
           // After Teams updates its client code, we can remove this default code.
           try {
             initializeHelperLogger('Parsing %s', runtimeConfig);
-            const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(runtimeConfig);
+            let givenRuntimeConfig: IBaseRuntime | null = JSON.parse(runtimeConfig);
             initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
             // Check that givenRuntimeConfig is a valid instance of IBaseRuntime
             if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
               throw new Error('Received runtime config is invalid');
             }
+            // Normalize ageGroup value for backward compatibility
+            givenRuntimeConfig = normalizeAgeGroupValue(givenRuntimeConfig);
             runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
           } catch (e) {
             if (e instanceof SyntaxError) {
@@ -167,7 +174,7 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
                 if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                   GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                 }
-                const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(clientSupportedSDKVersion);
+                let givenRuntimeConfig: IBaseRuntime | null = JSON.parse(clientSupportedSDKVersion);
                 initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
 
                 if (!givenRuntimeConfig) {
@@ -175,6 +182,7 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
                     'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
                   );
                 } else {
+                  givenRuntimeConfig = normalizeAgeGroupValue(givenRuntimeConfig);
                   applyRuntimeConfig(givenRuntimeConfig);
                 }
               } catch (e) {
@@ -222,6 +230,11 @@ export function registerOnThemeChangeHandlerHelper(apiVersionTag: string, handle
   // allow for registration cleanup even when not called initialize
   !isNullOrUndefined(handler) && ensureInitializeCalled();
   Handlers.registerOnThemeChangeHandler(apiVersionTag, handler);
+}
+
+export function registerOnContextChangeHandlerHelper(apiVersionTag: string, handler: app.contextHandler): void {
+  !isNullOrUndefined(handler) && ensureInitializeCalled();
+  Handlers.registerOnContextChangeHandler(apiVersionTag, handler);
 }
 
 export function openLinkHelper(apiVersionTag: string, deepLink: string): Promise<void> {

@@ -27,6 +27,8 @@ export {
   FileOpenPreference,
   FrameContext,
   FrameInfo,
+  HostMemoryMetrics,
+  HostToAppFrameMemoryMetrics,
   HostToAppPerformanceMetrics,
   LoadContext,
   LocaleInfo,
@@ -45,6 +47,7 @@ export {
 } from './interfaces';
 export * as app from './app/app';
 export { AppId } from './appId';
+export * as appPerformanceMetrics from './appPerformanceMetrics';
 export { EmailAddress } from './emailAddress';
 export * as appInstallDialog from './appInstallDialog';
 export * as barCode from './barCode';
@@ -139,3 +142,4 @@ export * as liveShare from './liveShareHost';
 export { LiveShareHost } from './liveShareHost';
 export * as marketplace from './marketplace';
 export { ISerializable } from './serializable.interface';
+export * as shortcutRelay from './shortcutRelay';
