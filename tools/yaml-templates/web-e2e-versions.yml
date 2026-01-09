@@ -12,13 +12,13 @@ jobs:
       AppHostingSdk: AppHostingSdk
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'npm'
-      testPrefixPatternGroups: [
+      testPrefixPatternGroups:
+        [
           'app(?=\.)',
           '{appE,appI,appS,auth}',
           '{[B],[b]}',
           '{[C-D],[c-d]}',
-          'externalAppAuthentication.ts',
-          '{externalAppAuthenticationFor*,externalAppC*,e[^x]*,E[^x]*}', # Separate out known bottleneck test externalAppAuthenticationFor
+          '{[E],[e]}',
           '{[F-M],[f-m]}',
           '{[N-R],[n-r]}',
           '{[S],[s]}',
@@ -31,13 +31,13 @@ jobs:
       AppHostingSdk: AppHostingSdk
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'scriptTag'
-      testPrefixPatternGroups: [
+      testPrefixPatternGroups:
+        [
           'app(?=\.)',
           '{appE,appI,appS,auth}',
           '{[B],[b]}',
           '{[C-D],[c-d]}',
-          'externalAppAuthentication.ts',
-          '{externalAppAuthenticationFor*,externalAppC*,e[^x]*,E[^x]*}', # Separate out known bottleneck test externalAppAuthenticationFor
+          '{[E],[e]}',
           '{[F-M],[f-m]}',
           '{[N-R],[n-r]}',
           '{[S],[s]}',
