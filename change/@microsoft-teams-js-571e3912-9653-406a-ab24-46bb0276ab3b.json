@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added opt-in event handler to receive memory usage heartbeat periodically.",
-  "packageName": "@microsoft/teams-js",
-  "email": "31258166+juanscr@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
