@@ -6,7 +6,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { ContextDisplay, PageInfo, PostBodyDisplay } from '../components/CommonComponents';
 import { parseBody } from '../utils/serverUtils';
 
-export interface FailureSuccessTestPageProps {
+export interface FailureOnlyTestPageProps {
   renderString: string;
   time: string;
   postCount?: number;
@@ -15,26 +15,24 @@ export interface FailureSuccessTestPageProps {
 }
 
 // Test Instructions:
-// - First POST request will trigger notifyFailure
-// - Second POST request will trigger notifySuccess
+// - Every POST request will trigger notifyFailure
 // - Use a tool like Postman or curl to send POST requests to this page
 // - Add ?withMessage=true to the URL to include a message in notifyFailure
 //
 // Example curl commands:
 // Without message:
-// curl -X POST https://localhost:53000/failureSuccessTest \
+// curl -X POST https://localhost:53000/failureOnlyTest \
 //   -H "Content-Type: application/x-www-form-urlencoded" \
 //   -d "test=value"
 //
 // With message:
-// curl -X POST https://localhost:53000/failureSuccessTest?withMessage=true \
+// curl -X POST https://localhost:53000/failureOnlyTest?withMessage=true \
 //   -H "Content-Type: application/x-www-form-urlencoded" \
 //   -d "test=value"
 
-// Track the number of POST requests received
 let postRequestCount = 0;
 
-export default function FailureSuccessTestPage(props: FailureSuccessTestPageProps): ReactElement {
+export default function FailureOnlyTestPage(props: FailureOnlyTestPageProps): ReactElement {
   const [teamsContext, setTeamsContext] = useState({});
   const [clientTime, setClientTime] = useState('');
   const [notificationStatus, setNotificationStatus] = useState('');
@@ -47,9 +45,8 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
         setTeamsContext(ctx);
       });
 
-      // Call notifyFailure on first POST request
-      if (props.postCount === 0) {
-        console.log('!!!Calling notifyFailure for first POST request');
+      // Always call notifyFailure on every POST request
+      if (typeof props.postCount === 'number') {
         const message = props.withMessage
           ? 'Bearer realm="", authorization_uri="https://some_url/authorize", error="insufficient_claims", claims="Base65Encoded_claims_value"'
           : '';
@@ -59,13 +56,7 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
         };
         console.log(`!!!notifyFailure request: ${JSON.stringify(request)}`);
         microsoftTeams.app.notifyFailure(request);
-        setNotificationStatus(`notifyFailure called${props.withMessage ? ' with message' : ''} (first POST request)`);
-      }
-      // Call notifySuccess on second POST request
-      else {
-        console.log('!!!Calling notifySuccess for second POST request');
-        microsoftTeams.app.notifySuccess();
-        setNotificationStatus('notifySuccess called (second POST request)');
+        setNotificationStatus(`notifyFailure called${props.withMessage ? ' with message' : ''} (POST request)`);
       }
       setClientTime(JSON.stringify(new Date()));
     });
@@ -74,13 +65,13 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
   return (
     <div>
       <Head>
-        <title>Test Page</title>
+        <title>Failure Only Test Page</title>
       </Head>
       <div>
         <PageInfo renderString={props.renderString} serverTime={props.time} clientTime={clientTime} />
         <h2 id="post-count">POST Request Count: {props.postCount}</h2>
         {notificationStatus && (
-          <h2 id="notification-status" style={{ color: props.postCount === 0 ? 'red' : 'green' }}>
+          <h2 id="notification-status" style={{ color: 'red' }}>
             Status: {notificationStatus}
           </h2>
         )}
@@ -106,12 +97,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
     console.log(`!!!!POST request #${currentCount} postRequestCount: ${postRequestCount}`);
 
     // Add delay for POST requests
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log('!!!!POST request delay complete', postRequestCount);
-    // Reset counter after the second request
-    if (postRequestCount >= 2) {
-      postRequestCount = 0;
-    }
 
     return {
       props: {

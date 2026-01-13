@@ -3,8 +3,8 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
 
-import { ContextDisplay, PageInfo, PostBodyDisplay } from './components/CommonComponents';
-import { parseBody } from './utils/serverUtils';
+import { ContextDisplay, PageInfo, PostBodyDisplay } from '../components/CommonComponents';
+import { parseBody } from '../utils/serverUtils';
 
 export interface SSRProps {
   renderString: string;
