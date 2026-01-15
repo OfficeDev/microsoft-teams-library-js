@@ -1,5 +1,5 @@
 /* eslint-disable */
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -28,8 +28,16 @@ execSync('mkcert -install', { stdio: 'inherit' });
 
 // Generate certificates
 console.log('🔐 Generating certificates...');
-execSync(
-  `mkcert -key-file ${path.join(certDir, 'localhost-key.pem')} -cert-file ${path.join(certDir, 'localhost.pem')} localhost 127.0.0.1`,
+execFileSync(
+  'mkcert',
+  [
+    '-key-file',
+    path.join(certDir, 'localhost-key.pem'),
+    '-cert-file',
+    path.join(certDir, 'localhost.pem'),
+    'localhost',
+    '127.0.0.1',
+  ],
   { stdio: 'inherit' },
 );
 
