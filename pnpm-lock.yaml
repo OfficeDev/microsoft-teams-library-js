@@ -331,8 +331,8 @@ importers:
         specifier: ^17.0.1
         version: 17.0.2(react@17.0.2)
       react-router-dom:
-        specifier: ^6.21.3
-        version: 6.24.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        specifier: ^7.12.0
+        version: 7.12.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
     devDependencies:
       '@microsoft/teams-js':
         specifier: workspace:*
@@ -1769,10 +1769,6 @@ packages:
     resolution: {integrity: sha512-3ZG500+ZeLql8rE0hjfhkycJjDj0pI/btEh3L9IkWUYcOrgP0xCNRq3HbtbqOPbvDhFaAWD88pDFtlLv8ns8gA==}
     engines: {node: '>=18'}
     hasBin: true
-
-  '@remix-run/router@1.17.0':
-    resolution: {integrity: sha512-2D6XaHEVvkCn682XBnipbJjgZUU7xjLtA4dGJRBVUKpEaDYOZMENZoZjAOSb7qirxt5RupjzZxz4fK2FO+EFPw==}
-    engines: {node: '>=14.0.0'}
 
   '@rollup/plugin-commonjs@26.0.3':
     resolution: {integrity: sha512-2BJcolt43MY+y5Tz47djHkodCC3c1VKVrBDKpVqHKpQ9z9S158kCCqB8NF6/gzxLdNlYW9abB3Ibh+kOWLp8KQ==}
@@ -6179,18 +6175,22 @@ packages:
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
 
-  react-router-dom@6.24.0:
-    resolution: {integrity: sha512-960sKuau6/yEwS8e+NVEidYQb1hNjAYM327gjEyXlc6r3Skf2vtwuJ2l7lssdegD2YjoKG5l8MsVyeTDlVeY8g==}
-    engines: {node: '>=14.0.0'}
+  react-router-dom@7.12.0:
+    resolution: {integrity: sha512-pfO9fiBcpEfX4Tx+iTYKDtPbrSLLCbwJ5EqP+SPYQu1VYCXdy79GSj0wttR0U4cikVdlImZuEZ/9ZNCgoaxwBA==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: '>=16.8'
-      react-dom: '>=16.8'
+      react: '>=18'
+      react-dom: '>=18'
 
-  react-router@6.24.0:
-    resolution: {integrity: sha512-sQrgJ5bXk7vbcC4BxQxeNa5UmboFm35we1AFK0VvQaz9g0LzxEIuLOhHIoZ8rnu9BO21ishGeL9no1WB76W/eg==}
-    engines: {node: '>=14.0.0'}
+  react-router@7.12.0:
+    resolution: {integrity: sha512-kTPDYPFzDVGIIGNLS5VJykK0HfHLY5MF3b+xj0/tTyNYL1gF1qs7u67Z9jEhQk2sQ98SUaHxlG31g1JtF7IfVw==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: '>=16.8'
+      react: '>=18'
+      react-dom: '>=18'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
 
   react@17.0.2:
     resolution: {integrity: sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==}
@@ -6500,6 +6500,9 @@ packages:
 
   set-blocking@2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
+
+  set-cookie-parser@2.7.2:
+    resolution: {integrity: sha512-oeM1lpU/UvhTxw+g3cIfxXHyJRc/uidd3yK1P242gzHds0udQBYzs3y8j4gCCW+ZJ7ad0yctld8RYO+bdurlvw==}
 
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
@@ -9403,8 +9406,6 @@ snapshots:
       - bare-buffer
       - react-native-b4a
       - supports-color
-
-  '@remix-run/router@1.17.0': {}
 
   '@rollup/plugin-commonjs@26.0.3(rollup@4.55.1)':
     dependencies:
@@ -14628,17 +14629,19 @@ snapshots:
 
   react-is@18.3.1: {}
 
-  react-router-dom@6.24.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-router-dom@7.12.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
     dependencies:
-      '@remix-run/router': 1.17.0
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
-      react-router: 6.24.0(react@17.0.2)
+      react-router: 7.12.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
 
-  react-router@6.24.0(react@17.0.2):
+  react-router@7.12.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
     dependencies:
-      '@remix-run/router': 1.17.0
+      cookie: 1.1.1
       react: 17.0.2
+      set-cookie-parser: 2.7.2
+    optionalDependencies:
+      react-dom: 17.0.2(react@17.0.2)
 
   react@17.0.2:
     dependencies:
@@ -15044,6 +15047,8 @@ snapshots:
       - supports-color
 
   set-blocking@2.0.0: {}
+
+  set-cookie-parser@2.7.2: {}
 
   set-function-length@1.2.2:
     dependencies:
