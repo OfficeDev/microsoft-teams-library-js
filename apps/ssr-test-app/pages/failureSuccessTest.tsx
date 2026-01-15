@@ -9,27 +9,14 @@ import { parseBody } from '../utils/serverUtils';
 export interface FailureSuccessTestPageProps {
   renderString: string;
   time: string;
-  postCount?: number;
+  postCount: number;
   postBody?: string;
   withMessage?: boolean;
 }
 
-// Test Instructions:
-// - First POST request will trigger notifyFailure
-// - Second POST request will trigger notifySuccess
-// - Use a tool like Postman or curl to send POST requests to this page
-// - Add ?withMessage=true to the URL to include a message in notifyFailure
-//
-// Example curl commands:
-// Without message:
-// curl -X POST https://localhost:53000/failureSuccessTest \
-//   -H "Content-Type: application/x-www-form-urlencoded" \
-//   -d "test=value"
-//
-// With message:
-// curl -X POST https://localhost:53000/failureSuccessTest?withMessage=true \
-//   -H "Content-Type: application/x-www-form-urlencoded" \
-//   -d "test=value"
+// First POST request will trigger notifyFailure
+// Add ?withMessage=true to the URL to include a message in notifyFailure
+// Second POST request will trigger notifySuccess
 
 // Track the number of POST requests received
 let postRequestCount = 0;
@@ -40,8 +27,6 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
   const [notificationStatus, setNotificationStatus] = useState('');
 
   useEffect(() => {
-    console.log(`!!!postCount in useEffect: ${props.postCount}`);
-
     microsoftTeams.app.initialize().then(() => {
       microsoftTeams.app.getContext().then((ctx) => {
         setTeamsContext(ctx);
@@ -49,7 +34,6 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
 
       // Call notifyFailure on first POST request
       if (props.postCount === 0) {
-        console.log('!!!Calling notifyFailure for first POST request');
         const message = props.withMessage
           ? 'Bearer realm="", authorization_uri="https://some_url/authorize", error="insufficient_claims", claims="Base65Encoded_claims_value"'
           : '';
@@ -57,13 +41,11 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
           reason: microsoftTeams.app.FailedReason.Unauthorized,
           authHeader: message,
         };
-        console.log(`!!!notifyFailure request: ${JSON.stringify(request)}`);
         microsoftTeams.app.notifyFailure(request);
         setNotificationStatus(`notifyFailure called${props.withMessage ? ' with message' : ''} (first POST request)`);
       }
       // Call notifySuccess on second POST request
       else {
-        console.log('!!!Calling notifySuccess for second POST request');
         microsoftTeams.app.notifySuccess();
         setNotificationStatus('notifySuccess called (second POST request)');
       }
@@ -74,7 +56,7 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
   return (
     <div>
       <Head>
-        <title>Test Page</title>
+        <title>Failure & Success Test Page</title>
       </Head>
       <div>
         <PageInfo renderString={props.renderString} serverTime={props.time} clientTime={clientTime} />
@@ -94,7 +76,7 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
 /**
  * @returns prop data
  */
-export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
   const time = JSON.stringify(new Date());
   const withMessage = query.withMessage === 'true';
 
@@ -102,12 +84,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
     const currentCount = postRequestCount;
     postRequestCount++;
     const postBody = await parseBody(req);
-    console.log('!!!!POST request received');
-    console.log(`!!!!POST request #${currentCount} postRequestCount: ${postRequestCount}`);
 
     // Add delay for POST requests
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log('!!!!POST request delay complete', postRequestCount);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     // Reset counter after the second request
     if (postRequestCount >= 2) {
       postRequestCount = 0;
@@ -124,12 +103,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
     };
   }
 
-  console.log('!!!!GET request received');
-  // Default GET handling
+  // Reject non-POST requests with 405 Method Not Allowed
+  res.setHeader('Allow', ['POST']);
+  res.statusCode = 405;
+  res.end('Method Not Allowed');
+
   return {
-    props: {
-      renderString: 'Waiting for POST requests... (GET request)',
-      time,
-    },
+    props: {},
   };
 };

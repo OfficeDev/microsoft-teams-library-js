@@ -9,44 +9,24 @@ import { parseBody } from '../utils/serverUtils';
 export interface FailureOnlyTestPageProps {
   renderString: string;
   time: string;
-  postCount?: number;
+  isPostRequest?: boolean;
   postBody?: string;
   withMessage?: boolean;
 }
 
-// Test Instructions:
-// - Every POST request will trigger notifyFailure
-// - Use a tool like Postman or curl to send POST requests to this page
-// - Add ?withMessage=true to the URL to include a message in notifyFailure
-//
-// Example curl commands:
-// Without message:
-// curl -X POST https://localhost:53000/failureOnlyTest \
-//   -H "Content-Type: application/x-www-form-urlencoded" \
-//   -d "test=value"
-//
-// With message:
-// curl -X POST https://localhost:53000/failureOnlyTest?withMessage=true \
-//   -H "Content-Type: application/x-www-form-urlencoded" \
-//   -d "test=value"
-
-let postRequestCount = 0;
-
+//Every POST request will trigger notifyFailure
 export default function FailureOnlyTestPage(props: FailureOnlyTestPageProps): ReactElement {
   const [teamsContext, setTeamsContext] = useState({});
   const [clientTime, setClientTime] = useState('');
-  const [notificationStatus, setNotificationStatus] = useState('');
 
   useEffect(() => {
-    console.log(`!!!postCount in useEffect: ${props.postCount}`);
-
     microsoftTeams.app.initialize().then(() => {
       microsoftTeams.app.getContext().then((ctx) => {
         setTeamsContext(ctx);
       });
 
       // Always call notifyFailure on every POST request
-      if (typeof props.postCount === 'number') {
+      if (props.isPostRequest) {
         const message = props.withMessage
           ? 'Bearer realm="", authorization_uri="https://some_url/authorize", error="insufficient_claims", claims="Base65Encoded_claims_value"'
           : '';
@@ -54,13 +34,11 @@ export default function FailureOnlyTestPage(props: FailureOnlyTestPageProps): Re
           reason: microsoftTeams.app.FailedReason.Unauthorized,
           authHeader: message,
         };
-        console.log(`!!!notifyFailure request: ${JSON.stringify(request)}`);
         microsoftTeams.app.notifyFailure(request);
-        setNotificationStatus(`notifyFailure called${props.withMessage ? ' with message' : ''} (POST request)`);
       }
       setClientTime(JSON.stringify(new Date()));
     });
-  }, [props.postCount, props.withMessage]);
+  }, [props.isPostRequest, props.withMessage]);
 
   return (
     <div>
@@ -69,12 +47,6 @@ export default function FailureOnlyTestPage(props: FailureOnlyTestPageProps): Re
       </Head>
       <div>
         <PageInfo renderString={props.renderString} serverTime={props.time} clientTime={clientTime} />
-        <h2 id="post-count">POST Request Count: {props.postCount}</h2>
-        {notificationStatus && (
-          <h2 id="notification-status" style={{ color: 'red' }}>
-            Status: {notificationStatus}
-          </h2>
-        )}
         <PostBodyDisplay postBody={props.postBody} />
         <ContextDisplay context={teamsContext} />
       </div>
@@ -85,38 +57,33 @@ export default function FailureOnlyTestPage(props: FailureOnlyTestPageProps): Re
 /**
  * @returns prop data
  */
-export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
   const time = JSON.stringify(new Date());
   const withMessage = query.withMessage === 'true';
 
   if (req.method === 'POST') {
-    const currentCount = postRequestCount;
-    postRequestCount++;
     const postBody = await parseBody(req);
-    console.log('!!!!POST request received');
-    console.log(`!!!!POST request #${currentCount} postRequestCount: ${postRequestCount}`);
 
     // Add delay for POST requests
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('!!!!POST request delay complete', postRequestCount);
 
     return {
       props: {
-        renderString: `POST request #${currentCount} received`,
+        renderString: 'POST request received',
         postBody,
         time,
-        postCount: currentCount,
+        isPostRequest: true,
         withMessage,
       },
     };
   }
 
-  console.log('!!!!GET request received');
-  // Default GET handling
+  // Reject non-POST requests with 405 Method Not Allowed
+  res.setHeader('Allow', ['POST']);
+  res.statusCode = 405;
+  res.end('Method Not Allowed');
+
   return {
-    props: {
-      renderString: 'Waiting for POST requests... (GET request)',
-      time,
-    },
+    props: {},
   };
 };
