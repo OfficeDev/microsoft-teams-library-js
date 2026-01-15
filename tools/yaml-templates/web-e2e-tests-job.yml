@@ -8,7 +8,6 @@ parameters:
   - name: hostingEnvironmentType
     type: string
     values:
-      - 'electron'
       - 'standardWeb'
   - name: teamsJsReferenceType
     type: string
@@ -44,7 +43,7 @@ jobs:
           '(', 'LP'),
           ')', 'RP'),
           '=', 'EQUALS') }}
-        
+
         timeoutInMinutes: 120
         displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
         pool:
@@ -77,15 +76,6 @@ jobs:
               --envType=${{ variables.envType }}
             displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
-            workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-          - bash: |
-              pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=test --serverUrl=https://localhost:4000/
-              pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=orange --serverUrl=https://local.teams.office.com:8080
-              # This runs the Electron-integration layer tests, which currently cannot be filtered
-              pnpm exec xvfb-maybe playwright test
-            displayName: 'Run Electron-Integration Layer tests'
-            condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
           - task: PublishTestResults@2
