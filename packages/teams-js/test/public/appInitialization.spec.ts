@@ -129,9 +129,26 @@ describe('appInitialization', () => {
       });
       const message = utils.findMessageByFunc(appInitialization.Messages.Failure);
       expect(message).not.toBeNull();
-      expect(message.args.length).toBe(2);
+      expect(message.args.length).toBe(3);
       expect(message.args[0]).toEqual(appInitialization.FailedReason.AuthFailed);
       expect(message.args[1]).toEqual('Failed message');
+      expect(message.args[2]).toBeUndefined();
+    });
+
+    it('should call notifyFailure correctly in legacy flow when authHeader is provided', async () => {
+      await utils.initializeWithContext('content');
+
+      appInitialization.notifyFailure({
+        reason: app.FailedReason.AuthFailed,
+        message: 'Failed message',
+        authHeader: 'authHeaderValue',
+      });
+      const message = utils.findMessageByFunc(app.Messages.Failure);
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(3);
+      expect(message.args[0]).toEqual(app.FailedReason.AuthFailed);
+      expect(message.args[1]).toEqual('Failed message');
+      expect(message.args[2]).toEqual('authHeaderValue');
     });
 
     it('should call notifyFailure correctly', async () => {
@@ -143,9 +160,26 @@ describe('appInitialization', () => {
       });
       const message = utils.findMessageByFunc(app.Messages.Failure);
       expect(message).not.toBeNull();
-      expect(message.args.length).toBe(2);
+      expect(message.args.length).toBe(3);
       expect(message.args[0]).toEqual(app.FailedReason.AuthFailed);
       expect(message.args[1]).toEqual('Failed message');
+      expect(message.args[2]).toBeUndefined();
+    });
+
+    it('should call notifyFailure correctly when authHeader is provided', async () => {
+      await utils.initializeWithContext('content');
+
+      app.notifyFailure({
+        reason: app.FailedReason.AuthFailed,
+        message: 'Failed message',
+        authHeader: 'authHeaderValue',
+      });
+      const message = utils.findMessageByFunc(app.Messages.Failure);
+      expect(message).not.toBeNull();
+      expect(message.args.length).toBe(3);
+      expect(message.args[0]).toEqual(app.FailedReason.AuthFailed);
+      expect(message.args[1]).toEqual('Failed message');
+      expect(message.args[2]).toEqual('authHeaderValue');
     });
   });
 });

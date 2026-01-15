@@ -69,6 +69,10 @@ export enum FailedReason {
    */
   Timeout = 'Timeout',
   /**
+   * The user is unauthorized
+   */
+  Unauthorized = 'Unauthorized',
+  /**
    * The app failed for a different reason
    */
   Other = 'Other',
@@ -113,6 +117,11 @@ export interface IFailedRequest {
    * This property is currently unused.
    */
   message?: string;
+  /**
+   * Optional authorization header to be sent along with the failure notification.
+   * Currently only supported for SSR scenarios.
+   */
+  authHeader?: string;
 }
 
 /**
