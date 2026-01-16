@@ -21,7 +21,7 @@
   "dependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-router-dom": "^6.21.3"
+    "react-router-dom": "^6.30.0"
   },
   "devDependencies": {
     "@microsoft/teams-js": "workspace:*"
