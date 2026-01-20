@@ -35,7 +35,7 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
       // Call notifyFailure on first POST request
       if (props.postCount === 0) {
         const message = props.withMessage
-          ? 'Bearer realm="", authorization_uri="https://some_url/authorize", error="insufficient_claims", claims="Base65Encoded_claims_value"'
+          ? 'Bearer realm="", authorization_uri="https://some_url/authorize", error="insufficient_claims", claims="Base64Encoded_claims_value"'
           : '';
         const request = {
           reason: microsoftTeams.app.FailedReason.Unauthorized,
@@ -85,8 +85,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
     postRequestCount++;
     const postBody = await parseBody(req);
 
-    // Add delay for POST requests
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     // Reset counter after the second request
     if (postRequestCount >= 2) {
       postRequestCount = 0;
