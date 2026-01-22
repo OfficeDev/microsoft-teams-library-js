@@ -57,6 +57,18 @@
     "m365copilotapp.svc.cloud.dev.microsoft",
     "ffc-copilot.officeapps.live.com",
     "m365.cloud.dev.microsoft",
-    "m365.cloud.dev.microsoft:3001"
+    "m365.cloud.dev.microsoft:3001",
+    "portal.officeppe.com",
+    "ignite.m365.admin.cloud.microsoft",
+    "ignite.admin.cloud.microsoft",
+    "sdf.m365.admin.cloud.microsoft",
+    "admin-sdf.microsoft.com",
+    "canary.m365.admin.cloud.microsoft",
+    "ring0.m365.admin.cloud.microsoft",
+    "admin.cloud.microsoft",
+    "portal.office365.us",
+    "portal.apps.mil",
+    "www.ohome.apps.mil",
+    "www.office365.us"
   ]
 }
