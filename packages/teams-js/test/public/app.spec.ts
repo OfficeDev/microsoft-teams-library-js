@@ -829,9 +829,10 @@ describe('Testing app capability', () => {
           });
           const message = utils.findMessageByFunc(app.Messages.Failure);
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(2);
+          expect(message.args.length).toBe(3);
           expect(message.args[0]).toEqual(app.FailedReason.AuthFailed);
           expect(message.args[1]).toEqual('Failed message');
+          expect(message.args[2]).toBeUndefined();
         });
 
         it(`app.notifyFailure should call notify expected failure correctly with ${context} context`, async () => {
@@ -1743,9 +1744,10 @@ describe('Testing app capability', () => {
           });
           const message = utils.findMessageByFunc(app.Messages.Failure);
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(2);
+          expect(message.args.length).toBe(3);
           expect(message.args[0]).toEqual(app.FailedReason.AuthFailed);
           expect(message.args[1]).toEqual('Failed message');
+          expect(message.args[2]).toBeNull();
         });
 
         it(`app.notifyFailure should call notify expected failure correctly with ${context} context`, async () => {

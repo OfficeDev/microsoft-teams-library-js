@@ -78,6 +78,7 @@ export const enum ApiName {
   AppInitialization_NotifyFailure = 'appInitialization.notifyFailure',
   AppInitialization_NotifySuccess = 'appInitialization.notifySuccess',
   AppEntity_SelectAppEntity = 'appEntity.selectAppEntity',
+  AppPerformanceMetrics_RegisterHostMemoryMetricsHandler = 'appPerformanceMetrics.memoryUsageHeartbeat',
   AppInstallDialog_OpenAppInstallDialog = 'appInstallDialog.openAppInstallDialog',
   AppWindow_ChildAppWindow_AddEventListener = 'appWindow.childAppWindow.addEventListener',
   AppWindow_ChildAppWindow_PostMessage = 'appWindow.childAppWindow.postMessage',
