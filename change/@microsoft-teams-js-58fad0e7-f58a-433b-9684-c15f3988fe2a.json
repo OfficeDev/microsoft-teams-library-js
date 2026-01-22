@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added MAC domains to valid domains for CDN",
+  "packageName": "@microsoft/teams-js",
+  "email": "niharikad@microsoft.com",
+  "dependentChangeType": "patch"
+}
