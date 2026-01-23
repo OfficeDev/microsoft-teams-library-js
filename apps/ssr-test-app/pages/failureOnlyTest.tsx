@@ -31,7 +31,7 @@ export default function FailureOnlyTestPage(props: FailureOnlyTestPageProps): Re
           ? 'Bearer realm="", authorization_uri="https://some_url/authorize", error="insufficient_claims", claims="Base64Encoded_claims_value"'
           : '';
         const request = {
-          reason: microsoftTeams.app.FailedReason.Unauthorized,
+          reason: microsoftTeams.app.FailedReason.AuthFailed,
           authHeader: message,
         };
         microsoftTeams.app.notifyFailure(request);

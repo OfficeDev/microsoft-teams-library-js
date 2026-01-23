@@ -38,7 +38,7 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
           ? 'Bearer realm="", authorization_uri="https://some_url/authorize", error="insufficient_claims", claims="Base64Encoded_claims_value"'
           : '';
         const request = {
-          reason: microsoftTeams.app.FailedReason.Unauthorized,
+          reason: microsoftTeams.app.FailedReason.AuthFailed,
           authHeader: message,
         };
         microsoftTeams.app.notifyFailure(request);
@@ -47,7 +47,7 @@ export default function FailureSuccessTestPage(props: FailureSuccessTestPageProp
       // Call notifySuccess on second POST request
       else {
         microsoftTeams.app.notifySuccess();
-        setNotificationStatus('notifySuccess called (second POST request)');
+        setNotificationStatus('notifySuccess called');
       }
       setClientTime(JSON.stringify(new Date()));
     });
