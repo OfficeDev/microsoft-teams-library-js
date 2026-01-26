@@ -150,12 +150,12 @@ export const validOriginsCdnEndpoint = new URL(
 
 /**
  * @hidden
- * USer specified message origins should satisfy this test
+ * User specified message origins should have a schema defined to be processed.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export const userOriginUrlValidationRegExp = /^https:\/\//;
+export const userOriginUrlValidationRegExp = /^w[\w\d+.-]*:\/\//;
 
 /**
  * @hidden

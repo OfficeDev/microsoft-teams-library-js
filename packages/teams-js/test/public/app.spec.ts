@@ -382,11 +382,32 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize([validOrigin]);
 
         const initMessage = utils.findMessageByFunc('initialize');
-        await utils.respondToMessage(initMessage, FrameContexts.content);
+        await utils.respondToMessage(initMessage!!, FrameContexts.content);
         await initPromise;
 
         expect(GlobalVars.additionalValidOrigins.length).toBe(1);
         expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
+      });
+
+      it('app.initialize should assign additionalValidOrigins with custom origin when supplied', async () => {
+        const validOrigin = 'mycustomprotocol://';
+        const initPromise = app.initialize([validOrigin]);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        await utils.respondToMessage(initMessage!!, FrameContexts.content);
+        await initPromise;
+
+        expect(GlobalVars.additionalValidOrigins.length).toBe(1);
+        expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
+      });
+
+      it('app.initialize should allow response from custom protocols when needed', async () => {
+        const validOrigin = 'customprotocol://';
+        utils.validOrigin = validOrigin;
+        const initPromise = app.initialize([validOrigin]);
+        const initMessage = utils.findMessageByFunc('initialize');
+        await utils.respondToMessage(initMessage!!, FrameContexts.content);
+        expect(initPromise).resolves.toBeFalsy();
       });
     });
 
@@ -1405,9 +1426,9 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize([validOrigin]);
 
         const initMessage = utils.findMessageByFunc('initialize');
-        await utils.respondToFramelessMessage({
+        utils.respondToFramelessMessage({
           data: {
-            id: initMessage.id,
+            id: initMessage!!.id,
             args: [],
           },
         } as DOMMessageEvent);
@@ -1415,6 +1436,37 @@ describe('Testing app capability', () => {
 
         expect(GlobalVars.additionalValidOrigins.length).toBe(1);
         expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
+      });
+
+      it('app.initialize should assign additionalValidOrigins with custom protocol when supplied', async () => {
+        const validOrigin = 'mycustomprotocol://';
+        const initPromise = app.initialize([validOrigin]);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
+          data: {
+            id: initMessage!!.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+        await initPromise;
+
+        expect(GlobalVars.additionalValidOrigins.length).toBe(1);
+        expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
+      });
+
+      it('app.initialize should allow response from custom protocols when needed', async () => {
+        const validOrigin = 'customprotocol://';
+        utils.validOrigin = validOrigin;
+        const initPromise = app.initialize([validOrigin]);
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
+          data: {
+            id: initMessage!!.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+        expect(initPromise).resolves.toBeFalsy();
       });
     });
 
