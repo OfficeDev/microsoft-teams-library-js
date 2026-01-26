@@ -6,8 +6,7 @@
     "dev": "next",
     "dev:https": "node server.js",
     "build": "next build",
-    "start": "next start",
-    "start:https": "NODE_ENV=production node server.js"
+    "start": "next start"
   },
   "dependencies": {
     "next": "^15.5.7",
