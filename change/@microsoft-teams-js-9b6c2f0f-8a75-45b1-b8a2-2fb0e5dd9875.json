@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed a bug on RegisterOnContextChangeHandler where the handler was not being called when the context changed due to theme change.",
-  "packageName": "@microsoft/teams-js",
-  "email": "niharikad@microsoft.com",
-  "dependentChangeType": "patch"
-}

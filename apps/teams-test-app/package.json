@@ -3,7 +3,7 @@
   "private": true,
   "author": "Microsoft Teams",
   "description": "Teams Test App utilizing Teams JavaScript client SDK to test Hosts",
-  "version": "2.47.2",
+  "version": "2.48.0",
   "scripts": {
     "build": "pnpm build:bundle",
     "build:bundle": "pnpm validate-test-schema && pnpm lint && webpack",
@@ -21,7 +21,7 @@
   "dependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-router-dom": "^6.21.3"
+    "react-router-dom": "^6.30.0"
   },
   "devDependencies": {
     "@microsoft/teams-js": "workspace:*"
