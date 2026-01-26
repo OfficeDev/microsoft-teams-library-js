@@ -155,7 +155,7 @@ export const validOriginsCdnEndpoint = new URL(
  * @internal
  * Limited to Microsoft-internal use
  */
-export const userOriginUrlValidationRegExp = /^w[\w\d+.-]*:\/\//;
+export const userOriginUrlValidationRegExp = /^\w[\w\d+.-]*:\/\//;
 
 /**
  * @hidden

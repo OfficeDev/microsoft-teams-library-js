@@ -54,9 +54,10 @@ describe('Testing app capability', () => {
   };
   describe('Framed - Testing app capability', () => {
     // Use to send a mock message from the app.
-    const utils = new Utils();
+    let utils: Utils;
 
     beforeEach(() => {
+      utils = new Utils();
       utils.processMessage = null;
       utils.messages = [];
       utils.childMessages = [];
@@ -387,6 +388,17 @@ describe('Testing app capability', () => {
 
         expect(GlobalVars.additionalValidOrigins.length).toBe(1);
         expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
+      });
+
+      it('app.initialize should not assign additionalValidOrigins when scheme is not supplied', async () => {
+        const validOrigin = 'uri@test.com';
+        const initPromise = app.initialize([validOrigin]);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToMessage(initMessage!!, FrameContexts.content);
+        await initPromise;
+
+        expect(GlobalVars.additionalValidOrigins.length).toBe(0);
       });
 
       it('app.initialize should assign additionalValidOrigins with custom origin when supplied', async () => {
@@ -1436,6 +1448,22 @@ describe('Testing app capability', () => {
 
         expect(GlobalVars.additionalValidOrigins.length).toBe(1);
         expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
+      });
+
+      it('app.initialize should not assign additionalValidOrigins when scheme is not supplied', async () => {
+        const validOrigin = 'uri@test.com';
+        const initPromise = app.initialize([validOrigin]);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
+          data: {
+            id: initMessage!!.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+        await initPromise;
+
+        expect(GlobalVars.additionalValidOrigins.length).toBe(0);
       });
 
       it('app.initialize should assign additionalValidOrigins with custom protocol when supplied', async () => {
