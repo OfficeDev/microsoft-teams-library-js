@@ -413,6 +413,20 @@ describe('Testing app capability', () => {
         expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
       });
 
+      it('app.initialize should assign additionalValidOrigins only store URLs with valid schema', async () => {
+        const validOrigins = ['protocol-untrusted://', 'postgresql+test://', '+bad-protocol://', '__non-existing'];
+        const initPromise = app.initialize(validOrigins);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        await utils.respondToMessage(initMessage!!, FrameContexts.content);
+        await initPromise;
+
+        expect(GlobalVars.additionalValidOrigins.length).toBe(2);
+        expect(GlobalVars.additionalValidOrigins).toEqual(
+          expect.arrayContaining(['protocol-untrusted://', 'postgresql+test://']),
+        );
+      });
+
       it('app.initialize should allow response from custom protocols when needed', async () => {
         const validOrigin = 'customprotocol://';
         utils.validOrigin = validOrigin;
@@ -1481,6 +1495,20 @@ describe('Testing app capability', () => {
 
         expect(GlobalVars.additionalValidOrigins.length).toBe(1);
         expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
+      });
+
+      it('app.initialize should assign additionalValidOrigins only store URLs with valid schema', async () => {
+        const validOrigins = ['protocol-untrusted://', 'postgresql+test://', '+bad-protocol://', '__non-existing'];
+        const initPromise = app.initialize(validOrigins);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        await utils.respondToMessage(initMessage!!, FrameContexts.content);
+        await initPromise;
+
+        expect(GlobalVars.additionalValidOrigins.length).toBe(2);
+        expect(GlobalVars.additionalValidOrigins).toEqual(
+          expect.arrayContaining(['protocol-untrusted://', 'postgresql+test://']),
+        );
       });
 
       it('app.initialize should allow response from custom protocols when needed', async () => {
