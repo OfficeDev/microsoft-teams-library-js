@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "next",
+    "dev:https": "node server.js",
     "build": "next build",
     "start": "next start"
   },

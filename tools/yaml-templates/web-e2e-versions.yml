@@ -44,10 +44,3 @@ jobs:
           '{[T-Z],[t-z]}',
         ]
       versionBranch: ${{parameters.versionBranch}}
-
-  - template: web-e2e-tests-job.yml@self
-    parameters:
-      AppHostingSdk: AppHostingSdk
-      hostingEnvironmentType: 'electron'
-      teamsJsReferenceType: 'npm'
-      versionBranch: ${{parameters.versionBranch}}

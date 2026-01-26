@@ -113,6 +113,11 @@ export interface IFailedRequest {
    * This property is currently unused.
    */
   message?: string;
+  /**
+   * Optional authorization header to be sent along with the failure notification.
+   * Currently only supported for SSR scenarios.
+   */
+  authHeader?: string;
 }
 
 /**
