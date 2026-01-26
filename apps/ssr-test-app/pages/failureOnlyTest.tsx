@@ -28,10 +28,10 @@ export default function FailureOnlyTestPage(props: FailureOnlyTestPageProps): Re
       // Always call notifyFailure on every POST request
       if (props.isPostRequest) {
         const message = props.withMessage
-          ? 'Bearer realm="", authorization_uri="https://some_url/authorize", error="insufficient_claims", claims="Base65Encoded_claims_value"'
+          ? 'Bearer realm="", authorization_uri="https://some_url/authorize", error="insufficient_claims", claims="Base64Encoded_claims_value"'
           : '';
         const request = {
-          reason: microsoftTeams.app.FailedReason.Unauthorized,
+          reason: microsoftTeams.app.FailedReason.AuthFailed,
           authHeader: message,
         };
         microsoftTeams.app.notifyFailure(request);
@@ -63,9 +63,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
 
   if (req.method === 'POST') {
     const postBody = await parseBody(req);
-
-    // Add delay for POST requests
-    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return {
       props: {
