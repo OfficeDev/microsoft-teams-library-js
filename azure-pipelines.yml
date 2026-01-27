@@ -238,6 +238,20 @@ extends:
                   shardIndex: 1
             continueOnError: true
 
+          - job: E2ETestAndroidC
+            displayName: 'E2E Tests - Android - Plan C'
+            pool:
+              name: Azure Pipelines
+              image: macos-15
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/android-test.yml@self
+                parameters:
+                  androidAppHostingSdkGitPath: AndroidAppHostingSdk
+                  shardNum: 3
+                  shardIndex: 2
+            continueOnError: true
+
           # Comment out all of iOS E2E tests in TJS side due to unknown E2E testing failures on CI
           # - job: E2ETestIOS
           #   displayName: 'E2E Tests - IOS - Plan A'
