@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Mark registerOnContextChangeHandler as internal API",
+  "packageName": "@microsoft/teams-js",
+  "email": "98852890+vhuseinova-msft@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
