@@ -598,7 +598,11 @@ export interface Context {
 export type themeHandler = (theme: string) => void;
 
 /**
+ * @hidden
  * This function is passed to registerOnContextChangeHandler. It is called every time the user changes their context.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export type contextHandler = (context: Context) => void;
 
@@ -777,12 +781,16 @@ export function registerOnThemeChangeHandler(handler: themeHandler): void {
 }
 
 /**
+ * @hidden
  * Registers a handler for content (context) changes.
  *
  * @remarks
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
  *
  * @param handler - The handler to invoke when the app's content context changes.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export function registerOnContextChangeHandler(handler: contextHandler): void {
   appHelpers.registerOnContextChangeHandlerHelper(
