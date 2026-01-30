@@ -123,16 +123,25 @@ export function validateOrigin(messageOrigin: URL, disableCache?: boolean): Prom
   const localList = !disableCache && !isValidOriginsCacheEmpty() ? validOriginsCache : validOriginsFallback;
   if (validateOriginWithValidOriginsList(messageOrigin, localList)) {
     return Promise.resolve(true);
-  } else {
-    validateOriginLogger('Origin %s is not in the local valid origins list, fetching from CDN', messageOrigin);
-    return getValidOriginsListFromCDN(disableCache).then((validOriginsList) => {
-      return validateOriginWithValidOriginsList(messageOrigin, validOriginsList);
-    });
   }
+
+  validateOriginLogger('Origin %s is not in the local valid origins list, fetching from CDN', messageOrigin);
+  return getValidOriginsListFromCDN(disableCache).then((validOriginsList) =>
+    validateOriginWithValidOriginsList(messageOrigin, validOriginsList),
+  );
 }
 
 function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList: string[]): boolean {
-  // Check whether the url is in the pre-known allowlist or supplied by user
+  // User provided additional valid origins take precedence as they do not require https protocol
+  const messageOriginHost = messageOrigin.host;
+  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
+    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
+    if (validateHostAgainstPattern(pattern, messageOriginHost)) {
+      return true;
+    }
+  }
+
+  // For standard valid origins, only allow https protocol
   if (!isValidHttpsURL(messageOrigin)) {
     validateOriginLogger(
       'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
@@ -141,16 +150,9 @@ function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList
     );
     return false;
   }
-  const messageOriginHost = messageOrigin.host;
+
   if (validOriginsList.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
     return true;
-  }
-
-  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
-    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
-    if (validateHostAgainstPattern(pattern, messageOriginHost)) {
-      return true;
-    }
   }
 
   validateOriginLogger(

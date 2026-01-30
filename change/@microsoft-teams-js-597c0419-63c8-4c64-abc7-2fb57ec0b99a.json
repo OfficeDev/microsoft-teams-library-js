@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added support for non-https URLs for opt-in app valid origins in `app.initialize()`.",
+  "packageName": "@microsoft/teams-js",
+  "email": "31258166+juanscr@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
