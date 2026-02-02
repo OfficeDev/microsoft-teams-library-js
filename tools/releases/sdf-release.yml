@@ -103,9 +103,6 @@ extends:
               - task: PowerShell@2
                 displayName: View Published Package URLs
                 inputs:
-                  targetType: 'inline'
-                  script: |
-                    $version = Get-ChildItem -Path $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/CDNFeed -Directory -Name -Exclude _*
-                    Write-Host "Releasing version $version"
-                    Write-Host "CDN: https://res-sdf.cdn.office.net/teams-js/$version/js/MicrosoftTeams.min.js"
-                    Write-Host "NPM: https://www.npmjs.com/package/@microsoft/teams-js/v/$version"
+                  targetType: 'filePath'
+                  filePath: 'tools/releases/powershell-commands/view-published-pkg-urls.ps1'
+                  arguments: -PIPELINE_WORKSPACE $(System.DefaultWorkingDirectory)
