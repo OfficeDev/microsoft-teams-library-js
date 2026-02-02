@@ -76,7 +76,7 @@ extends:
                 displayName: Build NPM package for release
                 inputs:
                   command: custom
-                  workingDir: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed
+                  workingDir: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/NPMFeed
                   verbose: false
                   customCommand: npm pack
               - task: EsrpRelease@10
