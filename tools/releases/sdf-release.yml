@@ -72,6 +72,13 @@ extends:
                 displayName: Use Node 18.x
                 inputs:
                   versionSpec: 18.x
+              - task: Npm@1
+                displayName: Build NPM package for release
+                inputs:
+                  command: custom
+                  workingDir: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed
+                  verbose: false
+                  customCommand: npm pack
               - task: EsrpRelease@10
                 displayName: Publish to npm (tag beta) - ESRP release
                 inputs:
@@ -81,7 +88,7 @@ extends:
                   signcertname: '$(signCertName)'
                   clientid: '$(clientId)'
                   intent: 'PackageDistribution'
-                  contenttype: 'pypi'
+                  contenttype: 'npm'
                   contentsource: 'Folder'
                   folderlocation: '$(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/NPMFeed'
                   waitforreleasecompletion: true
