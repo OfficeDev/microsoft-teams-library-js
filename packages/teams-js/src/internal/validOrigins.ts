@@ -150,14 +150,14 @@ export function validateOrigin(messageOrigin: URL, disableCache?: boolean): Prom
 }
 
 function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList: string[]): boolean {
-  const messageOriginHost = messageOrigin.host;
-
   // User provided additional valid origins take precedence as they do not require https protocol
   for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
     if (validateOriginAgainstFullPattern(domainOrPattern, messageOrigin)) {
       return true;
     }
   }
+
+  const messageOriginHost = messageOrigin.host;
 
   // For standard valid origins, only allow https protocol
   if (!isValidHttpsURL(messageOrigin)) {
