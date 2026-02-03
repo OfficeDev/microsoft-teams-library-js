@@ -154,17 +154,7 @@ function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList
 
   // User provided additional valid origins take precedence as they do not require https protocol
   for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
-    // For non-https protocols, match the full origin (protocol + host)
-    if (messageOrigin.protocol !== 'https:') {
-      if (validateOriginAgainstFullPattern(domainOrPattern, messageOrigin)) {
-        return true;
-      }
-      continue;
-    }
-
-    // For https protocol, match only the host part
-    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
-    if (validateHostAgainstPattern(pattern, messageOriginHost)) {
+    if (validateOriginAgainstFullPattern(domainOrPattern, messageOrigin)) {
       return true;
     }
   }
