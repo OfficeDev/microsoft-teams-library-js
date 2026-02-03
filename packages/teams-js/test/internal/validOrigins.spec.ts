@@ -105,6 +105,12 @@ describe('validOrigins', () => {
       const result = await validateOrigin(messageOrigin, disableCache);
       expect(result).toBe(false);
     });
+    it("validateOrigin returns false if the protocol of origin is not 'https:'", async () => {
+      /* eslint-disable-next-line @microsoft/sdl/no-insecure-url */ /* Intentionally using http here because of what it is testing */
+      const messageOrigin = new URL('http://teams.microsoft.com');
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
     it('validateOrigin returns false if first end of origin is not matched valid subdomains in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://myteams.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
@@ -139,6 +145,44 @@ describe('validOrigins', () => {
       messageOrigin = new URL('https://m365.cloud.microsoft');
       result = await validateOrigin(messageOrigin, disableCache);
       expect(result).toBe(true);
+    });
+    it("validateOrigin returns true if the protocol of origin is 'http:' and specified in user-supplied list", async () => {
+      /* eslint-disable-next-line @microsoft/sdl/no-insecure-url */ /* Intentionally using http here because of what it is testing */
+      const messageOrigin = new URL('http://teams.microsoft.com');
+      /* eslint-disable-next-line @microsoft/sdl/no-insecure-url */ /* Intentionally using http here because of what it is testing */
+      GlobalVars.additionalValidOrigins = ['http://teams.microsoft.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns true for non-https origin in user-specified list', async () => {
+      const messageOrigin = new URL('chrome://');
+      GlobalVars.additionalValidOrigins = ['chrome://'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns true for non-https full origin in user-specified list', async () => {
+      const messageOrigin = new URL('chrome://my-new-origin');
+      GlobalVars.additionalValidOrigins = ['chrome://my-new-origin'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns true for non-https partial origin in user-specified list', async () => {
+      const messageOrigin = new URL('chrome://my-new-origin');
+      GlobalVars.additionalValidOrigins = ['chrome://'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it("validateOrigin returns false for non-https if protocols don't match", async () => {
+      const messageOrigin = new URL('https://my-new-origin');
+      GlobalVars.additionalValidOrigins = ['chrome://my-new-origin'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
+    it("validateOrigin returns false for non-https if hostname don't match", async () => {
+      const messageOrigin = new URL('chrome://my-new-origin');
+      GlobalVars.additionalValidOrigins = ['chrome://different-origin'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
     });
   });
   describe('testing main validOrigins flow with invalid json object', () => {

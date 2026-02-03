@@ -115,6 +115,24 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
 }
 
 /**
+ * Validates the origin against the full pattern including protocol and hostname.
+ * @param pattern - reference pattern
+ * @param origin - candidate URL object
+ */
+function validateOriginAgainstFullPattern(pattern: string, origin: URL): boolean {
+  let patternUrl: URL;
+  try {
+    patternUrl = new URL(pattern);
+  } catch {
+    return false;
+  }
+  return (
+    patternUrl.protocol === origin.protocol &&
+    (!patternUrl.host || validateHostAgainstPattern(patternUrl.host, origin.host))
+  );
+}
+
+/**
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -132,9 +150,19 @@ export function validateOrigin(messageOrigin: URL, disableCache?: boolean): Prom
 }
 
 function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList: string[]): boolean {
-  // User provided additional valid origins take precedence as they do not require https protocol
   const messageOriginHost = messageOrigin.host;
+
+  // User provided additional valid origins take precedence as they do not require https protocol
   for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
+    // For non-https protocols, match the full origin (protocol + host)
+    if (messageOrigin.protocol !== 'https:') {
+      if (validateOriginAgainstFullPattern(domainOrPattern, messageOrigin)) {
+        return true;
+      }
+      continue;
+    }
+
+    // For https protocol, match only the host part
     const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
     if (validateHostAgainstPattern(pattern, messageOriginHost)) {
       return true;
