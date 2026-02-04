@@ -1,8 +1,17 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 08 Jan 2026 23:04:26 GMT and should not be manually modified.
+<!-- This log was last generated on Wed, 04 Feb 2026 17:24:38 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.48.1
+
+Wed, 04 Feb 2026 17:24:38 GMT
+
+### Patches
+
+- Added MAC domains to valid domains for CDN
+- Mark registerOnContextChangeHandler as internal API
 
 ## 2.48.0
 
