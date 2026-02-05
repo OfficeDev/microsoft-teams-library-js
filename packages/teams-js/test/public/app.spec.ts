@@ -427,6 +427,17 @@ describe('Testing app capability', () => {
         );
       });
 
+      it('app.initialize should not assign additionalValidOrigins protocols with _', async () => {
+        const validOrigins = ['_protocol://url.com', 'protocol_test://bad.url.com'];
+        const initPromise = app.initialize(validOrigins);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        await utils.respondToMessage(initMessage!!, FrameContexts.content);
+        await initPromise;
+
+        expect(GlobalVars.additionalValidOrigins.length).toBe(0);
+      });
+
       it('app.initialize should allow response from custom protocols when needed', async () => {
         const validOrigin = 'customprotocol://';
         utils.validOrigin = validOrigin;

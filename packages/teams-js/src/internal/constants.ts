@@ -150,15 +150,6 @@ export const validOriginsCdnEndpoint = new URL(
 
 /**
  * @hidden
- * User specified message origins should have a schema defined to be processed.
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export const userOriginUrlValidationRegExp = /^\w[\w\d+.-]*:\/\//;
-
-/**
- * @hidden
  * The protocol used for deep links into Teams
  *
  * @internal

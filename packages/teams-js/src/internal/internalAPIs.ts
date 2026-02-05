@@ -1,14 +1,10 @@
 import { HostClientType } from '../public/constants';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { IBaseRuntime, isRuntimeInitialized, Runtime } from '../public/runtime';
-import {
-  defaultSDKVersionForCompatCheck,
-  errorLibraryNotInitialized,
-  userOriginUrlValidationRegExp,
-} from './constants';
+import { defaultSDKVersionForCompatCheck, errorLibraryNotInitialized } from './constants';
 import { GlobalVars } from './globalVars';
 import { getLogger } from './telemetry';
-import { compareSDKVersions } from './utils';
+import { compareSDKVersions, isValidUrl } from './utils';
 
 const internalLogger = getLogger('internal');
 const ensureInitializeCalledLogger = internalLogger.extend('ensureInitializeCalled');
@@ -137,7 +133,7 @@ export function throwExceptionIfMobileApiIsNotSupported(
 export function processAdditionalValidOrigins(validMessageOrigins: string[]): void {
   let combinedOriginUrls = GlobalVars.additionalValidOrigins.concat(
     validMessageOrigins.filter((_origin: string) => {
-      return typeof _origin === 'string' && userOriginUrlValidationRegExp.test(_origin);
+      return typeof _origin === 'string' && isValidUrl(_origin);
     }),
   );
   const dedupUrls: { [url: string]: boolean } = {};

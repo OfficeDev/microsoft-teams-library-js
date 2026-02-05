@@ -598,3 +598,17 @@ export function normalizeAgeGroupValue(runtimeConfig: IBaseRuntime): IBaseRuntim
     },
   };
 }
+
+/**
+ * Checks if a string is a valid URL
+ * @param urlString - The string to validate
+ * @returns - true if the string is a valid URL, false otherwise
+ */
+export function isValidUrl(urlString: string): boolean {
+  try {
+    new URL(urlString);
+    return true;
+  } catch {
+    return false;
+  }
+}
