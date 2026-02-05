@@ -94,7 +94,7 @@ jobs:
               --useDataFromLocal=true
               --testPrefixPattern "${{testPrefixPattern}}"
               --envType=${{ variables.envType }}
-              --ssr=${{ eq(testPrefixPattern, '{[S],[s]}') }}
+              ${{ if eq(testPrefixPattern, '{[S],[s]}') }}--ssr${{ endif }}
             displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
