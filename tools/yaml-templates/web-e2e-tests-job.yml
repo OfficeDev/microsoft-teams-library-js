@@ -56,6 +56,11 @@ jobs:
               value: 'test'
             ${{ else }}:
               value: 'localScriptTag'
+          - name: ssrFlag
+            ${{ if eq(testPrefixPattern, '{[S],[s]}') }}:
+              value: '--ssr'
+            ${{ else }}:
+              value: ''
         steps:
           - template: build-app-host.yml
             parameters:
@@ -94,7 +99,7 @@ jobs:
               --useDataFromLocal=true
               --testPrefixPattern "${{testPrefixPattern}}"
               --envType=${{ variables.envType }}
-              ${{ if eq(testPrefixPattern, '{[S],[s]}') }}--ssr${{ endif }}
+              ${{ variables.ssrFlag }}
             displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
