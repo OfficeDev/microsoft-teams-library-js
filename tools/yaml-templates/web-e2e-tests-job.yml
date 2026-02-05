@@ -69,6 +69,14 @@ jobs:
                 pnpm build-test-app-local
               workingDirectory: '$(ClientSdkProjectDirectory)'
 
+          - script: |
+              sudo apt-get install -y libnss3-tools
+              curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+              chmod +x mkcert-v*-linux-amd64
+              sudo mv mkcert-v*-linux-amd64 /usr/local/bin/mkcert
+            displayName: 'Install mkcert using pre-built binary'
+            condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+
           - powershell: |
               pnpm setup-ssr-app-cert
             displayName: 'Setup SSR app certificates for SSR test app'
