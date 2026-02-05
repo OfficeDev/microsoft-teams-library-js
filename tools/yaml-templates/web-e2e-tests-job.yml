@@ -69,11 +69,24 @@ jobs:
                 pnpm build-test-app-local
               workingDirectory: '$(ClientSdkProjectDirectory)'
 
+          - powershell: |
+              pnpm setup-ssr-app-cert
+            displayName: 'Setup SSR app certificates for SSR test app'
+            workingDirectory: 'microsoft-teams-library-js'
+            condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+
+          - powershell: |
+              pnpm --filter ssr-test-app build
+            displayName: 'Build teamsjs SSR test app'
+            workingDirectory: 'microsoft-teams-library-js'
+            condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+
           - bash: >
               pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
               --useDataFromLocal=true
               --testPrefixPattern "${{testPrefixPattern}}"
               --envType=${{ variables.envType }}
+              --ssr=${{ eq(testPrefixPattern, '{[S],[s]}') }}
             displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
