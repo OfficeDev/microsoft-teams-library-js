@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated stageView.StageViewParams interface to make threadId optional.",
+  "packageName": "@microsoft/teams-js",
+  "email": "yudogan@microsoft.com",
+  "dependentChangeType": "patch"
+}

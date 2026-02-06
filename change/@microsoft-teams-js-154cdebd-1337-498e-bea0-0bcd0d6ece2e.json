@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Reverting the changes for Unauthorized FailedReason",
+  "comment": "Released 2.48.1",
   "packageName": "@microsoft/teams-js",
   "email": "98852890+vhuseinova-msft@users.noreply.github.com",
   "dependentChangeType": "none"

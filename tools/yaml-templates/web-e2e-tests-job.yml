@@ -56,6 +56,11 @@ jobs:
               value: 'test'
             ${{ else }}:
               value: 'localScriptTag'
+          - name: ssrFlag
+            ${{ if eq(testPrefixPattern, '{[S],[s]}') }}:
+              value: '--ssr'
+            ${{ else }}:
+              value: ''
         steps:
           - template: build-app-host.yml
             parameters:
@@ -69,11 +74,32 @@ jobs:
                 pnpm build-test-app-local
               workingDirectory: '$(ClientSdkProjectDirectory)'
 
+          - script: |
+              sudo apt-get install -y libnss3-tools
+              curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+              chmod +x mkcert-v*-linux-amd64
+              sudo mv mkcert-v*-linux-amd64 /usr/local/bin/mkcert
+            displayName: 'Install mkcert using pre-built binary'
+            condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+
+          - powershell: |
+              pnpm setup-ssr-app-cert
+            displayName: 'Setup SSR app certificates for SSR test app'
+            workingDirectory: 'microsoft-teams-library-js'
+            condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+
+          - powershell: |
+              pnpm --filter ssr-test-app build
+            displayName: 'Build teamsjs SSR test app'
+            workingDirectory: 'microsoft-teams-library-js'
+            condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+
           - bash: >
               pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
               --useDataFromLocal=true
               --testPrefixPattern "${{testPrefixPattern}}"
               --envType=${{ variables.envType }}
+              ${{ variables.ssrFlag }}
             displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
