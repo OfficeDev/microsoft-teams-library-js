@@ -1,6 +1,7 @@
 import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS, validOriginsCdnEndpoint, validOriginsFallback } from './constants';
 import { GlobalVars } from './globalVars';
 import { getLogger } from './telemetry';
+import { createURLVerifier, URLVerifier, validateHostAgainstPattern } from './urlPattern';
 import { inServerSideRenderingEnvironment, isValidHttpsURL } from './utils';
 
 let validOriginsCache: string[] = [];
@@ -87,49 +88,22 @@ function isValidOriginsJSONValid(validOriginsJSON: string): boolean {
 }
 
 /**
- * @param pattern - reference pattern
- * @param host - candidate string
- * @returns returns true if host matches pre-know valid pattern
- *
- * @example
- *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
- *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-function validateHostAgainstPattern(pattern: string, host: string): boolean {
-  if (pattern.substring(0, 2) === '*.') {
-    const suffix = pattern.substring(1);
-    if (
-      host.length > suffix.length &&
-      host.split('.').length === suffix.split('.').length &&
-      host.substring(host.length - suffix.length) === suffix
-    ) {
-      return true;
-    }
-  } else if (pattern === host) {
-    return true;
-  }
-  return false;
-}
-
-/**
  * Validates the origin against the full pattern including protocol and hostname.
  * @param pattern - reference pattern
  * @param origin - candidate URL object
  */
 function validateOriginAgainstFullPattern(pattern: string, origin: URL): boolean {
-  let patternUrl: URL;
+  let patternUrl: URLVerifier;
   try {
-    patternUrl = new URL(pattern);
+    const createdURLVerifier = createURLVerifier(pattern, validateOriginLogger);
+    if (!createdURLVerifier) {
+      return false;
+    }
+    patternUrl = createdURLVerifier;
   } catch {
     return false;
   }
-  return (
-    patternUrl.protocol === origin.protocol &&
-    (!patternUrl.host || validateHostAgainstPattern(patternUrl.host, origin.host))
-  );
+  return patternUrl.test(origin);
 }
 
 /**

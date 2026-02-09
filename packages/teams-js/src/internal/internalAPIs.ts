@@ -4,7 +4,8 @@ import { IBaseRuntime, isRuntimeInitialized, Runtime } from '../public/runtime';
 import { defaultSDKVersionForCompatCheck, errorLibraryNotInitialized } from './constants';
 import { GlobalVars } from './globalVars';
 import { getLogger } from './telemetry';
-import { compareSDKVersions, isValidUrl } from './utils';
+import { isValidPatternUrl } from './urlPattern';
+import { compareSDKVersions } from './utils';
 
 const internalLogger = getLogger('internal');
 const ensureInitializeCalledLogger = internalLogger.extend('ensureInitializeCalled');
@@ -133,7 +134,7 @@ export function throwExceptionIfMobileApiIsNotSupported(
 export function processAdditionalValidOrigins(validMessageOrigins: string[]): void {
   let combinedOriginUrls = GlobalVars.additionalValidOrigins.concat(
     validMessageOrigins.filter((_origin: string) => {
-      return typeof _origin === 'string' && isValidUrl(_origin);
+      return typeof _origin === 'string' && isValidPatternUrl(_origin);
     }),
   );
   const dedupUrls: { [url: string]: boolean } = {};

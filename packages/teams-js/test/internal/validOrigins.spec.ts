@@ -4,6 +4,7 @@ import { resetValidOriginsCache, validateOrigin } from '../../src/internal/valid
 import * as app from '../../src/public/app/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
 //We need this now because our code prefetches the CDN url and caches the response. This has the side effect of bypassing all future fetch calls.
 const disableCache = true;
 
@@ -166,12 +167,6 @@ describe('validOrigins', () => {
       const result = await validateOrigin(messageOrigin, disableCache);
       expect(result).toBe(true);
     });
-    it('validateOrigin returns true for non-https partial origin in user-specified list', async () => {
-      const messageOrigin = new URL('chrome://my-new-origin');
-      GlobalVars.additionalValidOrigins = ['chrome://'];
-      const result = await validateOrigin(messageOrigin, disableCache);
-      expect(result).toBe(true);
-    });
     it("validateOrigin returns false for non-https if protocols don't match", async () => {
       const messageOrigin = new URL('https://my-new-origin');
       GlobalVars.additionalValidOrigins = ['chrome://my-new-origin'];
@@ -183,6 +178,12 @@ describe('validOrigins', () => {
       GlobalVars.additionalValidOrigins = ['chrome://different-origin'];
       const result = await validateOrigin(messageOrigin, disableCache);
       expect(result).toBe(false);
+    });
+    it('validateOrigin returns true for non-https using wildcard', async () => {
+      const messageOrigin = new URL('chrome://chrome.testing.url.com');
+      GlobalVars.additionalValidOrigins = ['chrome://*.testing.url.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
     });
   });
   describe('testing main validOrigins flow with invalid json object', () => {
