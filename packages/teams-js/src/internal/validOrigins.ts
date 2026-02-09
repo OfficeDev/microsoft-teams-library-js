@@ -1,6 +1,7 @@
 import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS, validOriginsCdnEndpoint, validOriginsFallback } from './constants';
 import { GlobalVars } from './globalVars';
 import { getLogger } from './telemetry';
+import { createURLVerifier, URLVerifier, validateHostAgainstPattern } from './urlPattern';
 import { inServerSideRenderingEnvironment, isValidHttpsURL } from './utils';
 
 let validOriginsCache: string[] = [];
@@ -87,31 +88,22 @@ function isValidOriginsJSONValid(validOriginsJSON: string): boolean {
 }
 
 /**
+ * Validates the origin against the full pattern including protocol and hostname.
  * @param pattern - reference pattern
- * @param host - candidate string
- * @returns returns true if host matches pre-know valid pattern
- *
- * @example
- *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
- *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
- *
- * @internal
- * Limited to Microsoft-internal use
+ * @param origin - candidate URL object
  */
-function validateHostAgainstPattern(pattern: string, host: string): boolean {
-  if (pattern.substring(0, 2) === '*.') {
-    const suffix = pattern.substring(1);
-    if (
-      host.length > suffix.length &&
-      host.split('.').length === suffix.split('.').length &&
-      host.substring(host.length - suffix.length) === suffix
-    ) {
-      return true;
+function validateOriginAgainstFullPattern(pattern: string, origin: URL): boolean {
+  let patternUrl: URLVerifier;
+  try {
+    const createdURLVerifier = createURLVerifier(pattern, validateOriginLogger);
+    if (!createdURLVerifier) {
+      return false;
     }
-  } else if (pattern === host) {
-    return true;
+    patternUrl = createdURLVerifier;
+  } catch {
+    return false;
   }
-  return false;
+  return patternUrl.test(origin);
 }
 
 /**
@@ -123,16 +115,25 @@ export function validateOrigin(messageOrigin: URL, disableCache?: boolean): Prom
   const localList = !disableCache && !isValidOriginsCacheEmpty() ? validOriginsCache : validOriginsFallback;
   if (validateOriginWithValidOriginsList(messageOrigin, localList)) {
     return Promise.resolve(true);
-  } else {
-    validateOriginLogger('Origin %s is not in the local valid origins list, fetching from CDN', messageOrigin);
-    return getValidOriginsListFromCDN(disableCache).then((validOriginsList) => {
-      return validateOriginWithValidOriginsList(messageOrigin, validOriginsList);
-    });
   }
+
+  validateOriginLogger('Origin %s is not in the local valid origins list, fetching from CDN', messageOrigin);
+  return getValidOriginsListFromCDN(disableCache).then((validOriginsList) =>
+    validateOriginWithValidOriginsList(messageOrigin, validOriginsList),
+  );
 }
 
 function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList: string[]): boolean {
-  // Check whether the url is in the pre-known allowlist or supplied by user
+  // User provided additional valid origins take precedence as they do not require https protocol
+  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
+    if (validateOriginAgainstFullPattern(domainOrPattern, messageOrigin)) {
+      return true;
+    }
+  }
+
+  const messageOriginHost = messageOrigin.host;
+
+  // For standard valid origins, only allow https protocol
   if (!isValidHttpsURL(messageOrigin)) {
     validateOriginLogger(
       'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
@@ -141,16 +142,9 @@ function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList
     );
     return false;
   }
-  const messageOriginHost = messageOrigin.host;
+
   if (validOriginsList.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
     return true;
-  }
-
-  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
-    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
-    if (validateHostAgainstPattern(pattern, messageOriginHost)) {
-      return true;
-    }
   }
 
   validateOriginLogger(

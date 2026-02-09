@@ -150,15 +150,6 @@ export const validOriginsCdnEndpoint = new URL(
 
 /**
  * @hidden
- * USer specified message origins should satisfy this test
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export const userOriginUrlValidationRegExp = /^https:\/\//;
-
-/**
- * @hidden
  * The protocol used for deep links into Teams
  *
  * @internal

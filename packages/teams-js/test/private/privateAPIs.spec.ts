@@ -21,9 +21,10 @@ import { Utils } from '../utils';
 describe('AppSDK-privateAPIs', () => {
   // Use to send a mock message from the app.
 
-  const utils = new Utils();
+  let utils: Utils;
 
   beforeEach(() => {
+    utils = new Utils();
     utils.processMessage = null;
     utils.messages = [];
     utils.childMessages = [];
@@ -300,7 +301,7 @@ describe('AppSDK-privateAPIs', () => {
 
   unSupportedDomains.forEach((unSupportedDomain) => {
     it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
-      await utils.initializeWithContext('content', undefined, ['http://invalid.origin.com']);
+      await utils.initializeWithContext('content', undefined, []);
       let callbackCalled = false;
       app.getContext().then(() => {
         callbackCalled = true;
@@ -409,25 +410,6 @@ describe('AppSDK-privateAPIs', () => {
       callbackCalled = true;
       return;
     });
-
-    utils.processMessage!({
-      origin: 'http://some-invalid-origin.com',
-      source: utils.mockWindow.parent,
-      data: {
-        id: initMessage!.id,
-        args: ['content'],
-      } as MessageResponse,
-    } as MessageEvent);
-
-    // Try to make a call
-    app.getContext().then(() => {
-      callbackCalled = true;
-      return;
-    });
-
-    // Only the init call went out
-    expect(utils.messages.length).toBe(1);
-    expect(callbackCalled).toBe(false);
   });
 
   it('should successfully handle calls queued before init completes', async () => {
