@@ -233,6 +233,12 @@ export function registerOnThemeChangeHandlerHelper(apiVersionTag: string, handle
   Handlers.registerOnThemeChangeHandler(apiVersionTag, handler);
 }
 
+export function registerOnPromptHandlerHelper(apiVersionTag: string, handler: app.promptHandler): void {
+  // allow for registration cleanup even when not called initialize
+  !isNullOrUndefined(handler) && ensureInitializeCalled();
+  Handlers.registerOnPromptHandler(apiVersionTag, handler);
+}
+
 export function registerOnContextChangeHandlerHelper(apiVersionTag: string, handler: app.contextHandler): void {
   !isNullOrUndefined(handler) && ensureInitializeCalled();
   Handlers.registerOnContextChangeHandler(apiVersionTag, handler);
