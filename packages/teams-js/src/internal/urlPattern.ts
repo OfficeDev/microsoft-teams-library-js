@@ -51,6 +51,11 @@ export function validateHostAgainstPattern(pattern: string, host: string): boole
       return false;
     }
 
+    // Wildcard in the last segment (TLD position) is not allowed for security reasons.
+    if (i === patternSegments.length - 1) {
+      return false;
+    }
+
     // Wildcard segment can match any single segment in the host, but only one wildcard is allowed in the pattern.
     if (hasUsedWildcard) {
       return false;

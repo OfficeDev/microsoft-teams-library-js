@@ -398,12 +398,12 @@ describe('validateHostAgainstPattern', () => {
       expect(validateHostAgainstPattern('*.*.teams.com', 'subdomain.teams.com')).toBe(false);
     });
 
-    it('returns true for wildcard at end of pattern', () => {
-      expect(validateHostAgainstPattern('teams.microsoft.*', 'teams.microsoft.com')).toBe(true);
+    it('returns false for wildcard at end of pattern (TLD position not allowed)', () => {
+      expect(validateHostAgainstPattern('teams.microsoft.*', 'teams.microsoft.com')).toBe(false);
     });
 
-    it('returns true for wildcard at end matching different TLD', () => {
-      expect(validateHostAgainstPattern('teams.microsoft.*', 'teams.microsoft.net')).toBe(true);
+    it('returns false for wildcard at end matching different TLD (TLD position not allowed)', () => {
+      expect(validateHostAgainstPattern('teams.microsoft.*', 'teams.microsoft.net')).toBe(false);
     });
   });
 });
