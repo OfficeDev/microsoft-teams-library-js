@@ -28,20 +28,38 @@ const userOriginUrlValidationRegExp = /^[A-Za-z][A-Za-z\d+.-]*:\/\//;
  *
  * @example
  *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
+ *    validateHostAgainstPattern('test.*.teams.microsoft.com', 'test.subdomain.teams.microsoft.com') returns true
  *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
  *
  * @internal
  * Limited to Microsoft-internal use
  */
 export function validateHostAgainstPattern(pattern: string, host: string): boolean {
-  const suffix = pattern.substring(1);
-  return (
-    pattern === host ||
-    (pattern.substring(0, 2) === '*.' &&
-      host.length > suffix.length &&
-      host.split('.').length === suffix.split('.').length &&
-      host.substring(host.length - suffix.length) === suffix)
-  );
+  const patternSegments = pattern.split('.');
+  const hostSegments = host.split('.');
+  if (hostSegments.length !== patternSegments.length) {
+    return false;
+  }
+
+  let hasUsedWildcard = false;
+  for (let i = 0; i < patternSegments.length; i++) {
+    if (patternSegments[i] === hostSegments[i]) {
+      continue;
+    }
+
+    if (patternSegments[i] !== '*' && patternSegments[i] !== hostSegments[i]) {
+      return false;
+    }
+
+    // Wildcard segment can match any single segment in the host, but only one wildcard is allowed in the pattern.
+    if (hasUsedWildcard) {
+      return false;
+    }
+    hasUsedWildcard = true;
+    continue;
+  }
+
+  return true;
 }
 
 /**
