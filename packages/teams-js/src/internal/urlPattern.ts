@@ -37,6 +37,7 @@ const userOriginUrlValidationRegExp = /^[A-Za-z][A-Za-z\d+.-]*:\/\//;
 export function validateHostAgainstPattern(pattern: string, host: string): boolean {
   const patternSegments = pattern.split('.');
   const hostSegments = host.split('.');
+
   if (hostSegments.length !== patternSegments.length) {
     return false;
   }
@@ -47,19 +48,15 @@ export function validateHostAgainstPattern(pattern: string, host: string): boole
       continue;
     }
 
-    if (patternSegments[i] !== '*' && patternSegments[i] !== hostSegments[i]) {
+    if (patternSegments[i] !== '*') {
       return false;
     }
 
     // Wildcard in the last segment (TLD position) is not allowed for security reasons.
-    if (i === patternSegments.length - 1) {
+    if (i === patternSegments.length - 1 || hasUsedWildcard) {
       return false;
     }
 
-    // Wildcard segment can match any single segment in the host, but only one wildcard is allowed in the pattern.
-    if (hasUsedWildcard) {
-      return false;
-    }
     hasUsedWildcard = true;
     continue;
   }
