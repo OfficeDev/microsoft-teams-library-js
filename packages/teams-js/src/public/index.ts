@@ -15,6 +15,7 @@ export {
   ActionObjectType,
   AdaptiveCardVersion,
   AdaptiveCardDialogInfo,
+  AppLifecycleEvent,
   BaseActionObject,
   BotAdaptiveCardDialogInfo,
   BotUrlDialogInfo,
