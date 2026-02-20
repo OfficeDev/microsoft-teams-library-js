@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `lifecycleEvent` key to `HostMemoryMetrics`, so apps can correlate a heartbeat to a specific lifecycle moment of the app if applicable.",
+  "packageName": "@microsoft/teams-js",
+  "email": "31258166+juanscr@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
