@@ -1438,6 +1438,36 @@ export type HostToAppFrameMemoryMetrics = {
 };
 
 /**
+ * App lifecycle events.
+ */
+export enum AppLifecycleEvent {
+  /**
+   * The app called initialize.
+   */
+  Initialize = 'initialize',
+
+  /**
+   * Notify success was called by the app after initialization.
+   */
+  AppInitializationSuccess = 'appInitialization.success',
+
+  /**
+   * Notify failure was called by the app after initialization.
+   */
+  AppInitializationFailure = 'appInitialization.failure',
+
+  /**
+   * Notify expected failure was called by the app after initialization.
+   */
+  AppInitializationExpectedFailure = 'appInitialization.expectedFailure',
+
+  /**
+   * The app called notify app loaded after initialization to indicate that the app has finished loading and is ready for user interaction.
+   */
+  AppInitializationAppLoaded = 'appInitialization.appLoaded',
+}
+
+/**
  * Memory metrics provided by the host for the app.
  */
 export type HostMemoryMetrics = {
@@ -1465,6 +1495,11 @@ export type HostMemoryMetrics = {
    * The amount of memory allocated by all frames of the app (in KB).
    */
   totalFrameCommitSizeKB: number;
+
+  /**
+   * The lifecycle event that triggered this heartbeat, if applicable. This can be used to correlate memory metrics with specific app lifecycle events.
+   */
+  lifecycleEvent?: AppLifecycleEvent;
 
   /**
    * A breakdown of the memory metrics by each frame.
