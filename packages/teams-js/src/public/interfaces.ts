@@ -1441,10 +1441,29 @@ export type HostToAppFrameMemoryMetrics = {
  * App lifecycle events.
  */
 export enum AppLifecycleEvent {
+  /**
+   * The app called initialize.
+   */
   Initialize = 'initialize',
+
+  /**
+   * Notify success was called by the app after initialization.
+   */
   AppInitializationSuccess = 'appInitialization.success',
+
+  /**
+   * Notify failure was called by the app after initialization.
+   */
   AppInitializationFailure = 'appInitialization.failure',
+
+  /**
+   * Notify expected failure was called by the app after initialization.
+   */
   AppInitializationExpectedFailure = 'appInitialization.expectedFailure',
+
+  /**
+   * The app called notify app loaded after initialization to indicate that the app has finished loading and is ready for user interaction.
+   */
   AppInitializationAppLoaded = 'appInitialization.appLoaded',
 }
 
