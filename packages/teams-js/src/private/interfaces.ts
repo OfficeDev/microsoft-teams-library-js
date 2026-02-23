@@ -232,6 +232,33 @@ export interface FilePreviewParameters {
    * Limited to Microsoft-internal use
    */
   conversationId?: string;
+
+  /**
+   * @hidden
+   * Optional; id of message where this file is shared (if applicable)
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  messageId?: string;
+
+  /**
+   * @hidden
+   * Optional; used internally to differentiate different callers from within an app
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  callerInfo?: string;
+
+  /**
+   * @hidden
+   * Optional; serialised string of atp data which the apps may pass to expediate safelink validations that run when a file is opened
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  atpData?: string;
 }
 
 /**
