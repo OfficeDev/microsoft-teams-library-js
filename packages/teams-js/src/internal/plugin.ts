@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Plugin Interfaces
  *
@@ -6,8 +8,9 @@
  *
  * @remarks
  * The plugin system allows third-party or internal modules to extend the Teams JS SDK
- * without modifying its core handler dispatch logic. Plugins receive a {@link PluginContext}
- * during registration that provides two communication channels:
+ * without modifying its core handler dispatch logic. Plugins implement the {@link IPlugin}
+ * interface and are activated with a {@link PluginContext} that provides two communication
+ * channels:
  *
  * - **sendMessage**: Send messages from the plugin to the Teams host (app → host direction).
  *   Wraps the SDK's `sendMessageToParent` internally.
@@ -16,22 +19,28 @@
  *   Chains the plugin's handler onto the existing handler in the SDK's handler registry,
  *   so both the original handler and the plugin handler execute when the event fires.
  *
+ * Plugins are created by the consumer and passed as an array. The consumer retains a direct
+ * reference to each plugin and can call plugin-specific methods at any time.
+ *
  * @example
  * ```typescript
- * import { pluginService, PluginContext } from '@microsoft/teams-js';
+ * import { pluginService, IPlugin, PluginContext } from '@microsoft/teams-js';
  *
- * class MyPlugin {
- *   public readonly id = 'my-plugin';
- *   constructor(context: PluginContext) {
+ * class CatalystPlugin implements IPlugin {
+ *   public readonly id = 'catalyst';
+ *   activate(context: PluginContext): void {
  *     context.onReceiveMessage('themeChange', (args) => {
  *       console.log('Theme changed:', args);
  *     });
- *     context.sendMessage('myPlugin.ready', [{ version: '1.0' }]);
  *   }
- *   async dispose() { // optional cleanup  }
+ *   async dispose(): Promise<void> { }
  * }
  *
- * const plugin = await pluginService.register(MyPlugin);
+ * const catalystPlugin = new CatalystPlugin();
+ * pluginService.activatePlugins([catalystPlugin]);
+ *
+ * // Consumer holds the reference — call plugin methods directly:
+ * catalystPlugin.triggerPrompt('hello');
  * ```
  *
  * @internal
@@ -54,26 +63,31 @@
  * Limited to Microsoft-internal use
  */
 export interface PluginResponse {
+  /** Whether the operation succeeded. */
   success: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  /** Optional payload returned from the operation. */
   data?: any;
+  /** Error message if the operation failed. */
   error?: string;
 }
 
 /**
- * Result of a plugin registration ({@link pluginService.register}) or
- * unregistration ({@link pluginService.unregister}) operation.
+ * Result of a plugin activation ({@link pluginService.activatePlugins}) or
+ * deactivation ({@link pluginService.deactivatePlugin}) operation.
  *
  * @property success - `true` if the operation completed successfully.
- * @property pluginId - The ID of the plugin that was registered/unregistered (set on success).
+ * @property pluginId - The ID of the plugin that was activated/deactivated (set on success).
  * @property error - Error message string if the operation failed.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
 export interface PluginRegistrationResult {
+  /** Whether the operation succeeded. */
   success: boolean;
+  /** The ID of the affected plugin. */
   pluginId?: string;
+  /** Error message if the operation failed. */
   error?: string;
 }
 
@@ -189,35 +203,137 @@ export interface PluginContext {
 }
 
 /**
- * Constructor type for plugin classes that can be registered with {@link pluginService.register}.
+ * Interface that all plugins must implement.
  *
  * @remarks
- * A plugin class must:
- * 1. Accept a {@link PluginContext} as its sole constructor parameter.
- * 2. Expose a public `id` property (a unique string identifier for the plugin).
- * 3. Optionally implement a `dispose(): Promise<void> | void` method for cleanup
- *    when the plugin is unregistered.
+ * Plugins are created by the consumer and passed to {@link pluginService.activatePlugins}.
+ * The consumer retains a direct reference to each plugin instance, so plugin-specific
+ * methods can be called at any time without going through the plugin service.
  *
- * @typeParam T - The plugin instance type. Must have at minimum an `id: string` property.
+ * A plugin must:
+ * 1. Expose a readonly `id` property (a unique string identifier).
+ * 2. Implement `activate(context)` which is called by the service to wire up communication.
+ * 3. Optionally implement `dispose()` for cleanup when deactivated.
  *
  * @example
  * ```typescript
- * class MyPlugin {
- *   public readonly id = 'my-plugin';
- *   constructor(private context: PluginContext) {
- *     context.onReceiveMessage('themeChange', this.onThemeChange.bind(this));
+ * class CatalystPlugin implements IPlugin {
+ *   public readonly id = 'catalyst';
+ *   private context?: PluginContext;
+ *
+ *   activate(context: PluginContext): void {
+ *     this.context = context;
+ *     context.onReceiveMessage('themeChange', (args) => {
+ *       console.log('Theme changed:', args?.[0]);
+ *     });
  *   }
- *   private onThemeChange(args?: any[]): void { // handle theme change  }
- *   async dispose(): Promise<void> { // cleanup  }
+ *
+ *   async dispose(): Promise<void> { // cleanup }
+ *
+ *   triggerPrompt(text: string): void {
+ *     this.context?.sendMessage('prompt', [text]);
+ *   }
  * }
+ *
+ * const plugin = new CatalystPlugin();
+ * pluginService.activatePlugins([plugin]);
+ * plugin.triggerPrompt('hello');
  * ```
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export type PluginConstructor<
-  T extends {
-    /** Unique string identifier for the plugin instance. */
-    id: string;
-  },
-> = new (context: PluginContext) => T;
+export interface IPlugin {
+  /** Unique string identifier for the plugin. */
+  readonly id: string;
+
+  /**
+   * Called by the plugin service to activate the plugin with a communication context.
+   *
+   * @param context - The {@link PluginContext} providing send/receive capabilities.
+   */
+  activate(context: PluginContext): void;
+
+  /**
+   * Optional cleanup method called when the plugin is deactivated.
+   * @returns A promise or void.
+   */
+  dispose?(): Promise<void> | void;
+}
+
+/**
+ * Represents a message received from the web content layer (e.g., MetaOS application).
+ *
+ * @remarks
+ * This interface is used by {@link IPluginService.broadcastReceivedMessage} to distribute
+ * incoming messages to all plugins that have registered handlers for the given function name.
+ *
+ * @property func - The function/event name identifying the message type.
+ * @property args - Optional arguments accompanying the message.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface IWebContentRequestMessage {
+  /** The function/event name identifying the message type. */
+  func: string;
+  /** Optional arguments accompanying the message. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  args?: any[];
+}
+
+/**
+ * Interface for the Plugin Service that manages plugin activation and lifecycle.
+ *
+ * @remarks
+ * The plugin service enables bidirectional communication between plugins and the
+ * Teams JS SDK / MetaOS host application. Plugins are created by the consumer and
+ * passed to the service for activation.
+ *
+ * @example
+ * ```typescript
+ * const catalyst = new CatalystPlugin();
+ * pluginService.activatePlugins([catalyst]);
+ * catalyst.triggerPrompt('Hello?');
+ * ```
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface IPluginService {
+  /**
+   * Activate an array of plugins by calling `activate(context)` on each one.
+   *
+   * @param plugins - The plugin instances to activate.
+   */
+  activatePlugins(plugins: IPlugin[]): void;
+
+  /**
+   * Deactivate a plugin by ID.
+   *
+   * @param pluginId - The ID of the plugin to deactivate.
+   * @returns Result of the deactivation attempt.
+   */
+  deactivatePlugin(pluginId: string): Promise<PluginRegistrationResult>;
+
+  /**
+   * Get an active plugin by ID.
+   *
+   * @param pluginId - The ID of the plugin.
+   * @returns The plugin instance, or undefined if not found.
+   */
+  getPlugin(pluginId: string): IPlugin | undefined;
+
+  /**
+   * Get all active plugins.
+   *
+   * @returns Array of all active plugins.
+   */
+  getAllPlugins(): IPlugin[];
+
+  /**
+   * Deactivate all plugins and clean up resources.
+   */
+  deactivateAll(): Promise<void>;
+}

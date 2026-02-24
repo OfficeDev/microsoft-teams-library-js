@@ -3,22 +3,25 @@
 /**
  * Plugin Service
  *
- * Manages plugin registration and lifecycle, enabling bidirectional communication
+ * Manages plugin activation and lifecycle, enabling bidirectional communication
  * between plugins and the Teams JS SDK.
  *
  * @remarks
- * The plugin service is exposed as a set of module-level functions that can be
- * imported as a namespace:
+ * Plugins are created by the consumer and passed to {@link activatePlugins} as an array.
+ * The consumer retains direct references to plugin instances and can call plugin-specific
+ * methods at any time.
  *
  * ```typescript
- * import { pluginService } from '@microsoft/teams-js';
+ * import { pluginService, IPlugin, PluginContext } from '@microsoft/teams-js';
  *
- * const plugin = await pluginService.register(MyPlugin);
+ * const catalystPlugin = new CatalystPlugin();
+ * pluginService.activatePlugins([catalystPlugin]);
+ * catalystPlugin.triggerPrompt('hello');
  * ```
  *
  * **How message receiving works:**
  *
- * When a plugin calls `context.onReceiveMessage(func, handler)` during construction,
+ * When a plugin calls `context.onReceiveMessage(func, handler)` inside `activate()`,
  * the handler is chained onto the existing handler in `HandlersPrivate.handlers` via
  * {@link addPluginHandler}. This means the core dispatch logic in `callHandler` is
  * never modified — plugin handlers execute as part of the normal handler chain.
@@ -31,9 +34,10 @@
  *
  * **Lifecycle:**
  *
- * - {@link register} — Instantiates a plugin, wires up communication, stores it.
- * - {@link unregister} — Restores original handlers, calls `dispose()` if present, removes the plugin.
- * - {@link cleanup} — Unregisters all plugins.
+ * - {@link activatePlugins} — Calls `activate(context)` on each plugin, wires up communication, stores them.
+ * - {@link deactivatePlugin} — Restores original handlers, calls `dispose()` if present, removes the plugin.
+ * - {@link deactivateAll} — Deactivates all plugins.
+ * - {@link broadcastReceivedMessage} — Dispatches an incoming message to plugin handlers.
  * - {@link reset} — Clears all plugin state (used during SDK uninitialization).
  *
  * @internal
@@ -41,9 +45,10 @@
  */
 
 import { sendMessageToParent } from './communication';
-import { addPluginHandler, getHandler, restoreHandlers } from './handlers';
+import { addPluginHandler, callHandler, getHandler, restoreHandlers } from './handlers';
 import {
-  PluginConstructor,
+  IPlugin,
+  IWebContentRequestMessage,
   PluginContext,
   PluginRegistrationResult,
   PluginResponse,
@@ -55,148 +60,116 @@ import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from './teleme
 const pluginServiceLogger = getLogger('pluginService');
 
 // Module-level state
-let plugins: Map<string, any> = new Map();
+let plugins: Map<string, IPlugin> = new Map();
 /** Tracks per-plugin: which handler names were registered and what the original handler was before chaining */
 // eslint-disable-next-line @typescript-eslint/ban-types
 let pluginOriginalHandlers: Map<string, Map<string, Function | undefined>> = new Map();
 
 /**
- * Register a plugin class with the Teams JS SDK.
+ * Activate an array of plugins.
  *
  * @remarks
- * Instantiates the plugin class with a {@link PluginContext} that provides:
+ * For each plugin, creates a {@link PluginContext} that provides:
  * - `sendMessage` — forwards messages to the Teams host via `sendMessageToParent`.
  * - `onReceiveMessage` — chains the plugin's handler onto the existing handler in
  *   `HandlersPrivate.handlers`, so both the original SDK handler and the plugin
  *   handler run when the event fires.
  *
- * The plugin's constructor is called synchronously. If the plugin needs to perform
- * async setup, it should do so internally after construction.
+ * Then calls `plugin.activate(context)`. If a plugin with the same ID is already active,
+ * it is skipped with a warning.
  *
- * @typeParam T - The plugin instance type. Must have at minimum an `id: string` property.
- * @param PluginClass - The plugin class constructor. See {@link PluginConstructor}.
- * @returns A promise that resolves with the plugin instance.
- * @throws Will reject if the plugin constructor throws.
+ * @param pluginList - Array of plugin instances implementing {@link IPlugin}.
  *
  * @example
  * ```typescript
- * import { pluginService, PluginContext } from '@microsoft/teams-js';
+ * import { pluginService, IPlugin, PluginContext } from '@microsoft/teams-js';
  *
- * class ThemeLoggerPlugin {
+ * class ThemeLoggerPlugin implements IPlugin {
  *   public readonly id = 'theme-logger';
- *   constructor(context: PluginContext) {
+ *   activate(context: PluginContext): void {
  *     context.onReceiveMessage('themeChange', (args) => {
  *       console.log('Theme changed to:', args?.[0]);
  *     });
  *   }
  * }
  *
- * const plugin = await pluginService.register(ThemeLoggerPlugin);
- * console.log(plugin.id); // 'theme-logger'
+ * const plugin = new ThemeLoggerPlugin();
+ * pluginService.activatePlugins([plugin]);
  * ```
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function register<
-  T extends {
-    /** Unique string identifier for the plugin instance. */
-    id: string;
-  },
->(PluginClass: PluginConstructor<T>): Promise<T> {
-  const sendMessage: SendMessageCallback = async (
-    func: string,
-    args?: (object | string | boolean)[],
-  ): Promise<PluginResponse> => {
-    try {
-      const apiVersionTag = getApiVersionTag(ApiVersionNumber.V_2, ApiName.Plugin_SendMessage);
-      sendMessageToParent(apiVersionTag, func, args);
-      return {
-        success: true,
-        data: undefined,
-      };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      pluginServiceLogger('Error sending plugin message: %s', errorMessage);
-      return {
-        success: false,
-        error: errorMessage,
-      };
-    }
-  };
-
-  // Mutable reference to pluginId, set after plugin construction
-  const ref = { pluginId: '' };
-
-  const onReceiveMessage: ReceiveMessageCallback = (func: string, handler: (args?: any[]) => void): void => {
-    // Snapshot the current handler before chaining, so we can restore it on unregister
-    if (!pluginOriginalHandlers.has(ref.pluginId)) {
-      pluginOriginalHandlers.set(ref.pluginId, new Map());
-    }
-    const originals = pluginOriginalHandlers.get(ref.pluginId)!;
-    if (!originals.has(func)) {
-      originals.set(func, getHandler(func));
+export function activatePlugins(pluginList: IPlugin[]): void {
+  for (const plugin of pluginList) {
+    if (plugins.has(plugin.id)) {
+      pluginServiceLogger('Plugin already active, skipping: %s', plugin.id);
+      continue;
     }
 
-    // Chain onto the existing handler in HandlersPrivate.handlers
-    addPluginHandler(func, handler);
-  };
+    const sendMessage: SendMessageCallback = async (
+      func: string,
+      args?: (object | string | boolean)[],
+    ): Promise<PluginResponse> => {
+      try {
+        const apiVersionTag = getApiVersionTag(ApiVersionNumber.V_2, ApiName.Plugin_SendMessage);
+        sendMessageToParent(apiVersionTag, func, args);
+        return { success: true, data: undefined };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        pluginServiceLogger('Error sending plugin message: %s', errorMessage);
+        return { success: false, error: errorMessage };
+      }
+    };
 
-  const context: PluginContext = {
-    sendMessage,
-    onReceiveMessage,
-  };
+    const onReceiveMessage: ReceiveMessageCallback = (func: string, handler: (args?: any[]) => void): void => {
+      if (!pluginOriginalHandlers.has(plugin.id)) {
+        pluginOriginalHandlers.set(plugin.id, new Map());
+      }
+      const originals = pluginOriginalHandlers.get(plugin.id)!;
+      if (!originals.has(func)) {
+        originals.set(func, getHandler(func));
+      }
+      addPluginHandler(func, handler);
+    };
 
-  // Instantiate plugin with context
-  const plugin = new PluginClass(context);
-  ref.pluginId = plugin.id;
+    const context: PluginContext = { sendMessage, onReceiveMessage };
 
-  // Store plugin
-  plugins.set(plugin.id, plugin);
-
-  pluginServiceLogger('Registered plugin: %s', plugin.id);
-
-  return plugin;
+    plugin.activate(context);
+    plugins.set(plugin.id, plugin);
+    pluginServiceLogger('Activated plugin: %s', plugin.id);
+  }
 }
 
 /**
- * Unregister a plugin from the SDK.
+ * Deactivate a plugin by ID.
  *
  * @remarks
  * Performs the following cleanup in order:
  * 1. Restores any handlers in `HandlersPrivate.handlers` that were modified when the
- *    plugin chained its handlers via `onReceiveMessage`. The original handler (or absence
- *    of handler) is restored for each affected event name.
+ *    plugin chained its handlers via `onReceiveMessage`.
  * 2. Calls the plugin's `dispose()` method if one exists, awaiting its completion.
  * 3. Removes the plugin from the internal registry.
  *
- * If the plugin ID is not found, returns `{ success: false, error: '...' }` without
- * throwing.
- *
- * @param pluginId - The unique ID of the plugin to unregister (must match the plugin's
- *                   `id` property).
- * @returns A promise that resolves with a {@link PluginRegistrationResult} indicating
- *          whether the unregistration succeeded.
+ * @param pluginId - The unique ID of the plugin to deactivate.
+ * @returns A promise that resolves with a {@link PluginRegistrationResult}.
  *
  * @example
  * ```typescript
- * const result = await pluginService.unregister('my-plugin');
+ * const result = await pluginService.deactivatePlugin('catalyst');
  * if (!result.success) {
- *   console.error('Failed to unregister:', result.error);
+ *   console.error('Failed to deactivate:', result.error);
  * }
  * ```
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function unregister(pluginId: string): Promise<PluginRegistrationResult> {
+export async function deactivatePlugin(pluginId: string): Promise<PluginRegistrationResult> {
   try {
     const plugin = plugins.get(pluginId);
     if (!plugin) {
-      return {
-        success: false,
-        error: `Plugin with ID ${pluginId} not found`,
-      };
+      return { success: false, error: `Plugin with ID ${pluginId} not found` };
     }
 
     // Restore original handlers that this plugin chained onto
@@ -212,96 +185,82 @@ export async function unregister(pluginId: string): Promise<PluginRegistrationRe
     }
 
     plugins.delete(pluginId);
+    pluginServiceLogger('Deactivated plugin: %s', pluginId);
 
-    pluginServiceLogger('Unregistered plugin: %s', pluginId);
-
-    return {
-      success: true,
-      pluginId,
-    };
+    return { success: true, pluginId };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return {
-      success: false,
-      error: errorMessage,
-    };
+    return { success: false, error: errorMessage };
   }
 }
 
 /**
- * Retrieve a registered plugin instance by its ID.
+ * Retrieve an active plugin instance by its ID.
  *
- * @param pluginId - The unique ID of the plugin (must match the plugin's `id` property).
- * @returns The plugin instance, or `undefined` if no plugin with the given ID is registered.
- *
- * @example
- * ```typescript
- * const plugin = pluginService.getPlugin('my-plugin');
- * if (plugin) {
- *   console.log('Found plugin:', plugin.id);
- * }
- * ```
+ * @param pluginId - The unique ID of the plugin.
+ * @returns The plugin instance, or `undefined` if not active.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function getPlugin(pluginId: string): any | undefined {
+export function getPlugin(pluginId: string): IPlugin | undefined {
   return plugins.get(pluginId);
 }
 
 /**
- * Retrieve all currently registered plugin instances.
+ * Retrieve all currently active plugin instances.
  *
- * @returns An array of all registered plugin instances. Returns an empty array if
- *          no plugins are registered.
- *
- * @example
- * ```typescript
- * const allPlugins = pluginService.getAllPlugins();
- * console.log(`${allPlugins.length} plugin(s) registered`);
- * ```
+ * @returns An array of all active plugin instances.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function getAllPlugins(): any[] {
+export function getAllPlugins(): IPlugin[] {
   return Array.from(plugins.values());
 }
 
 /**
- * Unregister all currently registered plugins.
+ * Deactivate all currently active plugins.
  *
  * @remarks
- * Iterates over all registered plugins and calls {@link unregister} for each one.
+ * Iterates over all active plugins and calls {@link deactivatePlugin} for each one.
  * This restores all chained handlers and calls `dispose()` on each plugin that
- * implements it. After this call, the plugin registry is empty.
- *
- * @example
- * ```typescript
- * // Clean up all plugins before re-initialization
- * await pluginService.cleanup();
- * ```
+ * implements it.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function cleanup(): Promise<void> {
+export async function deactivateAll(): Promise<void> {
   const pluginIds = Array.from(plugins.keys());
   for (const pluginId of pluginIds) {
-    await unregister(pluginId);
+    await deactivatePlugin(pluginId);
   }
+}
+
+/**
+ * Broadcast a received message to all plugins that have registered handlers for it.
+ *
+ * @remarks
+ * Dispatches the message through the SDK's handler registry via `callHandler`, which
+ * will invoke any plugin handlers that were chained onto the given function name.
+ *
+ * @param message - The message to broadcast.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function broadcastReceivedMessage(message: IWebContentRequestMessage): void {
+  pluginServiceLogger('Broadcasting message to plugins: %s', message.func);
+  callHandler(message.func, message.args);
 }
 
 /**
  * Reset all plugin state without calling `dispose()` on plugins.
  *
  * @remarks
- * Unlike {@link cleanup}, this does **not** call `dispose()` on plugins or restore
- * chained handlers. It simply clears all internal maps. This is intended for use
- * during SDK uninitialization (`_uninitialize`) where the entire handler registry
- * is being wiped anyway.
- *
- * For graceful plugin teardown, use {@link cleanup} instead.
+ * Unlike {@link deactivateAll}, this does **not** call `dispose()` on plugins or restore
+ * chained handlers. It simply clears all internal maps. Intended for use during SDK
+ * uninitialization where the entire handler registry is being wiped anyway.
  *
  * @internal
  * Limited to Microsoft-internal use
