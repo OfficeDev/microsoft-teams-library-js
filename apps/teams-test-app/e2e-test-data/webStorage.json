@@ -7,7 +7,7 @@
   },
   "checkIsSupported": {
     "domElementName": "checkWebStorageCapability",
-    "expectedOutput": "webStorage is not supported"
+    "expectedOutput": "webStorage is supported"
   },
   "testCases": [
     {
@@ -15,7 +15,31 @@
       "type": "callResponse",
       "boxSelector": "#box_isWebStorageClearedOnUserLogOut",
       "expectedAlertValue": "isWebStorageClearedOnUserLogOut called",
-      "expectedTestAppValue": "webStorage is cleared on user log out"
+      "expectedTestAppValue": "webStorage is cleared on user log out",
+      "hostSdkVersion": {
+        "web": "<4.0.2"
+      }
+    },
+    {
+      "title": "isWebStorageClearedOnUserLogOut function Call - Success (True case)",
+      "type": "callResponse",
+      "boxSelector": "#box_isWebStorageClearedOnUserLogOut",
+      "expectedAlertValue": "isWebStorageClearedOnUserLogOut called",
+      "expectedTestAppValue": "webStorage is cleared on user log out. Result from sdk: true",
+      "hostSdkVersion": {
+        "web": ">=4.0.2"
+      }
+    },
+    {
+      "title": "isWebStorageClearedOnUserLogOut function Call - Success (False case)",
+      "type": "callResponse",
+      "boxSelector": "#box_isWebStorageClearedOnUserLogOut",
+      "modulesToDisable": ["shouldWebStorageResolveToTrueToggle"],
+      "expectedAlertValue": "isWebStorageClearedOnUserLogOut called",
+      "expectedTestAppValue": "webStorage is not cleared on user log out. Result from sdk: false",
+      "hostSdkVersion": {
+        "web": ">=4.0.2"
+      }
     }
   ]
 }
