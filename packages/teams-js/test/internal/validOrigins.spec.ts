@@ -185,6 +185,54 @@ describe('validOrigins', () => {
       const result = await validateOrigin(messageOrigin, disableCache);
       expect(result).toBe(true);
     });
+    it('validateOrigin returns true for nested wildcard test.*.teams.com in user-supplied list', async () => {
+      const messageOrigin = new URL('https://test.subdomain.teams.com');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns true for nested wildcard test.*.teams.microsoft.com in user-supplied list', async () => {
+      const messageOrigin = new URL('https://test.subdomain.teams.microsoft.com');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.microsoft.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns false for nested wildcard when prefix does not match', async () => {
+      const messageOrigin = new URL('https://prod.subdomain.teams.com');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
+    it('validateOrigin returns false for nested wildcard when suffix does not match', async () => {
+      const messageOrigin = new URL('https://test.subdomain.outlook.com');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
+    it('validateOrigin returns true for wildcard in the middle of a longer pattern', async () => {
+      const messageOrigin = new URL('https://api.v2.service.teams.com');
+      GlobalVars.additionalValidOrigins = ['https://api.*.service.teams.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns false for wildcard in middle when other segments mismatch', async () => {
+      const messageOrigin = new URL('https://api.v2.other.teams.com');
+      GlobalVars.additionalValidOrigins = ['https://api.*.service.teams.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
+    it('validateOrigin returns true for nested wildcard with port', async () => {
+      const messageOrigin = new URL('https://test.subdomain.teams.com:8080');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.com:8080'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns false for nested wildcard with mismatched port', async () => {
+      const messageOrigin = new URL('https://test.subdomain.teams.com:9090');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.com:8080'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
   });
   describe('testing main validOrigins flow with invalid json object', () => {
     let utils: Utils = new Utils();

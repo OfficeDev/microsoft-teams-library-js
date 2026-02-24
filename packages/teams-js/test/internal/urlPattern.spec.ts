@@ -257,6 +257,63 @@ describe('urlPattern', () => {
       expect(verifier.test(new URL('chrome://'))).toBe(true);
     });
   });
+
+  describe('URLVerifier.test - nested wildcard patterns', () => {
+    it('returns true for nested wildcard test.*.teams.com matching valid URL', () => {
+      const verifier = createURLVerifier('https://test.*.teams.com', logger)!;
+      expect(verifier.test(new URL('https://test.subdomain.teams.com'))).toBe(true);
+    });
+
+    it('returns true for nested wildcard test.*.teams.microsoft.com', () => {
+      const verifier = createURLVerifier('https://test.*.teams.microsoft.com', logger)!;
+      expect(verifier.test(new URL('https://test.subdomain.teams.microsoft.com'))).toBe(true);
+    });
+
+    it('returns false for nested wildcard when prefix does not match', () => {
+      const verifier = createURLVerifier('https://test.*.teams.com', logger)!;
+      expect(verifier.test(new URL('https://prod.subdomain.teams.com'))).toBe(false);
+    });
+
+    it('returns false for nested wildcard when suffix does not match', () => {
+      const verifier = createURLVerifier('https://test.*.teams.com', logger)!;
+      expect(verifier.test(new URL('https://test.subdomain.outlook.com'))).toBe(false);
+    });
+
+    it('returns false for nested wildcard with wrong depth', () => {
+      const verifier = createURLVerifier('https://test.*.teams.com', logger)!;
+      expect(verifier.test(new URL('https://test.a.b.teams.com'))).toBe(false);
+    });
+
+    it('returns false for nested wildcard with fewer levels', () => {
+      const verifier = createURLVerifier('https://test.*.teams.com', logger)!;
+      expect(verifier.test(new URL('https://test.teams.com'))).toBe(false);
+    });
+
+    it('returns true for wildcard in the middle of a longer pattern', () => {
+      const verifier = createURLVerifier('https://api.*.service.teams.com', logger)!;
+      expect(verifier.test(new URL('https://api.v2.service.teams.com'))).toBe(true);
+    });
+
+    it('returns false for wildcard in middle when other segments mismatch', () => {
+      const verifier = createURLVerifier('https://api.*.service.teams.com', logger)!;
+      expect(verifier.test(new URL('https://api.v2.other.teams.com'))).toBe(false);
+    });
+
+    it('returns false for multiple wildcards ', () => {
+      const verifier = createURLVerifier('https://*.*.teams.com', logger)!;
+      expect(verifier.test(new URL('https://subdomain.teams.com'))).toBe(false);
+    });
+
+    it('returns true for nested wildcard with port', () => {
+      const verifier = createURLVerifier('https://test.*.teams.com:8080', logger)!;
+      expect(verifier.test(new URL('https://test.subdomain.teams.com:8080'))).toBe(true);
+    });
+
+    it('returns false for nested wildcard with mismatched port', () => {
+      const verifier = createURLVerifier('https://test.*.teams.com:8080', logger)!;
+      expect(verifier.test(new URL('https://test.subdomain.teams.com:9090'))).toBe(false);
+    });
+  });
 });
 
 describe('validateHostAgainstPattern', () => {
@@ -302,5 +359,51 @@ describe('validateHostAgainstPattern', () => {
 
   it('returns false for localhost vs different host', () => {
     expect(validateHostAgainstPattern('localhost', 'notlocalhost')).toBe(false);
+  });
+
+  describe('nested wildcard patterns', () => {
+    it('returns true for nested wildcard test.*.teams.com matching test.subdomain.teams.com', () => {
+      expect(validateHostAgainstPattern('test.*.teams.com', 'test.subdomain.teams.com')).toBe(true);
+    });
+
+    it('returns true for nested wildcard test.*.teams.microsoft.com matching test.subdomain.teams.microsoft.com', () => {
+      expect(validateHostAgainstPattern('test.*.teams.microsoft.com', 'test.subdomain.teams.microsoft.com')).toBe(true);
+    });
+
+    it('returns false for nested wildcard when prefix does not match', () => {
+      expect(validateHostAgainstPattern('test.*.teams.com', 'prod.subdomain.teams.com')).toBe(false);
+    });
+
+    it('returns false for nested wildcard when suffix does not match', () => {
+      expect(validateHostAgainstPattern('test.*.teams.com', 'test.subdomain.outlook.com')).toBe(false);
+    });
+
+    it('returns false for nested wildcard with wrong depth', () => {
+      expect(validateHostAgainstPattern('test.*.teams.com', 'test.a.b.teams.com')).toBe(false);
+    });
+
+    it('returns false for nested wildcard with fewer levels', () => {
+      expect(validateHostAgainstPattern('test.*.teams.com', 'test.teams.com')).toBe(false);
+    });
+
+    it('returns true for wildcard in the middle of a longer pattern', () => {
+      expect(validateHostAgainstPattern('api.*.service.teams.com', 'api.v2.service.teams.com')).toBe(true);
+    });
+
+    it('returns false for wildcard in middle when other segments mismatch', () => {
+      expect(validateHostAgainstPattern('api.*.service.teams.com', 'api.v2.other.teams.com')).toBe(false);
+    });
+
+    it('returns false for multiple wildcards with wrong depth', () => {
+      expect(validateHostAgainstPattern('*.*.teams.com', 'subdomain.teams.com')).toBe(false);
+    });
+
+    it('returns false for wildcard at end of pattern (TLD position not allowed)', () => {
+      expect(validateHostAgainstPattern('teams.microsoft.*', 'teams.microsoft.com')).toBe(false);
+    });
+
+    it('returns false for wildcard at end matching different TLD (TLD position not allowed)', () => {
+      expect(validateHostAgainstPattern('teams.microsoft.*', 'teams.microsoft.net')).toBe(false);
+    });
   });
 });

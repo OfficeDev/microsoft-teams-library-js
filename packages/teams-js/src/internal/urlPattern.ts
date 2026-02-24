@@ -22,26 +22,48 @@ export interface URLVerifier {
 const userOriginUrlValidationRegExp = /^[A-Za-z][A-Za-z\d+.-]*:\/\//;
 
 /**
+ * Checks if the provided host matches the given pattern, which may include a single wildcard segment.
  * @param pattern - reference pattern
  * @param host - candidate string
  * @returns returns true if host matches pre-know valid pattern
  *
  * @example
  *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
+ *    validateHostAgainstPattern('test.*.teams.microsoft.com', 'test.subdomain.teams.microsoft.com') returns true
  *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
+ *    validateHostAgainstPattern('*.*.microsoft.com', 'test.team.microsoft.com') returns false
  *
  * @internal
  * Limited to Microsoft-internal use
  */
 export function validateHostAgainstPattern(pattern: string, host: string): boolean {
-  const suffix = pattern.substring(1);
-  return (
-    pattern === host ||
-    (pattern.substring(0, 2) === '*.' &&
-      host.length > suffix.length &&
-      host.split('.').length === suffix.split('.').length &&
-      host.substring(host.length - suffix.length) === suffix)
-  );
+  const patternSegments = pattern.split('.');
+  const hostSegments = host.split('.');
+
+  if (hostSegments.length !== patternSegments.length) {
+    return false;
+  }
+
+  let hasUsedWildcard = false;
+  for (let i = 0; i < patternSegments.length; i++) {
+    if (patternSegments[i] === hostSegments[i]) {
+      continue;
+    }
+
+    if (patternSegments[i] !== '*') {
+      return false;
+    }
+
+    // Wildcard in the last segment (TLD position) is not allowed for security reasons. Additionally, only one wildcard segment is allowed to prevent overly permissive patterns.
+    if (i === patternSegments.length - 1 || hasUsedWildcard) {
+      return false;
+    }
+
+    hasUsedWildcard = true;
+    continue;
+  }
+
+  return true;
 }
 
 /**
