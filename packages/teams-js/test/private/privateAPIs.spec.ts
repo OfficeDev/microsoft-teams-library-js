@@ -685,17 +685,20 @@ describe('AppSDK-privateAPIs', () => {
       fileOpenPreference: FileOpenPreference.Web,
       conversationId: 'someConversationId',
       sizeInBytes: 1024,
+      messageId: 'someMessageId',
+      callerInfo: 'someCallerInfo',
+      atpData: 'someData'
     };
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it('should successfully open a file preview with content frameContext', async () => {
-          expect.assertions(16);
+          expect.assertions(19);
           await utils.initializeWithContext(context);
 
           openFilePreview(openFilePreviewParams);
 
           const message = utils.findMessageByActionName('openFilePreview');
-          expect(message.args?.length).toBe(15);
+          expect(message.args?.length).toBe(18);
           expect(message.args?.[0]).toBe('someEntityId');
           expect(message.args?.[1]).toBe('someTitle');
           expect(message.args?.[2]).toBe('someDescription');
@@ -711,6 +714,9 @@ describe('AppSDK-privateAPIs', () => {
           expect(message.args?.[12]).toBe(FileOpenPreference.Web);
           expect(message.args?.[13]).toBe('someConversationId');
           expect(message.args?.[14]).toBe(1024);
+          expect(message.args?.[15]).toBe('someMessageId');
+          expect(message.args?.[16]).toBe('someCallerInfo');
+          expect(message.args?.[17]).toBe('someData');
         });
       } else {
         it(`remoteCamera.registerOnCapableParticipantsChangeHandler should not allow calls when initialized with ${context} context`, async () => {
