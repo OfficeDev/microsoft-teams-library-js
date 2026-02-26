@@ -12,7 +12,7 @@
   "typings": "./dist/esm/packages/teams-js/dts/index.d.ts",
   "module": "./dist/esm/packages/teams-js/src/index.js",
   "scripts": {
-    "build": "pnpm clean && pnpm lint && pnpm build-rollup && pnpm build-webpack && pnpm docs:validate",
+    "build": "pnpm clean && pnpm lint && pnpm build-rollup && pnpm build-webpack && pnpm docs:validate && pnpm size",
     "build-rollup": "pnpm clean && rollup -c",
     "build-webpack": "webpack",
     "clean": "rimraf ./dist",
