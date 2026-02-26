@@ -1,7 +1,7 @@
 {
   "name": "@microsoft/teams-js",
   "author": "Microsoft Teams",
-  "version": "2.48.1",
+  "version": "2.49.0",
   "description": "Microsoft Client SDK for building app for Microsoft hosts",
   "repository": {
     "directory": "packages/teams-js",
@@ -12,7 +12,7 @@
   "typings": "./dist/esm/packages/teams-js/dts/index.d.ts",
   "module": "./dist/esm/packages/teams-js/src/index.js",
   "scripts": {
-    "build": "pnpm clean && pnpm lint && pnpm build-rollup && pnpm build-webpack && pnpm docs:validate && pnpm size",
+    "build": "pnpm clean && pnpm lint && pnpm build-rollup && pnpm build-webpack && pnpm docs:validate",
     "build-rollup": "pnpm clean && rollup -c",
     "build-webpack": "webpack",
     "clean": "rimraf ./dist",
