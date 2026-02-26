@@ -1,8 +1,22 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 04 Feb 2026 17:24:38 GMT and should not be manually modified. -->
+<!-- This log was last generated on Thu, 26 Feb 2026 21:58:31 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.49.0
+
+Thu, 26 Feb 2026 21:58:31 GMT
+
+### Minor changes
+
+- Added new params for openFilePreview SDK that will help reduce file open latency in Teams. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added support for non-https URLs for opt-in app valid origins in `app.initialize()`.
+- Added support for nested wildcard subdomains. The valid origins are still restricted to the usage of only one wildcard in the valid origin.
+
+### Patches
+
+- Updated stageView.StageViewParams interface to make threadId optional.
 
 ## 2.48.1
 
