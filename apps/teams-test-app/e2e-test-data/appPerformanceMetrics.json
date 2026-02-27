@@ -1,0 +1,26 @@
+{
+  "name": "AppPerformanceMetrics",
+  "platforms": "Web",
+  "version": ">=2.48.0",
+  "checkIsSupported": {
+    "expectedOutput": "AppPerformanceMetrics is not supported",
+    "domElementName": "appPerformanceMetrics_checkAppPerformanceMetricsCapability"
+  },
+  "testCases": [
+    {
+      "title": "registerHostMemoryMetricsHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_appPerformanceMetrics_registerHostMemoryMetricsHandler",
+      "eventName": "memoryUsageHeartbeat",
+      "eventData": {
+        "isCached": false,
+        "isPrecached": true,
+        "isSharingProcess": false,
+        "totalFrameWorkingSetSizeKB": 0,
+        "totalFrameCommitSizeKB": 0,
+        "frameMemoryMetrics": []
+      },
+      "expectedTestAppValue": "##JSON_EVENT_DATA##"
+    }
+  ]
+}
