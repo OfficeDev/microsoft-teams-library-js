@@ -29,7 +29,11 @@ jobs:
 
         timeoutInMinutes: 120
         displayName: 'E2E Tests - CDN - ${{testPrefixPattern}} (only runs on release builds)'
-        condition: succeeded()
+        condition: and(
+          eq(variables['Build.Reason'], 'PullRequest'),
+          startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
+          eq(variables['System.PullRequest.TargetBranch'], 'main')
+          )
         pool:
           name: Azure-Pipelines-1ESPT-ExDShared
           image: 'ubuntu-latest'
