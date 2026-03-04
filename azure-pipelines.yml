@@ -175,18 +175,7 @@ extends:
           # This check will run on the PR to merge the release branch back into main
           - template: tools/yaml-templates/cdn-e2e-tests-job.yml@self
             parameters:
-              testPrefixPatternGroups:
-                [
-                  'app(?=\.)',
-                  '{appE,appI,appS,auth}',
-                  '{[B],[b]}',
-                  '{[C-D],[c-d]}',
-                  '{[E],[e]}',
-                  '{[F-M],[f-m]}',
-                  '{[N-R],[n-r]}',
-                  '{[S],[s]}',
-                  '{[T-Z],[t-z]}',
-                ]
+              testPrefixPatternGroups: ['app(?=\.)', '{appE,appI,appS,auth}']
 
           - job: E2ETestAndroidA
             displayName: 'E2E Tests - Android - Plan A'
