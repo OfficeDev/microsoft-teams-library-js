@@ -96,14 +96,29 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
     },
   });
 
+const RegisterOnPromptHandler = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'registerOnPromptHandler',
+    title: 'Register On Prompt Change Handler',
+    onClick: {
+      withPromise: async (setResult) => {
+        app.registerOnPromptHandler(setResult);
+        return '';
+      },
+      withCallback: (setResult) => {
+        alert('This API is not expected to be called in this test app.');
+        // registerOnPromptHandler(setResult);
+        setResult('');
+      },
+    },
+  });
+
 const RegisterOnContextChangeHandler = (): React.ReactElement => {
   return ApiWithoutInput({
     name: 'RegisterOnContextChangeHandler',
     title: 'Register OnContextChange Handler',
     onClick: async (setResult) => {
-      console.log('[RegisterOnContextChangeHandler] Registering handler, setResult:', typeof setResult);
       app.registerOnContextChangeHandler((context: app.Context): void => {
-        console.log('[RegisterOnContextChangeHandler] Handler called with context:', context);
         setResult('successfully called with context:' + JSON.stringify(context));
       });
       return 'registered';
@@ -163,6 +178,7 @@ const AppAPIs = (): ReactElement => (
     <OpenLink />
     <RegisterHostToAppPerformanceMetricsHandler />
     <RegisterOnThemeChangeHandler />
+    <RegisterOnPromptHandler />
     <RegisterBeforeSuspendOrTerminateHandler />
     <RegisterOnResumeHandler />
     <RegisterOnContextChangeHandler />

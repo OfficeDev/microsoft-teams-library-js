@@ -72,6 +72,7 @@ export const enum ApiName {
   App_NotifySuccess = 'app.notifySuccess',
   App_OpenLink = 'app.openLink',
   App_RegisterOnThemeChangeHandler = 'app.registerOnThemeChangeHandler',
+  App_RegisterOnPromptHandler = 'app.registerOnPromptHandler',
   App_RegisterOnContextChangeHandler = 'app.registerOnContextChangeHandler',
   AppInitialization_NotifyAppLoaded = 'appInitialization.notifyAppLoaded',
   AppInitialization_NotifyExpectedFailure = 'appInitialization.notifyExpectedFailure',
@@ -399,4 +400,5 @@ export const enum ApiName {
   WidgetHosting_RequestModal = 'widgetHosting.requestModal',
   WidgetHosting_RegisterModalCloseHandler = 'widgetHosting.registerModalCloseHandler',
   WidgetHosting_ContentSizeChanged = 'widgetHosting.contentSizeChanged',
+  Plugin_SendMessage = 'plugin.sendMessage',
 }

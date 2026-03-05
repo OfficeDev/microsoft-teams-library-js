@@ -143,3 +143,40 @@ export { LiveShareHost } from './liveShareHost';
 export * as marketplace from './marketplace';
 export { ISerializable } from './serializable.interface';
 export * as shortcutRelay from './shortcutRelay';
+
+/**
+ * Plugin service for activating and managing plugins that extend the Teams JS SDK
+ * with bidirectional host communication.
+ *
+ * @remarks
+ * Exposes module-level functions for plugin lifecycle management:
+ * - `pluginService.activatePlugins(plugins)` — Activate an array of plugins
+ * - `pluginService.deactivatePlugin(pluginId)` — Deactivate a plugin by ID
+ * - `pluginService.getPlugin(pluginId)` — Retrieve a plugin by ID
+ * - `pluginService.getAllPlugins()` — Retrieve all active plugins
+ * - `pluginService.deactivateAll()` — Deactivate all plugins gracefully
+ * - `pluginService.reset()` — Clear all plugin state (used during SDK uninitialization)
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export * as pluginService from '../internal/pluginService';
+
+/**
+ * Plugin interfaces and types for building plugins that integrate with the Teams JS SDK.
+ * See {@link PluginContext} for the main entry point provided to plugin constructors.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export {
+  IPlugin,
+  IPluginService,
+  IWebContentRequestMessage,
+  PluginContext,
+  PluginRegistrationResult,
+  PluginResponse,
+  SendMessageCallback,
+  ReceiveMessageCallback,
+  ReceiveMessageHandler,
+} from '../internal/plugin';

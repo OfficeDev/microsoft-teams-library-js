@@ -598,6 +598,11 @@ export interface Context {
 export type themeHandler = (theme: string) => void;
 
 /**
+ * This function is passed to registerOnPromptHandler. It is called every time the user changes their prompt.
+ */
+export type promptHandler = (prompt: string) => void;
+
+/**
  * @hidden
  * This function is passed to registerOnContextChangeHandler. It is called every time the user changes their context.
  *
@@ -776,6 +781,21 @@ export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRe
 export function registerOnThemeChangeHandler(handler: themeHandler): void {
   appHelpers.registerOnThemeChangeHandlerHelper(
     getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnThemeChangeHandler),
+    handler,
+  );
+}
+
+/**
+ * Registers a handler for prompt changes.
+ *
+ * @remarks
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ *
+ * @param handler - The handler to invoke when the user changes their prompt.
+ */
+export function registerOnPromptHandler(handler: promptHandler): void {
+  appHelpers.registerOnPromptHandlerHelper(
+    getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnPromptHandler),
     handler,
   );
 }
