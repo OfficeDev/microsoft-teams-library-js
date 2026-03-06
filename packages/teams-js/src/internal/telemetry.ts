@@ -290,6 +290,9 @@ export const enum ApiName {
   PrivateAPIs_RegisterUserSettingsChangeHandler = 'registerUserSettingsChangeHandler',
   PrivateAPIs_SendCustomMessage = 'sendCustomMessage',
   PrivateAPIs_UploadCustomApp = 'uploadCustomApp',
+  Plugins_GetRegisteredPlugins = 'plugins.getRegisteredPlugins',
+  Plugins_ReceiveMessage = 'plugins.receiveMessage',
+  Plugins_SendMessage = 'plugins.sendMessage',
   Profile_ShowProfile = 'profile.showProfile',
   PublicAPIs_ExecuteDeepLink = 'executeDeepLink',
   PublicAPIs_GetContext = 'getContext',
@@ -400,5 +403,4 @@ export const enum ApiName {
   WidgetHosting_RequestModal = 'widgetHosting.requestModal',
   WidgetHosting_RegisterModalCloseHandler = 'widgetHosting.registerModalCloseHandler',
   WidgetHosting_ContentSizeChanged = 'widgetHosting.contentSizeChanged',
-  Plugin_SendMessage = 'plugin.sendMessage',
 }

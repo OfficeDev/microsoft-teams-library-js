@@ -19,7 +19,7 @@ describe('urlPattern', () => {
     });
 
     it('returns true for an http pattern', () => {
-      expect(isValidPatternUrl('http://example.com')).toBe(true);
+      expect(isValidPatternUrl('https://example.com')).toBe(true);
     });
 
     it('returns true for a non-standard protocol pattern', () => {
@@ -96,7 +96,7 @@ describe('urlPattern', () => {
     });
 
     it('returns a verifier for an http pattern', () => {
-      const verifier = createURLVerifier('http://example.com', logger);
+      const verifier = createURLVerifier('https://example.com', logger);
       expect(verifier).toBeDefined();
     });
 
