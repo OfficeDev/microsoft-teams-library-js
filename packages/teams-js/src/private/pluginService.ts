@@ -87,10 +87,10 @@ export type PluginMessage = {
 export async function getRegisteredPlugins(): Promise<string[]> {
   ensureInitialized(runtime);
   return callFunctionInHostAndHandleResponse(
-    ApiName.Plugin_GetRegisteredPlugins,
+    ApiName.Plugins_GetRegisteredPlugins,
     [],
     new GetRegisteredPluginsResponseHandler(),
-    getApiVersionTag(pluginTelemetryVersionNumber, ApiName.Plugin_GetRegisteredPlugins),
+    getApiVersionTag(pluginTelemetryVersionNumber, ApiName.Plugins_GetRegisteredPlugins),
   );
 }
 
@@ -128,9 +128,9 @@ export async function sendMessage(
 
   const message = normalizePluginOutboundMessage(messageOrFuncName, pluginIdOrArgs, args);
   return callFunctionInHost(
-    ApiName.Plugin_SendMessage,
+    ApiName.Plugins_SendMessage,
     [message.func, serializePluginMessageArg(message.args), message.pluginId, message.correlationId],
-    getApiVersionTag(pluginTelemetryVersionNumber, ApiName.Plugin_SendMessage),
+    getApiVersionTag(pluginTelemetryVersionNumber, ApiName.Plugins_SendMessage),
   );
 }
 
@@ -165,8 +165,8 @@ export type ReceiveMessageHandler = (message: PluginMessage) => void;
  */
 export function receivePluginMessage(handler: ReceiveMessageHandler): void {
   registerHandlerHelper(
-    getApiVersionTag(pluginTelemetryVersionNumber, ApiName.Plugin_ReceiveMessage),
-    'plugin.receiveMessage',
+    getApiVersionTag(pluginTelemetryVersionNumber, ApiName.Plugins_ReceiveMessage),
+    ApiName.Plugins_ReceiveMessage,
     (...incoming: unknown[]) => {
       handler(normalizePluginInboundMessage(incoming));
     },
