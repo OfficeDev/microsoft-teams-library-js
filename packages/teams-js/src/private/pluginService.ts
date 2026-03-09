@@ -1,7 +1,7 @@
 import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../internal/communication';
 import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { ResponseHandler, SimpleType } from '../internal/responseHandler';
+import { ResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -98,38 +98,32 @@ export async function getRegisteredPlugins(): Promise<string[]> {
  * Sends a plugin message to the host.
  *
  * @remarks
- * The payload is normalized to host-safe data before transmission:
- * primitive/simple values are passed directly, and complex values are JSON
- * serialized through an {@link ISerializable} wrapper.
- *
- * @remarks
- * Supported invocation forms:
- * 1. `sendMessage(message)` where `message` is a {@link PluginMessage}
- * 2. `sendMessage(funcName, pluginId, args?)`
+ * The message payload is serialized before transmission to the host.
+ * All payload data must be JSON-safe (see {@link JsonValue}).
  *
  * @returns A promise that resolves when the host acknowledges the message.
  *
  * @throws Error if SDK initialization has not completed, if the host returns
- * an error response, if `args` cannot be serialized, or if `pluginId` is missing.
+ * an error response, or if `pluginId` is missing.
  *
  * @hidden
  * @internal
  * Limited to Microsoft-internal use
  * @beta
  */
-export async function sendMessage(message: PluginMessage): Promise<void>;
-export async function sendMessage(funcName: string, pluginId: string, args?: unknown): Promise<void>;
-export async function sendMessage(
-  messageOrFuncName: PluginMessage | string,
-  pluginIdOrArgs?: string | unknown,
-  args?: unknown,
-): Promise<void> {
+export async function sendMessage(message: PluginMessage): Promise<void> {
   ensureInitialized(runtime);
 
-  const message = normalizePluginOutboundMessage(messageOrFuncName, pluginIdOrArgs, args);
+  if (!message.func) {
+    throw new Error('func is required in PluginMessage.');
+  }
+  if (!message.pluginId) {
+    throw new Error('pluginId is required in PluginMessage.');
+  }
+
   return callFunctionInHost(
     ApiName.Plugins_SendMessage,
-    [message.func, serializePluginMessageArg(message.args), message.pluginId, message.correlationId],
+    [new SerializablePluginMessage(message)],
     getApiVersionTag(pluginTelemetryVersionNumber, ApiName.Plugins_SendMessage),
   );
 }
@@ -189,42 +183,11 @@ class GetRegisteredPluginsResponseHandler extends ResponseHandler<string[], stri
   }
 }
 
-function serializePluginMessageArg(arg: unknown): SimpleType | ISerializable {
-  if (isSimpleType(arg)) {
-    return arg;
-  }
+class SerializablePluginMessage implements ISerializable {
+  public constructor(private readonly message: PluginMessage) {}
 
-  return new SerializablePluginMessageArg(arg);
-}
-
-function isSimpleType(value: unknown): value is SimpleType {
-  if (
-    value === null ||
-    value === undefined ||
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'boolean'
-  ) {
-    return true;
-  }
-
-  return Array.isArray(value) && value.every(isSimpleType);
-}
-
-class SerializablePluginMessageArg implements ISerializable {
-  public constructor(private readonly arg: unknown) {}
-
-  public serialize(): string | object {
-    try {
-      const serialized = JSON.stringify(this.arg);
-      if (serialized === undefined) {
-        throw new Error('Plugins_SendMessage args are not serializable');
-      }
-
-      return JSON.parse(serialized) as object;
-    } catch {
-      throw new Error('Plugins_SendMessage args must be JSON-serializable');
-    }
+  public serialize(): object {
+    return this.message;
   }
 }
 
@@ -254,28 +217,4 @@ function isPluginInboundMessage(value: unknown): value is PluginMessage {
 
   const message = value as PluginMessage;
   return typeof message.func === 'string' && typeof message.pluginId === 'string' && !!message.pluginId;
-}
-
-function normalizePluginOutboundMessage(
-  messageOrFuncName: PluginMessage | string,
-  pluginIdOrArgs?: string | unknown,
-  args?: unknown,
-): PluginMessage {
-  if (typeof messageOrFuncName === 'string') {
-    if (typeof pluginIdOrArgs !== 'string' || !pluginIdOrArgs) {
-      throw new Error('pluginId is required when calling sendMessage with funcName.');
-    }
-
-    return {
-      func: messageOrFuncName,
-      pluginId: pluginIdOrArgs,
-      args: args as JsonValue | undefined,
-    };
-  }
-
-  if (!messageOrFuncName.pluginId) {
-    throw new Error('pluginId is required in PluginMessage.');
-  }
-
-  return messageOrFuncName;
 }
