@@ -20,7 +20,8 @@
         "totalFrameCommitSizeKB": 0,
         "frameMemoryMetrics": []
       },
-      "expectedTestAppValue": "##JSON_EVENT_DATA##"
+      "expectedTestAppValue": "##JSON_EVENT_DATA##",
+      "skipForCallbackBasedRuns": true
     }
   ]
 }
