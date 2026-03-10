@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added support for nested wildcard subdomains. The valid origins are still restricted to the usage of only one wildcard in the valid origin.",
-  "packageName": "@microsoft/teams-js",
-  "email": "31258166+juanscr@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
