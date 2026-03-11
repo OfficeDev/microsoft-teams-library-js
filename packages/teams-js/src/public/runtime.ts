@@ -292,6 +292,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly tabs?: {};
     };
     readonly people?: {};
+    readonly plugins?: {};
     readonly permissions?: {};
     readonly profile?: {};
     readonly remoteCamera?: {};
@@ -626,6 +627,7 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
     // isDeeplyNestedAuthSupported: true (based on const legacyTeamsMobileVersionForDeeplyNestedAuth)
     // for hostClientTypes: [HostClientType.android, HostClientType.ios, HostClientType.ipados, HostClientType.visionOS]
   ],
+  // TODO: Need to add plugins here if we old teams hosts decide to use plugins.
 };
 
 const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');

@@ -52,6 +52,7 @@ import MeetingRoomAPIs from '../components/privateApis/MeetingRoomAPIs';
 import MessageChannelAPIs from '../components/privateApis/MessageChannelAPIs';
 import MonetizationAPIs from '../components/privateApis/MonetizationAPIs';
 import NotificationAPIs from '../components/privateApis/NotificationAPIs';
+import PluginAPI from '../components/privateApis/PluginAPI';
 import PrivateAPIs from '../components/privateApis/PrivateAPIs';
 import TeamsAPIs from '../components/privateApis/TeamsAPIs';
 import VideoExAPIs from '../components/privateApis/VideoEffectsExAPIs';
@@ -100,6 +101,7 @@ export const TestApp: React.FC = () => {
   // List of sections dynamically created from React elements
   const sections = useMemo(
     () => [
+      { name: 'PluginAPIs', component: <PluginAPI /> },
       { name: 'AppAPIs', component: <AppAPIs /> },
       { name: 'AppInitializationAPIs', component: <AppInitializationAPIs /> },
       { name: 'AppInstallDialogAPIs', component: <AppInstallDialogAPIs /> },
