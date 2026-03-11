@@ -60,9 +60,15 @@ export type JsonValue = string | number | boolean | null | JsonValue[] | { [key:
  * Limited to Microsoft-internal use
  * @beta
  */
+/**
+ * A UUID string in the canonical 8-4-4-4-12 hex format, e.g. `550e8400-e29b-41d4-a716-446655440000`.
+ * Use `crypto.randomUUID()` to generate a valid value at runtime.
+ */
+export type PluginId = `${string}-${string}-${string}-${string}-${string}`;
+
 export type PluginMessage = {
   func: string;
-  pluginId: string;
+  pluginId: PluginId;
   args?: JsonValue;
   correlationId?: string; // May be useful in the future for correlating requests and responses between host and plugin, but currently unused.
 };
@@ -205,7 +211,7 @@ function normalizePluginInboundMessage(incoming: unknown[]): PluginMessage {
   return {
     func: typeof func === 'string' ? func : String(func ?? ''),
     args: args as JsonValue | undefined,
-    pluginId,
+    pluginId: pluginId as PluginId,
     correlationId: typeof correlationId === 'string' ? correlationId : undefined,
   };
 }

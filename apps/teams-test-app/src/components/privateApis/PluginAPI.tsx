@@ -3,6 +3,13 @@ import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import {
+  CatalystFuncs,
+  CatalystPluginIds,
+  ContextUpdateArgs,
+  PromptSentResponse,
+  TriggerPromptArgs,
+} from '../utils/catalyst-plugin-contract';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const GetRegisteredPlugins = (): ReactElement =>
@@ -34,12 +41,13 @@ const SendMessage = (): ReactElement =>
       },
     },
     defaultInput: JSON.stringify({
-      func: 'catalyst.promptSent',
-      pluginId: 'catalyst-plugin', // example plugin existing in the hubsdk
+      func: CatalystFuncs.promptSent,
+      pluginId: CatalystPluginIds.prompt,
       args: {
+        promptId: 'prompt-001',
+        status: 'accepted',
         message: 'hello from teams-test-app',
-        count: 1,
-      },
+      } satisfies PromptSentResponse,
     }),
   });
 
@@ -49,7 +57,16 @@ const RegisterReceiveMessage = (): ReactElement =>
     title: 'Register Receive Message',
     onClick: async (setResult) => {
       const handler = (message: unknown): void => {
-        setResult(`Received plugin message: ${JSON.stringify(message)}`);
+        const msg = message as pluginService.PluginMessage;
+        if (msg.func === CatalystFuncs.triggerPrompt && msg.pluginId === CatalystPluginIds.prompt) {
+          const args = msg.args as unknown as TriggerPromptArgs;
+          setResult(`Received triggerPrompt: ${JSON.stringify(args)}`);
+        } else if (msg.func === CatalystFuncs.contextUpdate && msg.pluginId === CatalystPluginIds.contextUpdate) {
+          const args = msg.args as unknown as ContextUpdateArgs;
+          setResult(`Received contextUpdate: ${JSON.stringify(args)}`);
+        } else {
+          setResult(`Received plugin message: ${JSON.stringify(msg)}`);
+        }
       };
 
       pluginService.receivePluginMessage(handler);
