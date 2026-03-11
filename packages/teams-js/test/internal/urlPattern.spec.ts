@@ -19,7 +19,8 @@ describe('urlPattern', () => {
     });
 
     it('returns true for an http pattern', () => {
-      expect(isValidPatternUrl('https://example.com')).toBe(true);
+      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      expect(isValidPatternUrl('http://example.com')).toBe(true);
     });
 
     it('returns true for a non-standard protocol pattern', () => {

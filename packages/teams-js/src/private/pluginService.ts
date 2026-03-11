@@ -110,7 +110,7 @@ export async function getRegisteredPlugins(): Promise<string[]> {
  * @returns A promise that resolves when the host acknowledges the message.
  *
  * @throws Error if SDK initialization has not completed, if the host returns
- * an error response, or if `pluginId` is missing.
+ * an error response, or if `func` or `pluginId` is missing.
  *
  * @hidden
  * @internal
@@ -123,6 +123,9 @@ export async function sendMessage(message: PluginMessage): Promise<void> {
   if (!message.func) {
     throw new Error('func is required in PluginMessage.');
   }
+  // pluginId is required: the host routes messages by the composite key (func, pluginId).
+  // Multiple plugins can share the same func name, so without pluginId the host
+  // cannot deterministically identify which plugin handler should receive this message.
   if (!message.pluginId) {
     throw new Error('pluginId is required in PluginMessage.');
   }
