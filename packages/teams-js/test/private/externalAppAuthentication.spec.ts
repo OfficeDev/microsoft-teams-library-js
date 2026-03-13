@@ -57,7 +57,7 @@ describe('externalAppAuthentication', () => {
       errorCode: 'INTERNAL_ERROR',
       message: 'test error message',
     };
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
 
     it('should not allow calls before initialization', () => {
       return expect(() =>
@@ -376,7 +376,7 @@ describe('externalAppAuthentication', () => {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
     });
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     Object.values(FrameContexts).forEach((frameContext) => {
       if (allowedFrameContexts.includes(frameContext)) {
         it(`should throw error from host failure in context - ${frameContext}`, async () => {
@@ -637,7 +637,7 @@ describe('externalAppAuthentication', () => {
       height: 100,
       isExternal: true,
     };
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     const titleId = 'testTitleId';
     const testOauthConfigId = 'testOauthConfigId';
     it('should not allow calls before initialization', () => {
@@ -777,7 +777,7 @@ describe('externalAppAuthentication', () => {
   });
 
   describe('authenticateWithConnector', () => {
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     const testConnectorId = 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe';
     const testOAuthConfigId = 'testOauthConfigId';
     const testWindowParameters = { width: 500, height: 400, isExternal: false };
@@ -930,7 +930,7 @@ describe('externalAppAuthentication', () => {
   });
 
   describe('disconnectConnector', () => {
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     const testConnectorId = 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe';
     const testOAuthConfigId = 'testOauthConfigId';
     const testWindowParameters = { width: 500, height: 400, isExternal: false };
@@ -1083,7 +1083,7 @@ describe('externalAppAuthentication', () => {
   });
 
   describe('getUserAuthenticationStateForConnector', () => {
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     const testConnectorId = 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe';
     const testOAuthConfigId = 'testOauthConfigId';
 
@@ -1263,7 +1263,7 @@ describe('externalAppAuthentication', () => {
       height: 100,
       isExternal: true,
     };
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     const titleId = 'testTitleId';
     const testSignInUrl = new URL('https://example.com');
 
