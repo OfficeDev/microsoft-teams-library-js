@@ -23,12 +23,6 @@ const OpenStageView = (): ReactElement =>
         if (!input.contentUrl) {
           throw new Error('contentUrl are required.');
         }
-        if (!input.threadId) {
-          throw new Error('threadId are required.');
-        }
-        if (!input.title) {
-          throw new Error('title are required.');
-        }
       },
       submit: {
         withPromise: async (input) => {

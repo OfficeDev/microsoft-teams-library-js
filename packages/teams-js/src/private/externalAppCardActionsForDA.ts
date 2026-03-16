@@ -68,7 +68,7 @@ export async function processActionOpenUrlDialog(
   actionOpenUrlDialogInfo: IActionOpenUrlDialogInfo,
   traceId: UUID,
 ): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;

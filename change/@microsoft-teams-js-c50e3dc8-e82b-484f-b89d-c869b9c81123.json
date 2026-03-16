@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Updated ExternalApp* capabilities to allow calls in sidePanel frame context.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "patch"
+}

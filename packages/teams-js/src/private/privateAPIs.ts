@@ -152,6 +152,9 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.fileOpenPreference,
     filePreviewParameters.conversationId,
     filePreviewParameters.sizeInBytes,
+    filePreviewParameters.messageId,
+    filePreviewParameters.callerInfo,
+    filePreviewParameters.atpData,
   ];
 
   sendMessageToParent(

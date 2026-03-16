@@ -35,7 +35,7 @@ export async function authenticateWithSSO(
   conversationId: string,
   authTokenRequest: AuthTokenRequestParametersForCEA,
 ): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -78,7 +78,7 @@ export async function authenticateWithOauth(
   conversationId: string,
   authenticateParameters: externalAppAuthentication.AuthenticatePopUpParameters,
 ): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -124,7 +124,7 @@ export async function authenticateAndResendRequest(
   authenticateParameters: externalAppAuthentication.AuthenticatePopUpParameters,
   originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest,
 ): Promise<externalAppAuthentication.IActionExecuteResponse> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -195,7 +195,7 @@ export async function authenticateWithSSOAndResendRequest(
   authTokenRequest: AuthTokenRequestParametersForCEA,
   originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest,
 ): Promise<externalAppAuthentication.IActionExecuteResponse> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
