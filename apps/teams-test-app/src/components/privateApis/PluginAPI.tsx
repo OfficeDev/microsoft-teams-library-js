@@ -5,22 +5,11 @@ import { generateRegistrationMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 import {
   CatalystFuncs,
-  CatalystPluginIds,
   ContextUpdateArgs,
   PromptSentResponse,
   TriggerPromptArgs,
 } from '../utils/catalyst-plugin-contract';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
-
-const GetRegisteredPlugins = (): ReactElement =>
-  ApiWithoutInput({
-    name: 'getRegisteredPlugins',
-    title: 'Get Registered Plugins',
-    onClick: async () => {
-      const plugins = await pluginService.getRegisteredPlugins();
-      return JSON.stringify(plugins);
-    },
-  });
 
 const SendMessage = (): ReactElement =>
   ApiWithTextInput<pluginService.PluginMessage>({
@@ -31,9 +20,6 @@ const SendMessage = (): ReactElement =>
         if (!input.func || typeof input.func !== 'string') {
           throw new Error('func is required and must be a string.');
         }
-        if (!input.pluginId || typeof input.pluginId !== 'string') {
-          throw new Error('pluginId is required and must be a string.');
-        }
       },
       submit: async (input) => {
         await pluginService.sendMessage(input);
@@ -42,12 +28,12 @@ const SendMessage = (): ReactElement =>
     },
     defaultInput: JSON.stringify({
       func: CatalystFuncs.promptSent,
-      pluginId: CatalystPluginIds.prompt,
       args: {
         promptId: 'prompt-001',
         status: 'accepted',
         message: 'hello from teams-test-app',
       } satisfies PromptSentResponse,
+      correlationId: '12345',
     }),
   });
 
@@ -58,12 +44,14 @@ const RegisterReceiveMessage = (): ReactElement =>
     onClick: async (setResult) => {
       const handler = (message: unknown): void => {
         const msg = message as pluginService.PluginMessage;
-        if (msg.func === CatalystFuncs.triggerPrompt && msg.pluginId === CatalystPluginIds.prompt) {
+        if (msg.func === CatalystFuncs.triggerPrompt) {
           const args = msg.args as unknown as TriggerPromptArgs;
           setResult(`Received triggerPrompt: ${JSON.stringify(args)}`);
-        } else if (msg.func === CatalystFuncs.contextUpdate && msg.pluginId === CatalystPluginIds.contextUpdate) {
+        } else if (msg.func === CatalystFuncs.contextUpdate) {
           const args = msg.args as unknown as ContextUpdateArgs;
-          setResult(`Received contextUpdate: ${JSON.stringify(args)}`);
+          setResult(
+            `Received contextUpdate with corelationId: ${msg.correlationId} and data : ${JSON.stringify(args)}`,
+          );
         } else {
           setResult(`Received plugin message: ${JSON.stringify(msg)}`);
         }
@@ -76,7 +64,6 @@ const RegisterReceiveMessage = (): ReactElement =>
 
 const PluginAPI = (): ReactElement => (
   <ModuleWrapper title="Plugin Service">
-    <GetRegisteredPlugins />
     <SendMessage />
     <RegisterReceiveMessage />
   </ModuleWrapper>

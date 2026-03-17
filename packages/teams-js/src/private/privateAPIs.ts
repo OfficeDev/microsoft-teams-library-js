@@ -34,6 +34,8 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
 }
 
 /**
+ * @deprecated Use {@link pluginService.sendMessage} with {@link pluginService.receivePluginMessage} and a correlationId-based response pattern.
+ *
  * @hidden
  * Sends a custom action MessageRequest to host or parent window
  *
@@ -41,6 +43,39 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
  * @param args - Specifies additional arguments passed to the action
  * @param callback - Optionally specify a callback to receive response parameters from the parent
  * @returns id of sent message
+ *
+ * @remarks
+ * Prefer the plugin event model for new development. In that model, send a request message
+ * with a unique `correlationId` and listen for a response event with the same `correlationId`.
+ *
+ * Example:
+ * ```ts
+ * // Request side
+ * const correlationId = crypto.randomUUID();
+ *
+ * pluginService.receivePluginMessage((message) => {
+ *   if (message.func !== 'example.customAction.response') {
+ *     return;
+ *   }
+ *   if (message.correlationId !== correlationId) {
+ *     return;
+ *   }
+ *
+ *   // This is the response for the request above.
+ *   const response = message.args;
+ *   console.log('Received response', response);
+ * });
+ *
+ * await pluginService.sendMessage({
+ *   func: 'example.customAction.request',
+ *   args: { itemId: '12345' },
+ *   correlationId,
+ * });
+ *
+ * // Host side contract example (conceptual):
+ * // On receiving example.customAction.request, send back
+ * // example.customAction.response with the same correlationId.
+ * ```
  *
  * @internal
  * Limited to Microsoft-internal use

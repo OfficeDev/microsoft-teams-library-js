@@ -1,7 +1,6 @@
-import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../internal/communication';
+import { callFunctionInHost } from '../internal/communication';
 import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { ResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -47,11 +46,9 @@ export type JsonValue = string | number | boolean | null | JsonValue[] | { [key:
  * Canonical message envelope used for plugin send/receive operations.
  *
  * @remarks
- * `pluginId` is required to enable deterministic routing when multiple plugins
- * may register the same function name.
+ * Messages are used to communicate between plugin and host.
  *
  * @property func - Function/event name for the message.
- * @property pluginId - Unique identifier for the plugin associated with this message.
  * @property args - Optional JSON payload.
  * @property correlationId - Optional ID for request/response correlation.
  *
@@ -60,45 +57,11 @@ export type JsonValue = string | number | boolean | null | JsonValue[] | { [key:
  * Limited to Microsoft-internal use
  * @beta
  */
-/**
- * A UUID string in the canonical 8-4-4-4-12 hex format, e.g. `550e8400-e29b-41d4-a716-446655440000`.
- * Use `crypto.randomUUID()` to generate a valid value at runtime.
- */
-export type PluginId = `${string}-${string}-${string}-${string}-${string}`;
-
 export type PluginMessage = {
   func: string;
-  pluginId: PluginId;
   args?: JsonValue;
-  correlationId?: string; // May be useful in the future for correlating requests and responses between host and plugin, but currently unused.
+  correlationId?: string; // Useful in the future for correlating requests and responses between host and plugin, but currently unused.
 };
-
-/**
- * Retrieves the list of plugin identifiers currently registered with the host.
- *
- * @remarks
- * This function calls the host-side `plugin.getRegisteredPlugins` contract and
- * validates that the response is an array of strings.
- *
- * @returns A promise that resolves to the set of registered plugin IDs.
- *
- * @throws Error if SDK initialization has not completed or if the host returns
- * an invalid/error response.
- *
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- * @beta
- */
-export async function getRegisteredPlugins(): Promise<string[]> {
-  ensureInitialized(runtime);
-  return callFunctionInHostAndHandleResponse(
-    ApiName.Plugins_GetRegisteredPlugins,
-    [],
-    new GetRegisteredPluginsResponseHandler(),
-    getApiVersionTag(pluginTelemetryVersionNumber, ApiName.Plugins_GetRegisteredPlugins),
-  );
-}
 
 /**
  * Sends a plugin message to the host.
@@ -110,7 +73,7 @@ export async function getRegisteredPlugins(): Promise<string[]> {
  * @returns A promise that resolves when the host acknowledges the message.
  *
  * @throws Error if SDK initialization has not completed, if the host returns
- * an error response, or if `func` or `pluginId` is missing.
+ * an error response, or if `func` is missing.
  *
  * @hidden
  * @internal
@@ -122,12 +85,6 @@ export async function sendMessage(message: PluginMessage): Promise<void> {
 
   if (!message.func) {
     throw new Error('func is required in PluginMessage.');
-  }
-  // pluginId is required: the host routes messages by the composite key (func, pluginId).
-  // Multiple plugins can share the same func name, so without pluginId the host
-  // cannot deterministically identify which plugin handler should receive this message.
-  if (!message.pluginId) {
-    throw new Error('pluginId is required in PluginMessage.');
   }
 
   return callFunctionInHost(
@@ -182,16 +139,6 @@ export function receivePluginMessage(handler: ReceiveMessageHandler): void {
   );
 }
 
-class GetRegisteredPluginsResponseHandler extends ResponseHandler<string[], string[]> {
-  public validate(response: string[]): boolean {
-    return Array.isArray(response);
-  }
-
-  public deserialize(response: string[]): string[] {
-    return response;
-  }
-}
-
 class SerializablePluginMessage implements ISerializable {
   public constructor(private readonly message: PluginMessage) {}
 
@@ -201,20 +148,16 @@ class SerializablePluginMessage implements ISerializable {
 }
 
 function normalizePluginInboundMessage(incoming: unknown[]): PluginMessage {
-  // New envelope format: { func, args, pluginId?, correlationId?, schemaVersion? }
+  // New envelope format: { func, args, correlationId?, schemaVersion? }
   if (incoming.length === 1 && isPluginInboundMessage(incoming[0])) {
     return incoming[0];
   }
 
-  const [func, args, pluginId, correlationId] = incoming;
-  if (typeof pluginId !== 'string' || !pluginId) {
-    throw new Error('Plugin message is missing required pluginId.');
-  }
+  const [func, args, correlationId] = incoming;
 
   return {
     func: typeof func === 'string' ? func : String(func ?? ''),
     args: args as JsonValue | undefined,
-    pluginId: pluginId as PluginId,
     correlationId: typeof correlationId === 'string' ? correlationId : undefined,
   };
 }
@@ -225,5 +168,5 @@ function isPluginInboundMessage(value: unknown): value is PluginMessage {
   }
 
   const message = value as PluginMessage;
-  return typeof message.func === 'string' && typeof message.pluginId === 'string' && !!message.pluginId;
+  return typeof message.func === 'string';
 }

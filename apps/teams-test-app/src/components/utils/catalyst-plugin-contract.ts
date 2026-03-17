@@ -11,14 +11,6 @@
  * Neither side owns this file — it is the source of truth for the wire contract.
  */
 
-// ── Plugin identifiers ───────────────────────────────────────────────────────
-// Routed through every PluginMessage — host and app must agree on these.
-
-export const CatalystPluginIds = {
-  prompt: 'a1b2c3d4-e5f6-4789-8012-b3c4d5e6f7a8',
-  contextUpdate: 'b2c3d4e5-f6a7-4890-9123-c4d5e6f7a8b9',
-} as const;
-
 // ── Message function name constants ──────────────────────────────────────────
 // Both host and app reference the same constants so func names can never drift.
 
