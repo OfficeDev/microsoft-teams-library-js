@@ -131,7 +131,7 @@ export async function processActionCommand(
   commandId: string,
   extractedParameters: Record<string, string>,
 ): Promise<IActionCommandResponse> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;

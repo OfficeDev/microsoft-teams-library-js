@@ -13,8 +13,9 @@
       "boxSelector": "#box_appPerformanceMetrics_registerHostMemoryMetricsHandler",
       "eventName": "memoryUsageHeartbeat",
       "eventData": {
+        "appState": "active",
         "isCached": false,
-        "isPrecached": true,
+        "isPrecached": false,
         "isSharingProcess": false,
         "totalFrameWorkingSetSizeKB": 0,
         "totalFrameCommitSizeKB": 0,

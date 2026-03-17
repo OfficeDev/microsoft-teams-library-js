@@ -445,7 +445,7 @@ export function authenticateAndResendRequest(
   authenticateParameters: AuthenticatePopUpParameters,
   originalRequestInfo: IOriginalRequestInfo,
 ): Promise<IInvokeResponse> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -489,7 +489,7 @@ export function authenticateAndResendRequest(
  * @returns A promise that resolves when authentication and succeeds and rejects with InvokeError on failure
  */
 export function authenticateWithSSO(appId: string, authTokenRequest: AuthTokenRequestParameters): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -526,7 +526,7 @@ export function authenticateWithSSOAndResendRequest(
   authTokenRequest: AuthTokenRequestParameters,
   originalRequestInfo: IOriginalRequestInfo,
 ): Promise<IInvokeResponse> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -568,7 +568,7 @@ export function authenticateWithOauth2(
   oauthConfigId: string,
   oauthWindowParameters: OauthWindowProperties,
 ): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -613,7 +613,7 @@ export function authenticateWithPowerPlatformConnectorPlugins(
   signInUrl?: URL,
   oauthWindowParameters?: OauthWindowProperties,
 ): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -694,7 +694,7 @@ export class SerializableConnectorParameters implements ISerializable {
  * @throws Error if {@linkcode app.initialize} has not successfully completed
  */
 export function authenticateWithConnector(input: ConnectorParameters): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -776,7 +776,7 @@ class UserAuthenticationStateResponseHandler extends ResponseHandler<UserAuthent
  * @throws Error if the capability is not supported or if initialization has not completed.
  */
 export function getUserAuthenticationStateForConnector(input: ConnectorParameters): Promise<UserAuthenticationState> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -811,7 +811,7 @@ export function getUserAuthenticationStateForConnector(input: ConnectorParameter
  * @throws Error if the capability is not supported or if initialization has not completed.
  */
 export function disconnectConnector(input: ConnectorParameters): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
