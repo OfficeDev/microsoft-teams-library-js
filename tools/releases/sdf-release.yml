@@ -49,6 +49,10 @@ extends:
                   pipeline: microsoft-teams-library-js-pipeline
                   artifactName: CDNFeed
                   targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/CDNFeed
+                - input: pipelineArtifact
+                  pipeline: microsoft-teams-library-js-pipeline
+                  artifactName: scripts
+                  targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/scripts
 
             steps:
               - task: prepare-deployment@1
@@ -104,5 +108,5 @@ extends:
                 displayName: View Published Package URLs
                 inputs:
                   targetType: 'filePath'
-                  filePath: 'tools/releases/powershell-commands/view-published-pkg-urls.ps1'
+                  filePath: 'microsoft-teams-library-js-pipeline/scripts/view-published-pkg-urls.ps1'
                   arguments: -PIPELINE_WORKSPACE $(System.DefaultWorkingDirectory)
