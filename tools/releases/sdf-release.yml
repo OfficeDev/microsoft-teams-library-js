@@ -56,7 +56,7 @@ extends:
 
             steps:
               - task: prepare-deployment@1
-                displayName:
+                displayName: Prepare deployment
                 inputs:
                   taskType: credentialFetchTaskAzureRM
                   armserviceconnection: $(serviceConnectionId)
