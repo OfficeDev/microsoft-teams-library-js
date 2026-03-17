@@ -59,10 +59,11 @@ export function ensureInitialized(runtime: IBaseRuntime, ...expectedFrameContext
     }
 
     if (!found) {
-      throw new Error(
+      const errorMessage =
         `This call is only allowed in following contexts: ${JSON.stringify(expectedFrameContexts)}. ` +
-          `Current context: "${GlobalVars.frameContext}".`,
-      );
+        `Current context: "${GlobalVars.frameContext}".`;
+      ensureInitializedLogger(errorMessage);
+      throw new Error(errorMessage);
     }
   }
   return isRuntimeInitialized(runtime);
