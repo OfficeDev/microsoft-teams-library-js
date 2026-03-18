@@ -1,8 +1,8 @@
 /**
  * Catalyst Plugin Contract
  *
- * This file represents what would be a standalone shared types package possibly in 1js
- * (e.g. `@1js/bizchat-catalyst-plugins-metaos-hub`) in production.
+ * This file represents what would be a standalone shared types package
+ * (e.g. `@Shared/plugin-contract`) in production.
  *
  * Both sides of the messaging boundary import from it:
  *   - Host (hub): uses it to type outbound send calls and inbound listener args

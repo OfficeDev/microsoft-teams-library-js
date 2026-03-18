@@ -97,7 +97,8 @@ describe('urlPattern', () => {
     });
 
     it('returns a verifier for an http pattern', () => {
-      const verifier = createURLVerifier('https://example.com', logger);
+      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      const verifier = createURLVerifier('http://example.com', logger);
       expect(verifier).toBeDefined();
     });
 

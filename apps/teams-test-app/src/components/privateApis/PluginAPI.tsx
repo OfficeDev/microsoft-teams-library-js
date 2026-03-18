@@ -3,13 +3,13 @@ import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 import {
   CatalystFuncs,
   ContextUpdateArgs,
   PromptSentResponse,
   TriggerPromptArgs,
-} from '../utils/catalyst-plugin-contract';
-import { ModuleWrapper } from '../utils/ModuleWrapper';
+} from '../utils/shared-plugin-contract';
 
 const SendMessage = (): ReactElement =>
   ApiWithTextInput<pluginService.PluginMessage>({

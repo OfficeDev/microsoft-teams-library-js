@@ -101,7 +101,6 @@ export const TestApp: React.FC = () => {
   // List of sections dynamically created from React elements
   const sections = useMemo(
     () => [
-      { name: 'PluginAPIs', component: <PluginAPI /> },
       { name: 'AppAPIs', component: <AppAPIs /> },
       { name: 'AppInitializationAPIs', component: <AppInitializationAPIs /> },
       { name: 'AppInstallDialogAPIs', component: <AppInstallDialogAPIs /> },
@@ -157,6 +156,7 @@ export const TestApp: React.FC = () => {
       { name: 'PagesCurrentAppAPIs', component: <PagesCurrentAppAPIs /> },
       { name: 'PagesTabsAPIs', component: <PagesTabsAPIs /> },
       { name: 'PeopleAPIs', component: <PeopleAPIs /> },
+      { name: 'PluginAPIs', component: <PluginAPI /> },
       { name: 'PrivateAPIs', component: <PrivateAPIs /> },
       { name: 'ProfileAPIs', component: <ProfileAPIs /> },
       { name: 'RemoteCameraAPIs', component: <RemoteCameraAPIs /> },
