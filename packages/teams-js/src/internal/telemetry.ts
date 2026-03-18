@@ -290,7 +290,6 @@ export const enum ApiName {
   PrivateAPIs_RegisterUserSettingsChangeHandler = 'registerUserSettingsChangeHandler',
   PrivateAPIs_SendCustomMessage = 'sendCustomMessage',
   PrivateAPIs_UploadCustomApp = 'uploadCustomApp',
-  Plugins_GetRegisteredPlugins = 'plugins.getRegisteredPlugins',
   Plugins_ReceiveMessage = 'plugins.receiveMessage',
   Plugins_SendMessage = 'plugins.sendMessage',
   Profile_ShowProfile = 'profile.showProfile',
