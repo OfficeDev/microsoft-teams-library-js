@@ -11,6 +11,12 @@ import {
   TriggerPromptArgs,
 } from '../utils/shared-plugin-contract';
 
+const defaultPromptSentResponse: PromptSentResponse = {
+  promptId: 'prompt-001',
+  status: 'accepted',
+  message: 'hello from teams-test-app',
+};
+
 const SendMessage = (): ReactElement =>
   ApiWithTextInput<pluginService.PluginMessage>({
     name: 'sendMessage',
@@ -28,11 +34,7 @@ const SendMessage = (): ReactElement =>
     },
     defaultInput: JSON.stringify({
       func: CatalystFuncs.promptSent,
-      args: {
-        promptId: 'prompt-001',
-        status: 'accepted',
-        message: 'hello from teams-test-app',
-      } satisfies PromptSentResponse,
+      args: defaultPromptSentResponse,
       correlationId: '12345',
     }),
   });
