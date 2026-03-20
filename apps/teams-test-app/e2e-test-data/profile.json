@@ -10,7 +10,7 @@
       "title": "showProfile API Call - Success",
       "type": "callResponse",
       "hostSdkVersion": {
-        "web": "<9.15.0"
+        "web": "<=9.15.0"
       },
       "boxSelector": "#box_showProfile",
       "inputValue": {
@@ -34,7 +34,7 @@
       "title": "showProfile API Call - Success",
       "type": "callResponse",
       "hostSdkVersion": {
-        "web": ">9.15.1"
+        "web": ">10.0.0"
       },
       "boxSelector": "#box_showProfile",
       "inputValue": {
