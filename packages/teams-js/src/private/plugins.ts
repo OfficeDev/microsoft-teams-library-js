@@ -10,6 +10,16 @@ import { ISerializable } from '../public/serializable.interface';
 const pluginTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
+ * The type of arguments that can be passed in a {@link PluginMessage}.
+ *
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ * @beta
+ */
+export type PluginMessageArg = SimpleType;
+
+/**
  * Indicates whether the plugin capability is available in the current host.
  *
  * @remarks
@@ -46,7 +56,7 @@ export function isSupported(): boolean {
  */
 export type PluginMessage = {
   func: string;
-  args?: SimpleType;
+  args?: PluginMessageArg;
   correlationId?: string; // Optional correlation ID for request/response patterns
 };
 
