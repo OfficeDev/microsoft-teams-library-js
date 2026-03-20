@@ -34,7 +34,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
 }
 
 /**
- * @deprecated Use {@link pluginService.sendPluginMessage} with {@link pluginService.registerPluginMessage} and a correlationId-based response pattern.
+ * @deprecated Use {@link plugins.sendPluginMessage} with {@link plugins.registerPluginMessage} and a correlationId-based response pattern.
  *
  * @hidden
  * Sends a custom action MessageRequest to host or parent window
@@ -53,7 +53,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
  * // Request side
  * const correlationId = crypto.randomUUID();
  *
- * pluginService.registerPluginMessage((message) => {
+ * plugins.registerPluginMessage((message) => {
  *   if (message.func !== 'example.customAction.response') {
  *     return;
  *   }
@@ -66,7 +66,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
  *   console.log('Received response', response);
  * });
  *
- * await pluginService.sendPluginMessage({
+ * await plugins.sendPluginMessage({
  *   func: 'example.customAction.request',
  *   args: { itemId: '12345' },
  *   correlationId,
