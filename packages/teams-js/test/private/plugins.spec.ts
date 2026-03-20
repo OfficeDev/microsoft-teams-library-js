@@ -1,6 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import * as pluginService from '../../src/private/pluginService';
-import { PluginMessage } from '../../src/private/pluginService';
+import * as pluginService from '../../src/private/plugins';
+import { PluginMessage } from '../../src/private/plugins';
 import * as app from '../../src/public/app/app';
 import { FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
@@ -59,7 +59,9 @@ describe('pluginService', () => {
     it('should throw if called before initialization', async () => {
       expect.assertions(1);
       utils.uninitializeRuntimeConfig();
-      await expect(pluginService.sendMessage(validMessage)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      await expect(pluginService.sendPluginMessage(validMessage)).rejects.toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
 
     it('should throw when func is empty', async () => {
@@ -68,7 +70,7 @@ describe('pluginService', () => {
       utils.setRuntimeConfig(pluginsRuntimeConfig);
 
       const msg = { ...validMessage, func: '' };
-      await expect(pluginService.sendMessage(msg)).rejects.toThrowError('func is required in PluginMessage.');
+      await expect(pluginService.sendPluginMessage(msg)).rejects.toThrowError('func is required in PluginMessage.');
     });
 
     it('should send the correct message to the host', async () => {
@@ -76,7 +78,7 @@ describe('pluginService', () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(pluginsRuntimeConfig);
 
-      const promise = pluginService.sendMessage(validMessage);
+      const promise = pluginService.sendPluginMessage(validMessage);
       const message = utils.findMessageByFunc('plugins.sendMessage');
       expect(message).not.toBeNull();
       expect(message?.args).toHaveLength(1);
@@ -97,7 +99,7 @@ describe('pluginService', () => {
       utils.setRuntimeConfig(pluginsRuntimeConfig);
 
       const msgWithCorrelation: PluginMessage = { ...validMessage, correlationId: 'corr-123' };
-      const promise = pluginService.sendMessage(msgWithCorrelation);
+      const promise = pluginService.sendPluginMessage(msgWithCorrelation);
       const message = utils.findMessageByFunc('plugins.sendMessage');
       expect(message).not.toBeNull();
       expect(message?.args?.[0]).toMatchObject({ correlationId: 'corr-123' });
@@ -114,7 +116,7 @@ describe('pluginService', () => {
       utils.setRuntimeConfig(pluginsRuntimeConfig);
 
       const sdkError = { errorCode: 500, message: 'Send failed' };
-      const promise = pluginService.sendMessage(validMessage);
+      const promise = pluginService.sendPluginMessage(validMessage);
       const message = utils.findMessageByFunc('plugins.sendMessage');
       expect(message).not.toBeNull();
       if (message) {
@@ -129,14 +131,14 @@ describe('pluginService', () => {
   describe('receivePluginMessage', () => {
     it('should throw if called before initialization', () => {
       utils.uninitializeRuntimeConfig();
-      expect(() => pluginService.receivePluginMessage(jest.fn())).toThrowError(new Error(errorLibraryNotInitialized));
+      expect(() => pluginService.registerPluginMessage(jest.fn())).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should throw when plugins capability is not supported', async () => {
       expect.assertions(1);
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-      expect(() => pluginService.receivePluginMessage(jest.fn())).toThrowError(
+      expect(() => pluginService.registerPluginMessage(jest.fn())).toThrowError(
         'Receiving plugin messages is not supported in the current host.',
       );
     });
@@ -144,7 +146,7 @@ describe('pluginService', () => {
     it('should not throw during registration when plugins capability is supported', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(pluginsRuntimeConfig);
-      expect(() => pluginService.receivePluginMessage(jest.fn())).not.toThrow();
+      expect(() => pluginService.registerPluginMessage(jest.fn())).not.toThrow();
     });
 
     it('should invoke handler with normalized envelope format (single-object style)', async () => {
@@ -153,7 +155,7 @@ describe('pluginService', () => {
       utils.setRuntimeConfig(pluginsRuntimeConfig);
 
       const handler = jest.fn();
-      pluginService.receivePluginMessage(handler);
+      pluginService.registerPluginMessage(handler);
 
       const inboundEnvelope: PluginMessage = {
         func: 'catalyst.triggerPrompt',
@@ -171,7 +173,7 @@ describe('pluginService', () => {
       utils.setRuntimeConfig(pluginsRuntimeConfig);
 
       const handler = jest.fn();
-      pluginService.receivePluginMessage(handler);
+      pluginService.registerPluginMessage(handler);
 
       // Positional format: func, args, correlationId
       await utils.sendMessage(
@@ -190,13 +192,13 @@ describe('pluginService', () => {
       );
     });
 
-    it('should only be callable from content context', async () => {
-      const nonContentContexts = Object.values(FrameContexts).filter((c) => c !== FrameContexts.content);
+    it('should be callable from all frame contexts', async () => {
+      const allContexts = Object.values(FrameContexts);
 
-      for (const context of nonContentContexts) {
+      for (const context of allContexts) {
         await utils.initializeWithContext(context);
         utils.setRuntimeConfig(pluginsRuntimeConfig);
-        expect(() => pluginService.receivePluginMessage(jest.fn())).toThrowError(/following contexts/);
+        expect(() => pluginService.registerPluginMessage(jest.fn())).not.toThrow();
         app._uninitialize();
         utils = new Utils();
       }

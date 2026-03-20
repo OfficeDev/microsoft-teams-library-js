@@ -1,4 +1,4 @@
-import { pluginService } from '@microsoft/teams-js';
+import { pluginService as plugins } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../../App';
@@ -18,7 +18,7 @@ const defaultPromptSentResponse: PromptSentResponse = {
 };
 
 const SendMessage = (): ReactElement =>
-  ApiWithTextInput<pluginService.PluginMessage>({
+  ApiWithTextInput<plugins.PluginMessage>({
     name: 'sendMessage',
     title: 'Send Message',
     onClick: {
@@ -28,8 +28,8 @@ const SendMessage = (): ReactElement =>
         }
       },
       submit: async (input) => {
-        await pluginService.sendMessage(input);
-        return 'pluginService.sendMessage() was called';
+        await plugins.sendPluginMessage(input);
+        return 'plugins.sendPluginMessage() was called';
       },
     },
     defaultInput: JSON.stringify({
@@ -45,7 +45,7 @@ const RegisterReceiveMessage = (): ReactElement =>
     title: 'Register Receive Message',
     onClick: async (setResult) => {
       const handler = (message: unknown): void => {
-        const msg = message as pluginService.PluginMessage;
+        const msg = message as plugins.PluginMessage;
         if (msg.func === CatalystFuncs.triggerPrompt) {
           const args = msg.args as unknown as TriggerPromptArgs;
           setResult(`Received triggerPrompt: ${JSON.stringify(args)}`);
@@ -59,7 +59,7 @@ const RegisterReceiveMessage = (): ReactElement =>
         }
       };
 
-      pluginService.receivePluginMessage(handler);
+      plugins.registerPluginMessage(handler);
       return generateRegistrationMsg('a plugin message is received');
     },
   });

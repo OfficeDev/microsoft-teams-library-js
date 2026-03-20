@@ -1,6 +1,7 @@
 import { callFunctionInHost } from '../internal/communication';
 import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { SimpleType } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -29,20 +30,6 @@ export function isSupported(): boolean {
 }
 
 /**
- * JSON-compatible value used for plugin message payloads.
- *
- * @remarks
- * Plugin messages are serialized before transport to the host, so payload data
- * is constrained to JSON-safe types.
- *
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- * @beta
- */
-export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
-
-/**
  * Canonical message envelope used for plugin send/receive operations.
  *
  * @remarks
@@ -59,8 +46,8 @@ export type JsonValue = string | number | boolean | null | JsonValue[] | { [key:
  */
 export type PluginMessage = {
   func: string;
-  args?: JsonValue;
-  correlationId?: string; // Useful in the future for correlating requests and responses between host and plugin, but currently unused.
+  args?: SimpleType;
+  correlationId?: string; // Optional correlation ID for request/response patterns
 };
 
 /**
@@ -80,7 +67,7 @@ export type PluginMessage = {
  * Limited to Microsoft-internal use
  * @beta
  */
-export async function sendMessage(message: PluginMessage): Promise<void> {
+export async function sendPluginMessage(message: PluginMessage): Promise<void> {
   ensureInitialized(runtime);
 
   if (!message.func) {
@@ -123,14 +110,14 @@ export type ReceiveMessageHandler = (message: PluginMessage) => void;
  * Limited to Microsoft-internal use
  * @beta
  */
-export function receivePluginMessage(handler: ReceiveMessageHandler): void {
+export function registerPluginMessage(handler: ReceiveMessageHandler): void {
   registerHandlerHelper(
     getApiVersionTag(pluginTelemetryVersionNumber, ApiName.Plugins_ReceiveMessage),
     ApiName.Plugins_ReceiveMessage,
     (...incoming: unknown[]) => {
       handler(normalizePluginInboundMessage(incoming));
     },
-    [FrameContexts.content],
+    Object.values(FrameContexts),
     () => {
       if (!isSupported()) {
         throw new Error('Receiving plugin messages is not supported in the current host.');
@@ -157,7 +144,7 @@ function normalizePluginInboundMessage(incoming: unknown[]): PluginMessage {
 
   return {
     func: typeof func === 'string' ? func : String(func ?? ''),
-    args: args as JsonValue | undefined,
+    args: args as SimpleType,
     correlationId: typeof correlationId === 'string' ? correlationId : undefined,
   };
 }
