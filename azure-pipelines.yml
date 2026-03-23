@@ -76,7 +76,7 @@ extends:
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
-      - stage: __default
+      - stage: Build
         jobs:
           - job: Security
             displayName: 'Security Tasks'
@@ -123,53 +123,6 @@ extends:
                   targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
                   artifactName: 'scripts'
 
-          - job: E2ETest1
-            displayName: 'E2E Test - Perf'
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-latest'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
-                parameters:
-                  appHostGitPath: AppHostingSdk
-
-              - task: Bash@3
-                displayName: 'Run E2E Perf tests'
-                condition: succeeded()
-                inputs:
-                  targetType: inline
-                  script: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - Perf'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
-
-          - template: tools/yaml-templates/web-e2e-versions.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdk
-              versionBranch: 'Latest'
-
-          - template: tools/yaml-templates/web-e2e-versions.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdkV2
-              versionBranch: 'v2'
-
-          - template: tools/yaml-templates/web-e2e-versions.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdkV3
-              versionBranch: 'v3'
-
-          - template: tools/yaml-templates/web-e2e-versions.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdkV4
-              versionBranch: 'v4'
-
           - job: E2ETestCDN
             timeoutInMinutes: 120
             displayName: 'E2E Tests - CDN (only runs on release builds)'
@@ -210,6 +163,94 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
+          # Comment out all of iOS E2E tests in TJS side due to unknown E2E testing failures on CI
+          # - job: E2ETestIOS
+          #   displayName: 'E2E Tests - IOS - Plan A'
+          #   pool:
+          #     name: Azure Pipelines
+          #     image: macos-latest-internal
+          #     os: macOS
+          #   steps:
+          #     - template: tools/yaml-templates/ios-test.yml@self
+          #       parameters:
+          #         iOSAppHostingSdkGitPath: IOSAppHostingSdk
+          #         testPlan: iosE2ETestPlanA
+
+          # - job: E2ETestIOS2
+          #   displayName: 'E2E Tests - IOS - Plan B'
+          #   pool:
+          #     name: Azure Pipelines
+          #     image: macos-latest-internal
+          #     os: macOS
+          #   steps:
+          #     - template: tools/yaml-templates/ios-test.yml@self
+          #       parameters:
+          #         iOSAppHostingSdkGitPath: IOSAppHostingSdk
+          #         testPlan: iosE2ETestPlanB
+
+      - stage: E2E_Latest
+        dependsOn:
+          - Build
+          - E2E_Perf
+        condition: >-
+          and(
+            not(canceled()),
+            in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+          )
+        jobs:
+          - template: tools/yaml-templates/web-e2e-versions.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdk
+              versionBranch: 'Latest'
+
+      - stage: E2E_V4
+        dependsOn:
+          - Build
+          - E2E_Latest
+        condition: >-
+          and(
+            not(canceled()),
+            in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+          )
+        jobs:
+          - template: tools/yaml-templates/web-e2e-versions.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdkV4
+              versionBranch: 'v4'
+
+      - stage: E2E_V3
+        dependsOn:
+          - Build
+          - E2E_V4
+        condition: >-
+          and(
+            not(canceled()),
+            in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+          )
+        jobs:
+          - template: tools/yaml-templates/web-e2e-versions.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdkV3
+              versionBranch: 'v3'
+
+      - stage: E2E_V2
+        dependsOn:
+          - Build
+          - E2E_V3
+        condition: >-
+          and(
+            not(canceled()),
+            in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+          )
+        jobs:
+          - template: tools/yaml-templates/web-e2e-versions.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdkV2
+              versionBranch: 'v2'
+
+      - stage: E2E_Android
+        dependsOn: Build
+        jobs:
           - job: E2ETestAndroidA
             displayName: 'E2E Tests - Android - Plan A'
             pool:
@@ -252,27 +293,39 @@ extends:
                   shardIndex: 2
             continueOnError: true
 
-          # Comment out all of iOS E2E tests in TJS side due to unknown E2E testing failures on CI
-          # - job: E2ETestIOS
-          #   displayName: 'E2E Tests - IOS - Plan A'
-          #   pool:
-          #     name: Azure Pipelines
-          #     image: macos-latest-internal
-          #     os: macOS
-          #   steps:
-          #     - template: tools/yaml-templates/ios-test.yml@self
-          #       parameters:
-          #         iOSAppHostingSdkGitPath: IOSAppHostingSdk
-          #         testPlan: iosE2ETestPlanA
+      - stage: E2E_Perf
+        dependsOn:
+          - Build
+        condition: >-
+          and(
+            not(canceled()),
+            in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+          )
+        jobs:
+          - job: E2ETest1
+            displayName: 'E2E Test - Perf'
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-latest'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/build-app-host.yml@self
+                parameters:
+                  appHostGitPath: AppHostingSdk
 
-          # - job: E2ETestIOS2
-          #   displayName: 'E2E Tests - IOS - Plan B'
-          #   pool:
-          #     name: Azure Pipelines
-          #     image: macos-latest-internal
-          #     os: macOS
-          #   steps:
-          #     - template: tools/yaml-templates/ios-test.yml@self
-          #       parameters:
-          #         iOSAppHostingSdkGitPath: IOSAppHostingSdk
-          #         testPlan: iosE2ETestPlanB
+              - task: Bash@3
+                displayName: 'Run E2E Perf tests'
+                condition: succeeded()
+                inputs:
+                  targetType: inline
+                  script: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+              - task: PublishTestResults@2
+                inputs:
+                  testResultsFormat: 'JUnit'
+                  testResultsFiles: '**/e2e-tests-report*.xml'
+                  testRunTitle: 'E2E Tests - Perf'
+                  mergeTestResults: true
+                condition: succeededOrFailed()
+
