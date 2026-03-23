@@ -101,9 +101,7 @@ const RegisterOnContextChangeHandler = (): React.ReactElement => {
     name: 'RegisterOnContextChangeHandler',
     title: 'Register OnContextChange Handler',
     onClick: async (setResult) => {
-      console.log('[RegisterOnContextChangeHandler] Registering handler, setResult:', typeof setResult);
       app.registerOnContextChangeHandler((context: app.Context): void => {
-        console.log('[RegisterOnContextChangeHandler] Handler called with context:', context);
         setResult('successfully called with context:' + JSON.stringify(context));
       });
       return 'registered';
