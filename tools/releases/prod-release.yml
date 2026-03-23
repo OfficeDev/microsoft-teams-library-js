@@ -75,7 +75,7 @@ extends:
                   verbose: false
                   customCommand: pack
               - task: EsrpRelease@10
-                displayName: Publish to npm (tag beta) - ESRP release
+                displayName: Publish to npm (tag latest) - ESRP release
                 inputs:
                   connectedservicename: '$(connectedServiceName)'
                   usemanagedidentity: true
