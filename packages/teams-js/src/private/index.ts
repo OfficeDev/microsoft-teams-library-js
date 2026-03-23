@@ -37,6 +37,7 @@ export * as messageChannels from './messageChannels/messageChannels';
 export * as nestedAppAuthBridge from './nestedAppAuth/nestedAppAuthBridge';
 export * as notifications from './notifications';
 export * as otherAppStateChange from './otherAppStateChange';
+export * as plugins from './plugins';
 export * as remoteCamera from './remoteCamera';
 export * as appEntity from './appEntity';
 export * as teams from './teams/teams';
