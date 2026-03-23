@@ -1,8 +1,16 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Thu, 26 Feb 2026 21:58:31 GMT and should not be manually modified. -->
+<!-- This log was last generated on Thu, 12 Mar 2026 20:51:32 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.50.0
+
+Thu, 12 Mar 2026 20:51:32 GMT
+
+### Minor changes
+
+- Updated ExternalApp* capabilities to allow calls in sidePanel frame context.
 
 ## 2.49.0
 
