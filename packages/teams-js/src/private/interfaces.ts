@@ -259,6 +259,24 @@ export interface FilePreviewParameters {
    * Limited to Microsoft-internal use
    */
   atpData?: string;
+
+  /**
+   * @hidden
+   * Optional; sharelink of a ODSP file
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  shareUrl?: string;
+
+  /**
+   * @hidden
+   * Optional; the reply chain id of message where file is shared. Usually found in channels
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  replyChainId?: string;
 }
 
 /**
