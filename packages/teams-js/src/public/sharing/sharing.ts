@@ -29,7 +29,7 @@ export const SharingAPIMessages = {
 };
 
 // More types can be added as we expand share capability
-type ContentType = 'URL';
+type ContentType = 'URL' | 'File';
 
 /** Represents parameters for base shared content. */
 interface IBaseSharedContent {
@@ -39,7 +39,7 @@ interface IBaseSharedContent {
 
 // More types can be added as we expand share capability
 /** IShareRequestContentType defines share request type. */
-export type IShareRequestContentType = IURLContent;
+export type IShareRequestContentType = IURLContent | IFileContent;
 
 /** Represents IShareRequest parameters interface.
  * @typeparam T - The identity type
@@ -47,6 +47,27 @@ export type IShareRequestContentType = IURLContent;
 export interface IShareRequest<T> {
   /** Content of the share request. */
   content: T[];
+}
+
+/** Represents IFileContent parameters. */
+export interface IFileContent extends IBaseSharedContent {
+  /** Type */
+  type: 'File';
+
+  /**
+   * Required URL of the file to share
+   */
+  url: string;
+
+  /**
+   * Default initial message text
+   */
+  message?: string;
+
+  /**
+   * Show file preview, defaults to true
+   */
+  preview?: boolean;
 }
 
 /** Represents IURLContent parameters. */
@@ -175,6 +196,14 @@ function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequ
       err = {
         errorCode: ErrorCode.INVALID_ARGUMENTS,
         message: 'URLs are required for URL content types',
+      };
+      throw err;
+    }
+  } else if (shareRequest.content[0].type === 'File') {
+    if (shareRequest.content.some((item) => !item.url)) {
+      err = {
+        errorCode: ErrorCode.INVALID_ARGUMENTS,
+        message: 'File URLs are required for File content types',
       };
       throw err;
     }
