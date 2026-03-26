@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
+import { HostFeatures } from './app/app';
 import {
   ChannelType,
   DialogDimension,
@@ -835,6 +836,13 @@ export interface Context {
    * For example, if Bizchat is running in Calendar in Teams, this would be ["Calendar", "Teams"].
    */
   hostAncestors?: string[];
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppHostInfo.features | app.Context.app.host.features} instead
+   * The features supported by the host. This is an optional field that may not be populated by all hosts, and may be added to over time as new features are added to hosts. Because of this, apps should always check for the presence of a feature and its value before using it, and should gracefully handle the case where the feature is not present.
+   */
+  hostFeatures?: HostFeatures;
 }
 
 /** Represents the parameters used to share a deep link. */
