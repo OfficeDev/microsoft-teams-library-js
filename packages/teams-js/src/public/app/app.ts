@@ -227,7 +227,7 @@ export type HostFeatures = {
   nestedWildcardsInValidDomains?: boolean;
 
   /**
-   * Indicates whether server side rendering is enabled for the host. If true, the host will render the app on the server side before sending it to the client. If false or undefined, the host will render the app on the client side.
+   * Indicates whether server side rendering is enabled for the host.
    */
   serverSideRendering?: boolean;
 };
