@@ -1446,15 +1446,29 @@ export type HostToAppFrameMemoryMetrics = {
 };
 
 /**
+ * The state of the app in terms of its lifecycle and caching status, which can impact its performance characteristics and memory usage.
+ */
+export type AppState = 'cached' | 'precached' | 'active';
+
+/**
  * Memory metrics provided by the host for the app.
  */
 export type HostMemoryMetrics = {
   /**
+   * The current state of the app, which can be 'cached', 'precached', or 'active'. This provides insight into the app's lifecycle stage and can help developers understand the performance characteristics and memory usage of their app in different states.
+   */
+  appState: AppState;
+
+  /**
+   * @deprecated - Use `appState` instead.
+   *
    * Indicates if the app is in a hidden state to accelerate future launches.
    */
   isCached: boolean;
 
   /**
+   * @deprecated - Use `appState` instead.
+   *
    * Indicates if the app is in a preloaded state to accelerate its first launch in the session.
    */
   isPrecached: boolean;

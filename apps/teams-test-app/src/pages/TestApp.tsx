@@ -52,6 +52,7 @@ import MeetingRoomAPIs from '../components/privateApis/MeetingRoomAPIs';
 import MessageChannelAPIs from '../components/privateApis/MessageChannelAPIs';
 import MonetizationAPIs from '../components/privateApis/MonetizationAPIs';
 import NotificationAPIs from '../components/privateApis/NotificationAPIs';
+import PluginAPI from '../components/privateApis/PluginAPI';
 import PrivateAPIs from '../components/privateApis/PrivateAPIs';
 import TeamsAPIs from '../components/privateApis/TeamsAPIs';
 import VideoExAPIs from '../components/privateApis/VideoEffectsExAPIs';
@@ -155,6 +156,7 @@ export const TestApp: React.FC = () => {
       { name: 'PagesCurrentAppAPIs', component: <PagesCurrentAppAPIs /> },
       { name: 'PagesTabsAPIs', component: <PagesTabsAPIs /> },
       { name: 'PeopleAPIs', component: <PeopleAPIs /> },
+      { name: 'PluginAPIs', component: <PluginAPI /> },
       { name: 'PrivateAPIs', component: <PrivateAPIs /> },
       { name: 'ProfileAPIs', component: <ProfileAPIs /> },
       { name: 'RemoteCameraAPIs', component: <RemoteCameraAPIs /> },
