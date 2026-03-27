@@ -190,6 +190,8 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.messageId,
     filePreviewParameters.callerInfo,
     filePreviewParameters.atpData,
+    filePreviewParameters.shareUrl,
+    filePreviewParameters.replyChainId,
   ];
 
   sendMessageToParent(
