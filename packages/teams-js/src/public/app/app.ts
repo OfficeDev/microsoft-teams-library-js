@@ -218,6 +218,21 @@ export interface AppInfo {
 }
 
 /**
+ * Features supported by the host that the app can query for via getContext.
+ */
+export type HostFeatures = {
+  /**
+   * Indicates whether the host supports nested wildcards in valid domains. If true, the host will allow valid domains with nested wildcards (e.g. apps.*.com). If false or undefined, the host will only allow valid domains with a single wildcard level (e.g. *.test.com).
+   */
+  nestedWildcardsInValidDomains?: boolean;
+
+  /**
+   * Indicates whether server side rendering is enabled for the host.
+   */
+  serverSideRendering?: boolean;
+};
+
+/**
  * Represents information about the application's host.
  */
 export interface AppHostInfo {
@@ -230,6 +245,11 @@ export interface AppHostInfo {
    * The client type on which the host is running
    */
   clientType: HostClientType;
+
+  /**
+   * The features supported by the host. This is an optional field that may not be populated by all hosts, and may be added to over time as new features are added to hosts. Because of this, apps should always check for the presence of a feature and its value before using it, and should gracefully handle the case where the feature is not present.
+   */
+  features?: HostFeatures;
 
   /**
    * Unique ID for the current Host session for use in correlating telemetry data.
@@ -873,6 +893,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       host: {
         name: legacyContext.hostName ? legacyContext.hostName : HostName.teams,
         clientType: legacyContext.hostClientType ? legacyContext.hostClientType : HostClientType.web,
+        features: legacyContext.hostFeatures,
         sessionId: legacyContext.sessionId ? legacyContext.sessionId : '',
         ringId: legacyContext.ringId,
         ancestors: legacyContext.hostAncestors,

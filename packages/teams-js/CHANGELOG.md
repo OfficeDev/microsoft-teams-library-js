@@ -13,7 +13,8 @@ Fri, 27 Mar 2026 20:29:02 GMT
 - Added teamsJs logging for cases where an API fails because it is called in an unsupported frame context.
 - Added `plugins` capability that will help directly interact with the host bypassing API registration in hubsdk. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
 - Added `appState` parameter to `HostMemoryMetrics` to indicate current state of the app's lifecycle. Deprecated `isCached` and `isPrecached` fields to use the new structure.
-- Added `{namespace}` capability that will {explain capability}. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `shareUrl` and `replyChainId` in `openFilePreview` SDK schema.
+- Added `hostFeatures` key in app context, so the hosts can declare support for features to the app.
 
 ## 2.50.0
 
