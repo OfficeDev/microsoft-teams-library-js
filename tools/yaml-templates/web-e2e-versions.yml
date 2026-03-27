@@ -9,7 +9,7 @@ parameters:
 jobs:
   - template: web-e2e-tests-job.yml@self
     parameters:
-      AppHostingSdk: AppHostingSdk
+      AppHostingSdk: ${{ parameters.AppHostingSdk }}
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'npm'
       testPrefixPatternGroups:
@@ -28,7 +28,7 @@ jobs:
 
   - template: web-e2e-tests-job.yml@self
     parameters:
-      AppHostingSdk: AppHostingSdk
+      AppHostingSdk: ${{ parameters.AppHostingSdk }}
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'scriptTag'
       testPrefixPatternGroups:

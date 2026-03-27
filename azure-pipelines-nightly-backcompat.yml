@@ -1,0 +1,130 @@
+# Nightly back-compat E2E tests pipeline
+# Runs Hub SDK back-compat E2E tests sequentially by version (newest first).
+#
+# To add a new back-compat version:
+#   1. Add an AppHostingSdkV<N> repository resource below
+#   2. Create an AppHostV<N>ReleaseBranch pipeline variable in ADO
+#   3. Append { version: 'v<N>', resource: 'AppHostingSdkV<N>' } to the backCompatVersions list
+#
+# Required ADO pipeline variables (set in ADO portal or variable group):
+#   - AppHostV3ReleaseBranch
+#   - AppHostV4ReleaseBranch
+#   - AppHostV5ReleaseBranch
+#   - AppHostV6ReleaseBranch
+#   - AppHostV7ReleaseBranch
+#   - AppHostV8ReleaseBranch
+#   - AppHostV9ReleaseBranch
+#
+# The release pipeline (tools/releases/prod-release.yml) validates that this
+# nightly pipeline has a recent successful run before allowing a release.
+
+parameters:
+  - name: backCompatVersions
+    displayName: 'Back-compat Hub SDK versions to test (newest first)'
+    type: object
+    default:
+      - { version: 'v9', resource: 'AppHostingSdkV9' }
+      - { version: 'v8', resource: 'AppHostingSdkV8' }
+      - { version: 'v7', resource: 'AppHostingSdkV7' }
+      - { version: 'v6', resource: 'AppHostingSdkV6' }
+      - { version: 'v5', resource: 'AppHostingSdkV5' }
+      - { version: 'v4', resource: 'AppHostingSdkV4' }
+      - { version: 'v3', resource: 'AppHostingSdkV3' }
+
+variables:
+  - group: InfoSec-SecurityResults
+  - name: products
+    value: 6eff390d-80c0-4456-81b6-6abafa71e768
+
+trigger: none
+
+schedules:
+  - cron: '0 0 * * *'
+    displayName: 'Nightly back-compat E2E tests'
+    branches:
+      include:
+        - main
+    always: true
+
+resources:
+  repositories:
+    - repository: OfficePipelineTemplates
+      type: git
+      name: 1ESPipelineTemplates/OfficePipelineTemplates
+      ref: refs/tags/release
+    - repository: AppHostingSdkV3
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: $(AppHostV3ReleaseBranch)
+    - repository: AppHostingSdkV4
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: $(AppHostV4ReleaseBranch)
+    - repository: AppHostingSdkV5
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: $(AppHostV5ReleaseBranch)
+    - repository: AppHostingSdkV6
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: $(AppHostV6ReleaseBranch)
+    - repository: AppHostingSdkV7
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: $(AppHostV7ReleaseBranch)
+    - repository: AppHostingSdkV8
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: $(AppHostV8ReleaseBranch)
+    - repository: AppHostingSdkV9
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: $(AppHostV9ReleaseBranch)
+
+extends:
+  template: v1/Office.Unofficial.PipelineTemplate.yml@OfficePipelineTemplates
+  parameters:
+    pool:
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: windows-latest
+      os: windows
+    sdl:
+      eslint:
+        configuration: 'required'
+        parser: '@typescript-eslint/parser'
+        parserOptions: 'ecmaFeatures:{jsx:true}\necmaVersion:12\nsourceType:module\nproject:$(Build.SourcesDirectory)/tsconfig.common.json'
+        enableExclusions: true
+        exclusionPatterns": "*.d.ts\n*.spec.js\n*.spec.jsx\n*.spec.ts\n*.spec.tsx\n*.test.ts\n*.test.tsx"
+        customEnvironments: true
+        environmentsBrowser: true
+        environmentsNode: true
+        environmentsCommonJs: true
+        environmentsSharedNodeBrowser: false
+        environmentsEs6: false
+        environmentsEs2017: false
+        environmentsEs2020: true
+        environmentsJest: false
+      sourceRepositoriesToScan:
+        include:
+          - repository: AppHostingSdkV3
+          - repository: AppHostingSdkV4
+          - repository: AppHostingSdkV5
+          - repository: AppHostingSdkV6
+          - repository: AppHostingSdkV7
+          - repository: AppHostingSdkV8
+          - repository: AppHostingSdkV9
+      codeql:
+        compiled:
+          enabled: false
+          justificationForDisabling: 'CodeQL has some known issues with arm64 macos. Disabling auto-injection and using manual task instead'
+    customBuildTags:
+      - ES365AIMigrationTooling
+    stages:
+      - ${{ each ver in parameters.backCompatVersions }}:
+        - stage: BackCompat_${{ ver.version }}
+          displayName: 'Back-Compat E2E Tests - ${{ ver.version }}'
+          jobs:
+            - template: tools/yaml-templates/web-e2e-versions.yml@self
+              parameters:
+                AppHostingSdk: ${{ ver.resource }}
+                versionBranch: ${{ ver.version }}

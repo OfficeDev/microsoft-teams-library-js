@@ -64,7 +64,7 @@ jobs:
         steps:
           - template: build-app-host.yml
             parameters:
-              appHostGitPath: AppHostingSdk
+              appHostGitPath: ${{ parameters.AppHostingSdk }}
 
           - task: CmdLine@2
             displayName: 'Build Local Test App to Reference via Script Tag'
