@@ -1,0 +1,70 @@
+# This template handles running CDN E2E tests split by test name prefix pattern.
+# It will run one E2E job for each testPrefixPattern in the testPrefixPatternGroups parameter.
+
+parameters:
+  - name: testPrefixPatternGroups
+    type: object
+    default: ['{[A-Z],[a-z],[0-9]}']
+
+jobs:
+  - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
+      - job: E2ETestsCDN_${{ replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
+          '*', 'STAR'),
+          '?', 'QMARK'),
+          '\', 'BS'),
+          '.', 'DOT'),
+          '(', 'LP'),
+          ')', 'RP'),
+          '=', 'EQUALS') }}
+
+        timeoutInMinutes: 120
+        displayName: 'E2E Tests - CDN - ${{testPrefixPattern}} (only runs on release builds)'
+        condition: and(
+          eq(variables['Build.Reason'], 'PullRequest'),
+          startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
+          eq(variables['System.PullRequest.TargetBranch'], 'main')
+          )
+        pool:
+          name: Azure-Pipelines-1ESPT-ExDShared
+          image: 'ubuntu-latest'
+          os: linux
+        steps:
+          - template: build-app-host.yml
+            parameters:
+              appHostGitPath: AppHostingSdk
+
+          - task: CmdLine@2
+            displayName: 'Build Test App CDN'
+            inputs:
+              script: |
+                pnpm build-test-app-CDN
+              workingDirectory: '$(ClientSdkProjectDirectory)'
+
+          - bash: >
+              pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
+              --useDataFromLocal=true
+              --testPrefixPattern "${{testPrefixPattern}}"
+              --reportFileName=e2e-tests-report-cdn-script-tag
+              --envType=cdnScriptTag
+            displayName: 'Run E2E CDN tests (${{testPrefixPattern}})'
+            condition: succeeded()
+            workingDirectory: '$(AppHostingSdkProjectDirectory)'
+            enabled: true
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/e2e-tests-report*.xml'
+              testRunTitle: 'E2E Tests - CDN - ${{testPrefixPattern}}'
+              mergeTestResults: true
+            condition: succeededOrFailed()
