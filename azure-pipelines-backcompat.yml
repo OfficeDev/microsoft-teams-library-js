@@ -1,4 +1,4 @@
-# Nightly back-compat E2E tests pipeline
+# Back-compat E2E tests pipeline
 # Runs Hub SDK back-compat E2E tests sequentially by version (newest first).
 #
 # To add a new back-compat version:
@@ -6,21 +6,11 @@
 #   2. Create an AppHostV<N>ReleaseBranch pipeline variable in ADO
 #   3. Append { version: 'v<N>', resource: 'AppHostingSdkV<N>' } to the backCompatVersions list
 #
-# Required ADO pipeline variables (set in ADO portal or variable group):
-#   - AppHostV3ReleaseBranch
-#   - AppHostV4ReleaseBranch
-#   - AppHostV5ReleaseBranch
-#   - AppHostV6ReleaseBranch
-#   - AppHostV7ReleaseBranch
-#   - AppHostV8ReleaseBranch
-#   - AppHostV9ReleaseBranch
-#
-# The release pipeline (tools/releases/prod-release.yml) validates that this
-# nightly pipeline has a recent successful run before allowing a release.
+# Only LTS app host versions should be validated on this pipeline.
 
 parameters:
   - name: backCompatVersions
-    displayName: 'Back-compat Hub SDK versions to test (newest first)'
+    displayName: 'Back-compat app host SDK versions to test (newest first)'
     type: object
     default:
       - { version: 'v9', resource: 'AppHostingSdkV9' }
@@ -40,7 +30,7 @@ trigger: none
 
 schedules:
   - cron: '0 0 * * *'
-    displayName: 'Nightly back-compat E2E tests'
+    displayName: 'teams-js back-compat E2E tests'
     branches:
       include:
         - main
@@ -113,10 +103,6 @@ extends:
           - repository: AppHostingSdkV7
           - repository: AppHostingSdkV8
           - repository: AppHostingSdkV9
-      codeql:
-        compiled:
-          enabled: false
-          justificationForDisabling: 'CodeQL has some known issues with arm64 macos. Disabling auto-injection and using manual task instead'
     customBuildTags:
       - ES365AIMigrationTooling
     stages:

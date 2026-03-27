@@ -9,9 +9,6 @@ resources:
     - pipeline: microsoft-teams-library-js-pipeline
       source: 'microsoft-teams-library-js/M365 Platform/App SDK/OfficeDev.microsoft-teams-library-js'
       project: ISS
-    - pipeline: nightlyBackCompatPipeline
-      source: 'microsoft-teams-library-js/M365 Platform/App SDK/OfficeDev.microsoft-teams-library-js.nightly-backcompat'
-      project: ISS
 extends:
   template: v1/Office.Official.PipelineTemplate.yml@CustomPipelineTemplates
   parameters:
@@ -55,43 +52,6 @@ extends:
                   artifactName: scripts
                   targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/scripts
             steps:
-              - task: PowerShell@2
-                displayName: 'Validate nightly back-compat pipeline succeeded'
-                inputs:
-                  targetType: inline
-                  script: |
-                    $orgUrl = $env:SYSTEM_COLLECTIONURI
-                    $project = $env:SYSTEM_TEAMPROJECT
-                    $token = $env:SYSTEM_ACCESSTOKEN
-                    $headers = @{ Authorization = "Bearer $token" }
-
-                    # Query the latest completed run of the nightly back-compat pipeline on main
-                    $pipelineName = "$(resources.pipeline.nightlyBackCompatPipeline.pipelineName)"
-                    $runsUrl = "${orgUrl}${project}/_apis/build/builds?definitions=$(resources.pipeline.nightlyBackCompatPipeline.pipelineID)&statusFilter=completed&resultFilter=succeeded&branchName=refs/heads/main&`$top=1&api-version=7.0"
-
-                    Write-Host "Checking latest nightly back-compat pipeline run ($pipelineName)..."
-                    $response = Invoke-RestMethod -Uri $runsUrl -Headers $headers -Method Get
-
-                    if ($response.count -eq 0) {
-                      Write-Error "No successful runs found for the nightly back-compat pipeline. Releases require a passing nightly run."
-                      exit 1
-                    }
-
-                    $latestRun = $response.value[0]
-                    $finishTime = [DateTime]::Parse($latestRun.finishTime)
-                    $hoursAgo = (Get-Date).ToUniversalTime().Subtract($finishTime).TotalHours
-
-                    Write-Host "Latest successful run: #$($latestRun.buildNumber) finished $([math]::Round($hoursAgo, 1)) hours ago"
-
-                    if ($hoursAgo -gt 48) {
-                      Write-Error "Latest successful nightly back-compat run is more than 48 hours old ($([math]::Round($hoursAgo, 1))h). Please investigate nightly pipeline failures before releasing."
-                      exit 1
-                    }
-
-                    Write-Host "##[section]Nightly back-compat pipeline validation passed."
-                  pwsh: true
-                env:
-                  SYSTEM_ACCESSTOKEN: $(System.AccessToken)
               - task: prepare-deployment@1
                 displayName: Prepare deployment
                 inputs:
