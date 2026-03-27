@@ -1,8 +1,19 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Thu, 12 Mar 2026 20:51:32 GMT and should not be manually modified. -->
+<!-- This log was last generated on Fri, 27 Mar 2026 20:29:02 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.51.0
+
+Fri, 27 Mar 2026 20:29:02 GMT
+
+### Minor changes
+
+- Added teamsJs logging for cases where an API fails because it is called in an unsupported frame context.
+- Added `plugins` capability that will help directly interact with the host bypassing API registration in hubsdk. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `appState` parameter to `HostMemoryMetrics` to indicate current state of the app's lifecycle. Deprecated `isCached` and `isPrecached` fields to use the new structure.
+- Added `{namespace}` capability that will {explain capability}. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
 
 ## 2.50.0
 
