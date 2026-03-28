@@ -12,7 +12,7 @@ const CheckSharingCapability = (): React.ReactElement =>
   });
 
 const ShareWebContent = (): React.ReactElement =>
-  ApiWithTextInput<sharing.IShareRequest<sharing.IURLContent>>({
+  ApiWithTextInput<sharing.IShareRequest<sharing.IShareRequestContentType>>({
     name: 'share_shareWebContent',
     title: 'Share web content',
     onClick: {
@@ -21,11 +21,16 @@ const ShareWebContent = (): React.ReactElement =>
           throw new Error('content is required');
         }
         for (const contentItem of input.content) {
-          if (contentItem.type !== 'URL') {
-            throw new Error("Each of the content items has to have type property with value 'URL'.");
-          }
-          if (!contentItem.url) {
-            throw new Error('Each of the content items has to have url property set.');
+          if (contentItem.type === 'URL') {
+            if (!(contentItem as sharing.IURLContent).url) {
+              throw new Error('Each URL content item must have a url property set.');
+            }
+          } else if (contentItem.type === 'File') {
+            if (!(contentItem as sharing.IFileContent).url) {
+              throw new Error('Each File content item must have a url property set.');
+            }
+          } else {
+            throw new Error('Unsupported content type');
           }
         }
       },
