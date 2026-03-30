@@ -5,12 +5,14 @@ import {
   getBase64StringFromBlob,
   hasScriptTags,
   isPrimitiveOrPlainObject,
+  normalizeAgeGroupValue,
   validateId,
   validateUrl,
   validateUuid,
 } from '../../src/internal/utils';
 import { AppId, pages } from '../../src/public';
-import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
+import { ClipboardSupportedMimeType, LegalAgeGroupClassification } from '../../src/public/interfaces';
+import { IBaseRuntime } from '../../src/public/runtime';
 import { UUID } from '../../src/public/uuidObject';
 
 describe('utils', () => {
@@ -608,6 +610,53 @@ describe('utils', () => {
     it('should return false for objects nested deeper than 1000 levels', () => {
       expect(isPrimitiveOrPlainObject(createNestedObject(1001))).toBe(false);
       expect(isPrimitiveOrPlainObject(createNestedObject(1000))).toBe(true);
+    });
+  });
+  describe('normalizeAgeGroupValue', () => {
+    const createMockRuntimeConfig = (ageGroup?: string | LegalAgeGroupClassification): IBaseRuntime => ({
+      apiVersion: 4,
+      supports: {},
+      hostVersionsInfo: {
+        appEligibilityInformation: {
+          ageGroup: ageGroup as LegalAgeGroupClassification,
+          cohort: null,
+          isCopilotEligible: false,
+          isCopilotEnabledRegion: true,
+          isOptedOutByAdmin: false,
+          userClassification: null,
+        },
+      },
+    });
+
+    describe('when ageGroup needs normalization', () => {
+      it('should normalize "nonAdult" to NotAdult', () => {
+        const input = createMockRuntimeConfig('nonAdult');
+        const result = normalizeAgeGroupValue(input);
+
+        expect(result.hostVersionsInfo?.appEligibilityInformation?.ageGroup).toBe(LegalAgeGroupClassification.NotAdult);
+        expect(result).not.toBe(input); // Should return a new object
+      });
+
+      it('should normalize "NonAdult" to NotAdult (case insensitive)', () => {
+        const input = createMockRuntimeConfig('NonAdult');
+        const result = normalizeAgeGroupValue(input);
+
+        expect(result.hostVersionsInfo?.appEligibilityInformation?.ageGroup).toBe(LegalAgeGroupClassification.NotAdult);
+      });
+
+      it('should normalize "NONADULT" to NotAdult (case insensitive)', () => {
+        const input = createMockRuntimeConfig('NONADULT');
+        const result = normalizeAgeGroupValue(input);
+
+        expect(result.hostVersionsInfo?.appEligibilityInformation?.ageGroup).toBe(LegalAgeGroupClassification.NotAdult);
+      });
+
+      it('should normalize "noNaDuLt" to NotAdult (mixed case)', () => {
+        const input = createMockRuntimeConfig('noNaDuLt');
+        const result = normalizeAgeGroupValue(input);
+
+        expect(result.hostVersionsInfo?.appEligibilityInformation?.ageGroup).toBe(LegalAgeGroupClassification.NotAdult);
+      });
     });
   });
 });

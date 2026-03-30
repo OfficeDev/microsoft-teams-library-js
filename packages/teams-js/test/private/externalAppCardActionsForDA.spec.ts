@@ -23,7 +23,7 @@ describe('externalAppCardActionsForDA', () => {
     jest.clearAllMocks();
   });
   describe('processActionOpenUrlDialog', () => {
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     const testActionOpenUrlDialogInfo = {
       title: 'testTitle',
       url: new URL('https://www.example.com'),

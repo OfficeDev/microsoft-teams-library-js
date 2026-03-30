@@ -8,7 +8,6 @@ parameters:
   - name: hostingEnvironmentType
     type: string
     values:
-      - 'electron'
       - 'standardWeb'
   - name: teamsJsReferenceType
     type: string
@@ -26,7 +25,26 @@ jobs:
   - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
       # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
       # Sadly ADO does not support regex matching here at this time.
-      - job: E2ETestsWeb_${{parameters.versionBranch}}_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
+      - job: E2ETestsWeb_${{ parameters.versionBranch }}_${{ parameters.teamsJsReferenceType }}_${{ replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(
+          replace(replace(replace(testPrefixPattern, '[', 'LB'),']', 'RB'),'{', 'LC'),'}', 'RC'),',', 'COMMA'),'-', 'DASH'),
+          '*', 'STAR'),
+          '?', 'QMARK'),
+          '\', 'BS'),
+          '.', 'DOT'),
+          '(', 'LP'),
+          ')', 'RP'),
+          '=', 'EQUALS') }}
+
+        timeoutInMinutes: 120
         displayName: 'E2E Tests - Web ${{parameters.versionBranch}} - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
         pool:
           name: Azure-Pipelines-1ESPT-ExDShared
@@ -38,6 +56,11 @@ jobs:
               value: 'test'
             ${{ else }}:
               value: 'localScriptTag'
+          - name: ssrFlag
+            ${{ if eq(testPrefixPattern, '{[S],[s]}') }}:
+              value: '--ssr'
+            ${{ else }}:
+              value: ''
         steps:
           - template: build-app-host.yml
             parameters:
@@ -51,22 +74,34 @@ jobs:
                 pnpm build-test-app-local
               workingDirectory: '$(ClientSdkProjectDirectory)'
 
+          - script: |
+              sudo apt-get install -y libnss3-tools
+              curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+              chmod +x mkcert-v*-linux-amd64
+              sudo mv mkcert-v*-linux-amd64 /usr/local/bin/mkcert
+            displayName: 'Install mkcert using pre-built binary'
+            condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+
+          - powershell: |
+              pnpm setup-ssr-app-cert
+            displayName: 'Setup SSR app certificates for SSR test app'
+            workingDirectory: 'microsoft-teams-library-js'
+            condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+
+          - powershell: |
+              pnpm --filter ssr-test-app build
+            displayName: 'Build teamsjs SSR test app'
+            workingDirectory: 'microsoft-teams-library-js'
+            condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+
           - bash: >
               pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
               --useDataFromLocal=true
               --testPrefixPattern "${{testPrefixPattern}}"
               --envType=${{ variables.envType }}
+              ${{ variables.ssrFlag }}
             displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
-            workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-          - bash: |
-              pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=test --serverUrl=https://localhost:4000/
-              pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=orange --serverUrl=https://local.teams.office.com:8080
-              # This runs the Electron-integration layer tests, which currently cannot be filtered
-              pnpm exec xvfb-maybe playwright test
-            displayName: 'Run Electron-Integration Layer tests'
-            condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
           - task: PublishTestResults@2

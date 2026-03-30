@@ -13,6 +13,8 @@ export enum ContentItemType {
   CALENDAR_INVITE = 'calendarInvite',
   WEB_PAGE = 'webPage',
   MIXED = 'mixed',
+  TEAMS = 'teams', // Represents Teams-related content, such as chat or channel messages
+  FILE = 'file', // Represents file content, such as documents or attachments
 }
 
 /**
@@ -58,7 +60,9 @@ export interface ServerEmailContent extends BaseEmailContent {
  * Limited to Microsoft-internal use
  */
 export interface DraftEmailContent extends BaseEmailContent {
+  responseToEmailId?: string; // Optional, if this is a response to another email
   savedTime?: Date;
+  composeType?: 'new' | 'reply' | 'replyAll' | 'forward'; // Type of compose action
 }
 
 // Union type for usage elsewhere
@@ -85,6 +89,7 @@ export interface CalendarInviteContent {
   attachments?: string[]; // List of attachment file names or URLs
   // Add other calendar event properties
 }
+
 /**
  * @hidden
  *
@@ -113,7 +118,7 @@ export interface WebPageContent {
  */
 export interface TextSelection {
   content: string;
-  source?: EmailContent | WebPageContent | CalendarInviteContent;
+  source?: EmailContent | WebPageContent | CalendarInviteContent | TeamsContent | FileContent;
 }
 
 /**
@@ -194,7 +199,202 @@ export interface MediaSelection {
   type: MediaSelectionType;
   altText?: string;
   content: ImageContent | AudioContent | VideoContent;
-  source?: EmailContent | WebPageContent | CalendarInviteContent;
+  source?: EmailContent | WebPageContent | CalendarInviteContent | TeamsContent | FileContent;
+}
+/**
+ * @hidden
+ *
+ * Interface representing the context of a Microsoft Teams chat.
+ * Contains identifying information for a specific Teams chat session.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface TeamsChatContext {
+  chatId: string; // Unique identifier for the chat
+}
+/**
+ * @hidden
+ *
+ * Interface representing the context of a Microsoft Teams channel.
+ * Contains identifying information for a specific Teams channel and related content.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface TeamsChannelContext {
+  channelId: string; // Unique identifier for the channel
+  teamId: string; // Unique identifier for the team
+  channelName?: string; // Name of the channel
+  postId?: string; // Unique identifier for the post in the channel
+  replyChainId?: string; // Unique identifier for the reply chain in the channel
+  clientConversationId?: string; // Unique identifier for the client conversation
+}
+
+/**
+ * @hidden
+ *
+ * Interface representing the context of a Microsoft Teams meeting.
+ * Contains configuration and identifying information for Teams meeting sessions including Copilot features.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface TeamsMeetingContext {
+  callId: string;
+  threadId: string;
+  organizerId: string;
+  messageId?: string;
+  groupId?: string;
+  sessionType?: TeamsSessionType;
+  vroomId?: string;
+  iCalUid?: string;
+  conversationId?: string;
+  locale?: string;
+  disableHistory?: boolean;
+  Dimensions?: TeamsDimension[];
+  UtteranceInfo?: TeamsUtteranceInfo;
+  copilotMode?: CopilotMode;
+  transcriptState?: TranscriptState;
+  enableMeetingCopilotResponseHandoff?: boolean;
+  enableCopilotResponseCopyRestriction?: boolean;
+  enableMeetingCopilotVisualInsights?: boolean;
+  enableMeetingCopilotCitation?: boolean;
+}
+
+/**
+ * @hidden
+ *
+ * Enum representing different types of Teams session contexts.
+ * Defines the various meeting and chat session types within Microsoft Teams.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+
+export enum TeamsSessionType {
+  Private = 'Private',
+  Shared = 'Shared',
+  Recap = 'Recap',
+  RecapCall = 'RecapCall',
+  PrivateViewCall = 'PrivateViewCall',
+  Chat = 'Chat',
+  Compose = 'Compose',
+}
+/**
+ * @hidden
+ *
+ * Interface for telemetry dimension data used in analytics and reporting.
+ * Contains dimension name-value pairs for categorizing telemetry data.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface TeamsDimension {
+  DimensionName: TeamsDimensionName;
+  DimensionValue: string;
+}
+/**
+ * @hidden
+ *
+ * Enum defining telemetry dimension names for categorizing analytics data.
+ * Used to specify the type of dimension being tracked in telemetry systems.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum TeamsDimensionName {
+  ClientDeviceType = 'ClientDeviceType',
+  ClientRing = 'ClientRing',
+  ClientScenarioName = 'ClientScenarioName',
+}
+/**
+ * @hidden
+ *
+ * Interface for utterance identification information used in conversation tracking.
+ * Contains unique identifiers for individual utterances in chat or meeting contexts.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface TeamsUtteranceInfo {
+  utteranceId?: string;
+}
+/**
+ * @hidden
+ *
+ * Enum defining different Copilot operational modes.
+ * Specifies whether Copilot is enabled and how it should function in Teams contexts.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum CopilotMode {
+  Enabled = 'enabled',
+  Disabled = 'disabled',
+  EnabledWithTranscript = 'enabledWithTranscript',
+}
+/**
+ * @hidden
+ *
+ * Enum defining different transcript states for meeting recordings.
+ * Indicates the current status of transcript generation and availability.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum TranscriptState {
+  NotStarted = 'notStarted',
+  Active = 'active',
+  Inactive = 'inactive',
+  UnknownFutureValue = 'unknownFutureValue',
+}
+/**
+ * @hidden
+ *
+ * Enum defining the context types for Teams-related content.
+ * Specifies whether the content is from a chat, channel, meeting, or meeting chat.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum TeamsContextType {
+  Chat = 'Chat',
+  Channel = 'Channel',
+  Meeting = 'Meeting',
+  MeetingChat = 'MeetingChat',
+}
+/**
+ * @hidden
+ *
+ * Interface for Teams-related content data including app information and context.
+ * Contains metadata about Teams applications and their execution contexts.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface TeamsContent {
+  appName?: string;
+  appVersion?: string;
+  appPlatform?: string;
+  appRingInfo?: string;
+  contextType: TeamsContextType;
+  chatContext?: TeamsChatContext;
+  channelContext?: TeamsChannelContext;
+  meetingContext?: TeamsMeetingContext;
+}
+
+/**
+ * @hidden
+ *
+ * Interface for file content data including URLs and metadata.
+ * Represents file attachments and documents referenced in content.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface FileContent {
+  fileUrl?: string; // URL of the file
 }
 
 /**
@@ -211,6 +411,7 @@ export interface MixedContent {
   media?: (ImageContent | AudioContent | VideoContent)[];
   calendarInvites?: CalendarInviteContent[];
   webPages?: WebPageContent[];
+  files?: FileContent[];
   otherContent?: Array<Record<string, unknown>> | undefined; // Other content types that don't fit into the above categories
 }
 
@@ -228,8 +429,19 @@ export type ContentItem =
   | MediaSelection
   | CalendarInviteContent
   | WebPageContent
+  | TeamsContent
+  | FileContent
   | MixedContent;
 
+/**
+ * @hidden
+ *
+ * The Content interface represents the content data structure used in the side panel.
+ * It si the payload received by the copilot app from the hub.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface Content {
   userAction?: string;
   contentType:
@@ -237,6 +449,8 @@ export interface Content {
     | ContentItemType.EMAIL
     | ContentItemType.MEDIA
     | ContentItemType.TEXT
+    | ContentItemType.TEAMS
+    | ContentItemType.FILE
     | ContentItemType.WEB_PAGE
     | ContentItemType.MIXED;
   formCode?: string; // Unique identifier for the content
@@ -247,8 +461,32 @@ export interface Content {
   status?: string; // Optional status message
 }
 
+/**
+ * @hidden
+ *
+ * The ContentRequest interface represents the request params sent to the hub to fetch content.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface ContentRequest {
-  localEndpointInfo: string; // local endpoint information for the request- used by Edge
+  /**
+   * @deprecated Use the index signature `[key: string]: unknown` instead to pass custom properties.
+   */
+  localEndpointInfo?: string; // local endpoint information for the request - used by Edge
+  [key: string]: unknown;
+}
+
+/**
+ * @hidden
+ *
+ * The UserConsentRequest interface represents the request params sent to the hub to get user consent.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface UserConsentRequest {
+  [key: string]: unknown;
 }
 
 /**

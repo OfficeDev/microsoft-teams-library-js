@@ -113,6 +113,11 @@ export interface IFailedRequest {
    * This property is currently unused.
    */
   message?: string;
+  /**
+   * Optional authorization header to be sent along with the failure notification.
+   * Currently only supported for SSR scenarios.
+   */
+  authHeader?: string;
 }
 
 /**
@@ -180,6 +185,12 @@ export interface AppInfo {
   userClickTimeV2?: number;
 
   /**
+   * The ID of the message from which this task module was launched.
+   * This is only available in task modules launched from bot cards.
+   */
+  messageId?: string;
+
+  /**
    * The ID of the parent message from which this task module was launched.
    * This is only available in task modules launched from bot cards.
    */
@@ -207,6 +218,21 @@ export interface AppInfo {
 }
 
 /**
+ * Features supported by the host that the app can query for via getContext.
+ */
+export type HostFeatures = {
+  /**
+   * Indicates whether the host supports nested wildcards in valid domains. If true, the host will allow valid domains with nested wildcards (e.g. apps.*.com). If false or undefined, the host will only allow valid domains with a single wildcard level (e.g. *.test.com).
+   */
+  nestedWildcardsInValidDomains?: boolean;
+
+  /**
+   * Indicates whether server side rendering is enabled for the host.
+   */
+  serverSideRendering?: boolean;
+};
+
+/**
  * Represents information about the application's host.
  */
 export interface AppHostInfo {
@@ -221,6 +247,11 @@ export interface AppHostInfo {
   clientType: HostClientType;
 
   /**
+   * The features supported by the host. This is an optional field that may not be populated by all hosts, and may be added to over time as new features are added to hosts. Because of this, apps should always check for the presence of a feature and its value before using it, and should gracefully handle the case where the feature is not present.
+   */
+  features?: HostFeatures;
+
+  /**
    * Unique ID for the current Host session for use in correlating telemetry data.
    */
   sessionId: string;
@@ -229,6 +260,13 @@ export interface AppHostInfo {
    * Current ring ID
    */
   ringId?: string;
+
+  /**
+   * An array representing the hierarchy of ancestor hosts that the app is embedded inside of.
+   * The array is ordered from immediate parent to root host.
+   * For example, if Bizchat is running in Calendar in Teams, this would be ["Calendar", "Teams"].
+   */
+  ancestors?: string[];
 }
 
 /**
@@ -529,7 +567,7 @@ export interface Context {
 
   /**
    * Info about the currently logged in user running the app.
-   * If the current user is not logged in/authenticated (e.g. a meeting app running for an anonymously-joined partcipant) this will be `undefined`.
+   * If the current user is not logged in/authenticated (e.g. a meeting app running for an anonymously-joined participant) this will be `undefined`.
    */
   user?: UserInfo;
 
@@ -578,6 +616,15 @@ export interface Context {
  * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
  */
 export type themeHandler = (theme: string) => void;
+
+/**
+ * @hidden
+ * This function is passed to registerOnContextChangeHandler. It is called every time the user changes their context.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export type contextHandler = (context: Context) => void;
 
 /**
  * This function is passed to registerHostToAppPerformanceMetricsHandler. It is called every time a response is received from the host with metrics for analyzing message delay. See {@link HostToAppPerformanceMetrics} to see which metrics are passed to the handler.
@@ -635,7 +682,7 @@ logWhereTeamsJsIsBeingUsed();
  * @param validMessageOrigins - Optionally specify a list of cross-frame message origins. This parameter is used if you know that your app
  * will be hosted on a custom domain (i.e., not a standard Microsoft 365 host like Teams, Outlook, etc.) Most apps will never need
  * to pass a value for this parameter.
- * Any domains passed in the array must have the https: protocol on the string otherwise they will be ignored. Example: https://www.example.com
+ * Any domains passed in the array must define a scheme to be able to be processed. Examples: https://www.example.com, chrome://
  * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
  */
 export function initialize(validMessageOrigins?: string[]): Promise<void> {
@@ -754,6 +801,25 @@ export function registerOnThemeChangeHandler(handler: themeHandler): void {
 }
 
 /**
+ * @hidden
+ * Registers a handler for content (context) changes.
+ *
+ * @remarks
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ *
+ * @param handler - The handler to invoke when the app's content context changes.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerOnContextChangeHandler(handler: contextHandler): void {
+  appHelpers.registerOnContextChangeHandlerHelper(
+    getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnContextChangeHandler),
+    handler,
+  );
+}
+
+/**
  * Registers a function for handling data of host to app message delay.
  *
  * @remarks
@@ -819,6 +885,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       theme: legacyContext.theme ? legacyContext.theme : 'default',
       iconPositionVertical: legacyContext.appIconPosition,
       osLocaleInfo: legacyContext.osLocaleInfo,
+      messageId: legacyContext.messageId,
       parentMessageId: legacyContext.parentMessageId,
       userClickTime: legacyContext.userClickTime,
       userClickTimeV2: legacyContext.userClickTimeV2,
@@ -826,8 +893,10 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       host: {
         name: legacyContext.hostName ? legacyContext.hostName : HostName.teams,
         clientType: legacyContext.hostClientType ? legacyContext.hostClientType : HostClientType.web,
+        features: legacyContext.hostFeatures,
         sessionId: legacyContext.sessionId ? legacyContext.sessionId : '',
         ringId: legacyContext.ringId,
+        ancestors: legacyContext.hostAncestors,
       },
       appLaunchId: legacyContext.appLaunchId,
       appId: legacyContext.appId ? new AppId(legacyContext.appId) : undefined,

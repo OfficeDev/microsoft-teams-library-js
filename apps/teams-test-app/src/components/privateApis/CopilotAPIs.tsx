@@ -2,7 +2,7 @@ import { copilot, sidePanelInterfaces, UUID } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../../App';
-import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CopilotAPIs = (): ReactElement => {
@@ -15,11 +15,12 @@ const CopilotAPIs = (): ReactElement => {
     });
 
   const GetEligibilityInfo = (): ReactElement =>
-    ApiWithoutInput({
+    ApiWithCheckboxInput({
       name: 'getEligibilityInfo',
       title: 'Get the app Eligibility Information',
-      onClick: async () => {
-        const result = await copilot.eligibility.getEligibilityInfo();
+      label: 'forceRefresh',
+      onClick: async (input) => {
+        const result = await copilot.eligibility.getEligibilityInfo(input);
         return JSON.stringify(result);
       },
     });
@@ -80,19 +81,35 @@ const CopilotAPIs = (): ReactElement => {
           }
         },
       },
+      isInputOptional: true,
       defaultInput: JSON.stringify({
         localEndpointInfo: 'read',
+        correlationId: 'testValue',
       }),
     });
 
   const PreCheckUserConsent = (): ReactElement =>
-    ApiWithoutInput({
+    ApiWithTextInput<sidePanelInterfaces.UserConsentRequest>({
       name: 'preCheckUserConsent',
       title: 'Get User Consent',
-      onClick: async () => {
-        const result = await copilot.sidePanel.preCheckUserConsent();
-        return JSON.stringify(result);
+      onClick: {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        validateInput: (_input) => {},
+        submit: async (input) => {
+          try {
+            const result = input
+              ? await copilot.sidePanel.preCheckUserConsent(input)
+              : await copilot.sidePanel.preCheckUserConsent();
+            return JSON.stringify(result);
+          } catch (error) {
+            return `Error: ${error}`;
+          }
+        },
       },
+      isInputOptional: true,
+      defaultInput: JSON.stringify({
+        isMultiTabEnabled: true,
+      }),
     });
 
   const RegisterUserActionContentSelect = (): React.ReactElement =>
@@ -106,6 +123,27 @@ const CopilotAPIs = (): ReactElement => {
         };
         copilot.sidePanel.registerUserActionContentSelect(handler);
         return generateRegistrationMsg('then the content is selected by the user');
+      },
+    });
+
+  const CheckCopilotViewCapability = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCopilotViewCapability',
+      title: 'Check if Copilot.View is supported',
+      onClick: async () => `Copilot.View module ${copilot.view.isSupported() ? 'is' : 'is not'} supported`,
+    });
+
+  const CloseSidePanel = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'closeSidePanel',
+      title: 'Close Side Panel',
+      onClick: async () => {
+        try {
+          await copilot.view.closeSidePanel();
+          return 'copilot.view.closeSidePanel() was called';
+        } catch (error) {
+          return `Error: ${error}`;
+        }
       },
     });
 
@@ -124,6 +162,10 @@ const CopilotAPIs = (): ReactElement => {
         <RegisterUserActionContentSelect />
         <GetContent />
         <PreCheckUserConsent />
+      </ModuleWrapper>
+      <ModuleWrapper title="Copilot.View">
+        <CheckCopilotViewCapability />
+        <CloseSidePanel />
       </ModuleWrapper>
     </>
   );

@@ -1,13 +1,10 @@
 import { HostClientType } from '../public/constants';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { IBaseRuntime, isRuntimeInitialized, Runtime } from '../public/runtime';
-import {
-  defaultSDKVersionForCompatCheck,
-  errorLibraryNotInitialized,
-  userOriginUrlValidationRegExp,
-} from './constants';
+import { defaultSDKVersionForCompatCheck, errorLibraryNotInitialized } from './constants';
 import { GlobalVars } from './globalVars';
 import { getLogger } from './telemetry';
+import { isValidPatternUrl } from './urlPattern';
 import { compareSDKVersions } from './utils';
 
 const internalLogger = getLogger('internal');
@@ -62,10 +59,11 @@ export function ensureInitialized(runtime: IBaseRuntime, ...expectedFrameContext
     }
 
     if (!found) {
-      throw new Error(
+      const errorMessage =
         `This call is only allowed in following contexts: ${JSON.stringify(expectedFrameContexts)}. ` +
-          `Current context: "${GlobalVars.frameContext}".`,
-      );
+        `Current context: "${GlobalVars.frameContext}".`;
+      ensureInitializedLogger(errorMessage);
+      throw new Error(errorMessage);
     }
   }
   return isRuntimeInitialized(runtime);
@@ -137,7 +135,7 @@ export function throwExceptionIfMobileApiIsNotSupported(
 export function processAdditionalValidOrigins(validMessageOrigins: string[]): void {
   let combinedOriginUrls = GlobalVars.additionalValidOrigins.concat(
     validMessageOrigins.filter((_origin: string) => {
-      return typeof _origin === 'string' && userOriginUrlValidationRegExp.test(_origin);
+      return typeof _origin === 'string' && isValidPatternUrl(_origin);
     }),
   );
   const dedupUrls: { [url: string]: boolean } = {};

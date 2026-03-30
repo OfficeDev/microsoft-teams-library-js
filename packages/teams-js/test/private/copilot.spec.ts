@@ -28,6 +28,7 @@ const mockedAppEligibilityInformation = {
     eduType: EduType.HigherEducation,
   },
   featureSet: { serverFeatures: ['feature1', 'feature2'], uxFeatures: ['feature3'] },
+  settings: { conversationSettings: { isOptionalConnectedExperiencesEnabled: true } },
 };
 
 const mockedAppEligibilityInformationUserClassificationNull = {
@@ -43,6 +44,24 @@ const copilotInHostVersionsInfoRuntimeConfig: Runtime = {
   apiVersion: 4,
   hostVersionsInfo: {
     appEligibilityInformation: mockedAppEligibilityInformation,
+  },
+  supports: {
+    pages: {
+      appButton: {},
+      tabs: {},
+      config: {},
+      backStack: {},
+      fullTrust: {},
+    },
+    teamsCore: {},
+    logs: {},
+  },
+};
+
+const copilotInHostVersionsInfoRuntimeConfigWithNonAdult: Runtime = {
+  apiVersion: 4,
+  hostVersionsInfo: {
+    appEligibilityInformation: { ...mockedAppEligibilityInformation, ageGroup: LegalAgeGroupClassification.NonAdult },
   },
   supports: {
     pages: {
@@ -140,6 +159,12 @@ describe('copilot', () => {
         expect(copilot.eligibility.isSupported()).toBeTruthy();
       });
 
+      it('isSupported should return true if eligibility information is on the runtimeConfig with nonAdult enum', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfigWithNonAdult);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+      });
+
       it('isSupported should return true if copilot.eligibility is supported', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig(copilotRuntimeConfig);
@@ -201,6 +226,28 @@ describe('copilot', () => {
           return expect(promise).resolves.toEqual(mockedAppEligibilityInformation);
         });
 
+        it('correct the ageGroup from nonAdult to notAdult', async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+
+          const promise = copilot.eligibility.getEligibilityInfo();
+          const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+          expect(message).not.toBeNull();
+          const mockedAppEligibilityInformationWithInCorrectedAgeGroup = {
+            ...mockedAppEligibilityInformation,
+            ageGroup: LegalAgeGroupClassification.NonAdult,
+          };
+          if (message) {
+            utils.respondToMessage(message, mockedAppEligibilityInformationWithInCorrectedAgeGroup);
+          }
+          const mockedAppEligibilityInformationWithCorrectedAgeGroup = {
+            ...mockedAppEligibilityInformation,
+            ageGroup: LegalAgeGroupClassification.NotAdult,
+          };
+
+          return expect(promise).resolves.toEqual(mockedAppEligibilityInformationWithCorrectedAgeGroup);
+        });
+
         it(`should pass forceRefresh parameter if it exists - with context ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
@@ -244,6 +291,24 @@ describe('copilot', () => {
           }
 
           return expect(promise).resolves.toEqual(mockedAppEligibilityInformationWithUndefinedFeatureSet);
+        });
+
+        it(`should not throw if settings in response is undefined - with context ${frameContext}`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+
+          const promise = copilot.eligibility.getEligibilityInfo();
+          const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+          const mockedAppEligibilityInformationWithUndefinedSettings = {
+            ...mockedAppEligibilityInformation,
+            settings: undefined,
+          };
+          expect(message).not.toBeNull();
+          if (message) {
+            utils.respondToMessage(message, mockedAppEligibilityInformationWithUndefinedSettings);
+          }
+
+          return expect(promise).resolves.toEqual(mockedAppEligibilityInformationWithUndefinedSettings);
         });
 
         it(`should throw error if host returns error - with context ${frameContext}`, async () => {
@@ -420,6 +485,29 @@ describe('copilot', () => {
         }
 
         await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should not throw if AppEligibilityInformation.settings.conversationSettings.isOptionalConnectedExperiencesEnabled is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformationWithInvalidSettings = {
+          ...mockedAppEligibilityInformation,
+          settings: {
+            conversationSettings: {
+              isOptionalConnectedExperiencesEnabled: undefined,
+            },
+          },
+        };
+
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformationWithInvalidSettings);
+        }
+
+        await expect(promise).resolves.toEqual(mockedInvalidAppEligibilityInformationWithInvalidSettings);
       });
     });
   });
@@ -649,6 +737,54 @@ describe('copilot', () => {
         expect(() => copilot.sidePanel.registerUserActionContentSelect(() => {})).toThrowError(
           copilotSidePanelNotSupportedOnPlatformError,
         );
+      });
+    });
+  });
+
+  describe('copilot.view', () => {
+    describe('isSupported', () => {
+      it('should throw if called before initialization', () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        expect(() => copilot.view.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('should return false if view is not supported in runtimeConfig', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        expect(copilot.view.isSupported()).toBe(false);
+      });
+
+      it('should return true if view is supported in runtimeConfig', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(FrameContexts.content);
+        const runtimeWithView = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: { view: {} },
+          },
+        };
+        utils.setRuntimeConfig(runtimeWithView);
+        expect(copilot.view.isSupported()).toBe(true);
+      });
+    });
+
+    describe('closeSidePanel', () => {
+      it('should throw if called before initialization', async () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        await expect(copilot.view.closeSidePanel()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('should call the closeSidePanel API if supported', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+        copilot.view.closeSidePanel();
+        const message = utils.findMessageByFunc('copilot.view.closeSidePanel');
+        expect(message).not.toBeNull();
       });
     });
   });

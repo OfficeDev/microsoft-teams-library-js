@@ -51,6 +51,9 @@ const GetAuthToken = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({
+      resources: ['https://teams.microsoft.com'],
+    }),
   });
 
 const GetUser = (): React.ReactElement =>

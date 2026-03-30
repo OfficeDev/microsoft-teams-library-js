@@ -21,10 +21,12 @@ export interface ApiWithTextInputProps<T> {
             };
       };
   defaultInput?: string;
+  // Indicates whether the input value is optional for submit callback, defaults to false
+  isInputOptional?: boolean;
 }
 
 export const ApiWithTextInput = <T,>(props: ApiWithTextInputProps<T>): React.ReactElement => {
-  const { name, defaultInput, onClick, title } = props;
+  const { name, defaultInput, onClick, title, isInputOptional: isValueOptional = false } = props;
   const [result, setResult] = React.useState('');
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -35,11 +37,15 @@ export const ApiWithTextInput = <T,>(props: ApiWithTextInputProps<T>): React.Rea
   }, [defaultInput]);
 
   const onClickCallback = React.useCallback(async () => {
-    if (!inputRef || !inputRef.current || !inputRef.current.value) {
+    if (!inputRef || !inputRef.current) {
       return;
     }
-
-    const input = inputRef.current.value;
+    // Check if input is mandatory and no value is provided
+    if (!isValueOptional && !inputRef.current.value) {
+      return;
+    }
+    // set default value if input is optional and no value is provided
+    const input = isValueOptional && !inputRef.current.value ? '{}' : inputRef.current.value;
     setResult(noHostSdkMsg);
     try {
       const partialInput = JSON.parse(input) as Partial<T>;
@@ -69,7 +75,7 @@ export const ApiWithTextInput = <T,>(props: ApiWithTextInputProps<T>): React.Rea
       }
       setResult('Error: ' + error);
     }
-  }, [inputRef, setResult, onClick]);
+  }, [inputRef, setResult, onClick, isValueOptional]);
 
   return (
     <ApiContainer title={title} result={result} name={name}>

@@ -1,9 +1,10 @@
 import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { validateOrigin } from '../../src/internal/validOrigins';
+import { resetValidOriginsCache, validateOrigin } from '../../src/internal/validOrigins';
 import * as app from '../../src/public/app/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
 //We need this now because our code prefetches the CDN url and caches the response. This has the side effect of bypassing all future fetch calls.
 const disableCache = true;
 
@@ -105,6 +106,12 @@ describe('validOrigins', () => {
       const result = await validateOrigin(messageOrigin, disableCache);
       expect(result).toBe(false);
     });
+    it("validateOrigin returns false if the protocol of origin is not 'https:'", async () => {
+      /* eslint-disable-next-line @microsoft/sdl/no-insecure-url */ /* Intentionally using http here because of what it is testing */
+      const messageOrigin = new URL('http://teams.microsoft.com');
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
     it('validateOrigin returns false if first end of origin is not matched valid subdomains in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://myteams.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
@@ -139,6 +146,92 @@ describe('validOrigins', () => {
       messageOrigin = new URL('https://m365.cloud.microsoft');
       result = await validateOrigin(messageOrigin, disableCache);
       expect(result).toBe(true);
+    });
+    it("validateOrigin returns true if the protocol of origin is 'http:' and specified in user-supplied list", async () => {
+      /* eslint-disable-next-line @microsoft/sdl/no-insecure-url */ /* Intentionally using http here because of what it is testing */
+      const messageOrigin = new URL('http://teams.microsoft.com');
+      /* eslint-disable-next-line @microsoft/sdl/no-insecure-url */ /* Intentionally using http here because of what it is testing */
+      GlobalVars.additionalValidOrigins = ['http://teams.microsoft.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns true for non-https origin in user-specified list', async () => {
+      const messageOrigin = new URL('chrome://');
+      GlobalVars.additionalValidOrigins = ['chrome://'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns true for non-https full origin in user-specified list', async () => {
+      const messageOrigin = new URL('chrome://my-new-origin');
+      GlobalVars.additionalValidOrigins = ['chrome://my-new-origin'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it("validateOrigin returns false for non-https if protocols don't match", async () => {
+      const messageOrigin = new URL('https://my-new-origin');
+      GlobalVars.additionalValidOrigins = ['chrome://my-new-origin'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
+    it("validateOrigin returns false for non-https if hostname don't match", async () => {
+      const messageOrigin = new URL('chrome://my-new-origin');
+      GlobalVars.additionalValidOrigins = ['chrome://different-origin'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
+    it('validateOrigin returns true for non-https using wildcard', async () => {
+      const messageOrigin = new URL('chrome://chrome.testing.url.com');
+      GlobalVars.additionalValidOrigins = ['chrome://*.testing.url.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns true for nested wildcard test.*.teams.com in user-supplied list', async () => {
+      const messageOrigin = new URL('https://test.subdomain.teams.com');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns true for nested wildcard test.*.teams.microsoft.com in user-supplied list', async () => {
+      const messageOrigin = new URL('https://test.subdomain.teams.microsoft.com');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.microsoft.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns false for nested wildcard when prefix does not match', async () => {
+      const messageOrigin = new URL('https://prod.subdomain.teams.com');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
+    it('validateOrigin returns false for nested wildcard when suffix does not match', async () => {
+      const messageOrigin = new URL('https://test.subdomain.outlook.com');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
+    it('validateOrigin returns true for wildcard in the middle of a longer pattern', async () => {
+      const messageOrigin = new URL('https://api.v2.service.teams.com');
+      GlobalVars.additionalValidOrigins = ['https://api.*.service.teams.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns false for wildcard in middle when other segments mismatch', async () => {
+      const messageOrigin = new URL('https://api.v2.other.teams.com');
+      GlobalVars.additionalValidOrigins = ['https://api.*.service.teams.com'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
+    });
+    it('validateOrigin returns true for nested wildcard with port', async () => {
+      const messageOrigin = new URL('https://test.subdomain.teams.com:8080');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.com:8080'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
+    it('validateOrigin returns false for nested wildcard with mismatched port', async () => {
+      const messageOrigin = new URL('https://test.subdomain.teams.com:9090');
+      GlobalVars.additionalValidOrigins = ['https://test.*.teams.com:8080'];
+      const result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(false);
     });
   });
   describe('testing main validOrigins flow with invalid json object', () => {
@@ -293,100 +386,118 @@ describe('validOrigins', () => {
     it('validateOrigin returns true if origin is in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://teams.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns true if origin for subdomains in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://test.www.office.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns false if origin is not in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://badorigin.example.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if origin is not an exact match in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://team.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it('validateOrigin returns true if origin is valid origin supplied by user ', async () => {
       const messageOrigin = new URL('https://testorigin.example.com');
       GlobalVars.additionalValidOrigins = [messageOrigin.origin];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns false if origin is not supplied by user', async () => {
       const messageOrigin = new URL('https://badorigin.example.com');
       GlobalVars.additionalValidOrigins = ['https://testorigin.example.com'];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it('validateOrigin returns true if origin for subdomains is in the user supplied list', async () => {
       const messageOrigin = new URL('https://subdomain.badorigin.example.com');
       GlobalVars.additionalValidOrigins = ['https://*.badorigin.example.com'];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns false if origin for subdomains is not in the user supplied list', async () => {
       const messageOrigin = new URL('https://subdomain.badorigin.example.com');
       GlobalVars.additionalValidOrigins = ['https://*.testorigin.example.com'];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if the port number of valid origin is not in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://local.teams.live.com:4000');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if the port number of valid origin is not in the user supplied list', async () => {
       const messageOrigin = new URL('https://testorigin.example.com:4000');
       GlobalVars.additionalValidOrigins = ['https://testorigin.example.com:8080'];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it('validateOrigin returns true if the port number of valid origin is in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://local.teams.live.com:8080');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns true if the port number of valid origin is in the user supplied list', async () => {
       const messageOrigin = new URL('https://testorigin.example.com:8080');
       GlobalVars.additionalValidOrigins = ['https://testorigin.example.com:8080'];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns false if origin has extra appended', async () => {
       const messageOrigin = new URL('https://teams.microsoft.com.evil.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it("validateOrigin returns false if the protocol of origin is not 'https:'", async () => {
       /* eslint-disable-next-line @microsoft/sdl/no-insecure-url */ /* Intentionally using http here because of what it is testing */
       const messageOrigin = new URL('http://teams.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if first end of origin is not matched valid subdomains in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://myteams.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if first end of origin is not matched valid subdomains in the user supplied list', async () => {
       const messageOrigin = new URL('https://myteams.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
       GlobalVars.additionalValidOrigins = ['https://*.teams.microsoft.com'];
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if origin for subdomains does not match in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://a.b.sharepoint.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if origin for subdomains does not match in the user supplied list', async () => {
       const messageOrigin = new URL('https://a.b.testdomain.com');
       const result = await validateOrigin(messageOrigin, disableCache);
       GlobalVars.additionalValidOrigins = ['https://*.testdomain.com'];
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(false);
     });
   });
@@ -399,6 +510,7 @@ describe('validOrigins', () => {
       app._initialize(utils.mockWindow);
       GlobalVars.isFramelessWindow = false;
       global.fetch = jest.fn(() => Promise.resolve({ status: 503, ok: false } as Response));
+      resetValidOriginsCache();
     });
 
     afterAll(() => {
@@ -414,100 +526,118 @@ describe('validOrigins', () => {
     it('validateOrigin returns true if origin is in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://teams.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns true if origin for subdomains in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://test.www.office.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns false if origin is not in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://badorigin.example.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if origin is not an exact match in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://team.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it('validateOrigin returns true if origin is valid origin supplied by user ', async () => {
       const messageOrigin = new URL('https://testorigin.example.com');
       GlobalVars.additionalValidOrigins = [messageOrigin.origin];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns false if origin is not supplied by user', async () => {
       const messageOrigin = new URL('https://badorigin.example.com');
       GlobalVars.additionalValidOrigins = ['https://testorigin.example.com'];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it('validateOrigin returns true if origin for subdomains is in the user supplied list', async () => {
       const messageOrigin = new URL('https://subdomain.badorigin.example.com');
       GlobalVars.additionalValidOrigins = ['https://*.badorigin.example.com'];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns false if origin for subdomains is not in the user supplied list', async () => {
       const messageOrigin = new URL('https://subdomain.badorigin.example.com');
       GlobalVars.additionalValidOrigins = ['https://*.testorigin.example.com'];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if the port number of valid origin is not in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://local.teams.live.com:4000');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if the port number of valid origin is not in the user supplied list', async () => {
       const messageOrigin = new URL('https://testorigin.example.com:4000');
       GlobalVars.additionalValidOrigins = ['https://testorigin.example.com:8080'];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it('validateOrigin returns true if the port number of valid origin is in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://local.teams.live.com:8080');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns true if the port number of valid origin is in the user supplied list', async () => {
       const messageOrigin = new URL('https://testorigin.example.com:8080');
       GlobalVars.additionalValidOrigins = ['https://testorigin.example.com:8080'];
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(0);
       expect(result).toBe(true);
     });
     it('validateOrigin returns false if origin has extra appended', async () => {
       const messageOrigin = new URL('https://teams.microsoft.com.evil.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it("validateOrigin returns false if the protocol of origin is not 'https:'", async () => {
       /* eslint-disable-next-line @microsoft/sdl/no-insecure-url */ /* Intentionally using http here because of what it is testing */
       const messageOrigin = new URL('http://teams.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if first end of origin is not matched valid subdomains in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://myteams.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if first end of origin is not matched valid subdomains in the user supplied list', async () => {
       const messageOrigin = new URL('https://myteams.microsoft.com');
       const result = await validateOrigin(messageOrigin, disableCache);
       GlobalVars.additionalValidOrigins = ['https://*.teams.microsoft.com'];
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if origin for subdomains does not match in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://a.b.sharepoint.com');
       const result = await validateOrigin(messageOrigin, disableCache);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
     it('validateOrigin returns false if origin for subdomains does not match in the user supplied list', async () => {
       const messageOrigin = new URL('https://a.b.testdomain.com');
       const result = await validateOrigin(messageOrigin, disableCache);
       GlobalVars.additionalValidOrigins = ['https://*.testdomain.com'];
+      expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result).toBe(false);
     });
   });
@@ -545,6 +675,8 @@ describe('validOrigins', () => {
             } as Response);
           }),
       );
+
+      resetValidOriginsCache();
     });
 
     afterAll(() => {

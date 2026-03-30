@@ -4,8 +4,9 @@ import { Buffer } from 'buffer';
 import * as uuid from 'uuid';
 
 import { minAdaptiveCardVersion } from '../public/constants';
-import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
+import { AdaptiveCardVersion, LegalAgeGroupClassification, SdkError } from '../public/interfaces';
 import * as pages from '../public/pages/pages';
+import { IBaseRuntime } from '../public/runtime';
 
 /**
  * @internal
@@ -565,4 +566,35 @@ export function isPrimitiveOrPlainObject(value: unknown, depth: number = 0): boo
 
   // Check all properties of the object recursively
   return Object.keys(value).every((key) => isPrimitiveOrPlainObject(value[key], depth + 1));
+}
+
+/**
+ * Normalizes legacy ageGroup values for backward compatibility
+ * @param runtimeConfig - The runtime configuration object to normalize
+ * @returns A new IBaseRuntime object with normalized ageGroup values
+ */
+export function normalizeAgeGroupValue(runtimeConfig: IBaseRuntime): IBaseRuntime {
+  // If no ageGroup exists, return the original config
+  if (!runtimeConfig.hostVersionsInfo?.appEligibilityInformation?.ageGroup) {
+    return runtimeConfig;
+  }
+
+  const ageGroup = runtimeConfig.hostVersionsInfo.appEligibilityInformation.ageGroup as unknown as string;
+
+  // If the ageGroup doesn't need normalization, return the original config
+  if (ageGroup?.toLowerCase() !== 'nonadult') {
+    return runtimeConfig;
+  }
+
+  // Create a new config with the normalized ageGroup value
+  return {
+    ...runtimeConfig,
+    hostVersionsInfo: {
+      ...runtimeConfig.hostVersionsInfo,
+      appEligibilityInformation: {
+        ...runtimeConfig.hostVersionsInfo.appEligibilityInformation,
+        ageGroup: LegalAgeGroupClassification.NotAdult,
+      },
+    },
+  };
 }

@@ -230,6 +230,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
+    readonly appPerformanceMetrics?: {};
     readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
@@ -240,6 +241,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly customTelemetry?: {};
       readonly eligibility?: {};
       readonly sidePanel?: {};
+      readonly view?: {};
     };
     readonly dialog?: {
       readonly card?: {
@@ -290,6 +292,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly tabs?: {};
     };
     readonly people?: {};
+    readonly plugins?: {};
     readonly permissions?: {};
     readonly profile?: {};
     readonly remoteCamera?: {};
@@ -297,6 +300,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly sharing?: {
       readonly history?: {};
     };
+    readonly shortcutRelay?: {};
     readonly stageView?: {
       readonly self?: {};
     };
@@ -316,6 +320,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly image?: {};
     };
     readonly webStorage?: {};
+    readonly widgetHosting?: {};
   };
 }
 // Constant used to set the runtime configuration

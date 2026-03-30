@@ -5,6 +5,7 @@ import AppAPIs from '../components/AppAPIs';
 import AppEntityAPIs from '../components/AppEntityAPIs';
 import AppInitializationAPIs from '../components/AppInitialization';
 import AppInstallDialogAPIs from '../components/AppInstallDialog';
+import AppPerformanceMetricsAPIs from '../components/AppPerformanceMetrics';
 import AuthenticationAPIs from '../components/AuthenticationAPIs';
 import BarCodeAPIs from '../components/BarCodeAPIs';
 import CalendarAPIs from '../components/CalendarAPIs';
@@ -51,14 +52,17 @@ import MeetingRoomAPIs from '../components/privateApis/MeetingRoomAPIs';
 import MessageChannelAPIs from '../components/privateApis/MessageChannelAPIs';
 import MonetizationAPIs from '../components/privateApis/MonetizationAPIs';
 import NotificationAPIs from '../components/privateApis/NotificationAPIs';
+import PluginAPI from '../components/privateApis/PluginAPI';
 import PrivateAPIs from '../components/privateApis/PrivateAPIs';
 import TeamsAPIs from '../components/privateApis/TeamsAPIs';
 import VideoExAPIs from '../components/privateApis/VideoEffectsExAPIs';
+import WidgetHostingAPIs from '../components/privateApis/WidgetHostingAPIs';
 import ProfileAPIs from '../components/ProfileAPIs';
 import RemoteCameraAPIs from '../components/RemoteCameraAPIs';
 import SearchAPIs from '../components/SearchAPIs';
 import SecondaryBrowserAPIs from '../components/SecondaryBrowserAPIs';
 import SharingAPIs from '../components/SharingAPIs';
+import ShortcutRelayAPIs from '../components/ShortcutRelayAPIs';
 import StageViewAPIs from '../components/StageViewAPIs';
 import StageViewSelfAPIs from '../components/StageViewSelfAPIs';
 import StoreAPIs from '../components/StoreApis';
@@ -100,6 +104,7 @@ export const TestApp: React.FC = () => {
       { name: 'AppAPIs', component: <AppAPIs /> },
       { name: 'AppInitializationAPIs', component: <AppInitializationAPIs /> },
       { name: 'AppInstallDialogAPIs', component: <AppInstallDialogAPIs /> },
+      { name: 'AppPerformanceMetricsAPIs', component: <AppPerformanceMetricsAPIs /> },
       { name: 'AuthenticationAPIs', component: <AuthenticationAPIs /> },
       { name: 'AppEntityAPIs', component: <AppEntityAPIs /> },
       { name: 'BarCodeAPIs', component: <BarCodeAPIs /> },
@@ -151,12 +156,14 @@ export const TestApp: React.FC = () => {
       { name: 'PagesCurrentAppAPIs', component: <PagesCurrentAppAPIs /> },
       { name: 'PagesTabsAPIs', component: <PagesTabsAPIs /> },
       { name: 'PeopleAPIs', component: <PeopleAPIs /> },
+      { name: 'PluginAPIs', component: <PluginAPI /> },
       { name: 'PrivateAPIs', component: <PrivateAPIs /> },
       { name: 'ProfileAPIs', component: <ProfileAPIs /> },
       { name: 'RemoteCameraAPIs', component: <RemoteCameraAPIs /> },
       { name: 'SearchAPIs', component: <SearchAPIs /> },
       { name: 'SecondaryBrowserAPIs', component: <SecondaryBrowserAPIs /> },
       { name: 'SharingAPIs', component: <SharingAPIs /> },
+      { name: 'ShortcutRelayAPIs', component: <ShortcutRelayAPIs /> },
       { name: 'WebStorageAPIs', component: <WebStorageAPIs /> },
       { name: 'StageViewAPIs', component: <StageViewAPIs /> },
       { name: 'StageViewSelfAPIs', component: <StageViewSelfAPIs /> },
@@ -167,6 +174,7 @@ export const TestApp: React.FC = () => {
       { name: 'VideoExAPIs', component: <VideoExAPIs /> },
       { name: 'VisualMediaAPIs', component: <VisualMediaAPIs /> },
       { name: 'StoreAPIs', component: <StoreAPIs /> },
+      { name: 'WidgetHostingAPIs', component: <WidgetHostingAPIs /> },
     ],
     [],
   );

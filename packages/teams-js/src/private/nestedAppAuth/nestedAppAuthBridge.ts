@@ -19,7 +19,7 @@ import { v4 as generateUUID } from 'uuid';
  * @internal
  * Limited to Microsoft-internal use
  */
-export const version = '1.0.0';
+export const version = '1.0.1';
 
 /**
  * Interface representing a request structure.
@@ -256,12 +256,6 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
 }
 
 function shouldProcessIncomingMessage(messageSource: Window, messageOrigin: string): boolean {
-  // Reject messages if they are not from the top window
-  if (messageSource && messageSource !== window.top) {
-    log('Should not process message because it is not coming from the top window');
-    return false;
-  }
-
   // Check if messageOrigin matches topOriginForNAA
   if (messageOrigin === topOriginForNAA) {
     try {

@@ -1,13 +1,17 @@
 import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS, validOriginsCdnEndpoint, validOriginsFallback } from './constants';
 import { GlobalVars } from './globalVars';
 import { getLogger } from './telemetry';
+import { createURLVerifier, URLVerifier, validateHostAgainstPattern } from './urlPattern';
 import { inServerSideRenderingEnvironment, isValidHttpsURL } from './utils';
 
 let validOriginsCache: string[] = [];
 const validateOriginLogger = getLogger('validateOrigin');
+let validOriginsPromise: Promise<string[]> | undefined;
 
 export async function prefetchOriginsFromCDN(): Promise<void> {
-  await getValidOriginsListFromCDN();
+  if (!validOriginsPromise) {
+    await getValidOriginsListFromCDN();
+  }
 }
 
 function isValidOriginsCacheEmpty(): boolean {
@@ -18,13 +22,17 @@ async function getValidOriginsListFromCDN(shouldDisableCache: boolean = false): 
   if (!isValidOriginsCacheEmpty() && !shouldDisableCache) {
     return validOriginsCache;
   }
+  if (validOriginsPromise) {
+    // Fetch has already been initiated, return the existing promise
+    return validOriginsPromise;
+  }
   if (!inServerSideRenderingEnvironment()) {
     validateOriginLogger('Initiating fetch call to acquire valid origins list from CDN');
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), ORIGIN_LIST_FETCH_TIMEOUT_IN_MS);
 
-    return fetch(validOriginsCdnEndpoint, { signal: controller.signal })
+    validOriginsPromise = fetch(validOriginsCdnEndpoint, { signal: controller.signal })
       .then((response) => {
         clearTimeout(timeoutId);
         if (!response.ok) {
@@ -51,6 +59,7 @@ async function getValidOriginsListFromCDN(shouldDisableCache: boolean = false): 
         validOriginsCache = validOriginsFallback;
         return validOriginsCache;
       });
+    return validOriginsPromise;
   } else {
     validOriginsCache = validOriginsFallback;
     return validOriginsFallback;
@@ -79,31 +88,22 @@ function isValidOriginsJSONValid(validOriginsJSON: string): boolean {
 }
 
 /**
+ * Validates the origin against the full pattern including protocol and hostname.
  * @param pattern - reference pattern
- * @param host - candidate string
- * @returns returns true if host matches pre-know valid pattern
- *
- * @example
- *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
- *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
- *
- * @internal
- * Limited to Microsoft-internal use
+ * @param origin - candidate URL object
  */
-function validateHostAgainstPattern(pattern: string, host: string): boolean {
-  if (pattern.substring(0, 2) === '*.') {
-    const suffix = pattern.substring(1);
-    if (
-      host.length > suffix.length &&
-      host.split('.').length === suffix.split('.').length &&
-      host.substring(host.length - suffix.length) === suffix
-    ) {
-      return true;
+function validateOriginAgainstFullPattern(pattern: string, origin: URL): boolean {
+  let patternUrl: URLVerifier;
+  try {
+    const createdURLVerifier = createURLVerifier(pattern, validateOriginLogger);
+    if (!createdURLVerifier) {
+      return false;
     }
-  } else if (pattern === host) {
-    return true;
+    patternUrl = createdURLVerifier;
+  } catch {
+    return false;
   }
-  return false;
+  return patternUrl.test(origin);
 }
 
 /**
@@ -111,36 +111,60 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
  * Limited to Microsoft-internal use
  */
 export function validateOrigin(messageOrigin: URL, disableCache?: boolean): Promise<boolean> {
-  return getValidOriginsListFromCDN(disableCache).then((validOriginsList) => {
-    // Check whether the url is in the pre-known allowlist or supplied by user
-    if (!isValidHttpsURL(messageOrigin)) {
-      validateOriginLogger(
-        'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
-        messageOrigin,
-        messageOrigin.protocol,
-      );
-      return false;
-    }
-    const messageOriginHost = messageOrigin.host;
-    if (validOriginsList.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
+  // Try origin against the cache or hardcoded fallback list first before fetching from CDN
+  const localList = !disableCache && !isValidOriginsCacheEmpty() ? validOriginsCache : validOriginsFallback;
+  if (validateOriginWithValidOriginsList(messageOrigin, localList)) {
+    return Promise.resolve(true);
+  }
+
+  validateOriginLogger('Origin %s is not in the local valid origins list, fetching from CDN', messageOrigin);
+  return getValidOriginsListFromCDN(disableCache).then((validOriginsList) =>
+    validateOriginWithValidOriginsList(messageOrigin, validOriginsList),
+  );
+}
+
+function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList: string[]): boolean {
+  // User provided additional valid origins take precedence as they do not require https protocol
+  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
+    if (validateOriginAgainstFullPattern(domainOrPattern, messageOrigin)) {
       return true;
     }
+  }
 
-    for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
-      const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
-      if (validateHostAgainstPattern(pattern, messageOriginHost)) {
-        return true;
-      }
-    }
+  const messageOriginHost = messageOrigin.host;
 
+  // For standard valid origins, only allow https protocol
+  if (!isValidHttpsURL(messageOrigin)) {
     validateOriginLogger(
-      'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
+      'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
       messageOrigin,
-      validOriginsList,
-      GlobalVars.additionalValidOrigins,
+      messageOrigin.protocol,
     );
     return false;
-  });
+  }
+
+  if (validOriginsList.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
+    return true;
+  }
+
+  validateOriginLogger(
+    'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
+    messageOrigin,
+    validOriginsList,
+    GlobalVars.additionalValidOrigins,
+  );
+  return false;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * This function is only used for testing to reset the valid origins cache and ignore prefetched values.
+ */
+export function resetValidOriginsCache(): void {
+  validOriginsCache = [];
+  validOriginsPromise = undefined;
 }
 
 prefetchOriginsFromCDN();

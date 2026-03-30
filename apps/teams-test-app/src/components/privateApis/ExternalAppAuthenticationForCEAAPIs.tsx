@@ -25,7 +25,7 @@ const AuthenticateWithOAuthForCEA = (): React.ReactElement =>
     };
   }>({
     name: 'AuthenticateWithOAuthForCEA',
-    title: 'Authenticate With OAuth',
+    title: 'Authenticate With OAuth For CEA',
     onClick: {
       validateInput: (input) => {
         if (!input.appId) {
@@ -65,7 +65,7 @@ const AuthenticateWithSSOForCEA = (): React.ReactElement =>
     authTokenRequest: externalAppAuthenticationForCEA.AuthTokenRequestParametersForCEA;
   }>({
     name: 'authenticateWithSSOForCEA',
-    title: 'Authenticate With SSO',
+    title: 'Authenticate With SSO For CEA',
     onClick: {
       validateInput: (input) => {
         if (!input.appId) {
@@ -100,6 +100,8 @@ const AuthenticateWithSSOForCEA = (): React.ReactElement =>
       authTokenRequest: {
         claims: ['https://graph.microsoft.com'],
         silent: true,
+        authId: 'mockedId',
+        connectionName: 'mockedName',
       },
     }),
   });
@@ -117,7 +119,7 @@ const AuthenticateAndResendRequestForCEA = (): React.ReactElement =>
     originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest;
   }>({
     name: 'authenticateAndResendRequestForCEA',
-    title: 'Authenticate And Resend Request',
+    title: 'Authenticate And Resend Request For CEA',
     onClick: {
       validateInput: (input) => {
         if (!input.appId) {
@@ -169,7 +171,7 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
     originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest;
   }>({
     name: 'authenticateWithSSOAndResendRequestForCEA',
-    title: 'Authenticate With SSO And Resend Request',
+    title: 'Authenticate With SSO And Resend Request For CEA',
     onClick: {
       validateInput: (input) => {
         if (!input.appId) {

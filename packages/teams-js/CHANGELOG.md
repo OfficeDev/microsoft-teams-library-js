@@ -1,8 +1,178 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 06 Jun 2025 17:53:12 GMT and should not be manually modified.
+<!-- This log was last generated on Fri, 27 Mar 2026 20:29:02 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.51.0
+
+Fri, 27 Mar 2026 20:29:02 GMT
+
+### Minor changes
+
+- Added teamsJs logging for cases where an API fails because it is called in an unsupported frame context.
+- Added `plugins` capability that will help directly interact with the host bypassing API registration in hubsdk. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `appState` parameter to `HostMemoryMetrics` to indicate current state of the app's lifecycle. Deprecated `isCached` and `isPrecached` fields to use the new structure.
+- Added `shareUrl` and `replyChainId` in `openFilePreview` SDK schema.
+- Added `hostFeatures` key in app context, so the hosts can declare support for features to the app.
+
+## 2.50.0
+
+Thu, 12 Mar 2026 20:51:32 GMT
+
+### Minor changes
+
+- Updated ExternalApp* capabilities to allow calls in sidePanel frame context.
+
+## 2.49.0
+
+Thu, 26 Feb 2026 21:58:31 GMT
+
+### Minor changes
+
+- Added new params for openFilePreview SDK that will help reduce file open latency in Teams. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added support for non-https URLs for opt-in app valid origins in `app.initialize()`.
+- Added support for nested wildcard subdomains. The valid origins are still restricted to the usage of only one wildcard in the valid origin.
+
+### Patches
+
+- Updated stageView.StageViewParams interface to make threadId optional.
+
+## 2.48.1
+
+Wed, 04 Feb 2026 17:24:38 GMT
+
+### Patches
+
+- Added MAC domains to valid domains for CDN
+- Mark registerOnContextChangeHandler as internal API
+
+## 2.48.0
+
+Thu, 08 Jan 2026 23:04:26 GMT
+
+### Minor changes
+
+- Added domain to valid domains list.
+- Added opt-in event handler to receive memory usage heartbeat periodically.
+- Fixed formatting on some domains in valid domains list.
+- Added valid domain for UnifiedStore SDX.
+- Added host ancestors to app context.
+- Added `widgetHosting` capability that will enable hosting of widgets within M365 hubs. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added timezone property to LocaleInfo interface that will allow applications to access the user's timezone information. 
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Fixed a bug on RegisterOnContextChangeHandler where the handler was not being called when the context changed due to theme change.
+- Updated valid domains list for M365 Copilot SSR end points.
+
+## 2.47.2
+
+Wed, 10 Dec 2025 19:42:31 GMT
+
+### Patches
+
+- Upgraded Next dependency in SSR test app to resolve security alert.
+
+## 2.47.1
+
+Wed, 03 Dec 2025 21:10:55 GMT
+
+### Patches
+
+- Fixed error handling in `getConfigSetting` teams full trust api.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.47.0
+
+Wed, 12 Nov 2025 19:23:55 GMT
+
+### Minor changes
+
+- Updated Copilot `preCheckUserConsent` function to accept an optional `UserConsentRequest` parameter and updated `ContentRequest` interface to support flexible properties via index signature. Deprecated `localEndpointInfo` property in favor of the index signature approach.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.46.0
+
+Wed, 01 Oct 2025 22:58:28 GMT
+
+### Minor changes
+
+- Added `disconnectConnector` to `{externalAppAuthentication}` capability that will disconnect the external app connector. The capability is still awaiting support in one or more host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.45.0
+
+Wed, 10 Sep 2025 22:10:41 GMT
+
+### Minor changes
+
+- Added `{authenticateWithConnector}  and { getUserAuthenticationStateForConnector}` to  `externalAppAuthentication` capability that will authenticate the user and get user authentication status for copilot connectors. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Added `sidePanel` to `openFilePreview`'s ensureInitialized FrameContexts
+
+## 2.44.0
+
+Wed, 27 Aug 2025 21:57:44 GMT
+
+### Minor changes
+
+- Added optional `Settings` field to `AppEligibilityInformation` interface
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.43.0
+
+Tue, 19 Aug 2025 15:18:35 GMT
+
+### Minor changes
+
+- Added `shortcutRelay` capability to support host shortcuts in apps.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.42.0
+
+Thu, 07 Aug 2025 04:45:52 GMT
+
+### Minor changes
+
+- Updated validDomains list to support the catalyst consumer domains
+- Added `messageId` to app context.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Add Outlook DoD domains to validDomains
+- Fixed the typo from `NonAdult` to `NotAdult` in `LegalAgeGroupClassification` Enum.
+
+## 2.41.0
+
+Mon, 21 Jul 2025 20:57:12 GMT
+
+### Minor changes
+
+- Added view copilot API with function to close the side panel.
+- Bumped eslint-plugin-recommend-no-namespaces to v0.1.0
+
+## 2.40.0
+
+Mon, 07 Jul 2025 23:19:06 GMT
+
+### Minor changes
+
+- Added `contextType` in `TeamsContent` interface to `{copilot.sidePanel}` capability.
+- Added `TeamsContent` interface for `{copilot.sidePanel}` capability.
+- Bump eslint-plugin-recommend-no-namespaces to v0.1.0
+
+### Patches
+
+- Removed message source check but kept origin validation in nested app auth standalone bridge
+- Added Outlook OCDI domain to validDomains.json
+- Updated valid domains CDN fetch logic to prevent duplicate requests.
+- Added `responseToEmailId` to `{copilot.sidePanel.DraftEmailContent}` capability.
 
 ## 2.39.0
 

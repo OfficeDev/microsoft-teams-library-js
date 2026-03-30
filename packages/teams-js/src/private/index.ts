@@ -25,6 +25,7 @@ export { ConversationResponse, OpenConversationRequest } from './conversations';
 export * as copilot from './copilot/copilot';
 export * as sidePanelInterfaces from './copilot/sidePanelInterfaces';
 export * as externalAppAuthentication from './externalAppAuthentication';
+export { ConnectorParameters, UserAuthenticationState } from './externalAppAuthentication';
 export * as externalAppAuthenticationForCEA from './externalAppAuthenticationForCEA';
 export * as externalAppCardActions from './externalAppCardActions';
 export * as externalAppCardActionsForCEA from './externalAppCardActionsForCEA';
@@ -36,9 +37,28 @@ export * as messageChannels from './messageChannels/messageChannels';
 export * as nestedAppAuthBridge from './nestedAppAuth/nestedAppAuthBridge';
 export * as notifications from './notifications';
 export * as otherAppStateChange from './otherAppStateChange';
+export * as plugins from './plugins';
 export * as remoteCamera from './remoteCamera';
 export * as appEntity from './appEntity';
 export * as teams from './teams/teams';
 export * as videoEffectsEx from './videoEffectsEx';
 export * as hostEntity from './hostEntity/hostEntity';
 export * as store from './store';
+export * as widgetHosting from './widgetHosting/widgetHosting';
+export {
+  ISecurityPolicy,
+  Theme,
+  SafeAreaInsets,
+  SafeArea,
+  DeviceType,
+  UserAgent,
+  IModalOptions,
+  IModalResponse,
+  JSONObject,
+  JSONArray,
+  JSONValue,
+  DisplayMode,
+  IToolInput,
+  IToolOutput,
+  IWidgetContext,
+} from './widgetHosting/widgetContext';

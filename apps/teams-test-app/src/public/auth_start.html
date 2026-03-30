@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <h2 style="font-size: 40px">Starting auth</h2>
@@ -11,6 +11,7 @@
       const authId = params.get('authId');
       const method = params.get('oauthRedirectMethod');
       const redirectUrl = params.get('hostRedirectUrl');
+      const redirect_uri = params.get('redirect_uri');
       const hostName = params.get('hostName');
       const state = `{"authId":"${authId}","method":"${method}","hostName":"${hostName}"}`;
 
@@ -19,8 +20,12 @@
       }
 
       const getRedirectUri = () => {
-        const idx = window.location.href.lastIndexOf('/');
-        return `${window.location.href.slice(0, idx)}/auth_end.html`;
+        if (redirect_uri) {
+          return redirect_uri;
+        } else {
+          const idx = window.location.href.lastIndexOf('/');
+          return `${window.location.href.slice(0, idx)}/auth_end.html`;
+        }
       };
 
       // Redirect to auth_end page if its mockOauth for testing
