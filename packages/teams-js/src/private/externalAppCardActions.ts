@@ -100,7 +100,7 @@ export interface ActionSubmitError {
  * @returns Promise that resolves when the request is completed and rejects with ActionSubmitError if the request fails
  */
 export function processActionSubmit(appId: string, actionSubmitPayload: IAdaptiveCardActionSubmit): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -136,7 +136,7 @@ export function processActionOpenUrl(
   url: URL,
   fromElement?: { name: 'composeExtensions' | 'plugins' },
 ): Promise<ActionOpenUrlType> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;

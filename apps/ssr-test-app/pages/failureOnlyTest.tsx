@@ -6,13 +6,16 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { ContextDisplay, PageInfo, PostBodyDisplay } from '../components/CommonComponents';
 import { parseBody } from '../utils/serverUtils';
 
-export interface SSRProps {
+export interface FailureOnlyTestPageProps {
   renderString: string;
   time: string;
+  isPostRequest?: boolean;
   postBody?: string;
+  withMessage?: boolean;
 }
 
-export default function IndexPage(props: SSRProps): ReactElement {
+//Every POST request will trigger notifyFailure
+export default function FailureOnlyTestPage(props: FailureOnlyTestPageProps): ReactElement {
   const [teamsContext, setTeamsContext] = useState({});
   const [clientTime, setClientTime] = useState('');
 
@@ -21,15 +24,26 @@ export default function IndexPage(props: SSRProps): ReactElement {
       microsoftTeams.app.getContext().then((ctx) => {
         setTeamsContext(ctx);
       });
-      microsoftTeams.app.notifySuccess();
+
+      // Always call notifyFailure on every POST request
+      if (props.isPostRequest) {
+        const message = props.withMessage
+          ? 'Bearer realm="", authorization_uri="https://some_url/authorize", error="insufficient_claims", claims="Base64Encoded_claims_value"'
+          : '';
+        const request = {
+          reason: microsoftTeams.app.FailedReason.AuthFailed,
+          authHeader: message,
+        };
+        microsoftTeams.app.notifyFailure(request);
+      }
       setClientTime(JSON.stringify(new Date()));
     });
-  }, []);
+  }, [props.isPostRequest, props.withMessage]);
 
   return (
     <div>
       <Head>
-        <title>SSR Test App</title>
+        <title>Failure Only Test Page</title>
       </Head>
       <div>
         <PageInfo renderString={props.renderString} serverTime={props.time} clientTime={clientTime} />
@@ -43,25 +57,30 @@ export default function IndexPage(props: SSRProps): ReactElement {
 /**
  * @returns prop data
  */
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
   const time = JSON.stringify(new Date());
+  const withMessage = query.withMessage === 'true';
 
   if (req.method === 'POST') {
     const postBody = await parseBody(req);
+
     return {
       props: {
-        renderString: 'This string brought to you by the server (POST request)',
+        renderString: 'POST request received',
         postBody,
         time,
+        isPostRequest: true,
+        withMessage,
       },
     };
   }
 
-  // Default GET handling
+  // Reject non-POST requests with 405 Method Not Allowed
+  res.setHeader('Allow', ['POST']);
+  res.statusCode = 405;
+  res.end('Method Not Allowed');
+
   return {
-    props: {
-      renderString: 'This string brought to you by the server (GET request)',
-      time,
-    },
+    props: {},
   };
 };

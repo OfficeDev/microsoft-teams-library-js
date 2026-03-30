@@ -22,7 +22,7 @@ export abstract class ResponseHandler<SerializedReturnValueFromHost, Deserialize
   public abstract deserialize(response: SerializedReturnValueFromHost): DeserializedReturnValueFromHost;
 }
 
-export type SimpleType = string | number | boolean | null | undefined | SimpleType[];
+export type SimpleType = string | number | boolean | null | undefined | SimpleType[] | { [key: string]: SimpleType };
 
 /**
  * This class is used for validating and deserializing boolean responses from the host.

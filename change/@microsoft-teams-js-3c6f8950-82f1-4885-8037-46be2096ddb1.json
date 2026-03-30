@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added timezone property to LocaleInfo interface that will allow applications to access the user's timezone information. ",
-  "packageName": "@microsoft/teams-js",
-  "email": "ravasili@microsoft.com_msteamsmdb",
-  "dependentChangeType": "patch"
-}

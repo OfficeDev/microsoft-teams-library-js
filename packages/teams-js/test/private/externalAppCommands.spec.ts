@@ -33,7 +33,7 @@ describe('externalAppCommands', () => {
         externalAppCommands.processActionCommand(mockAppId, mockCommandId, mockExtractedParam),
       ).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     const testError = {
       errorCode: ExternalAppErrorCode.INTERNAL_ERROR,
       message: 'mockErrorMessage',

@@ -87,6 +87,7 @@ export function notifyFailureHelper(apiVersiontag: string, appInitializationFail
   sendMessageToParent(apiVersiontag, app.Messages.Failure, [
     appInitializationFailedRequest.reason,
     appInitializationFailedRequest.message,
+    appInitializationFailedRequest.authHeader,
   ]);
 }
 

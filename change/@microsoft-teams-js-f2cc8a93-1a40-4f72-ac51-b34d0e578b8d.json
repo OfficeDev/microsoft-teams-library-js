@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added domain to valid domains list.",
-  "packageName": "@microsoft/teams-js",
-  "email": "jeklouda@microsoft.com",
-  "dependentChangeType": "patch"
-}

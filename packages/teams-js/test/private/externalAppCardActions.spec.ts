@@ -26,7 +26,7 @@ describe('externalAppCardActions', () => {
   });
 
   describe('processActionSubmit', () => {
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     const testActionSubmitPayload = {
       id: 'testId',
       data: {},
@@ -124,7 +124,7 @@ describe('externalAppCardActions', () => {
   });
 
   describe('processActionOpenUrl', () => {
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     const testUrl = new URL('https://example.com');
     const testError = {
       errorCode: externalAppCardActions.ActionOpenUrlErrorCode.INTERNAL_ERROR,

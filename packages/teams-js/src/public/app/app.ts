@@ -113,6 +113,11 @@ export interface IFailedRequest {
    * This property is currently unused.
    */
   message?: string;
+  /**
+   * Optional authorization header to be sent along with the failure notification.
+   * Currently only supported for SSR scenarios.
+   */
+  authHeader?: string;
 }
 
 /**
@@ -213,6 +218,21 @@ export interface AppInfo {
 }
 
 /**
+ * Features supported by the host that the app can query for via getContext.
+ */
+export type HostFeatures = {
+  /**
+   * Indicates whether the host supports nested wildcards in valid domains. If true, the host will allow valid domains with nested wildcards (e.g. apps.*.com). If false or undefined, the host will only allow valid domains with a single wildcard level (e.g. *.test.com).
+   */
+  nestedWildcardsInValidDomains?: boolean;
+
+  /**
+   * Indicates whether server side rendering is enabled for the host.
+   */
+  serverSideRendering?: boolean;
+};
+
+/**
  * Represents information about the application's host.
  */
 export interface AppHostInfo {
@@ -225,6 +245,11 @@ export interface AppHostInfo {
    * The client type on which the host is running
    */
   clientType: HostClientType;
+
+  /**
+   * The features supported by the host. This is an optional field that may not be populated by all hosts, and may be added to over time as new features are added to hosts. Because of this, apps should always check for the presence of a feature and its value before using it, and should gracefully handle the case where the feature is not present.
+   */
+  features?: HostFeatures;
 
   /**
    * Unique ID for the current Host session for use in correlating telemetry data.
@@ -593,7 +618,11 @@ export interface Context {
 export type themeHandler = (theme: string) => void;
 
 /**
+ * @hidden
  * This function is passed to registerOnContextChangeHandler. It is called every time the user changes their context.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export type contextHandler = (context: Context) => void;
 
@@ -653,7 +682,7 @@ logWhereTeamsJsIsBeingUsed();
  * @param validMessageOrigins - Optionally specify a list of cross-frame message origins. This parameter is used if you know that your app
  * will be hosted on a custom domain (i.e., not a standard Microsoft 365 host like Teams, Outlook, etc.) Most apps will never need
  * to pass a value for this parameter.
- * Any domains passed in the array must have the https: protocol on the string otherwise they will be ignored. Example: https://www.example.com
+ * Any domains passed in the array must define a scheme to be able to be processed. Examples: https://www.example.com, chrome://
  * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
  */
 export function initialize(validMessageOrigins?: string[]): Promise<void> {
@@ -772,12 +801,16 @@ export function registerOnThemeChangeHandler(handler: themeHandler): void {
 }
 
 /**
+ * @hidden
  * Registers a handler for content (context) changes.
  *
  * @remarks
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
  *
  * @param handler - The handler to invoke when the app's content context changes.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export function registerOnContextChangeHandler(handler: contextHandler): void {
   appHelpers.registerOnContextChangeHandlerHelper(
@@ -860,6 +893,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       host: {
         name: legacyContext.hostName ? legacyContext.hostName : HostName.teams,
         clientType: legacyContext.hostClientType ? legacyContext.hostClientType : HostClientType.web,
+        features: legacyContext.hostFeatures,
         sessionId: legacyContext.sessionId ? legacyContext.sessionId : '',
         ringId: legacyContext.ringId,
         ancestors: legacyContext.hostAncestors,

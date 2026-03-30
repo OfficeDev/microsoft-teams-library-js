@@ -19,9 +19,73 @@ pnpm start-ssr-app
 
 or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory ssr-test-app, simply `pnpm build` and `pnpm start` there.
 
-### Note
+## Running with HTTPS
 
-Running the SSR Test App locally defaults to using an unsecure http connection. In order to run the SSR test app in the Orange app, a secure https connection is required. This can be achieved by generating an SSL certificate. Alternatively, ngrok can be used to generate a secure https connection without the need to generate an SSL certificate.
+The SSR Test App uses HTTP by default. To run it in the Orange app, you'll need HTTPS.
+
+**Two options:**
+
+- **Option 1:** Generate local SSL certificates (recommended for development)
+- **Option 2:** Use ngrok (no certificates needed, but URLs change between runs on free tier)
+
+### Option 1: Using the Custom HTTPS Server
+
+1. Generate SSL certificates:
+
+**Automated (Recommended):**
+
+```bash
+# From the monorepo root
+pnpm setup-ssr-app-cert
+```
+
+This script will:
+
+- Check if mkcert is installed (prompts to install if missing)
+- Install the local CA
+- Generate certificates in `apps/ssr-test-app/certs/`
+
+**Manual:**
+
+```bash
+# Install mkcert (if not already installed)
+brew install mkcert  # macOS
+# or follow instructions at https://github.com/FiloSottile/mkcert
+
+# Install the local CA
+mkcert -install
+
+# Generate certificates in the certificates directory
+cd apps/ssr-test-app/certificates
+mkcert localhost
+# This creates localhost.pem and localhost-key.pem
+```
+
+2. Run the app with HTTPS:
+
+```bash
+# From monorepo root
+pnpm start-ssr-app:https
+
+# Or from the ssr-test-app directory
+pnpm dev:https   # for development
+# or
+pnpm start:https # for production (requires pnpm build first)
+```
+
+The app will be available at https://localhost:3000
+
+### Option 2: Using ngrok
+
+Alternatively, ngrok can be used to generate a secure https connection without the need to generate an SSL certificate:
+
+```bash
+# In one terminal, start the app normally
+pnpm dev
+
+# In another terminal, start ngrok
+ngrok http 3000
+```
 
 # Troubleshooting
 
