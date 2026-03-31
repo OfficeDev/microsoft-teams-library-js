@@ -212,7 +212,7 @@ describe('sharing_v1', () => {
                     url: 'https://www.microsoft.com',
                   },
                   {
-                    type: 'File',
+                    type: 'FILE',
                     url: 'https://www.microsoft.com/file.docx',
                   },
                 ],
@@ -284,7 +284,7 @@ describe('sharing_v1', () => {
               const shareRequest: sharing.IShareRequest<sharing.IFileContent> = {
                 content: [
                   {
-                    type: 'File',
+                    type: 'FILE',
                     url: 'https://www.microsoft.com/file.docx',
                     message: 'Check this file',
                   },
@@ -303,7 +303,7 @@ describe('sharing_v1', () => {
               const shareRequest = {
                 content: [
                   {
-                    type: 'File',
+                    type: 'FILE',
                     message: 'Check this file',
                   },
                 ],
@@ -661,7 +661,7 @@ describe('sharing_v2', () => {
                   url: 'https://www.microsoft.com',
                 },
                 {
-                  type: 'File',
+                  type: 'FILE',
                   url: 'https://www.microsoft.com/file.docx',
                 },
               ],
@@ -725,7 +725,7 @@ describe('sharing_v2', () => {
             const shareRequest: sharing.IShareRequest<sharing.IFileContent> = {
               content: [
                 {
-                  type: 'File',
+                  type: 'FILE',
                   url: 'https://www.microsoft.com/file.docx',
                   message: 'Check this file',
                 },
@@ -744,7 +744,7 @@ describe('sharing_v2', () => {
             const shareRequest = {
               content: [
                 {
-                  type: 'File',
+                  type: 'FILE',
                   message: 'Check this file',
                 },
               ],

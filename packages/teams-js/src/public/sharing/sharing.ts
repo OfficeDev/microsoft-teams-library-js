@@ -29,7 +29,7 @@ export const SharingAPIMessages = {
 };
 
 // More types can be added as we expand share capability
-type ContentType = 'URL' | 'File';
+type ContentType = 'URL' | 'FILE';
 
 /** Represents parameters for base shared content. */
 interface IBaseSharedContent {
@@ -52,7 +52,7 @@ export interface IShareRequest<T> {
 /** Represents IFileContent parameters. */
 export interface IFileContent extends IBaseSharedContent {
   /** Type */
-  type: 'File';
+  type: 'FILE';
 
   /**
    * Required URL of the file to share
@@ -199,7 +199,7 @@ function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequ
       };
       throw err;
     }
-  } else if (shareRequest.content[0].type === 'File') {
+  } else if (shareRequest.content[0].type === 'FILE') {
     if (shareRequest.content.some((item) => !item.url)) {
       err = {
         errorCode: ErrorCode.INVALID_ARGUMENTS,

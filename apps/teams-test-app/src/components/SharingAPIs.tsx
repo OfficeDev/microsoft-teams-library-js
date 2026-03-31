@@ -25,7 +25,7 @@ const ShareWebContent = (): React.ReactElement =>
             if (!(contentItem as sharing.IURLContent).url) {
               throw new Error('Each URL content item must have a url property set.');
             }
-          } else if (contentItem.type === 'File') {
+          } else if (contentItem.type === 'FILE') {
             if (!(contentItem as sharing.IFileContent).url) {
               throw new Error('Each File content item must have a url property set.');
             }

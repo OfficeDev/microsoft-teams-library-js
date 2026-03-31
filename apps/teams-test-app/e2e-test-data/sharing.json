@@ -27,7 +27,7 @@
       "inputValue": {
         "content": [
           {
-            "type": "File",
+            "type": "FILE",
             "url": "https://contoso.sharepoint.com/sites/team/Shared%20Documents/report.docx",
             "message": "Check this file"
           }
