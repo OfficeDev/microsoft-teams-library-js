@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `appState` parameter to `HostMemoryMetrics` to indicate current state of the app's lifecycle. Deprecated `isCached` and `isPrecached` fields to use the new structure.",
-  "packageName": "@microsoft/teams-js",
-  "email": "31258166+juanscr@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

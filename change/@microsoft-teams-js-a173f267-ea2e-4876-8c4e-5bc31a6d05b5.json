@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added teamsJs logging for cases where an API fails because it is called in an unsupported frame context.",
-  "packageName": "@microsoft/teams-js",
-  "email": "jeklouda@microsoft.com",
-  "dependentChangeType": "patch"
-}
