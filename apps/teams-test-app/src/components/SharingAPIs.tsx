@@ -20,17 +20,13 @@ const ShareWebContent = (): React.ReactElement =>
         if (!input.content || input.content.length === 0) {
           throw new Error('content is required');
         }
+        const supportedTypes: string[] = ['URL', 'FILE'];
         for (const contentItem of input.content) {
-          if (contentItem.type === 'URL') {
-            if (!(contentItem as sharing.IURLContent).url) {
-              throw new Error('Each URL content item must have a url property set.');
-            }
-          } else if (contentItem.type === 'FILE') {
-            if (!(contentItem as sharing.IFileContent).url) {
-              throw new Error('Each File content item must have a url property set.');
-            }
-          } else {
-            throw new Error('Unsupported content type');
+          if (!supportedTypes.includes(contentItem.type)) {
+            throw new Error(`Unsupported content type: ${contentItem.type}`);
+          }
+          if (!contentItem.url) {
+            throw new Error(`Each ${contentItem.type} content item must have a url property set.`);
           }
         }
       },

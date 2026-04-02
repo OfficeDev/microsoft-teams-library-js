@@ -189,31 +189,22 @@ function validateTypeConsistency(shareRequest: IShareRequest<IShareRequestConten
   }
 }
 
-function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): void {
-  let err: SdkError | undefined;
-  if (shareRequest.content[0].type === 'URL') {
-    if (shareRequest.content.some((item) => !item.url)) {
-      err = {
-        errorCode: ErrorCode.INVALID_ARGUMENTS,
-        message: 'URLs are required for URL content types',
-      };
-      throw err;
+function validateContentItem(item: IShareRequestContentType): void {
+  if (item.type === 'URL') {
+    if (!item.url) {
+      throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'URLs are required for URL content types' };
     }
-  } else if (shareRequest.content[0].type === 'FILE') {
-    if (shareRequest.content.some((item) => !item.url)) {
-      err = {
-        errorCode: ErrorCode.INVALID_ARGUMENTS,
-        message: 'File URLs are required for File content types',
-      };
-      throw err;
+  } else if (item.type === 'FILE') {
+    if (!item.url) {
+      throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'File URLs are required for File content types' };
     }
   } else {
-    err = {
-      errorCode: ErrorCode.INVALID_ARGUMENTS,
-      message: 'Content type is unsupported',
-    };
-    throw err;
+    throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Content type is unsupported' };
   }
+}
+
+function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): void {
+  shareRequest.content.forEach(validateContentItem);
 }
 
 /**
