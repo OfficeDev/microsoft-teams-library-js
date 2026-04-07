@@ -63,7 +63,7 @@ function isNamespaceObject(value: unknown): value is Record<string, unknown> {
     return false;
   }
   const prototype = Object.getPrototypeOf(value);
-  if (prototype === Object.prototype || prototype === null) {
+  if (prototype === Object.prototype) {
     return true;
   }
   // ts-jest CommonJS module interop wraps namespace re-exports with this marker
