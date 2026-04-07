@@ -19,18 +19,6 @@ resources:
       type: git
       name: ISS/metaos-hub-sdk
       ref: $(AppHostLatestBranch)
-    - repository: AppHostingSdkV2
-      type: git
-      name: ISS/metaos-hub-sdk
-      ref: $(AppHostV2ReleaseBranch)
-    - repository: AppHostingSdkV3
-      type: git
-      name: ISS/metaos-hub-sdk
-      ref: $(AppHostV3ReleaseBranch)
-    - repository: AppHostingSdkV4
-      type: git
-      name: ISS/metaos-hub-sdk
-      ref: $(AppHostV4ReleaseBranch)
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
@@ -64,9 +52,6 @@ extends:
       sourceRepositoriesToScan:
         include:
           - repository: AppHostingSdk
-          - repository: AppHostingSdkV2
-          - repository: AppHostingSdkV3
-          - repository: AppHostingSdkV4
           - repository: AndroidAppHostingSdk
           - repository: IOSAppHostingSdk
       codeql:
@@ -76,7 +61,8 @@ extends:
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
-      - stage: __default
+      - stage: Build
+        displayName: 'Build & Security'
         jobs:
           - job: Security
             displayName: 'Security Tasks'
@@ -123,52 +109,14 @@ extends:
                   targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
                   artifactName: 'scripts'
 
-          - job: E2ETest1
-            displayName: 'E2E Test - Perf'
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-latest'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
-                parameters:
-                  appHostGitPath: AppHostingSdk
-
-              - task: Bash@3
-                displayName: 'Run E2E Perf tests'
-                condition: succeeded()
-                inputs:
-                  targetType: inline
-                  script: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - Perf'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
-
+      - stage: Latest_E2E
+        displayName: 'Latest E2E Tests'
+        dependsOn: Build
+        jobs:
           - template: tools/yaml-templates/web-e2e-versions.yml@self
             parameters:
               AppHostingSdk: AppHostingSdk
               versionBranch: 'Latest'
-
-          - template: tools/yaml-templates/web-e2e-versions.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdkV2
-              versionBranch: 'v2'
-
-          - template: tools/yaml-templates/web-e2e-versions.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdkV3
-              versionBranch: 'v3'
-
-          - template: tools/yaml-templates/web-e2e-versions.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdkV4
-              versionBranch: 'v4'
 
           - job: E2ETestCDN
             timeoutInMinutes: 120
@@ -207,6 +155,37 @@ extends:
                   testResultsFormat: 'JUnit'
                   testResultsFiles: '**/e2e-tests-report*.xml'
                   testRunTitle: 'E2E Tests - CDN'
+                  mergeTestResults: true
+                condition: succeededOrFailed()
+
+      - stage: Perf_and_Android_E2E
+        displayName: 'Perf & Android E2E Tests'
+        dependsOn: Latest_E2E
+        jobs:
+          - job: E2ETest1
+            displayName: 'E2E Test - Perf'
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-latest'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/build-app-host.yml@self
+                parameters:
+                  appHostGitPath: AppHostingSdk
+
+              - task: Bash@3
+                displayName: 'Run E2E Perf tests'
+                condition: succeeded()
+                inputs:
+                  targetType: inline
+                  script: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+              - task: PublishTestResults@2
+                inputs:
+                  testResultsFormat: 'JUnit'
+                  testResultsFiles: '**/e2e-tests-report*.xml'
+                  testRunTitle: 'E2E Tests - Perf'
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
