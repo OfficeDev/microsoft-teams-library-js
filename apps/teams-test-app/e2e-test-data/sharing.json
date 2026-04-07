@@ -23,6 +23,7 @@
     {
       "title": "shareWebContent API Call - File type - Success",
       "type": "callResponse",
+      "version": ">2.52.0",
       "boxSelector": "#box_share_shareWebContent",
       "inputValue": {
         "content": [
