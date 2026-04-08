@@ -21,11 +21,6 @@ parameters:
       - { version: 'v4', resource: 'AppHostingSdkV4' }
       - { version: 'v3', resource: 'AppHostingSdkV3' }
 
-variables:
-  - group: InfoSec-SecurityResults
-  - name: products
-    value: 6eff390d-80c0-4456-81b6-6abafa71e768
-
 trigger: none
 
 schedules:
