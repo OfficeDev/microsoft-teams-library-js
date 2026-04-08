@@ -38,7 +38,7 @@ export async function processActionOpenUrl(
   conversationId: string,
   url: URL,
 ): Promise<externalAppCardActions.ActionOpenUrlType> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
@@ -77,7 +77,7 @@ export async function processActionSubmit(
   conversationId: string,
   actionSubmitPayload: externalAppCardActions.IAdaptiveCardActionSubmit,
 ): Promise<void> {
-  ensureInitialized(runtime, FrameContexts.content);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }

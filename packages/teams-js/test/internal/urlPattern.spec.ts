@@ -19,6 +19,7 @@ describe('urlPattern', () => {
     });
 
     it('returns true for an http pattern', () => {
+      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
       expect(isValidPatternUrl('http://example.com')).toBe(true);
     });
 
@@ -96,6 +97,7 @@ describe('urlPattern', () => {
     });
 
     it('returns a verifier for an http pattern', () => {
+      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
       const verifier = createURLVerifier('http://example.com', logger);
       expect(verifier).toBeDefined();
     });
