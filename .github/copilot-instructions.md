@@ -10,6 +10,7 @@
 
 ## Design Principles
 
+- **Descriptive variable names** — use clear and descriptive names for variables, functions, and classes to improve readability and maintainability. Always prefer clarity over brevity.
 - **One representation of state** — each piece of state should have exactly one canonical representation. Never store the same state in two places or two forms.
 - **Strong types over strings** — use enums, interfaces, and union types instead of raw strings. If a value has a known set of options, model it as a type.
 - **Zero tolerance for repetition** — one repetition is one too many. Extract shared logic, constants, and patterns immediately.
@@ -21,7 +22,7 @@
 
 Every public capability in `packages/teams-js/src/public/` must:
 - Export an `isSupported()` function that checks `ensureInitialized(runtime) && runtime.supports.{capability}`
-- Call `ensureInitialized(runtime, ...allowedFrameContexts)` before any operation
+- Call `ensureInitialized(runtime, ...allowedFrameContexts)` before any operation. Newly added capabilities should never specify allowed frame contexts so as to use the runtime as the source of truth for supported capabilities.
 - Tag all API calls with telemetry: `getApiVersionTag(versionNumber, ApiName.Capability_Method)`
 - Return `Promise<T>` for async operations
 - Export parameter/result interfaces from the same module

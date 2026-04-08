@@ -1,11 +1,10 @@
 ---
-name: teamsjs-contributor
+name: teams-js-contributor
 description: "Guide for contributing to the TeamsJS SDK monorepo. Use when user asks to build, test, lint, add capabilities, create changefiles, fix bugs, or understand the monorepo structure. Mentions: 'teams-js', 'TeamsJS', '@microsoft/teams-js', 'changefile', 'beachball', 'bundle size', 'tree-shaking', 'test app'."
 metadata:
   version: '1.0.0'
   tool_type: monorepo
   requires: Node.js 18+, pnpm 9.0.6+
-allowed-tools: Bash(pnpm:*) Bash(node:*) Bash(npx:*) Bash(git:*) Read Write Edit Glob Grep
 ---
 
 # TeamsJS SDK Contributor Guide
@@ -15,6 +14,7 @@ Agent skill for navigating, building, testing, and contributing to the `microsof
 ## When to Use This Skill
 
 **Triggers — activate this skill when:**
+
 - User asks to build, test, or lint the TeamsJS SDK
 - User asks how to add a new capability or public API
 - User asks about monorepo structure (packages, apps, tools)
@@ -26,9 +26,9 @@ Agent skill for navigating, building, testing, and contributing to the `microsof
 - User asks about the SDK's runtime capability checks or `isSupported()` pattern
 
 **Anti-triggers — do NOT use this skill when:**
-- User is building an app *with* TeamsJS as a consumer (point them to https://learn.microsoft.com/javascript/api/overview/msteams-client)
+
+- User is building an app _with_ TeamsJS as a consumer (point them to https://learn.microsoft.com/javascript/api/overview/msteams-client)
 - User asks about Teams Bot Framework or other Teams SDKs
-- User asks about Microsoft Graph API usage
 
 ## Monorepo Structure
 
@@ -117,6 +117,7 @@ pnpm bundleAnalyze
 ```
 
 **Size limits** are defined in the root `package.json` under `size-limit`. The key constraint:
+
 - Importing `{ app, authentication, pages }` must stay under the limit specified in `package.json` (uncompressed, no brotli)
 - If your change exceeds this, either tree-shaking is broken or you must justify the increase in your PR
 
@@ -131,6 +132,7 @@ pnpm changefile --no-commit
 ```
 
 **Change types:**
+
 - **minor** — new backwards-compatible functionality
 - **patch** — backwards-compatible bug fix
 - **none** — change doesn't affect the published package
@@ -138,6 +140,7 @@ pnpm changefile --no-commit
 **Major and prerelease are disallowed** per `beachball.config.js`.
 
 Change descriptions should use past tense and backtick-wrap API names:
+
 - ✅ `"Added \`calendar.openCalendarItem\` to support calendar deep links"`
 - ❌ `"Add calendar feature"`
 
@@ -182,8 +185,8 @@ export interface MyParams {
 
 // 2. Export async function with runtime + context checks
 export function doSomething(params: MyParams): Promise<void> {
-  // a. Validate initialization and frame context
-  ensureInitialized(runtime, FrameContexts.content);
+  // a. Validate initialization
+  ensureInitialized(runtime);
   // b. Check capability support
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
@@ -207,8 +210,9 @@ export function isSupported(): boolean {
 ```
 
 **Key rules:**
+
 - Every capability MUST export an `isSupported()` function
-- Use `ensureInitialized(runtime, ...allowedFrameContexts)` before any operation
+- Use `ensureInitialized(runtime)` before any operation
 - Use telemetry version tagging on all API calls
 - All async operations return `Promise<T>`
 - Parameter interfaces are exported from the same module
@@ -242,9 +246,7 @@ describe('myCapability', () => {
 
   describe('doSomething', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(myCapability.doSomething(params)).rejects.toThrowError(
-        new Error(errorLibraryNotInitialized),
-      );
+      await expect(myCapability.doSomething(params)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     // Test each allowed/disallowed FrameContext
@@ -270,7 +272,7 @@ describe('myCapability', () => {
 
 ### Adding a New Capability
 
-1. Create `src/public/myCapability.ts` following the capability pattern above
+1. Create `src/public/myCapability.ts` following the capability pattern above. New capabilities should _never_ specify allowed frame contexts in `ensureInitialized()`.
 2. Export from `src/public/index.ts`
 3. Add `runtime.supports.myCapability` to the runtime interface in `src/public/runtime.ts`
 4. Create `test/public/myCapability.spec.ts` following the test pattern
@@ -297,26 +299,28 @@ describe('myCapability', () => {
 
 ## Key Files Reference
 
-| File | Purpose |
-|------|---------|
-| `packages/teams-js/src/public/runtime.ts` | Runtime capability detection and `supports` interface |
-| `packages/teams-js/src/public/constants.ts` | `FrameContexts` enum and other shared constants |
-| `packages/teams-js/src/internal/communication.ts` | Host-app message passing (core IPC) |
-| `packages/teams-js/src/internal/telemetry.ts` | API telemetry tagging with version numbers |
-| `packages/teams-js/src/internal/internalAPIs.ts` | `ensureInitialized()` and internal state management |
-| `packages/teams-js/src/public/app/app.ts` | `app.initialize()` — SDK entry point |
-| `beachball.config.js` | Changefile config (scoped to `packages/teams-js`, ignores tests/docs) |
-| `packages/teams-js/rollup.config.mjs` | Build config producing ESM + UMD outputs |
+| File                                              | Purpose                                                               |
+| ------------------------------------------------- | --------------------------------------------------------------------- |
+| `packages/teams-js/src/public/runtime.ts`         | Runtime capability detection and `supports` interface                 |
+| `packages/teams-js/src/public/constants.ts`       | `FrameContexts` enum and other shared constants                       |
+| `packages/teams-js/src/internal/communication.ts` | Host-app message passing (core IPC)                                   |
+| `packages/teams-js/src/internal/telemetry.ts`     | API telemetry tagging with version numbers                            |
+| `packages/teams-js/src/internal/internalAPIs.ts`  | `ensureInitialized()` and internal state management                   |
+| `packages/teams-js/src/public/app/app.ts`         | `app.initialize()` — SDK entry point                                  |
+| `beachball.config.js`                             | Changefile config (scoped to `packages/teams-js`, ignores tests/docs) |
+| `packages/teams-js/rollup.config.mjs`             | Build config producing ESM + UMD outputs                              |
 
 ## Limitations
 
 **This skill CAN:**
+
 - ✅ Guide through building, testing, and linting the SDK
 - ✅ Explain monorepo structure and module patterns
 - ✅ Help add new capabilities following established patterns
 - ✅ Guide changefile creation and PR submission
 
 **This skill CANNOT:**
-- ❌ Help build apps that *consume* TeamsJS (use official docs instead)
+
+- ❌ Help build apps that _consume_ TeamsJS (use official docs instead)
 - ❌ Debug Teams host-side issues (SDK sends messages; host interprets them)
 - ❌ Manage Azure DevOps pipeline configuration (`azure-pipelines.yml` is separate infra)
