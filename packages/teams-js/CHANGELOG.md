@@ -1,8 +1,42 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 04 Feb 2026 17:24:38 GMT and should not be manually modified. -->
+<!-- This log was last generated on Fri, 27 Mar 2026 20:29:02 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.51.0
+
+Fri, 27 Mar 2026 20:29:02 GMT
+
+### Minor changes
+
+- Added teamsJs logging for cases where an API fails because it is called in an unsupported frame context.
+- Added `plugins` capability that will help directly interact with the host bypassing API registration in hubsdk. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `appState` parameter to `HostMemoryMetrics` to indicate current state of the app's lifecycle. Deprecated `isCached` and `isPrecached` fields to use the new structure.
+- Added `shareUrl` and `replyChainId` in `openFilePreview` SDK schema.
+- Added `hostFeatures` key in app context, so the hosts can declare support for features to the app.
+
+## 2.50.0
+
+Thu, 12 Mar 2026 20:51:32 GMT
+
+### Minor changes
+
+- Updated ExternalApp* capabilities to allow calls in sidePanel frame context.
+
+## 2.49.0
+
+Thu, 26 Feb 2026 21:58:31 GMT
+
+### Minor changes
+
+- Added new params for openFilePreview SDK that will help reduce file open latency in Teams. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added support for non-https URLs for opt-in app valid origins in `app.initialize()`.
+- Added support for nested wildcard subdomains. The valid origins are still restricted to the usage of only one wildcard in the valid origin.
+
+### Patches
+
+- Updated stageView.StageViewParams interface to make threadId optional.
 
 ## 2.48.1
 

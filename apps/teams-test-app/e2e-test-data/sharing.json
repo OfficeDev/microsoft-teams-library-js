@@ -19,6 +19,22 @@
         ]
       },
       "expectedAlertValue": "shareWebContent called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "shareWebContent API Call - File type - Success",
+      "type": "callResponse",
+      "version": ">2.52.0",
+      "boxSelector": "#box_share_shareWebContent",
+      "inputValue": {
+        "content": [
+          {
+            "type": "FILE",
+            "url": "https://contoso.sharepoint.com/sites/team/Shared%20Documents/report.docx",
+            "message": "Check this file"
+          }
+        ]
+      },
+      "expectedAlertValue": "shareWebContent called with ##JSON_INPUT_VALUE##"
     }
   ]
 }

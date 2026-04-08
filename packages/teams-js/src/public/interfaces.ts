@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
+import { HostFeatures } from './app/app';
 import {
   ChannelType,
   DialogDimension,
@@ -835,6 +836,13 @@ export interface Context {
    * For example, if Bizchat is running in Calendar in Teams, this would be ["Calendar", "Teams"].
    */
   hostAncestors?: string[];
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppHostInfo.features | app.Context.app.host.features} instead
+   * The features supported by the host. This is an optional field that may not be populated by all hosts, and may be added to over time as new features are added to hosts. Because of this, apps should always check for the presence of a feature and its value before using it, and should gracefully handle the case where the feature is not present.
+   */
+  hostFeatures?: HostFeatures;
 }
 
 /** Represents the parameters used to share a deep link. */
@@ -1438,15 +1446,29 @@ export type HostToAppFrameMemoryMetrics = {
 };
 
 /**
+ * The state of the app in terms of its lifecycle and caching status, which can impact its performance characteristics and memory usage.
+ */
+export type AppState = 'cached' | 'precached' | 'active';
+
+/**
  * Memory metrics provided by the host for the app.
  */
 export type HostMemoryMetrics = {
   /**
+   * The current state of the app, which can be 'cached', 'precached', or 'active'. This provides insight into the app's lifecycle stage and can help developers understand the performance characteristics and memory usage of their app in different states.
+   */
+  appState: AppState;
+
+  /**
+   * @deprecated - Use `appState` instead.
+   *
    * Indicates if the app is in a hidden state to accelerate future launches.
    */
   isCached: boolean;
 
   /**
+   * @deprecated - Use `appState` instead.
+   *
    * Indicates if the app is in a preloaded state to accelerate its first launch in the session.
    */
   isPrecached: boolean;

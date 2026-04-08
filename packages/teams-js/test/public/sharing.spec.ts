@@ -203,6 +203,34 @@ describe('sharing_v1', () => {
             });
           });
 
+          it(`sharing.shareWebContent should throw a SdkError when URL and File content types are mixed when initialized with ${frameContext} context`, (done) => {
+            utils.initializeWithContext(frameContext).then(() => {
+              const shareRequest = {
+                content: [
+                  {
+                    type: 'URL',
+                    url: 'https://www.microsoft.com',
+                  },
+                  {
+                    type: 'FILE',
+                    url: 'https://www.microsoft.com/file.docx',
+                  },
+                ],
+              };
+              const error = {
+                errorCode: ErrorCode.INVALID_ARGUMENTS,
+                message: 'Shared content must be of the same type',
+              };
+
+              sharing.shareWebContent(shareRequest as any, (response) => {
+                expect(response).toEqual(error);
+                done();
+              });
+              const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+              expect(shareMessage).toBeNull();
+            });
+          });
+
           it(`sharing.shareWebContent should throw a SdkError when url is missing in URL content type when initialized with ${frameContext} context`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               const shareRequest = {
@@ -240,6 +268,49 @@ describe('sharing_v1', () => {
               const error = {
                 errorCode: ErrorCode.INVALID_ARGUMENTS,
                 message: 'Content type is unsupported',
+              };
+              sharing.shareWebContent(shareRequest as any, (response) => {
+                expect(response).toEqual(error);
+                done();
+              });
+              const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+              expect(shareMessage).toBeNull();
+            });
+          });
+
+          it(`sharing.shareWebContent should successfully call the callback function when given File content in correct format when initialized with ${frameContext} context`, (done) => {
+            utils.initializeWithContext(frameContext).then(() => {
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
+              const shareRequest: sharing.IShareRequest<sharing.IFileContent> = {
+                content: [
+                  {
+                    type: 'FILE',
+                    url: 'https://www.microsoft.com/file.docx',
+                    message: 'Check this file',
+                  },
+                ],
+              };
+              sharing.shareWebContent(shareRequest, () => done());
+              const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+              expect(shareMessage).not.toBeNull();
+              expect(shareMessage.args[0]).toEqual(shareRequest);
+              utils.respondToMessage(shareMessage);
+            });
+          });
+
+          it(`sharing.shareWebContent should throw a SdkError when url is missing in File content type when initialized with ${frameContext} context`, (done) => {
+            utils.initializeWithContext(frameContext).then(() => {
+              const shareRequest = {
+                content: [
+                  {
+                    type: 'FILE',
+                    message: 'Check this file',
+                  },
+                ],
+              };
+              const error = {
+                errorCode: ErrorCode.INVALID_ARGUMENTS,
+                message: 'File URLs are required for File content types',
               };
               sharing.shareWebContent(shareRequest as any, (response) => {
                 expect(response).toEqual(error);
@@ -581,6 +652,31 @@ describe('sharing_v2', () => {
             await expect(promise).rejects.toEqual(error);
           });
 
+          it(`sharing.shareWebContent should throw a SdkError when URL and File content types are mixed when initialized with ${frameContext} context`, async () => {
+            await utils.initializeWithContext(FrameContexts.content);
+            const shareRequest = {
+              content: [
+                {
+                  type: 'URL',
+                  url: 'https://www.microsoft.com',
+                },
+                {
+                  type: 'FILE',
+                  url: 'https://www.microsoft.com/file.docx',
+                },
+              ],
+            };
+            const error = {
+              errorCode: ErrorCode.INVALID_ARGUMENTS,
+              message: 'Shared content must be of the same type',
+            };
+
+            const promise = sharing.shareWebContent(shareRequest as any);
+            const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+            expect(shareMessage).toBeNull();
+            await expect(promise).rejects.toEqual(error);
+          });
+
           it(`sharing.shareWebContent should throw a SdkError when url is missing in URL content type when initialized with ${frameContext} context`, async () => {
             await utils.initializeWithContext(FrameContexts.content);
             const shareRequest = {
@@ -615,6 +711,47 @@ describe('sharing_v2', () => {
             const error = {
               errorCode: ErrorCode.INVALID_ARGUMENTS,
               message: 'Content type is unsupported',
+            };
+
+            const promise = sharing.shareWebContent(shareRequest as any);
+            const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+            expect(shareMessage).toBeNull();
+            await expect(promise).rejects.toEqual(error);
+          });
+
+          it(`sharing.shareWebContent should successfully resolve when given File content in correct format when initialized with ${frameContext} context`, async () => {
+            await utils.initializeWithContext(frameContext);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
+            const shareRequest: sharing.IShareRequest<sharing.IFileContent> = {
+              content: [
+                {
+                  type: 'FILE',
+                  url: 'https://www.microsoft.com/file.docx',
+                  message: 'Check this file',
+                },
+              ],
+            };
+            const promise = sharing.shareWebContent(shareRequest);
+            const shareMessage = utils.findMessageByFunc(sharing.SharingAPIMessages.shareWebContent);
+            expect(shareMessage).not.toBeNull();
+            expect(shareMessage.args[0]).toEqual(shareRequest);
+            utils.respondToMessage(shareMessage);
+            await expect(promise).resolves.not.toThrowError();
+          });
+
+          it(`sharing.shareWebContent should throw a SdkError when url is missing in File content type when initialized with ${frameContext} context`, async () => {
+            await utils.initializeWithContext(FrameContexts.content);
+            const shareRequest = {
+              content: [
+                {
+                  type: 'FILE',
+                  message: 'Check this file',
+                },
+              ],
+            };
+            const error = {
+              errorCode: ErrorCode.INVALID_ARGUMENTS,
+              message: 'File URLs are required for File content types',
             };
 
             const promise = sharing.shareWebContent(shareRequest as any);

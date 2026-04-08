@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added support for non-https URLs for opt-in app valid origins in `app.initialize()`.",
+  "comment": "Added `hostFeatures` key in app context, so the hosts can declare support for features to the app.",
   "packageName": "@microsoft/teams-js",
   "email": "31258166+juanscr@users.noreply.github.com",
   "dependentChangeType": "patch"

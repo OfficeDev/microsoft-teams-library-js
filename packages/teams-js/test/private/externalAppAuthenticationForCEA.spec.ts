@@ -62,7 +62,7 @@ describe('externalAppAuthenticationForCEA', () => {
       errorCode: 'INTERNAL_ERROR',
       message: 'test error message',
     };
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
 
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
@@ -272,7 +272,7 @@ describe('externalAppAuthenticationForCEA', () => {
       claims: ['claims'],
       silent: true,
     };
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
 
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
@@ -428,7 +428,7 @@ describe('externalAppAuthenticationForCEA', () => {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
     });
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     Object.values(FrameContexts).forEach((frameContext) => {
       if (allowedFrameContexts.includes(frameContext)) {
         it(`should throw error if the appId is not an instance of AppId class - ${frameContext}`, async () => {
@@ -630,7 +630,7 @@ describe('externalAppAuthenticationForCEA', () => {
       height: 100,
       isExternal: true,
     };
-    const allowedFrameContexts = [FrameContexts.content];
+    const allowedFrameContexts = [FrameContexts.content, FrameContexts.sidePanel];
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
 
