@@ -35,8 +35,7 @@ steps:
     displayName: Cache client sdk node_modules pnpm
 
   - script: |
-      corepack enable
-      corepack prepare pnpm@9.0.6 --activate
+      npm install -g pnpm@9.0.6
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
 
