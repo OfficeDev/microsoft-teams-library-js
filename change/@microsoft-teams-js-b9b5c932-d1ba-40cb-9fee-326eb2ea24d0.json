@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Extended sharing.shareWebContent to support File content type via the new IFileContent interface, enabling sharing of file URLs alongside existing URL content.",
-  "packageName": "@microsoft/teams-js",
-  "email": "snandy+github@microsoft.com",
-  "dependentChangeType": "patch"
-}
