@@ -71,8 +71,8 @@ extends:
   parameters:
     pool:
       name: Azure-Pipelines-1ESPT-ExDShared
-      image: windows-latest
-      os: windows
+      image: ubuntu-latest
+      os: linux
     sdl:
       eslint:
         configuration: 'required'
