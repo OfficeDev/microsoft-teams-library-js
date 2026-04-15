@@ -55,6 +55,19 @@ Every public capability in `packages/teams-js/src/public/` must:
 - `apps/` — test applications (not published)
 - `tools/cli/` — utility scripts for bundle analysis and releases
 
+## Change Organization
+
+- **One logical change per PR** — each pull request should represent a single coherent idea: one new capability, one refactor, one bug fix. If a task requires both a refactor and a new feature, split them into separate PRs with the refactor landing first.
+- **Reviewable size** — aim for PRs that a reviewer can hold in their head at once. If a PR touches more than ~10 files or ~400 lines of diff, look for natural seams to split it. Common split points: infrastructure/types first, then implementation, then tests for new behavior, then documentation.
+- **Commits tell a story** — within a PR, each commit should compile and pass tests. Order commits so reviewers can follow the progression: types/interfaces → implementation → tests → wiring/integration.
+- **Separate mechanical from meaningful** — keep automated or mechanical changes (renames, import reordering, lint fixes, file moves) in their own commits or PRs so reviewers can skip them quickly and focus on behavioral changes.
+
+## PR Review Guidelines
+
+- **Propose splitting large PRs** — when reviewing a PR that is large (roughly >400 lines of meaningful diff) or crosses multiple unrelated concerns, suggest a concrete split plan. Name the proposed child PRs, what files/changes go in each, and the order they should land. Frame the suggestion constructively: explain how splitting will speed up review and reduce merge risk.
+- **Evaluate cohesion** — a good PR changes things that change for the same reason. Flag changes that bundle unrelated work (e.g., a bug fix mixed with a feature, or a refactor mixed with new API surface). Each separable concern should be its own PR.
+- **Identify safe landing order** — when proposing a split, suggest the dependency-safe merge order (e.g., "Land the type definitions first, then the implementation PR can build on them"). Ensure each proposed sub-PR is independently shippable and leaves the codebase in a working state.
+
 ## Build Commands
 
 - `pnpm build` — build everything (from repo root)
