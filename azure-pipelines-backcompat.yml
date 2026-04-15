@@ -84,7 +84,7 @@ extends:
         parser: '@typescript-eslint/parser'
         parserOptions: 'ecmaFeatures:{jsx:true}\necmaVersion:12\nsourceType:module\nproject:$(Build.SourcesDirectory)/tsconfig.common.json'
         enableExclusions: true
-        exclusionPatterns": "*.d.ts\n*.spec.js\n*.spec.jsx\n*.spec.ts\n*.spec.tsx\n*.test.ts\n*.test.tsx"
+        exclusionPatterns: "*.d.ts\n*.spec.js\n*.spec.jsx\n*.spec.ts\n*.spec.tsx\n*.test.ts\n*.test.tsx"
         customEnvironments: true
         environmentsBrowser: true
         environmentsNode: true
@@ -95,7 +95,7 @@ extends:
         environmentsEs2020: true
         environmentsJest: false
       sourceRepositoriesToScan:
-        include:
+        exclude:
           - repository: AppHostingSdkV3
           - repository: AppHostingSdkV4
           - repository: AppHostingSdkV5

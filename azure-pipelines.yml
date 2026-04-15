@@ -157,11 +157,6 @@ extends:
                   testRunTitle: 'E2E Tests - CDN'
                   mergeTestResults: true
                 condition: succeededOrFailed()
-
-      - stage: Perf_and_Android_E2E
-        displayName: 'Perf & Android E2E Tests'
-        dependsOn: Latest_E2E
-        jobs:
           - job: E2ETest1
             displayName: 'E2E Test - Perf'
             pool:
@@ -189,6 +184,10 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
+      - stage: Android_E2E
+        displayName: 'Android E2E Tests'
+        dependsOn: Build
+        jobs:
           - job: E2ETestAndroidA
             displayName: 'E2E Tests - Android - Plan A'
             pool:
