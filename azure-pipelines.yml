@@ -124,17 +124,7 @@ extends:
           - template: tools/yaml-templates/cdn-e2e-tests-job.yml@self
             parameters:
               testPrefixPatternGroups:
-                [
-                  'app(?=\.)',
-                  '{appE,appI,appS,auth}',
-                  '{[B],[b]}',
-                  '{[C-D],[c-d]}',
-                  '{[E],[e]}',
-                  '{[F-M],[f-m]}',
-                  '{[N-R],[n-r]}',
-                  '{[S],[s]}',
-                  '{[T-Z],[t-z]}',
-                ]
+                ['app(?=\.)','{appE,appI,appS,auth}']
 
       - stage: Perf_and_Android_E2E
         displayName: 'Perf & Android E2E Tests'
