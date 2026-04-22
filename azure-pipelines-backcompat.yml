@@ -29,7 +29,7 @@ schedules:
     branches:
       include:
         - main
-    always: true
+    always: false
 
 resources:
   repositories:
@@ -99,15 +99,15 @@ extends:
           - repository: AppHostingSdkV8
           - repository: AppHostingSdkV9
     settings:
-      networkIsolationPolicy: Npm
+      networkIsolationPolicy: Npm,GitHub
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
       - ${{ each ver in parameters.backCompatVersions }}:
-        - stage: BackCompat_${{ ver.version }}
-          displayName: 'Back-Compat E2E Tests - ${{ ver.version }}'
-          jobs:
-            - template: tools/yaml-templates/web-e2e-versions.yml@self
-              parameters:
-                AppHostingSdk: ${{ ver.resource }}
-                versionBranch: ${{ ver.version }}
+          - stage: BackCompat_${{ ver.version }}
+            displayName: 'Back-Compat E2E Tests - ${{ ver.version }}'
+            jobs:
+              - template: tools/yaml-templates/web-e2e-versions.yml@self
+                parameters:
+                  AppHostingSdk: ${{ ver.resource }}
+                  versionBranch: ${{ ver.version }}
