@@ -158,10 +158,6 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-      - stage: Perf_and_Android_E2E
-        displayName: 'Perf & Android E2E Tests'
-        dependsOn: Latest_E2E
-        jobs:
           - job: E2ETest1
             displayName: 'E2E Test - Perf'
             pool:
