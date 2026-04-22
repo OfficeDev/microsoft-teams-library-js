@@ -90,7 +90,7 @@ extends:
         environmentsEs2020: true
         environmentsJest: false
       sourceRepositoriesToScan:
-        include:
+        exclude:
           - repository: AppHostingSdkV3
           - repository: AppHostingSdkV4
           - repository: AppHostingSdkV5
@@ -98,17 +98,11 @@ extends:
           - repository: AppHostingSdkV7
           - repository: AppHostingSdkV8
           - repository: AppHostingSdkV9
+    settings:
+      networkIsolationPolicy: Npm
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
-      - stage: Security
-        displayName: 'Security'
-        jobs:
-          - job: Security
-            displayName: 'Security Tasks'
-            steps:
-              - template: tools/yaml-templates/security.yml@self
-
       - ${{ each ver in parameters.backCompatVersions }}:
         - stage: BackCompat_${{ ver.version }}
           displayName: 'Back-Compat E2E Tests - ${{ ver.version }}'
