@@ -99,7 +99,7 @@ extends:
           - repository: AppHostingSdkV8
           - repository: AppHostingSdkV9
     settings:
-      networkIsolationPolicy: Npm,GitHub
+      networkIsolationPolicy: Permissive
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
