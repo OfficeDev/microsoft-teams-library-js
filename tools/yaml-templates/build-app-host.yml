@@ -36,7 +36,7 @@ steps:
 
   - script: |
       corepack enable
-      corepack prepare pnpm@9.0.6 --activate
+      corepack prepare pnpm@9.14.4 --activate
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
     env:
