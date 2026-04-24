@@ -41,6 +41,7 @@ steps:
     displayName: 'Setup pnpm'
     env:
       COREPACK_NPM_REGISTRY: $(CfsNpmRegistryUrl)
+      COREPACK_NPM_TOKEN: $(System.AccessToken)
 
   # Cypress needs to run a post_install script, when `node_modules` are cached, therefore the cypress binary file
   # should be cached, as cypress doesn't supports running post_install script after node_modules are cached.
