@@ -39,6 +39,8 @@ steps:
       corepack prepare pnpm@9.0.6 --activate
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
+    env:
+      COREPACK_NPM_REGISTRY: $(CfsNpmRegistryUrl)
 
   # Cypress needs to run a post_install script, when `node_modules` are cached, therefore the cypress binary file
   # should be cached, as cypress doesn't supports running post_install script after node_modules are cached.
