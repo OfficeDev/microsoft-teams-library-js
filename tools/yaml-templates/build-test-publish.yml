@@ -5,6 +5,18 @@ steps:
       versionSpec: '18.x'
 
   - task: CmdLine@2
+    displayName: 'Configure CFS npm feed'
+    inputs:
+      script: |
+        echo "registry=$(CFS_NPM_Registry)" >> .npmrc
+        echo "always-auth=true" >> .npmrc
+
+  - task: npmAuthenticate@0
+    displayName: 'Authenticate to CFS feed'
+    inputs:
+      workingFile: .npmrc
+
+  - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
       script: |
