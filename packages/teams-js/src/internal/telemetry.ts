@@ -184,6 +184,8 @@ export const enum ApiName {
   Interactive_GetNtpTime = 'interactive.getNtpTime',
   Interactive_RegisterClientId = 'interactive.registerClientId',
   Interactive_SetFluidContainerId = 'interactive.setFluidContainerId',
+  Intune_IsSaveToLocationAllowed = 'intune.isSaveToLocationAllowed',
+  Intune_IsOpenFromLocationAllowed = 'intune.isOpenFromLocationAllowed',
   Location_GetLocation = 'location.getLocation',
   Location_ShowLocation = 'location.showLocation',
   Logs_Receive = 'log.receive',
