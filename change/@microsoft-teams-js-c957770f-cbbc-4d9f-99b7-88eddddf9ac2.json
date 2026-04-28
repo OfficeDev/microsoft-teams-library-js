@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Removed beta tags from shortcutRelay capability.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "patch"
+}
