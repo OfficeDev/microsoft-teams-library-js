@@ -1,6 +1,7 @@
 {
   "name": "teams-js-monorepo",
   "private": true,
+  "packageManager": "pnpm@9.14.4",
   "author": "Microsoft Teams",
   "engines": {
     "pnpm": ">=9.0.6",
