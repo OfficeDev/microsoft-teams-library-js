@@ -17,34 +17,17 @@ steps:
       workingFile: .npmrc
 
   - task: CmdLine@2
-    displayName: 'Debug: check pnpm versions in feed'
-    inputs:
-      script: |
-        echo "--- Available pnpm 9.x versions ---"
-        npm view pnpm versions --json 2>&1 | findstr /C:"9.14" /C:"9.0"
-        echo.
-        echo "--- Checking 9.14.4 specifically ---"
-        npm view pnpm@9.14.4 version 2>&1
-    continueOnError: true
-
-  - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        corepack enable
-        corepack prepare pnpm@9.14.4 --activate
+        npm install -g pnpm@9.14.4 --userconfig .npmrc
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-    env:
-      COREPACK_NPM_TOKEN: $(System.AccessToken)
 
   - task: CmdLine@2
     displayName: 'Install repo dependencies'
     inputs:
       script: |
         pnpm install
-    env:
-      COREPACK_NPM_REGISTRY: $(CFS_NPM_Registry)
-      COREPACK_NPM_TOKEN: $(System.AccessToken)
 
   - task: CmdLine@2
     displayName: 'Check that changefile was created if needed'
