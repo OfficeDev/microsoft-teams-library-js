@@ -17,22 +17,6 @@ steps:
       workingFile: .npmrc
 
   - task: CmdLine@2
-    displayName: 'Debug: test feed access'
-    inputs:
-      script: |
-        echo "--- /pnpm/9.14.4 ---"
-        curl -s -o nul -w "HTTP %%{http_code}" -u "AzureDevOps:%COREPACK_NPM_TOKEN%" "%COREPACK_NPM_REGISTRY%/pnpm/9.14.4"
-        echo.
-        echo "--- /pnpm (all versions) ---"
-        curl -s -o nul -w "HTTP %%{http_code}" -u "AzureDevOps:%COREPACK_NPM_TOKEN%" "%COREPACK_NPM_REGISTRY%/pnpm"
-        echo.
-        echo "--- /pnpm (body preview) ---"
-        curl -s -u "AzureDevOps:%COREPACK_NPM_TOKEN%" "%COREPACK_NPM_REGISTRY%/pnpm" 2>&1 | findstr /C:"error" /C:"name" /C:"versions" /I
-    env:
-      COREPACK_NPM_REGISTRY: $(CFS_NPM_Registry)
-      COREPACK_NPM_TOKEN: $(System.AccessToken)
-
-  - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
       script: |
