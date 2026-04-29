@@ -20,13 +20,14 @@ steps:
     displayName: 'Debug: test feed access'
     inputs:
       script: |
-        echo "Registry: %COREPACK_NPM_REGISTRY%"
-        echo "Token set: %COREPACK_NPM_TOKEN:~0,5%..."
-        echo "--- Bearer auth test ---"
-        curl -s -o nul -w "HTTP %%{http_code}" -H "Authorization: Bearer %COREPACK_NPM_TOKEN%" "%COREPACK_NPM_REGISTRY%/pnpm/9.14.4"
-        echo.
-        echo "--- Basic auth test ---"
+        echo "--- /pnpm/9.14.4 ---"
         curl -s -o nul -w "HTTP %%{http_code}" -u "AzureDevOps:%COREPACK_NPM_TOKEN%" "%COREPACK_NPM_REGISTRY%/pnpm/9.14.4"
+        echo.
+        echo "--- /pnpm (all versions) ---"
+        curl -s -o nul -w "HTTP %%{http_code}" -u "AzureDevOps:%COREPACK_NPM_TOKEN%" "%COREPACK_NPM_REGISTRY%/pnpm"
+        echo.
+        echo "--- /pnpm (body preview) ---"
+        curl -s -u "AzureDevOps:%COREPACK_NPM_TOKEN%" "%COREPACK_NPM_REGISTRY%/pnpm" 2>&1 | findstr /C:"error" /C:"name" /C:"versions" /I
     env:
       COREPACK_NPM_REGISTRY: $(CFS_NPM_Registry)
       COREPACK_NPM_TOKEN: $(System.AccessToken)
@@ -35,9 +36,10 @@ steps:
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        corepack enable
+        corepack enable --install-directory %AGENT_TOOLSDIRECTORY%
         corepack prepare pnpm@9.14.4 --activate
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+        echo ##vso[task.prependpath]%AGENT_TOOLSDIRECTORY%
     env:
       COREPACK_NPM_REGISTRY: $(CFS_NPM_Registry)
       COREPACK_NPM_TOKEN: $(System.AccessToken)
