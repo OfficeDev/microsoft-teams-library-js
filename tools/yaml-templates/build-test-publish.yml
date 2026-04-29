@@ -17,6 +17,21 @@ steps:
       workingFile: .npmrc
 
   - task: CmdLine@2
+    displayName: 'Debug: test feed access'
+    inputs:
+      script: |
+        echo "Registry: %COREPACK_NPM_REGISTRY%"
+        echo "Token set: %COREPACK_NPM_TOKEN:~0,5%..."
+        echo "--- Bearer auth test ---"
+        curl -s -o nul -w "HTTP %%{http_code}" -H "Authorization: Bearer %COREPACK_NPM_TOKEN%" "%COREPACK_NPM_REGISTRY%/pnpm/9.14.4"
+        echo.
+        echo "--- Basic auth test ---"
+        curl -s -o nul -w "HTTP %%{http_code}" -u "AzureDevOps:%COREPACK_NPM_TOKEN%" "%COREPACK_NPM_REGISTRY%/pnpm/9.14.4"
+    env:
+      COREPACK_NPM_REGISTRY: $(CFS_NPM_Registry)
+      COREPACK_NPM_TOKEN: $(System.AccessToken)
+
+  - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
       script: |
