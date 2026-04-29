@@ -32,6 +32,9 @@ steps:
     inputs:
       script: |
         pnpm install
+    env:
+      COREPACK_NPM_REGISTRY: $(CFS_NPM_Registry)
+      COREPACK_NPM_TOKEN: $(System.AccessToken)
 
   - task: CmdLine@2
     displayName: 'Check that changefile was created if needed'
