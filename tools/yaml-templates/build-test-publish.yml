@@ -20,12 +20,10 @@ steps:
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        corepack enable --install-directory %AGENT_TOOLSDIRECTORY%
+        corepack enable
         corepack prepare pnpm@9.14.4 --activate
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-        echo ##vso[task.prependpath]%AGENT_TOOLSDIRECTORY%
     env:
-      COREPACK_NPM_REGISTRY: $(CFS_NPM_Registry)
       COREPACK_NPM_TOKEN: $(System.AccessToken)
 
   - task: CmdLine@2
