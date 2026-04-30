@@ -34,7 +34,7 @@ extends:
       image: windows-latest
       os: windows
     settings:
-      networkIsolationPolicy: CFSClean
+      networkIsolationPolicy: Permissive,CFSClean
     sdl:
       eslint:
         configuration: 'required'
