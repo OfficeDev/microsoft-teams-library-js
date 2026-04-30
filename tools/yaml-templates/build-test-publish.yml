@@ -44,6 +44,21 @@ steps:
       workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
 
   - task: CmdLine@2
+    displayName: 'Configure CFS NuGet feed'
+    inputs:
+      script: |
+        echo ^<?xml version="1.0" encoding="utf-8"?^> > nuget.config
+        echo ^<configuration^> >> nuget.config
+        echo   ^<packageSources^> >> nuget.config
+        echo     ^<clear /^> >> nuget.config
+        echo     ^<add key="CFS" value="$(CFS_NuGet_Feed)" /^> >> nuget.config
+        echo   ^</packageSources^> >> nuget.config
+        echo ^</configuration^> >> nuget.config
+
+  - task: NuGetAuthenticate@1
+    displayName: 'Authenticate to CFS NuGet feed'
+
+  - task: CmdLine@2
     displayName: 'pnpm build'
     inputs:
       script: |
