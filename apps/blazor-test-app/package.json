@@ -5,10 +5,11 @@
   "description": "Blazor test app to ensure teams-js changes don't break Blazor app functionality",
   "version": "1.0.0",
   "scripts": {
-    "blazor-build": "dotnet build",
+    "blazor-build": "node bundle-fluentui.js && dotnet build",
     "start": "dotnet run"
   },
   "devDependencies": {
+    "@fluentui/web-components": "^2.6.1",
     "@microsoft/teams-js": "workspace:*"
   }
 }
