@@ -103,10 +103,17 @@ function eventToCanonicalShortcut(e: KeyboardEvent): string {
 /**
  * Checks if the event is a valid shortcut event.
  * A valid shortcut event is one that has at least one modifier key pressed
- * (ctrl, shift, alt, meta) or the Escape key.
+ * (ctrl, shift, alt, meta), the Escape key, or a function key (F1–F24).
  */
 function isValidShortcutEvent(e: KeyboardEvent): boolean {
-  return e.ctrlKey || e.shiftKey || e.altKey || e.metaKey || (!!e.key && e.key.toLowerCase() === 'escape');
+  return (
+    e.ctrlKey ||
+    e.shiftKey ||
+    e.altKey ||
+    e.metaKey ||
+    (!!e.key && e.key.toLowerCase() === 'escape') ||
+    (!!e.key && /^F\d+$/i.test(e.key))
+  );
 }
 
 function isMatchingShortcut(
