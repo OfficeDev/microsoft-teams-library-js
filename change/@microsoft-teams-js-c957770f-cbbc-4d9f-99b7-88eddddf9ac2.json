@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Promoted the `shortcutRelay` capability from beta to public.",
-  "packageName": "@microsoft/teams-js",
-  "email": "jeklouda@microsoft.com",
-  "dependentChangeType": "patch"
-}

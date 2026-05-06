@@ -1,8 +1,21 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 08 Apr 2026 17:07:30 GMT and should not be manually modified. -->
+<!-- This log was last generated on Wed, 06 May 2026 19:04:08 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.53.0
+
+Wed, 06 May 2026 19:04:08 GMT
+
+### Minor changes
+
+- Promoted the `shortcutRelay` capability from beta to public.
+
+### Patches
+
+- Security: Upgraded underscore dependency from 1.12.1 to 1.13.8 to resolve component governance alert and address known security vulnerabilities.
+- Added function key support (F1-F24) to \isValidShortcutEvent
 
 ## 2.52.0
 
