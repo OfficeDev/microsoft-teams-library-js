@@ -25,6 +25,8 @@
     <PackageReference Include="Microsoft.Fast.Components.FluentUI" Version="3.8.0" />
     <PackageReference Include="Microsoft.TeamsFx" Version="3.0.*" />
     <PackageReference Include="Microsoft.Bot.Connector" Version="4.23.*" />
+    <!-- CVE-2026-26127: Pin Microsoft.Bcl.Memory to patched version (transitive dependency) -->
+    <PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.15" />
   </ItemGroup>
 
   <ItemGroup>
