@@ -15,7 +15,7 @@ Wed, 06 May 2026 19:04:08 GMT
 ### Patches
 
 - Security: Upgraded underscore dependency from 1.12.1 to 1.13.8 to resolve component governance alert and address known security vulnerabilities.
-- Added function key support (F1-F24) to \isValidShortcutEvent
+- Added function key support (F1-F24) to `shortcutRelay` capability.
 
 ## 2.52.0
 
