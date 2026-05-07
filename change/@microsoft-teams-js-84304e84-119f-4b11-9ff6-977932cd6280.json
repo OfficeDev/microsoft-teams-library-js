@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added function key support (F1-F24) to \\isValidShortcutEvent",
-  "packageName": "@microsoft/teams-js",
-  "email": "zoeschmitt@microsoft.com",
-  "dependentChangeType": "patch"
-}

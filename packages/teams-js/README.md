@@ -24,7 +24,7 @@ To install the stable [version](https://learn.microsoft.com/javascript/api/overv
 
 ### Production
 
-You can reference these files directly [from here](https://res.cdn.office.net/teams-js/2.52.0/js/MicrosoftTeams.min.js) or point your package manager at them.
+You can reference these files directly [from here](https://res.cdn.office.net/teams-js/2.53.0/js/MicrosoftTeams.min.js) or point your package manager at them.
 
 ## Usage
 
@@ -45,13 +45,13 @@ Reference the library inside of your `.html` page using:
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
 <script
-  src="https://res.cdn.office.net/teams-js/2.52.0/js/MicrosoftTeams.min.js"
-  integrity="sha384-j4GNIru3mNYN+q8XdBRVyvbUx+0U867Cy90v6H61tpIZoR2pUq+bZDZmmpT8N7VG"
+  src="https://res.cdn.office.net/teams-js/2.53.0/js/MicrosoftTeams.min.js"
+  integrity="sha384-UFKwOGC8ix6vOFFC4vH8hSpjwkQXZmSjCx8aaxwhbtm+6joQdNvD7b4pPk82cYAD"
   crossorigin="anonymous"
 ></script>
 
 <!-- Microsoft Teams JavaScript API (via npm) -->
-<script src="node_modules/@microsoft/teams-js@2.52.0/dist/MicrosoftTeams.min.js"></script>
+<script src="node_modules/@microsoft/teams-js@2.53.0/dist/MicrosoftTeams.min.js"></script>
 
 <!-- Microsoft Teams JavaScript API (via local) -->
 <script src="MicrosoftTeams.min.js"></script>
