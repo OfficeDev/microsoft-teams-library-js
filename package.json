@@ -166,7 +166,7 @@
   },
   "dependencies": {
     "skeleton-buffer": "file:./skeleton-buffer",
-    "uuid": "^9.0.1"
+    "uuid": "^14.0.0"
   },
   "size-limit": [
     {
