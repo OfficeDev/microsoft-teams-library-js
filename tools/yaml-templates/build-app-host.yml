@@ -35,13 +35,20 @@ steps:
     displayName: Cache client sdk node_modules pnpm
 
   - script: |
-      corepack enable
-      corepack prepare pnpm@9.14.4 --activate
+      echo "registry=$(CfsNpmRegistryUrl)" >> $(ClientSdkProjectDirectory)/.npmrc
+      echo "always-auth=true" >> $(ClientSdkProjectDirectory)/.npmrc
+    displayName: 'Configure CFS npm feed'
+
+  - task: npmAuthenticate@0
+    displayName: 'Authenticate to CFS feed (client SDK)'
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
+  - script: |
+      cp $(ClientSdkProjectDirectory)/.npmrc ~/.npmrc
+      npm install -g pnpm@9.14.4
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
-    env:
-      COREPACK_NPM_REGISTRY: $(CfsNpmRegistryUrl)
-      COREPACK_NPM_TOKEN: $(System.AccessToken)
 
   # Cypress needs to run a post_install script, when `node_modules` are cached, therefore the cypress binary file
   # should be cached, as cypress doesn't supports running post_install script after node_modules are cached.

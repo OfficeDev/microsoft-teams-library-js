@@ -41,11 +41,23 @@ steps:
     displayName: Cache pnpm
 
   - task: CmdLine@2
+    displayName: 'Configure CFS npm feed'
+    inputs:
+      script: |
+        echo "registry=$(CFS_NPM_Registry)" >> $(ClientSdkProjectDirectory)/.npmrc
+        echo "always-auth=true" >> $(ClientSdkProjectDirectory)/.npmrc
+
+  - task: npmAuthenticate@0
+    displayName: 'Authenticate to CFS feed (client SDK)'
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
+  - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        corepack enable
-        corepack prepare pnpm@9.0.6 --activate
+        cp $(ClientSdkProjectDirectory)/.npmrc ~/.npmrc
+        npm install -g pnpm@9.14.4
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
   - task: CmdLine@2
