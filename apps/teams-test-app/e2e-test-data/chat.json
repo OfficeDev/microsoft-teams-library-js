@@ -16,7 +16,8 @@
         "message": "testMessage"
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
-      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
+      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK.",
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "openChat API Call - Success",
@@ -28,7 +29,8 @@
         "message": "testMessage"
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
-      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
+      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK.",
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "openGroupChat API Call - Success",
@@ -40,7 +42,8 @@
         "message": "testMessage"
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn1\",\"testUpn2\"],\"message\":\"testMessage\"}",
-      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
+      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK.",
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "openChat2 API Call - Success",
@@ -52,7 +55,8 @@
         "message": "testMessage"
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
-      "expectedTestAppValue": "chat.openChat() was called"
+      "expectedTestAppValue": "chat.openChat() was called",
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "openChat2 API Call - Success",
@@ -64,7 +68,8 @@
         "message": "testMessage"
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
-      "expectedTestAppValue": "chat.openChat() was called"
+      "expectedTestAppValue": "chat.openChat() was called",
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "openGroupChat2 API Call - Success",
@@ -76,7 +81,8 @@
         "message": "testMessage"
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn1\",\"testUpn2\"],\"message\":\"testMessage\"}",
-      "expectedTestAppValue": "chat.openGroupChat() was called"
+      "expectedTestAppValue": "chat.openGroupChat() was called",
+      "skipForCallbackBasedRuns": true
     }
   ]
 }

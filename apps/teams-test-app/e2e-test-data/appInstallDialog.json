@@ -14,7 +14,8 @@
         "appId": "957f8a7e-fbcd-411d-b69f-acb7eb58b515"
       },
       "expectedAlertValue": "openAppInstallDialog called with {\"appId\":\"957f8a7e-fbcd-411d-b69f-acb7eb58b515\"}",
-      "expectedTestAppValue": "called"
+      "expectedTestAppValue": "called",
+      "skipForCallbackBasedRuns": true
     }
   ]
 }

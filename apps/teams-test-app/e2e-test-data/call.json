@@ -16,7 +16,8 @@
         "source": "source"
       },
       "expectedAlertValue": "startCall called with ##JSON_INPUT_VALUE##",
-      "expectedTestAppValue": "result: true"
+      "expectedTestAppValue": "result: true",
+      "skipForCallbackBasedRuns": true
     }
   ]
 }

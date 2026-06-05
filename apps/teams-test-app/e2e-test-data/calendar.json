@@ -12,7 +12,8 @@
         "itemId": "123"
       },
       "expectedAlertValue": "openCalendarItem called with itemId: 123",
-      "expectedTestAppValue": "Completed"
+      "expectedTestAppValue": "Completed",
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "composeMeeting API Call - Success",
@@ -26,7 +27,8 @@
         "content": "content"
       },
       "expectedAlertValue": "composeMeeting called with ##JSON_INPUT_VALUE##",
-      "expectedTestAppValue": "Completed"
+      "expectedTestAppValue": "Completed",
+      "skipForCallbackBasedRuns": true
     }
   ]
 }
