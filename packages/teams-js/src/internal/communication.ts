@@ -554,8 +554,8 @@ async function processIncomingMessage(evt: DOMMessageEvent): Promise<void> {
   const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
   const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
 
-  return shouldProcessIncomingMessage(messageSource, messageOrigin).then((result) => {
-    if (!result) {
+  return verifyIncomingMessageOrigin(messageSource, messageOrigin).then((isOriginValid) => {
+    if (!isOriginValid) {
       processIncomingMessageLogger(
         'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin, message: %o, source: %o, origin: %o',
         evt,
@@ -630,51 +630,62 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
     return;
   }
 
-  if (!shouldProcessIncomingMessage(messageSource, messageOrigin)) {
-    logger(
-      'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
-    );
-    return;
-  }
+  verifyIncomingMessageOrigin(messageSource, messageOrigin).then((isOriginValid) => {
+    if (!isOriginValid) {
+      logger(
+        'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
+      );
+      return;
+    }
 
-  /**
-   * In most cases, top level window and the parent window will be same.
-   * If they're not, perform the necessary updates for the top level window.
-   *
-   * Top window logic to flush messages is kept independent so that we don't affect
-   * any of the code for the existing communication channel.
-   */
-  if (!Communication.topWindow || Communication.topWindow.closed || messageSource === Communication.topWindow) {
-    Communication.topWindow = messageSource;
-    Communication.topOrigin = messageOrigin;
-  }
+    /**
+     * In most cases, top level window and the parent window will be same.
+     * If they're not, perform the necessary updates for the top level window.
+     *
+     * Top window logic to flush messages is kept independent so that we don't affect
+     * any of the code for the existing communication channel.
+     */
+    if (!Communication.topWindow || Communication.topWindow.closed || messageSource === Communication.topWindow) {
+      Communication.topWindow = messageSource;
+      Communication.topOrigin = messageOrigin;
+    }
 
-  // Clean up pointers to closed parent
-  if (Communication.topWindow && Communication.topWindow.closed) {
-    Communication.topWindow = null;
-    Communication.topOrigin = null;
-  }
+    // Clean up pointers to closed parent
+    if (Communication.topWindow && Communication.topWindow.closed) {
+      Communication.topWindow = null;
+      Communication.topOrigin = null;
+    }
 
-  flushMessageQueue(Communication.topWindow, Communication.topOrigin, CommunicationPrivate.topMessageQueue, 'top');
+    flushMessageQueue(Communication.topWindow, Communication.topOrigin, CommunicationPrivate.topMessageQueue, 'top');
 
-  // Return the response to the registered callback
-  onMessageReceived(message);
+    // Return the response to the registered callback
+    onMessageReceived(message);
+  }).catch((err) => {
+    // Sanity check; this should not execute
+    logger('Unexpected error verifying message origin: %o', err);
+  });
 }
 
-const shouldProcessIncomingMessageLogger = communicationLogger.extend('shouldProcessIncomingMessage');
+const verifyIncomingMessageOriginLogger = communicationLogger.extend('verifyIncomingMessageOrigin');
 
 /**
  * @hidden
- * Validates the message source and origin, if it should be processed
+ * Verifies that an incoming message originates from a different window and that its origin
+ * is either in the pre-known allowlist or was supplied by the app developer during initialization.
+ *
+ * @param messageSource - The window that sent the message.
+ * @param messageOrigin - The origin of the message.
+ *
+ * @returns A promise that resolves to `true` if the origin is valid and the message is safe to process, `false` otherwise.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-async function shouldProcessIncomingMessage(messageSource: Window, messageOrigin: string): Promise<boolean> {
+async function verifyIncomingMessageOrigin(messageSource: Window, messageOrigin: string): Promise<boolean> {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
-    shouldProcessIncomingMessageLogger('Should not process message because it is coming from the current window');
+    verifyIncomingMessageOriginLogger('Should not process message because it is coming from the current window');
     return false;
   } else if (
     Communication.currentWindow &&
@@ -688,13 +699,13 @@ async function shouldProcessIncomingMessage(messageSource: Window, messageOrigin
     try {
       messageOriginURL = new URL(messageOrigin);
     } catch (_) {
-      shouldProcessIncomingMessageLogger('Message has an invalid origin of %s', messageOrigin);
+      verifyIncomingMessageOriginLogger('Message has an invalid origin of %s', messageOrigin);
       return false;
     }
 
     const isOriginValid = await validateOrigin(messageOriginURL);
     if (!isOriginValid) {
-      shouldProcessIncomingMessageLogger('Message has an invalid origin of %s', messageOrigin);
+      verifyIncomingMessageOriginLogger('Message has an invalid origin of %s', messageOrigin);
     }
     return isOriginValid;
   }

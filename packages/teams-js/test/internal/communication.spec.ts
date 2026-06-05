@@ -5,6 +5,7 @@ import { MessageRequest } from '../../src/internal/messageObjects';
 import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuthUtils';
 import { ResponseHandler } from '../../src/internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
+import * as validOrigins from '../../src/internal/validOrigins';
 import { ErrorCode, FrameContexts, SdkError } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { UUID } from '../../src/public/uuidObject';
@@ -1912,6 +1913,9 @@ describe('Testing communication', () => {
           validResponseMessage,
         );
 
+        // Wait for the async origin validation promise to resolve
+        await new Promise(process.nextTick);
+
         expect(onMessageReceivedCb).toBeCalledWith(validResponseMessage);
       });
 
@@ -1952,6 +1956,68 @@ describe('Testing communication', () => {
         );
 
         expect(onMessageReceivedCb).not.toBeCalled();
+      });
+    });
+
+    describe('origin validation in processAuthBridgeMessage', () => {
+      let validateOriginSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        validateOriginSpy = jest.spyOn(validOrigins, 'validateOrigin');
+      });
+
+      afterEach(() => {
+        validateOriginSpy.mockRestore();
+      });
+
+      test('should not call onMessageReceived when the message origin is invalid', async () => {
+        const onMessageReceivedCb = jest.fn();
+
+        utils.mockWindow.parent = utils.mockWindow.top;
+        await setupNAABridge();
+        communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
+
+        // Mock validateOrigin to reject the origin after the bridge is set up
+        validateOriginSpy.mockResolvedValue(false);
+
+        utils.respondToMessage(
+          {
+            id: 0,
+            data: validMessage,
+            func: 'nestedAppAuth.execute',
+          },
+          false,
+          validResponseMessage,
+        );
+
+        // Wait for the async origin validation promise to resolve
+        await new Promise(process.nextTick);
+
+        expect(onMessageReceivedCb).not.toBeCalled();
+      });
+
+      test('should call onMessageReceived when the message origin is valid', async () => {
+        const onMessageReceivedCb = jest.fn();
+        validateOriginSpy.mockResolvedValue(true);
+
+        utils.mockWindow.parent = utils.mockWindow.top;
+        await setupNAABridge();
+        communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
+
+        utils.respondToMessage(
+          {
+            id: 0,
+            data: validMessage,
+            func: 'nestedAppAuth.execute',
+          },
+          false,
+          validResponseMessage,
+        );
+
+        // Wait for the async origin validation promise to resolve
+        await new Promise(process.nextTick);
+
+        expect(onMessageReceivedCb).toBeCalledWith(validResponseMessage);
       });
     });
   });
