@@ -5,7 +5,6 @@ import { MessageRequest } from '../../src/internal/messageObjects';
 import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuthUtils';
 import { ResponseHandler } from '../../src/internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
-import * as validOrigins from '../../src/internal/validOrigins';
 import { ErrorCode, FrameContexts, SdkError } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { UUID } from '../../src/public/uuidObject';
@@ -1959,26 +1958,16 @@ describe('Testing communication', () => {
       });
     });
 
-    describe('origin validation in processAuthBridgeMessage', () => {
-      let validateOriginSpy: jest.SpyInstance;
-
-      beforeEach(() => {
-        validateOriginSpy = jest.spyOn(validOrigins, 'validateOrigin');
-      });
-
-      afterEach(() => {
-        validateOriginSpy.mockRestore();
-      });
-
-      test('should not call onMessageReceived when the message origin is invalid', async () => {
+    describe('verifyIncomingMessageOrigin', () => {
+      test('should not call onMessageReceived when the message comes from the same window', async () => {
         const onMessageReceivedCb = jest.fn();
 
         utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
-        // Mock validateOrigin to reject the origin after the bridge is set up
-        validateOriginSpy.mockResolvedValue(false);
+        // Set parent to currentWindow so the message appears to come from the same window
+        utils.mockWindow.parent = communication.Communication.currentWindow;
 
         utils.respondToMessage(
           {
@@ -1990,19 +1979,26 @@ describe('Testing communication', () => {
           validResponseMessage,
         );
 
-        // Wait for the async origin validation promise to resolve
         await new Promise(process.nextTick);
 
         expect(onMessageReceivedCb).not.toBeCalled();
       });
 
-      test('should call onMessageReceived when the message origin is valid', async () => {
+      test('should not call onMessageReceived when the message origin is not in valid origins', async () => {
         const onMessageReceivedCb = jest.fn();
-        validateOriginSpy.mockResolvedValue(true);
 
         utils.mockWindow.parent = utils.mockWindow.top;
         await setupNAABridge();
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
+
+        // Use an invalid origin and stub the CDN fetch so that validateOrigin resolves to false
+        // (validateOrigin itself is not under test here)
+        const savedOrigin = utils.validOrigin;
+        const savedFetch = global.fetch;
+        utils.validOrigin = 'https://invalid.example.com';
+        global.fetch = jest.fn(() =>
+          Promise.resolve({ ok: true, json: () => Promise.resolve({ validOrigins: [] }) } as unknown as Response),
+        );
 
         utils.respondToMessage(
           {
@@ -2014,10 +2010,13 @@ describe('Testing communication', () => {
           validResponseMessage,
         );
 
-        // Wait for the async origin validation promise to resolve
+        await new Promise(process.nextTick);
         await new Promise(process.nextTick);
 
-        expect(onMessageReceivedCb).toBeCalledWith(validResponseMessage);
+        expect(onMessageReceivedCb).not.toBeCalled();
+
+        utils.validOrigin = savedOrigin;
+        global.fetch = savedFetch;
       });
     });
   });

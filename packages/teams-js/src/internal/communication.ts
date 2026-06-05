@@ -630,40 +630,42 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
     return;
   }
 
-  verifyIncomingMessageOrigin(messageSource, messageOrigin).then((isOriginValid) => {
-    if (!isOriginValid) {
-      logger(
-        'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
-      );
-      return;
-    }
+  verifyIncomingMessageOrigin(messageSource, messageOrigin)
+    .then((isOriginValid) => {
+      if (!isOriginValid) {
+        logger(
+          'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
+        );
+        return;
+      }
 
-    /**
-     * In most cases, top level window and the parent window will be same.
-     * If they're not, perform the necessary updates for the top level window.
-     *
-     * Top window logic to flush messages is kept independent so that we don't affect
-     * any of the code for the existing communication channel.
-     */
-    if (!Communication.topWindow || Communication.topWindow.closed || messageSource === Communication.topWindow) {
-      Communication.topWindow = messageSource;
-      Communication.topOrigin = messageOrigin;
-    }
+      /**
+       * In most cases, top level window and the parent window will be same.
+       * If they're not, perform the necessary updates for the top level window.
+       *
+       * Top window logic to flush messages is kept independent so that we don't affect
+       * any of the code for the existing communication channel.
+       */
+      if (!Communication.topWindow || Communication.topWindow.closed || messageSource === Communication.topWindow) {
+        Communication.topWindow = messageSource;
+        Communication.topOrigin = messageOrigin;
+      }
 
-    // Clean up pointers to closed parent
-    if (Communication.topWindow && Communication.topWindow.closed) {
-      Communication.topWindow = null;
-      Communication.topOrigin = null;
-    }
+      // Clean up pointers to closed parent
+      if (Communication.topWindow && Communication.topWindow.closed) {
+        Communication.topWindow = null;
+        Communication.topOrigin = null;
+      }
 
-    flushMessageQueue(Communication.topWindow, Communication.topOrigin, CommunicationPrivate.topMessageQueue, 'top');
+      flushMessageQueue(Communication.topWindow, Communication.topOrigin, CommunicationPrivate.topMessageQueue, 'top');
 
-    // Return the response to the registered callback
-    onMessageReceived(message);
-  }).catch((err) => {
-    // Sanity check; this should not execute
-    logger('Unexpected error verifying message origin: %o', err);
-  });
+      // Return the response to the registered callback
+      onMessageReceived(message);
+    })
+    .catch((err) => {
+      // Sanity check; this should not execute
+      logger('Unexpected error verifying message origin: %o', err);
+    });
 }
 
 const verifyIncomingMessageOriginLogger = communicationLogger.extend('verifyIncomingMessageOrigin');
