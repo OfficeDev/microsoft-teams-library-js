@@ -1,0 +1,103 @@
+# This template runs the Playwright E2E suite from the metaos-hub-sdk repo
+# against the locally-built teams-js bundle. It mirrors the existing Cypress
+# `web-e2e-tests-job.yml` template but uses Playwright's native sharding
+# (--shardIndex / --shardTotal) instead of test-prefix patterns.
+#
+# Each invocation produces `shardTotal` parallel jobs.
+#
+# Setup parity notes vs the Cypress template:
+#   * mkcert / SSR cert / SSR app build are done unconditionally for every
+#     shard (Playwright distributes tests across shards randomly, so any
+#     shard could run an SSR test).
+#   * `npx playwright install --with-deps chromium` installs the Playwright
+#     browser; this isn't needed for Cypress.
+#   * dotnet HTTPS dev cert is initialized for the Blazor test app.
+
+parameters:
+  - name: AppHostingSdk
+    default: none
+    type: string
+
+  - name: versionBranch
+    type: string
+    default: 'Latest'
+
+  - name: shardTotal
+    type: number
+    default: 3
+
+jobs:
+  - ${{ each shardIndex in split('1,2,3', ',') }}:
+      - job: E2EPlaywrightWeb_${{ parameters.versionBranch }}_shard_${{ shardIndex }}
+        timeoutInMinutes: 120
+        displayName: 'Playwright E2E - Web ${{ parameters.versionBranch }} - shard ${{ shardIndex }}/${{ parameters.shardTotal }}'
+        pool:
+          name: Azure-Pipelines-1ESPT-ExDShared
+          image: 'ubuntu-latest'
+          os: linux
+        steps:
+          - template: build-app-host.yml
+            parameters:
+              appHostGitPath: ${{ parameters.AppHostingSdk }}
+
+          # Build the local teams-js test app so the Playwright suite picks
+          # up the PR's teams-js changes (matches Cypress flow for the
+          # npm/local case).
+          - script: |
+              pnpm --filter teams-test-app build
+            displayName: 'Build teamsjs test app'
+            workingDirectory: '$(ClientSdkProjectDirectory)'
+
+          # SSR setup must run on every shard since Playwright sharding is
+          # not predicate-based; any shard may include an SSR test.
+          - script: |
+              sudo apt-get install -y libnss3-tools
+              curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+              chmod +x mkcert-v*-linux-amd64
+              sudo mv mkcert-v*-linux-amd64 /usr/local/bin/mkcert
+            displayName: 'Install mkcert (for SSR test app cert)'
+
+          - script: |
+              pnpm setup-ssr-app-cert
+            displayName: 'Setup SSR app certificates'
+            workingDirectory: '$(ClientSdkProjectDirectory)'
+
+          - script: |
+              pnpm --filter ssr-test-app build
+            displayName: 'Build teamsjs SSR test app'
+            workingDirectory: '$(ClientSdkProjectDirectory)'
+
+          # Initialize the .NET HTTPS dev cert so the Blazor test app can
+          # serve over https://127.0.0.1:44302.
+          - script: |
+              dotnet dev-certs https --check || dotnet dev-certs https
+            displayName: 'Ensure .NET HTTPS dev certificate for Blazor'
+
+          - script: |
+              npx playwright install --with-deps chromium
+            displayName: 'Install Playwright browsers'
+            workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+          # runPlaywrightE2ETests.ts handles starting servers (test app,
+          # Blazor, Orange, SSR), running the suite for the requested
+          # shard, and tearing down on completion.
+          - bash: |
+              pnpm exec ts-node tools/cli/runPlaywrightE2ETests.ts \
+                --useDataFromLocal=true \
+                --targetClientSdkCheckpoint "${{ parameters.versionBranch }}" \
+                --reportFileName "e2e-playwright-report-shard-${{ shardIndex }}" \
+                --shardIndex ${{ shardIndex }} \
+                --shardTotal ${{ parameters.shardTotal }}
+            displayName: 'Run Playwright E2E tests (shard ${{ shardIndex }}/${{ parameters.shardTotal }})'
+            condition: succeeded()
+            workingDirectory: '$(AppHostingSdkProjectDirectory)'
+            env:
+              CI: 'true'
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/e2e-playwright-report*.xml'
+              testRunTitle: 'Playwright E2E - Web ${{ parameters.versionBranch }} - shard ${{ shardIndex }}/${{ parameters.shardTotal }}'
+              mergeTestResults: true
+            condition: succeededOrFailed()
