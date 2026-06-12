@@ -33,8 +33,6 @@ extends:
       name: Azure-Pipelines-1ESPT-ExDShared
       image: windows-latest
       os: windows
-    settings:
-      networkIsolationPolicy: CFSClean2
     sdl:
       eslint:
         configuration: 'required'
