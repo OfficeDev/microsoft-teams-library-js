@@ -11,7 +11,6 @@ parameters:
     type: number
     default: 0
 
-
 steps:
   - checkout: self
   - checkout: ${{ parameters.androidAppHostingSdkGitPath }}
@@ -46,7 +45,7 @@ steps:
     inputs:
       script: |
         cp $(ClientSdkProjectDirectory)/.npmrc ~/.npmrc
-        npm install -g pnpm@9.14.4
+        npm install -g pnpm@9.0.6
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
   - task: CmdLine@2
@@ -72,8 +71,8 @@ steps:
 
   - task: CodeQL3000Init@0
     inputs:
-        Enabled: true
-        
+      Enabled: true
+
   - task: Bash@3
     displayName: 'Install Emulator'
     # This task is flaky, but when it works it almost always completes in under 5 minutes.
@@ -107,7 +106,7 @@ steps:
 
   - task: CodeQL3000Finalize@0
     condition: always()
-    
+
   - task: Bash@3
     displayName: 'Pull Test Artifacts'
     inputs:

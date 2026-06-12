@@ -46,7 +46,7 @@ steps:
 
   - script: |
       cp $(ClientSdkProjectDirectory)/.npmrc ~/.npmrc
-      npm install -g pnpm@9.14.4
+      npm install -g pnpm@9.0.6
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
 
@@ -101,7 +101,7 @@ steps:
       pnpm build-force-blazor
     displayName: 'Build client sdk'
     workingDirectory: '$(ClientSdkProjectDirectory)'
-    
+
   - task: CmdLine@2
     displayName: 'Configure host machine'
     inputs:
