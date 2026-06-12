@@ -98,8 +98,6 @@ extends:
           - repository: AppHostingSdkV7
           - repository: AppHostingSdkV8
           - repository: AppHostingSdkV9
-    settings:
-      networkIsolationPolicy: Permissive
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
