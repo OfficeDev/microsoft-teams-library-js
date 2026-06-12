@@ -21,11 +21,6 @@ parameters:
       - { version: 'v4', resource: 'AppHostingSdkV4' }
       - { version: 'v3', resource: 'AppHostingSdkV3' }
 
-variables:
-  - group: InfoSec-SecurityResults
-  - name: products
-    value: 6eff390d-80c0-4456-81b6-6abafa71e768
-
 trigger: none
 
 schedules:
@@ -34,7 +29,7 @@ schedules:
     branches:
       include:
         - main
-    always: true
+    always: false
 
 resources:
   repositories:
@@ -95,7 +90,7 @@ extends:
         environmentsEs2020: true
         environmentsJest: false
       sourceRepositoriesToScan:
-        include:
+        exclude:
           - repository: AppHostingSdkV3
           - repository: AppHostingSdkV4
           - repository: AppHostingSdkV5
@@ -107,10 +102,10 @@ extends:
       - ES365AIMigrationTooling
     stages:
       - ${{ each ver in parameters.backCompatVersions }}:
-        - stage: BackCompat_${{ ver.version }}
-          displayName: 'Back-Compat E2E Tests - ${{ ver.version }}'
-          jobs:
-            - template: tools/yaml-templates/web-e2e-versions.yml@self
-              parameters:
-                AppHostingSdk: ${{ ver.resource }}
-                versionBranch: ${{ ver.version }}
+          - stage: BackCompat_${{ ver.version }}
+            displayName: 'Back-Compat E2E Tests - ${{ ver.version }}'
+            jobs:
+              - template: tools/yaml-templates/web-e2e-versions.yml@self
+                parameters:
+                  AppHostingSdk: ${{ ver.resource }}
+                  versionBranch: ${{ ver.version }}
