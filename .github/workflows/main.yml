@@ -21,6 +21,16 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # Temporary gate while we work on test migration: only allow PRs from aeun/* and jeklouda/* branches to target main
+      - name: Enforce PR head branch pattern
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Head branch: ${{ github.head_ref }}"
+          if [[ "${{ github.head_ref }}" != aeun/* && "${{ github.head_ref }}" != jeklouda/* ]]; then
+            echo "Only PRs from branches matching aeun/* or jeklouda/* may target main right now."
+            exit 1
+          fi
+
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4.1.1
       - name: Use Node.js ${{ matrix.node-version }}
