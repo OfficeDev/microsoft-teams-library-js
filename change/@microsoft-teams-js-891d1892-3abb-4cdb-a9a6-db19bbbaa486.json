@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Fix async origin validation in processAuthBridgeMessage to properly await the result of verifyIncomingMessageOrigin before processing messages",
+  "packageName": "@microsoft/teams-js",
+  "email": "aeun@microsoft.com",
+  "dependentChangeType": "patch"
+}
