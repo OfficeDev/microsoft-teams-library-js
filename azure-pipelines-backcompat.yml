@@ -28,13 +28,14 @@ variables:
 
 trigger: none
 
-schedules:
-  - cron: '0 0 * * *'
-    displayName: 'teams-js back-compat E2E tests'
-    branches:
-      include:
-        - main
-    always: true
+# Back-compat E2E schedule disabled — uncomment to re-enable
+# schedules:
+#   - cron: '0 0 * * *'
+#     displayName: 'teams-js back-compat E2E tests'
+#     branches:
+#       include:
+#         - main
+#     always: true
 
 resources:
   repositories:
