@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Update version number to 2.53.1 after release",
+  "packageName": "@microsoft/teams-js",
+  "email": "aeun@microsoft.com",
+  "dependentChangeType": "none"
+}
