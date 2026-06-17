@@ -1,8 +1,16 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 06 May 2026 19:04:08 GMT and should not be manually modified. -->
+<!-- This log was last generated on Wed, 17 Jun 2026 17:10:04 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.53.1
+
+Wed, 17 Jun 2026 17:10:04 GMT
+
+### Patches
+
+- Fix async origin validation in processAuthBridgeMessage to properly await the result of verifyIncomingMessageOrigin before processing messages
 
 ## 2.53.0
 
