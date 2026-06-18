@@ -21,6 +21,7 @@ import DialogUrlBotAPIs from '../components/DialogUrlBotAPIs';
 import DialogUrlParentCommunicationAPIs from '../components/DialogUrlParentCommunicationAPIs';
 import GeoLocationAPIs from '../components/GeoLocationAPIs';
 import HostEntityTabAPIs from '../components/HostEntityTabAPIs';
+import IntuneAPIs from '../components/IntuneAPIs';
 import Links from '../components/Links';
 import LocationAPIs from '../components/LocationAPIs';
 import LogAPIs from '../components/LogsAPIs';
@@ -135,6 +136,7 @@ export const TestApp: React.FC = () => {
       { name: 'FullTrustAPIs', component: <FullTrustAPIs /> },
       { name: 'GeoLocationAPIs', component: <GeoLocationAPIs /> },
       { name: 'HostEntityTabAPIs', component: <HostEntityTabAPIs /> },
+      { name: 'IntuneAPIs', component: <IntuneAPIs /> },
       { name: 'Links', component: <Links /> },
       { name: 'LocationAPIs', component: <LocationAPIs /> },
       { name: 'LogAPIs', component: <LogAPIs /> },
