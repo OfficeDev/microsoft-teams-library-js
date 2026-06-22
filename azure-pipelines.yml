@@ -3,17 +3,6 @@ variables:
   - name: products
     value: 6eff390d-80c0-4456-81b6-6abafa71e768
 
-# The legacy Cypress E2E stages are disabled (see "Temporarily disable all
-# e2e tests in pipeline YAML", #3064). The Playwright E2E suite is opt-in
-# while it is being validated: set `runPlaywrightE2E` to true (from the
-# pipeline UI "Run pipeline" -> Variables, or by editing the default below)
-# to run it.
-parameters:
-  - name: runPlaywrightE2E
-    displayName: 'Run Playwright E2E tests'
-    type: boolean
-    default: false
-
 trigger:
   branches:
     include:
@@ -252,14 +241,11 @@ extends:
       #     #   ...
 
       # Playwright E2E tests. The legacy Cypress E2E stages above are disabled
-      # (#3064); this stage is the Playwright replacement and is gated on the
-      # `runPlaywrightE2E` parameter (default false) while it is validated.
-      - ${{ if eq(parameters.runPlaywrightE2E, true) }}:
-          - stage: Latest_E2E_Playwright
-            displayName: 'Latest E2E Tests (Playwright)'
-            dependsOn: Build
-            jobs:
-              - template: tools/yaml-templates/web-e2e-playwright-tests-job.yml@self
-                parameters:
-                  AppHostingSdk: AppHostingSdk
-                  versionBranch: 'Latest'
+      - stage: Latest_E2E_Playwright
+        displayName: 'Latest E2E Tests (Playwright)'
+        dependsOn: Build
+        jobs:
+          - template: tools/yaml-templates/web-e2e-playwright-tests-job.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdk
+              versionBranch: 'Latest'
