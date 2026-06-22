@@ -3,7 +3,8 @@
 # `web-e2e-tests-job.yml` template but uses Playwright's native sharding
 # (--shardIndex / --shardTotal) instead of test-prefix patterns.
 #
-# Each invocation produces `shardTotal` parallel jobs.
+# Each invocation produces one parallel job per element of the `shards`
+# parameter (default [1, 2, 3] = three shards).
 #
 # Setup parity notes vs the Cypress template:
 #   * mkcert / SSR cert / SSR app build are done unconditionally for every
@@ -22,15 +23,19 @@ parameters:
     type: string
     default: 'Latest'
 
-  - name: shardTotal
-    type: number
-    default: 3
+  # The `shards` array is the single source of truth for sharding: it both
+  # controls how many parallel jobs are generated (one per element) and, via
+  # length(), the --shardTotal passed to Playwright. To change the shard count,
+  # edit this list only — e.g. [1, 2, 3, 4] for four shards.
+  - name: shards
+    type: object
+    default: [1, 2, 3]
 
 jobs:
-  - ${{ each shardIndex in split('1,2,3', ',') }}:
+  - ${{ each shardIndex in parameters.shards }}:
       - job: E2EPlaywrightWeb_${{ parameters.versionBranch }}_shard_${{ shardIndex }}
         timeoutInMinutes: 120
-        displayName: 'Playwright E2E - Web ${{ parameters.versionBranch }} - shard ${{ shardIndex }}/${{ parameters.shardTotal }}'
+        displayName: 'Playwright E2E - Web ${{ parameters.versionBranch }} - shard ${{ shardIndex }}/${{ length(parameters.shards) }}'
         pool:
           name: Azure-Pipelines-1ESPT-ExDShared
           image: 'ubuntu-latest'
@@ -87,8 +92,8 @@ jobs:
                 --targetClientSdkCheckpoint "${{ parameters.versionBranch }}" \
                 --reportFileName "e2e-playwright-report-shard-${{ shardIndex }}" \
                 --shardIndex ${{ shardIndex }} \
-                --shardTotal ${{ parameters.shardTotal }}
-            displayName: 'Run Playwright E2E tests (shard ${{ shardIndex }}/${{ parameters.shardTotal }})'
+                --shardTotal ${{ length(parameters.shards) }}
+            displayName: 'Run Playwright E2E tests (shard ${{ shardIndex }}/${{ length(parameters.shards) }})'
             condition: succeeded()
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
             env:
@@ -98,6 +103,6 @@ jobs:
             inputs:
               testResultsFormat: 'JUnit'
               testResultsFiles: '**/e2e-playwright-report*.xml'
-              testRunTitle: 'Playwright E2E - Web ${{ parameters.versionBranch }} - shard ${{ shardIndex }}/${{ parameters.shardTotal }}'
+              testRunTitle: 'Playwright E2E - Web ${{ parameters.versionBranch }} - shard ${{ shardIndex }}/${{ length(parameters.shards) }}'
               mergeTestResults: true
             condition: succeededOrFailed()
