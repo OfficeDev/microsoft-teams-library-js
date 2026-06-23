@@ -40,38 +40,25 @@ steps:
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
 
-  # Cypress needs to run a post_install script, when `node_modules` are cached, therefore the cypress binary file
-  # should be cached, as cypress doesn't supports running post_install script after node_modules are cached.
-  # The below task caches the Cypress binary.
-  - task: Cache@2
-    inputs:
-      key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-      path: /home/cloudtest/.cache/Cypress
-      cacheHitVar: CYPRESS_CACHE_RESTORED
-    displayName: 'Cache Cypress binary'
-
+  # The Cypress e2e suite is disabled in favor of the Playwright suite, so the
+  # Cypress binary is never needed, and its download host (download.cypress.io)
+  # is blocked on the build agents. We therefore skip the Cypress binary
+  # download entirely via CYPRESS_INSTALL_BINARY=0 and no longer cache it.
   - task: npmAuthenticate@0
     inputs:
       workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
 
-  # Below script task checks if Cypress cache is hit or not.
-  # If Cypress cache is found skip cypress install.
-  - script: |
-      CYPRESS_INSTALL_BINARY=0
-      sed -i '/"preinstall":/d' package.json
-      pnpm install --frozen-lockfile
-    displayName: Install app hosting dependencies (skip Cypress install)
-    workingDirectory: '$(AppHostingSdkProjectDirectory)'
-    condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
-
-  # If Cypress cache is not found include cypress install.
+  # Install dependencies, skipping Cypress's postinstall binary download.
+  # CYPRESS_INSTALL_BINARY is set via the step env (not a bare shell assignment)
+  # so that it is exported to the pnpm child process.
   - script: |
       rm -rf $(pnpm store path)
       sed -i '/"preinstall":/d' package.json
       pnpm install --frozen-lockfile
-    displayName: Install app hosting dependencies (include Cypress install)
+    displayName: Install app hosting dependencies (skip Cypress binary download)
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
-    condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
+    env:
+      CYPRESS_INSTALL_BINARY: '0'
 
   - task: CodeQL3000Init@0
     inputs:
