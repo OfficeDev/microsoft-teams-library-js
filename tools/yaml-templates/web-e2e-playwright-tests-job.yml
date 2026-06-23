@@ -1,7 +1,7 @@
-# This template runs the Playwright E2E suite from the metaos-hub-sdk repo
-# against the locally-built teams-js bundle. It mirrors the existing Cypress
-# `web-e2e-tests-job.yml` template but uses Playwright's native sharding
-# (--shardIndex / --shardTotal) instead of test-prefix patterns.
+# This template runs the Playwright E2E suite against the locally-built
+# teams-js bundle. It mirrors the existing Cypress `web-e2e-tests-job.yml`
+# template but uses Playwright's native sharding (--shardIndex / --shardTotal)
+# instead of test-prefix patterns.
 #
 # Each invocation produces one parallel job per element of the `shards`
 # parameter (default [1, 2, 3] = three shards).
@@ -45,16 +45,11 @@ jobs:
             parameters:
               appHostGitPath: ${{ parameters.AppHostingSdk }}
 
-          # Build the local teams-js test app so the Playwright suite picks
-          # up the PR's teams-js changes (matches Cypress flow for the
-          # npm/local case).
           - script: |
               pnpm --filter teams-test-app build
             displayName: 'Build teamsjs test app'
             workingDirectory: '$(ClientSdkProjectDirectory)'
 
-          # SSR setup must run on every shard since Playwright sharding is
-          # not predicate-based; any shard may include an SSR test.
           - script: |
               sudo apt-get install -y libnss3-tools
               curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
