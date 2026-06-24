@@ -239,3 +239,13 @@ extends:
       #     # - job: E2ETestIOS2
       #     #   displayName: 'E2E Tests - IOS - Plan B'
       #     #   ...
+
+      # Playwright E2E tests. The legacy Cypress E2E stages above are disabled
+      - stage: Latest_E2E_Playwright
+        displayName: 'Latest E2E Tests (Playwright)'
+        dependsOn: Build
+        jobs:
+          - template: tools/yaml-templates/web-e2e-playwright-tests-job.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdk
+              versionBranch: 'latest'
