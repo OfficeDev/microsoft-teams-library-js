@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Security: Upgraded underscore dependency from 1.12.1 to 1.13.8 to resolve component governance alert and address known security vulnerabilities.",
-  "packageName": "@microsoft/teams-js",
-  "email": "copilot@github.com",
-  "dependentChangeType": "patch"
-}

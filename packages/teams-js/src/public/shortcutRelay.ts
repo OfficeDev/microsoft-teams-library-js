@@ -1,8 +1,6 @@
 /**
  * Allows host shortcuts to function in your application by forwarding keyboard shortcuts to the host.
  *
- * This functionality is in Beta.
- * @beta
  * @module
  */
 
@@ -105,10 +103,17 @@ function eventToCanonicalShortcut(e: KeyboardEvent): string {
 /**
  * Checks if the event is a valid shortcut event.
  * A valid shortcut event is one that has at least one modifier key pressed
- * (ctrl, shift, alt, meta) or the Escape key.
+ * (ctrl, shift, alt, meta), the Escape key, or a function key (F1–F24).
  */
 function isValidShortcutEvent(e: KeyboardEvent): boolean {
-  return e.ctrlKey || e.shiftKey || e.altKey || e.metaKey || (!!e.key && e.key.toLowerCase() === 'escape');
+  return (
+    e.ctrlKey ||
+    e.shiftKey ||
+    e.altKey ||
+    e.metaKey ||
+    (!!e.key && e.key.toLowerCase() === 'escape') ||
+    (!!e.key && /^F\d+$/i.test(e.key))
+  );
 }
 
 function isMatchingShortcut(
@@ -241,7 +246,6 @@ let isShortcutRelayCapabilityEnabled = false;
  * • Pass `undefined` to remove an existing handler.
  * • Returns the previous handler so callers can restore it if needed.
  *
- * @beta
  */
 export function setOverridableShortcutHandler(
   handler: OverridableShortcutHandler | undefined,
@@ -259,7 +263,6 @@ export function setOverridableShortcutHandler(
  * Reset the state of the shortcut relay capability.
  * This is useful for tests to ensure a clean state.
  *
- * @beta
  */
 export function resetIsShortcutRelayCapabilityEnabled(): void {
   if (!isSupported()) {
@@ -276,7 +279,6 @@ export function resetIsShortcutRelayCapabilityEnabled(): void {
 /**
  * Enable capability to support host shortcuts.
  *
- * @beta
  */
 export async function enableShortcutRelayCapability(): Promise<void> {
   if (!isSupported()) {
@@ -310,7 +312,6 @@ export async function enableShortcutRelayCapability(): Promise<void> {
  *
  * @throws Error if {@link app.initialize} has not successfully completed
  *
- * @beta
  */
 export function isSupported(): boolean {
   return ensureInitialized(runtime) && runtime.supports.shortcutRelay ? true : false;
@@ -320,6 +321,5 @@ export function isSupported(): boolean {
  * Allow apps to define zones where shortcuts should not be forwarded to the host.
  * This is useful for input fields for password where shortcuts should not trigger host actions.
  *
- * @beta
  */
 export const DISABLE_SHORTCUT_FORWARDING_ATTRIBUTE = 'data-disable-shortcuts-forwarding';

@@ -131,7 +131,7 @@
       "minimist": "^0.2.4",
       "nanoid": "3.3.11",
       "nth-check": ">=2.0.1",
-      "postcss": "8.5.6",
+      "postcss": "8.5.13",
       "qs": "6.14.2",
       "semver": "^7.5.2",
       "serialize-javascript": "^3.1.0",
@@ -143,7 +143,9 @@
       "underscore": "1.13.8",
       "url-parse": "^1.5.0",
       "word-wrap": "^1.2.4",
-      "y18n": "^4.0.1"
+      "y18n": "^4.0.1",
+      "picomatch": ">=2.3.1,<3.0.0||>=4.0.4",
+      "uuid": ">=11.1.1 <12.0.0"
     },
     "overrides-explanation": {
       "WHAT IS THIS SECTION": "pnpm ignores this section and comments aren't allowed in JSON files. This section documents why the above overrides have been put in place. If you add an override, describe it in this section.",
@@ -154,10 +156,12 @@
       "form-data": "There is a vulnerability with form-data versions less than 4.0.4. This package is consumed indirectly by jest-environment-jsdom@29.7.0, jsdom@24.1.0, and lerna@8.1.9",
       "micromatch": "There is a vulnerability with micromatch versions less than 4.0.8 This package is currently being consumed in @types/webpack and needs to be updated there. For now we will override this until that is fixed.",
       "nanoid": "New nanoid 5.x releases are ESM-only and break our webpack/css-loader stack that still uses require(), so we pin to 3.3.11 (last 3.x CJS release).",
-      "postcss": "Pinned to 8.5.6 so we stay on the latest 8.x while forcing its nanoid dependency to the compatible 3.3.11 CJS build until our tooling is ESM-ready.",
+      "postcss": "CVE-2026-41305 is fixed in postcss 8.5.13. We pin to 8.5.13 so we stay on the latest 8.x while forcing its nanoid dependency to the compatible 3.3.11 CJS build until our tooling is ESM-ready. Once upstream packages update to depend on postcss >=8.5.13, we can remove this override.",
       "socks": "There is a vulnerability in the ip package which has no fix. We consume ip via socks (eventually via lerna). Socks released a new version that removed the ip dependency. We are using this newer version of socks to avoid the vulnerability. If ip is ever updated or lerna (or any package in the chain) eventually updates to a version of socks that doesn't depend on ip, we can remove this override",
       "tar": "There is a vulnerability in the tar package which is being used by lerna that hasn't yet been updated. Once this is patched in lerna we can remove this override",
-      "underscore": "Security vulnerability (prototype pollution) fixed in version 1.13.8. Pinned to address prototype pollution issues in older versions."
+      "underscore": "Security vulnerability (prototype pollution) fixed in version 1.13.8. Pinned to address prototype pollution issues in older versions.",
+      "picomatch": "CVE-2026-33671: picomatch 4.0.3 has a ReDoS vulnerability. Override to >=4.0.4 for v4 consumers while preserving v2 compatibility.",
+      "uuid": "GHSA-w5hq-g745-h8pq (CVE-2026-41907): uuid v3/v5/v6 do not validate buffer bounds, allowing silent partial writes. Fixed in uuid 11.1.1, 12.0.1, 13.0.1, and 14.0.0. We override to >=11.1.1 <12.0.0 because uuid 11.x is the only patched line that still ships CJS exports (require condition), which our Jest/ts-jest tooling needs. Once our test tooling supports ESM-only packages, we can widen to >=14.0.0."
     }
   },
   "dependencies": {
@@ -169,7 +173,7 @@
       "brotli": false,
       "path": "./packages/teams-js/dist/esm/packages/teams-js/src/index.js",
       "import": "{ app, authentication, pages }",
-      "limit": "60.2 KB"
+      "limit": "60.3 KB"
     },
     {
       "brotli": false,

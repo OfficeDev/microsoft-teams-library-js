@@ -11,7 +11,6 @@ parameters:
     type: number
     default: 0
 
-
 steps:
   - checkout: self
   - checkout: ${{ parameters.androidAppHostingSdkGitPath }}
@@ -30,11 +29,23 @@ steps:
     displayName: Cache pnpm
 
   - task: CmdLine@2
+    displayName: 'Configure CFS npm feed'
+    inputs:
+      script: |
+        echo "registry=$(CFS_NPM_Registry)" >> $(ClientSdkProjectDirectory)/.npmrc
+        echo "always-auth=true" >> $(ClientSdkProjectDirectory)/.npmrc
+
+  - task: npmAuthenticate@0
+    displayName: 'Authenticate to CFS feed (client SDK)'
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
+  - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        corepack enable
-        corepack prepare pnpm@9.0.6 --activate
+        cp $(ClientSdkProjectDirectory)/.npmrc ~/.npmrc
+        npm install -g pnpm@9.0.6
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
   - task: CmdLine@2
@@ -60,8 +71,8 @@ steps:
 
   - task: CodeQL3000Init@0
     inputs:
-        Enabled: true
-        
+      Enabled: true
+
   - task: Bash@3
     displayName: 'Install Emulator'
     # This task is flaky, but when it works it almost always completes in under 5 minutes.
@@ -95,7 +106,7 @@ steps:
 
   - task: CodeQL3000Finalize@0
     condition: always()
-    
+
   - task: Bash@3
     displayName: 'Pull Test Artifacts'
     inputs:

@@ -107,6 +107,28 @@ describe('shortcutRelay capability', () => {
       });
     });
 
+    describe('isValidShortcutEvent – function key support', () => {
+      it('forwards a matching function-key shortcut (e.g. F5) to host', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { shortcutRelay: {} } });
+
+        shortcutRelay.enableShortcutRelayCapability();
+
+        const response = { shortcuts: ['f5'], overridableShortcuts: [] };
+        const request = utils.findMessageByFunc(ApiName.ShortcutRelay_GetHostShortcuts);
+        utils.respondToFramelessMessage({
+          data: { id: request?.id, args: [response] },
+        } as DOMMessageEvent);
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        const evt = new KeyboardEvent('keydown', { key: 'F5', bubbles: true });
+        document.body.dispatchEvent(evt);
+
+        const fwd = utils.findMessageByFunc(ApiName.ShortcutRelay_ForwardShortcutEvent);
+        expect(fwd).not.toBeNull();
+      });
+    });
+
     describe('setOverridableShortcutHandler()', () => {
       it('replaces and returns previous handler', async () => {
         await utils.initializeWithContext(FrameContexts.content);

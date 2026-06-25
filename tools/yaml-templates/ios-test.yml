@@ -41,11 +41,23 @@ steps:
     displayName: Cache pnpm
 
   - task: CmdLine@2
+    displayName: 'Configure CFS npm feed'
+    inputs:
+      script: |
+        echo "registry=$(CFS_NPM_Registry)" >> $(ClientSdkProjectDirectory)/.npmrc
+        echo "always-auth=true" >> $(ClientSdkProjectDirectory)/.npmrc
+
+  - task: npmAuthenticate@0
+    displayName: 'Authenticate to CFS feed (client SDK)'
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
+  - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        corepack enable
-        corepack prepare pnpm@9.0.6 --activate
+        cp $(ClientSdkProjectDirectory)/.npmrc ~/.npmrc
+        npm install -g pnpm@9.0.6
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
   - task: CmdLine@2
@@ -90,7 +102,7 @@ steps:
   - task: CodeQL3000Init@0
     inputs:
       Enabled: true
-        
+
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
   - task: Xcode@5
@@ -104,10 +116,10 @@ steps:
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
       xcodeVersion: 'default'
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
-  
+
   - task: CodeQL3000Finalize@0
     condition: always()
-    
+
   - task: Bash@3
     displayName: 'Disable Slow Animation'
     inputs:

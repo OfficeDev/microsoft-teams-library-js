@@ -5,10 +5,10 @@
   "description": "Teams Perf Test App utilizing Teams JavaScript client SDK to test Teams Host Perf",
   "version": "0.0.1",
   "scripts": {
-    "build": "pnpm lint && webpack",
+    "build": "pnpm lint && pnpm exec webpack",
     "clean": "rimraf ./build",
     "lint": "pnpm eslint ./src --max-warnings 0 --fix --ext .tsx",
-    "start": "webpack serve"
+    "start": "pnpm exec webpack serve"
   },
   "dependencies": {
     "react": "^17.0.1",
