@@ -59,6 +59,19 @@ steps:
         cp $(ClientSdkProjectDirectory)/.npmrc ~/.npmrc
         npm install -g pnpm@9.0.6
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+    env:
+      COREPACK_NPM_REGISTRY: $(CfsNpmRegistryUrl)
+      COREPACK_NPM_TOKEN: $(System.AccessToken)
+
+  - script: |
+      echo "registry=$(CfsNpmRegistryUrl)" >> $(ClientSdkProjectDirectory)/.npmrc
+      echo "always-auth=true" >> $(ClientSdkProjectDirectory)/.npmrc
+    displayName: 'Configure CFS npm feed for client sdk'
+
+  - task: npmAuthenticate@0
+    displayName: 'Authenticate to CFS npm feed'
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
 
   - task: CmdLine@2
     displayName: 'Install client sdk dependencies'
@@ -66,6 +79,21 @@ steps:
       script: |
         pnpm install
       workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - script: |
+      cat > $(ClientSdkProjectDirectory)/nuget.config << 'EOF'
+      <?xml version="1.0" encoding="utf-8"?>
+      <configuration>
+        <packageSources>
+          <clear />
+          <add key="CFS" value="$(CFS_NuGet_Feed)" />
+        </packageSources>
+      </configuration>
+      EOF
+    displayName: 'Configure CFS NuGet feed'
+
+  - task: NuGetAuthenticate@1
+    displayName: 'Authenticate to CFS NuGet feed'
 
   - task: CmdLine@2
     displayName: 'Build client sdk'

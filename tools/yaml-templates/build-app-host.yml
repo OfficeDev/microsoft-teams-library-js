@@ -96,9 +96,34 @@ steps:
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
   - script: |
+      echo "registry=$(CfsNpmRegistryUrl)" >> $(ClientSdkProjectDirectory)/.npmrc
+      echo "always-auth=true" >> $(ClientSdkProjectDirectory)/.npmrc
+    displayName: 'Configure CFS npm feed for client sdk'
+
+  - task: npmAuthenticate@0
+    displayName: 'Authenticate to CFS npm feed for client sdk'
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
+  - script: |
       pnpm install
     displayName: 'Install client sdk dependencies'
     workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - script: |
+      cat > $(ClientSdkProjectDirectory)/nuget.config << 'EOF'
+      <?xml version="1.0" encoding="utf-8"?>
+      <configuration>
+        <packageSources>
+          <clear />
+          <add key="CFS" value="$(CFS_NuGet_Feed)" />
+        </packageSources>
+      </configuration>
+      EOF
+    displayName: 'Configure CFS NuGet feed'
+
+  - task: NuGetAuthenticate@1
+    displayName: 'Authenticate to CFS NuGet feed'
 
   - script: |
       pnpm build-force-blazor
