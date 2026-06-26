@@ -130,9 +130,13 @@
       "micromatch": ">=4.0.8",
       "minimist": "^0.2.4",
       "nanoid": "3.3.11",
+      "next": ">=15.5.16 <15.6.0",
       "nth-check": ">=2.0.1",
+      "picomatch": ">=2.3.1,<3.0.0||>=4.0.4",
       "postcss": "8.5.13",
-      "qs": "6.14.2",
+      "qs": "6.15.2",
+      "react-router": "^6.30.4",
+      "react-router-dom": "^6.30.4",
       "semver": "^7.5.2",
       "serialize-javascript": "^3.1.0",
       "set-value": "^2.0.1",
@@ -142,10 +146,9 @@
       "tough-cookie": "^4.1.3",
       "underscore": "1.13.8",
       "url-parse": "^1.5.0",
+      "uuid": ">=11.1.1 <12.0.0",
       "word-wrap": "^1.2.4",
-      "y18n": "^4.0.1",
-      "picomatch": ">=2.3.1,<3.0.0||>=4.0.4",
-      "uuid": ">=11.1.1 <12.0.0"
+      "y18n": "^4.0.1"
     },
     "overrides-explanation": {
       "WHAT IS THIS SECTION": "pnpm ignores this section and comments aren't allowed in JSON files. This section documents why the above overrides have been put in place. If you add an override, describe it in this section.",
@@ -161,7 +164,10 @@
       "tar": "There is a vulnerability in the tar package which is being used by lerna that hasn't yet been updated. Once this is patched in lerna we can remove this override",
       "underscore": "Security vulnerability (prototype pollution) fixed in version 1.13.8. Pinned to address prototype pollution issues in older versions.",
       "picomatch": "CVE-2026-33671: picomatch 4.0.3 has a ReDoS vulnerability. Override to >=4.0.4 for v4 consumers while preserving v2 compatibility.",
-      "uuid": "GHSA-w5hq-g745-h8pq (CVE-2026-41907): uuid v3/v5/v6 do not validate buffer bounds, allowing silent partial writes. Fixed in uuid 11.1.1, 12.0.1, 13.0.1, and 14.0.0. We override to >=11.1.1 <12.0.0 because uuid 11.x is the only patched line that still ships CJS exports (require condition), which our Jest/ts-jest tooling needs. Once our test tooling supports ESM-only packages, we can widen to >=14.0.0."
+      "uuid": "GHSA-w5hq-g745-h8pq (CVE-2026-41907): uuid v3/v5/v6 do not validate buffer bounds, allowing silent partial writes. Fixed in uuid 11.1.1, 12.0.1, 13.0.1, and 14.0.0. We override to >=11.1.1 <12.0.0 because uuid 11.x is the only patched line that still ships CJS exports (require condition), which our Jest/ts-jest tooling needs. Once our test tooling supports ESM-only packages, we can widen to >=14.0.0.",
+      "qs": "CVE-2026-8723: qs versions <=6.15.0 (including the previously pinned 6.14.2) are vulnerable. Fixed in 6.15.2. We pin to 6.15.2 to stay on the latest patched 6.x line.",
+      "next": "CVE-2026-44572 (and related CVE-2026-44573/44574/44575/44578/44579, CVE-2026-45109, GHSA-8h8q-6873-q5fj): next 15.5.15 is vulnerable. Override the ssr-test-app dependency to the latest patched 15.5.x (>=15.5.16) line.",
+      "react-router": "CVE-2026-40181: react-router/react-router-dom 6.30.3 is vulnerable. Fixed in 6.30.4. Override the teams-test-app dependency to the patched 6.30.4 line."
     }
   },
   "dependencies": {
