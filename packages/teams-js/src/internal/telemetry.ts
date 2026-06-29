@@ -241,6 +241,7 @@ export const enum ApiName {
   MessageChannels_Telemetry_GetTelemetryPort = 'messageChannels.telemetry.getTelemetryPort',
   MessageChannels_DataLayer_GetDataLayerPort = 'messageChannels.dataLayer.getDataLayerPort',
   Monetization_OpenPurchaseExperience = 'monetization.openPurchaseExperience',
+  MouseRelay_NavigateHistory = 'mouseRelay.navigateHistory',
   Navigation_NavigateBack = 'navigation.navigateBack',
   Navigation_NavigateCrossDomain = 'navigation.navigateCrossDomain',
   Navigation_NavigateToTab = 'navigation.navigateToTab',

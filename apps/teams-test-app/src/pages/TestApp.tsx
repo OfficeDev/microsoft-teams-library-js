@@ -29,6 +29,7 @@ import MarketplaceAPIs from '../components/MarketplaceAPIs';
 import MediaAPIs from '../components/MediaAPIs';
 import MeetingAPIs from '../components/MeetingAPIs';
 import MenusAPIs from '../components/MenusAPIs';
+import MouseRelayAPIs from '../components/MouseRelayAPIs';
 import NestedAppAuthAPIs from '../components/NestedAppAuthAPIs';
 import OtherAppStateChangedAPIs from '../components/OtherAppStateChangeAPIs';
 import PagesAPIs from '../components/PagesAPIs';
@@ -146,6 +147,7 @@ export const TestApp: React.FC = () => {
       { name: 'MenusAPIs', component: <MenusAPIs /> },
       { name: 'MessageChannelAPIs', component: <MessageChannelAPIs /> },
       { name: 'MonetizationAPIs', component: <MonetizationAPIs /> },
+      { name: 'MouseRelayAPIs', component: <MouseRelayAPIs /> },
       { name: 'NestedAppAuthAPIs', component: <NestedAppAuthAPIs /> },
       { name: 'NotificationAPIs', component: <NotificationAPIs /> },
       { name: 'OtherAppStateChangedAPIs', component: <OtherAppStateChangedAPIs /> },
