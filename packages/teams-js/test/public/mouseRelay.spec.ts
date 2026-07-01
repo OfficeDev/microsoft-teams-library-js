@@ -112,13 +112,13 @@ describe('mouseRelay capability', () => {
       });
     });
 
-    describe('resetIsMouseRelayCapabilityEnabled()', () => {
+    describe('disableMouseRelayCapability()', () => {
       it('detaches the listeners so events stop forwarding', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { mouseRelay: {} } });
 
         await mouseRelay.enableMouseRelayCapability();
-        mouseRelay.resetIsMouseRelayCapabilityEnabled();
+        mouseRelay.disableMouseRelayCapability();
         utils.messages = [];
 
         document.body.dispatchEvent(
