@@ -14,11 +14,10 @@ const CheckMouseRelayCapability = (): React.ReactElement =>
 const EnableMouseRelayCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'mouseRelay_enableMouseRelayCapability',
-    title: 'Enable Mouse Relay Capability and Trigger Back (X1) Button',
+    title: 'Enable Mouse Relay Capability',
     onClick: async () => {
       await mouseRelay.enableMouseRelayCapability();
-      document.body.dispatchEvent(new MouseEvent('mouseup', { button: 3, bubbles: true, cancelable: true }));
-      return 'called';
+      return 'Mouse relay enabled. Now press the physical mouse back (X1) / forward (X2) button to relay navigation to the host.';
     },
   });
 
