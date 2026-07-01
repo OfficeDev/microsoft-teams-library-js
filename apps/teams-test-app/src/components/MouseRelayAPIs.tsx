@@ -22,12 +22,12 @@ const EnableMouseRelayCapability = (): React.ReactElement =>
     },
   });
 
-const ResetIsMouseRelayCapabilityEnabled = (): React.ReactElement =>
+const DisableMouseRelayCapability = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'mouseRelay_resetIsMouseRelayCapabilityEnabled',
-    title: 'Reset Mouse Relay Capability',
+    name: 'mouseRelay_disableMouseRelayCapability',
+    title: 'Disable Mouse Relay Capability',
     onClick: async () => {
-      mouseRelay.resetIsMouseRelayCapabilityEnabled();
+      mouseRelay.disableMouseRelayCapability();
       return 'called';
     },
   });
@@ -37,7 +37,7 @@ const MouseRelayAPIs = (): React.ReactElement => (
     <ModuleWrapper title="MouseRelay">
       <CheckMouseRelayCapability />
       <EnableMouseRelayCapability />
-      <ResetIsMouseRelayCapabilityEnabled />
+      <DisableMouseRelayCapability />
     </ModuleWrapper>
   </>
 );

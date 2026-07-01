@@ -121,13 +121,13 @@ export async function enableMouseRelayCapability(): Promise<void> {
 }
 
 /**
- * Reset the state of the mouse relay capability, detaching its listeners.
- * This is useful for tests to ensure a clean state.
+ * Disable the mouse relay capability, detaching its listeners so the mouse
+ * back (X1) / forward (X2) buttons no longer drive Teams history navigation.
  *
  * @throws Error if {@link app.initialize} has not successfully completed or the
  * host does not support the mouseRelay capability.
  */
-export function resetIsMouseRelayCapabilityEnabled(): void {
+export function disableMouseRelayCapability(): void {
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
