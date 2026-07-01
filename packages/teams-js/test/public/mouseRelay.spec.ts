@@ -98,6 +98,19 @@ describe('mouseRelay capability', () => {
         expect(utils.findMessageByFunc(ApiName.MouseRelay_NavigateHistory)).toBeNull(); // not yet
       });
 
+      it('suppresses the synthetic auxclick that follows X1/X2 without forwarding', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { mouseRelay: {} } });
+
+        await mouseRelay.enableMouseRelayCapability();
+
+        const aux = new MouseEvent('auxclick', { button: BACK_BUTTON, bubbles: true, cancelable: true });
+        document.body.dispatchEvent(aux);
+
+        expect(aux.defaultPrevented).toBe(true); // synthetic click suppressed
+        expect(utils.findMessageByFunc(ApiName.MouseRelay_NavigateHistory)).toBeNull(); // auxclick never forwards
+      });
+
       it('ignores non-navigation mouse buttons', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { mouseRelay: {} } });
