@@ -1384,7 +1384,17 @@ export enum EduType {
 }
 
 /**
- * Currently supported Mime type
+ * Currently supported MIME types
+ *
+ * @deprecated
+ * As of TeamsJS v2.54.0, the clipboard capability is deprecated. These APIs may stop working at
+ * any time without notice: support for this capability in Teams and other host apps may be removed
+ * entirely and independently of a TeamsJS major release, so continued functionality is not
+ * guaranteed. The intended long-term replacement is the standardized Clipboard API provided by the
+ * browser ({@link https://developer.mozilla.org/docs/Web/API/Clipboard_API | Clipboard API}, `navigator.clipboard`).
+ * Note that using the browser-native Clipboard API directly within Teams hosts is not yet fully
+ * supported; it depends on native device permission handling that is still being enabled as a
+ * separate effort.
  */
 export enum ClipboardSupportedMimeType {
   TextPlain = 'text/plain',
@@ -1395,9 +1405,19 @@ export enum ClipboardSupportedMimeType {
 
 /**
  * Clipboard write parameters
+ *
+ * @deprecated
+ * As of TeamsJS v2.54.0, the clipboard capability is deprecated. These APIs may stop working at
+ * any time without notice: support for this capability in Teams and other host apps may be removed
+ * entirely and independently of a TeamsJS major release, so continued functionality is not
+ * guaranteed. The intended long-term replacement is the standardized Clipboard API provided by the
+ * browser ({@link https://developer.mozilla.org/docs/Web/API/Clipboard_API | Clipboard API}, `navigator.clipboard`).
+ * Note that using the browser-native Clipboard API directly within Teams hosts is not yet fully
+ * supported; it depends on native device permission handling that is still being enabled as a
+ * separate effort.
  */
 export interface ClipboardParams {
-  /** Mime Type of data to be copied to Clipboard */
+  /** MIME type of data to be copied to Clipboard */
   mimeType: ClipboardSupportedMimeType;
   /** Blob content in Base64 string format */
   content: string;

@@ -1,6 +1,16 @@
 /**
  * Interact with the system clipboard
  *
+ * @deprecated
+ * As of TeamsJS v2.54.0, the clipboard capability is deprecated. These APIs may stop working at
+ * any time without notice: support for this capability in Teams and other host apps may be removed
+ * entirely and independently of a TeamsJS major release, so continued functionality is not
+ * guaranteed. The intended long-term replacement is the standardized Clipboard API provided by the
+ * browser ({@link https://developer.mozilla.org/docs/Web/API/Clipboard_API | Clipboard API}, `navigator.clipboard`).
+ * Note that using the browser-native Clipboard API directly within Teams hosts is not yet fully
+ * supported; it depends on native device permission handling that is still being enabled as a
+ * separate effort.
+ *
  * @beta
  * @module
  */
@@ -21,6 +31,17 @@ const clipboardTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Function to copy data to clipboard.
+ *
+ * @deprecated
+ * As of TeamsJS v2.54.0, the clipboard capability is deprecated. These APIs may stop working at
+ * any time without notice: support for this capability in Teams and other host apps may be removed
+ * entirely and independently of a TeamsJS major release, so continued functionality is not
+ * guaranteed. The intended long-term replacement is the standardized Clipboard API provided by the
+ * browser ({@link https://developer.mozilla.org/docs/Web/API/Clipboard_API | Clipboard API}, `navigator.clipboard`).
+ * Note that using the browser-native Clipboard API directly within Teams hosts is not yet fully
+ * supported; it depends on native device permission handling that is still being enabled as a
+ * separate effort.
+ *
  * @remarks
  * Note: clipboard.write only supports Text, HTML, PNG, and JPEG data format.
  *       MIME type for Text -> `text/plain`, HTML -> `text/html`, PNG/JPEG -> `image/(png | jpeg)`
@@ -63,6 +84,16 @@ export async function write(blob: Blob): Promise<void> {
 /**
  * Function to read data from clipboard.
  *
+ * @deprecated
+ * As of TeamsJS v2.54.0, the clipboard capability is deprecated. These APIs may stop working at
+ * any time without notice: support for this capability in Teams and other host apps may be removed
+ * entirely and independently of a TeamsJS major release, so continued functionality is not
+ * guaranteed. The intended long-term replacement is the standardized Clipboard API provided by the
+ * browser ({@link https://developer.mozilla.org/docs/Web/API/Clipboard_API | Clipboard API}, `navigator.clipboard`).
+ * Note that using the browser-native Clipboard API directly within Teams hosts is not yet fully
+ * supported; it depends on native device permission handling that is still being enabled as a
+ * separate effort.
+ *
  * @returns A promise blob which resolves to the data read from the clipboard or
  *          rejects stating the reason for failure.
  *          Note: Returned blob type will contain one of the MIME type `image/png`, `text/plain` or `text/html`.
@@ -95,6 +126,16 @@ export async function read(): Promise<Blob> {
  * @returns boolean to represent whether the clipboard capability is supported
  *
  * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @deprecated
+ * As of TeamsJS v2.54.0, the clipboard capability is deprecated. These APIs may stop working at
+ * any time without notice: support for this capability in Teams and other host apps may be removed
+ * entirely and independently of a TeamsJS major release, so continued functionality is not
+ * guaranteed. The intended long-term replacement is the standardized Clipboard API provided by the
+ * browser ({@link https://developer.mozilla.org/docs/Web/API/Clipboard_API | Clipboard API}, `navigator.clipboard`).
+ * Note that using the browser-native Clipboard API directly within Teams hosts is not yet fully
+ * supported; it depends on native device permission handling that is still being enabled as a
+ * separate effort.
  *
  * @beta
  */
