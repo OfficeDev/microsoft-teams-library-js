@@ -174,6 +174,27 @@ describe('Testing TeamsCore Capability', () => {
 
           expect(handlerInvoked).toBe(true);
         });
+
+        it(`teamsCore.registerOnLoadHandler should pass subEntityId from load context. context: ${context}`, async () => {
+          await utils.initializeWithContext(context);
+
+          const loadContextWithSubEntityId: LoadContext = {
+            entityId: 'testEntityId',
+            contentUrl: 'https://localhost:4000',
+            subEntityId: 'testSubEntityId',
+          };
+
+          let receivedContext: LoadContext | undefined;
+          teamsCore.registerOnLoadHandler((ctx: LoadContext) => {
+            receivedContext = ctx;
+            return false;
+          });
+
+          await utils.sendMessage('load', loadContextWithSubEntityId);
+
+          expect(receivedContext).toBeDefined();
+          expect(receivedContext?.subEntityId).toBe('testSubEntityId');
+        });
       });
     });
 
