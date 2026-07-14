@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `M365CalendarMeetNow` to the `EventActionSource` enum",
+  "packageName": "@microsoft/teams-js",
+  "email": "idudas@microsoft.com",
+  "dependentChangeType": "patch"
+}
