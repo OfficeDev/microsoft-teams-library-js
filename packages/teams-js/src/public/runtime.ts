@@ -280,6 +280,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly dataLayer?: {};
     };
     readonly monetization?: {};
+    readonly mouseRelay?: {};
     readonly nestedAppAuth?: {};
     readonly notifications?: {};
     readonly otherAppStateChange?: {};

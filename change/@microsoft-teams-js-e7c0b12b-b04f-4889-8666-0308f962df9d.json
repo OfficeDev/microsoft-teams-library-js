@@ -1,0 +1,7 @@
+{
+  "comment": "Added `mouseRelay` capability that will forward mouse back/forward (X1/X2) buttons from app iframes to the host for Teams history navigation.",
+  "type": "minor",
+  "packageName": "@microsoft/teams-js",
+  "email": "yuanboxue@microsoft.com",
+  "dependentChangeType": "patch"
+}

@@ -142,5 +142,6 @@ export * as liveShare from './liveShareHost';
 //to keep the named exports so as to not break the existing consumers directly referencing the named exports.
 export { LiveShareHost } from './liveShareHost';
 export * as marketplace from './marketplace';
+export * as mouseRelay from './mouseRelay';
 export { ISerializable } from './serializable.interface';
 export * as shortcutRelay from './shortcutRelay';
