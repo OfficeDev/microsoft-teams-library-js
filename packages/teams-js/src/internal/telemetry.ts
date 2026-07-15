@@ -105,6 +105,8 @@ export const enum ApiName {
   Chat_OpenGroupChat = 'chat.openGroupChat',
   Clipboard_Read = 'clipboard.read',
   Clipboard_Write = 'clipboard.write',
+  Clipboard_HasPermission = 'clipboard.hasPermission',
+  Clipboard_RequestPermission = 'clipboard.requestPermission',
   Conversations_CloseConversation = 'conversations.closeConversation',
   Conversations_GetChatMember = 'conversations.getChatMember',
   Conversations_OpenConversation = 'conversations.openConversation',
