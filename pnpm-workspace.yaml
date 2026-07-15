@@ -1,4 +1,7 @@
-  packages: 
-    - 'apps/*'
-    - 'packages/*'
-    - 'tools/**/*'
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'tools/**/*'
+allowBuilds:
+  nx: set this to true or false
+  sharp: set this to true or false

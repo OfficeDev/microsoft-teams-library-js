@@ -19,6 +19,7 @@ import {
   FileOpenPreference,
   LoadContext,
   M365ContentAction,
+  ResumeContext,
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
 import {
@@ -1114,6 +1115,36 @@ describe('Testing app capability', () => {
             await utils.sendMessage('load', loadContext);
             expect(handlerInvoked).toBe(true);
           });
+
+          it(`app.lifecycle.registerOnResumeHandler should pass subPageId from load context subEntityId. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            const loadContextWithSubEntityId: LoadContext = {
+              entityId: 'testEntityId',
+              contentUrl: 'https://localhost:4000',
+              subEntityId: 'testSubPageId',
+            };
+
+            let receivedResumeContext: ResumeContext | undefined;
+            app.lifecycle.registerOnResumeHandler((ctx: ResumeContext) => {
+              receivedResumeContext = ctx;
+            });
+            await utils.sendMessage('load', loadContextWithSubEntityId);
+            expect(receivedResumeContext).toBeDefined();
+            expect(receivedResumeContext?.subPageId).toBe('testSubPageId');
+          });
+
+          it(`app.lifecycle.registerOnResumeHandler should have undefined subPageId when load context has no subEntityId. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            let receivedResumeContext: ResumeContext | undefined;
+            app.lifecycle.registerOnResumeHandler((ctx: ResumeContext) => {
+              receivedResumeContext = ctx;
+            });
+            await utils.sendMessage('load', loadContext);
+            expect(receivedResumeContext).toBeDefined();
+            expect(receivedResumeContext?.subPageId).toBeUndefined();
+          });
         });
       });
     });
@@ -2103,6 +2134,29 @@ describe('Testing app capability', () => {
               },
             } as DOMMessageEvent);
             expect(handlerInvoked).toBe(true);
+          });
+
+          it(`app.lifecycle.registerOnResumeHandler should pass subPageId from load context subEntityId. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            const loadContextWithSubEntityId: LoadContext = {
+              entityId: 'testEntityId',
+              contentUrl: 'https://localhost:4000',
+              subEntityId: 'testSubPageId',
+            };
+
+            let receivedResumeContext: ResumeContext | undefined;
+            app.lifecycle.registerOnResumeHandler((ctx: ResumeContext) => {
+              receivedResumeContext = ctx;
+            });
+            await utils.respondToFramelessMessage({
+              data: {
+                func: 'load',
+                args: [loadContextWithSubEntityId],
+              },
+            } as DOMMessageEvent);
+            expect(receivedResumeContext).toBeDefined();
+            expect(receivedResumeContext?.subPageId).toBe('testSubPageId');
           });
         });
       });
