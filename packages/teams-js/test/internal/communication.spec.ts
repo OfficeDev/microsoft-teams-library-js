@@ -1912,6 +1912,9 @@ describe('Testing communication', () => {
           validResponseMessage,
         );
 
+        // Wait for the async origin validation promise to resolve
+        await new Promise(process.nextTick);
+
         expect(onMessageReceivedCb).toBeCalledWith(validResponseMessage);
       });
 
@@ -1952,6 +1955,68 @@ describe('Testing communication', () => {
         );
 
         expect(onMessageReceivedCb).not.toBeCalled();
+      });
+    });
+
+    describe('verifyIncomingMessageOrigin', () => {
+      test('should not call onMessageReceived when the message comes from the same window', async () => {
+        const onMessageReceivedCb = jest.fn();
+
+        utils.mockWindow.parent = utils.mockWindow.top;
+        await setupNAABridge();
+        communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
+
+        // Set parent to currentWindow so the message appears to come from the same window
+        utils.mockWindow.parent = communication.Communication.currentWindow;
+
+        utils.respondToMessage(
+          {
+            id: 0,
+            data: validMessage,
+            func: 'nestedAppAuth.execute',
+          },
+          false,
+          validResponseMessage,
+        );
+
+        await new Promise(process.nextTick);
+
+        expect(onMessageReceivedCb).not.toBeCalled();
+      });
+
+      test('should not call onMessageReceived when the message origin is not in valid origins', async () => {
+        const onMessageReceivedCb = jest.fn();
+
+        utils.mockWindow.parent = utils.mockWindow.top;
+        await setupNAABridge();
+        communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
+
+        // Use an invalid origin and stub the CDN fetch so that validateOrigin resolves to false
+        // (validateOrigin itself is not under test here)
+        const savedOrigin = utils.validOrigin;
+        const savedFetch = global.fetch;
+        utils.validOrigin = 'https://invalid.example.com';
+        global.fetch = jest.fn(() =>
+          Promise.resolve({ ok: true, json: () => Promise.resolve({ validOrigins: [] }) } as unknown as Response),
+        );
+
+        utils.respondToMessage(
+          {
+            id: 0,
+            data: validMessage,
+            func: 'nestedAppAuth.execute',
+          },
+          false,
+          validResponseMessage,
+        );
+
+        await new Promise(process.nextTick);
+        await new Promise(process.nextTick);
+
+        expect(onMessageReceivedCb).not.toBeCalled();
+
+        utils.validOrigin = savedOrigin;
+        global.fetch = savedFetch;
       });
     });
   });

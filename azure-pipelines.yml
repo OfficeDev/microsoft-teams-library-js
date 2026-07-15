@@ -109,58 +109,19 @@ extends:
                   targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
                   artifactName: 'scripts'
 
-      - stage: Latest_E2E
-        displayName: 'Latest E2E Tests'
+      # Playwright E2E tests
+      - stage: Latest_E2E_Playwright
+        displayName: 'Latest E2E Tests (Playwright)'
         dependsOn: Build
         jobs:
-          - template: tools/yaml-templates/web-e2e-versions.yml@self
+          - template: tools/yaml-templates/web-e2e-playwright-tests-job.yml@self
             parameters:
               AppHostingSdk: AppHostingSdk
-              versionBranch: 'Latest'
-
-          - job: E2ETestCDN
-            timeoutInMinutes: 120
-            displayName: 'E2E Tests - CDN (only runs on release builds)'
-            # This test only runs after deployment from a release branch and the new CDN version has been deployed
-            # This check will run on the PR to merge the release branch back into main
-            condition: and(
-              eq(variables['Build.Reason'], 'PullRequest'),
-              startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
-              eq(variables['System.PullRequest.TargetBranch'], 'main')
-              )
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-latest'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
-                parameters:
-                  appHostGitPath: AppHostingSdk
-
-              - task: CmdLine@2
-                displayName: 'Build Test App CDN'
-                inputs:
-                  script: |
-                    pnpm build-test-app-CDN
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
-
-              - bash: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --useDataFromLocal=true --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
-                displayName: 'Run E2E integration tests with local script tag on latest cdn bundles'
-                condition: succeeded()
-                workingDirectory: '$(AppHostingSdkProjectDirectory)'
-                enabled: true
-
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - CDN'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
+              versionBranch: 'latest'
 
       - stage: Perf_and_Android_E2E
         displayName: 'Perf & Android E2E Tests'
-        dependsOn: Latest_E2E
+        dependsOn: Build
         jobs:
           - job: E2ETest1
             displayName: 'E2E Test - Perf'
@@ -233,28 +194,3 @@ extends:
                   shardNum: 3
                   shardIndex: 2
             continueOnError: true
-
-          # Comment out all of iOS E2E tests in TJS side due to unknown E2E testing failures on CI
-          # - job: E2ETestIOS
-          #   displayName: 'E2E Tests - IOS - Plan A'
-          #   pool:
-          #     name: Azure Pipelines
-          #     image: macos-latest-internal
-          #     os: macOS
-          #   steps:
-          #     - template: tools/yaml-templates/ios-test.yml@self
-          #       parameters:
-          #         iOSAppHostingSdkGitPath: IOSAppHostingSdk
-          #         testPlan: iosE2ETestPlanA
-
-          # - job: E2ETestIOS2
-          #   displayName: 'E2E Tests - IOS - Plan B'
-          #   pool:
-          #     name: Azure Pipelines
-          #     image: macos-latest-internal
-          #     os: macOS
-          #   steps:
-          #     - template: tools/yaml-templates/ios-test.yml@self
-          #       parameters:
-          #         iOSAppHostingSdkGitPath: IOSAppHostingSdk
-          #         testPlan: iosE2ETestPlanB

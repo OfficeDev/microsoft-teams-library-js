@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Deprecated the `clipboard` capability (`clipboard.write`, `clipboard.read`, `clipboard.isSupported`) and its `ClipboardParams` and `ClipboardSupportedMimeType` types. These APIs may stop working at any time without notice: support for this capability in Teams and other host apps may be removed entirely and independently of a TeamsJS major release, so continued functionality is not guaranteed. The intended long-term replacement is the browser's standardized Clipboard API (`navigator.clipboard`); note that using it directly within Teams hosts is not yet fully supported and depends on native device permission work still being enabled.",
+  "packageName": "@microsoft/teams-js",
+  "email": "107075081+Leah-Xia-Microsoft@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
