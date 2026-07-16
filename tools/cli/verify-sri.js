@@ -13,13 +13,14 @@ const INTEGRITY_REGEX = /integrity="([^"]+)"/g;
  * Reads the integrity (SRI) hash of MicrosoftTeams.min.js from the built UMD
  * manifest. Requires the package to have been built first (`pnpm build`).
  *
+ * @param {string} [manifestPath] override path (used in tests)
  * @returns {string} the integrity hash, e.g. "sha384-..."
  */
-function getManifestIntegrity() {
-  if (!fs.existsSync(MANIFEST_PATH)) {
-    throw new Error(`Manifest was not found at ${MANIFEST_PATH}. Run 'pnpm build' first.`);
+function getManifestIntegrity(manifestPath = MANIFEST_PATH) {
+  if (!fs.existsSync(manifestPath)) {
+    throw new Error(`Manifest was not found at ${manifestPath}. Run 'pnpm build' first.`);
   }
-  const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const entry = manifest['MicrosoftTeams.min.js'];
   const integrity = entry && entry.integrity;
   if (!integrity) {
@@ -46,13 +47,16 @@ function getIntegrityAttributes(filePath) {
  * Verifies that every checked-in integrity attribute (in the README and the
  * CDN test app) matches the freshly-built manifest integrity hash.
  *
+ * @param {object} [paths] optional path overrides { manifest, readme, testAppHtml }
  * @returns {string[]} list of human-readable failure messages (empty = success)
  */
-function verifySri() {
+function verifySri(paths = {}) {
+  const manifestPath = paths.manifest || MANIFEST_PATH;
+  const filesToCheck = [paths.readme || README_PATH, paths.testAppHtml || TEST_APP_HTML_PATH];
   const failures = [];
-  const expected = getManifestIntegrity();
+  const expected = getManifestIntegrity(manifestPath);
 
-  for (const filePath of [README_PATH, TEST_APP_HTML_PATH]) {
+  for (const filePath of filesToCheck) {
     const attributes = getIntegrityAttributes(filePath);
     if (attributes.length === 0) {
       failures.push(`No integrity attribute found in ${filePath}`);

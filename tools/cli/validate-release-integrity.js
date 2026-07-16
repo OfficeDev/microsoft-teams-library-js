@@ -5,11 +5,14 @@ const path = require('path');
 
 const { extractChangelogSection } = require('./extract-changelog-section');
 
-const TEAMS_JS_PACKAGE_JSON = path.resolve(__dirname, '../../packages/teams-js/package.json');
-const TEST_APP_PACKAGE_JSON = path.resolve(__dirname, '../../apps/teams-test-app/package.json');
-const README_PATH = path.resolve(__dirname, '../../packages/teams-js/README.md');
-const TEST_APP_HTML_PATH = path.resolve(__dirname, '../../apps/teams-test-app/index_cdn.html');
-const CHANGE_DIR = path.resolve(__dirname, '../../change');
+const DEFAULT_PATHS = {
+  teamsJsPackageJson: path.resolve(__dirname, '../../packages/teams-js/package.json'),
+  testAppPackageJson: path.resolve(__dirname, '../../apps/teams-test-app/package.json'),
+  readme: path.resolve(__dirname, '../../packages/teams-js/README.md'),
+  testAppHtml: path.resolve(__dirname, '../../apps/teams-test-app/index_cdn.html'),
+  changeDir: path.resolve(__dirname, '../../change'),
+  changelog: undefined, // undefined => extract-changelog-section default
+};
 
 const CDN_URL_REGEX = /res\.cdn\.office\.net\/teams-js\/([^/]+)\/js\/MicrosoftTeams\.min\.js/g;
 const NODE_MODULES_REGEX = /node_modules\/@microsoft\/teams-js@([^/]+)\/dist\/MicrosoftTeams\.min\.js/g;
@@ -54,14 +57,15 @@ function checkAllVersionsMatch(content, regex, expectedVersion, label, failures)
   });
 }
 
-function getPreviousChangelogVersion(currentVersion) {
-  const full = extractChangelogSection();
+function getPreviousChangelogVersion(currentVersion, changelogPath) {
+  const full = extractChangelogSection(undefined, changelogPath);
   const headers = [...full.matchAll(/^## (\d+\.\d+\.\d+)$/gm)].map((m) => m[1]);
   return headers.find((v) => v !== currentVersion);
 }
 
 function validate(version, options = {}) {
   const failures = [];
+  const paths = { ...DEFAULT_PATHS, ...(options.paths || {}) };
 
   // Check 9 (format): version must be a clean release semver (no prerelease/build metadata).
   if (!SEMVER_REGEX.test(version)) {
@@ -69,20 +73,20 @@ function validate(version, options = {}) {
   }
 
   // Check 1: teams-js package.json version.
-  const teamsJsVersion = readJson(TEAMS_JS_PACKAGE_JSON).version;
+  const teamsJsVersion = readJson(paths.teamsJsPackageJson).version;
   if (teamsJsVersion !== version) {
     failures.push(`packages/teams-js/package.json version is "${teamsJsVersion}", expected "${version}"`);
   }
 
   // Check 2: test app package.json version.
-  const testAppVersion = readJson(TEST_APP_PACKAGE_JSON).version;
+  const testAppVersion = readJson(paths.testAppPackageJson).version;
   if (testAppVersion !== version) {
     failures.push(`apps/teams-test-app/package.json version is "${testAppVersion}", expected "${version}"`);
   }
 
   // Check 3: beachball change files have been consumed by the bump.
-  if (fs.existsSync(CHANGE_DIR)) {
-    const remaining = fs.readdirSync(CHANGE_DIR).filter((f) => f.endsWith('.json'));
+  if (fs.existsSync(paths.changeDir)) {
+    const remaining = fs.readdirSync(paths.changeDir).filter((f) => f.endsWith('.json'));
     if (remaining.length > 0) {
       failures.push(
         `Unconsumed beachball change files remain in change/ (expected none on a release branch): ${remaining.join(', ')}`,
@@ -93,7 +97,7 @@ function validate(version, options = {}) {
   // Check 4: changelog section exists and is non-empty.
   let changelogSection = '';
   try {
-    changelogSection = extractChangelogSection(version);
+    changelogSection = extractChangelogSection(version, paths.changelog);
     if (!changelogSection.trim()) {
       failures.push(`Changelog section for ${version} is empty`);
     }
@@ -102,17 +106,17 @@ function validate(version, options = {}) {
   }
 
   // Check 5: README references the version in both the CDN URL and the @version path.
-  const readme = fs.readFileSync(README_PATH, 'utf8');
+  const readme = fs.readFileSync(paths.readme, 'utf8');
   checkAllVersionsMatch(readme, CDN_URL_REGEX, version, 'README.md CDN URL', failures);
   checkAllVersionsMatch(readme, NODE_MODULES_REGEX, version, 'README.md @microsoft/teams-js@version', failures);
 
   // Check 6: test app CDN HTML references the version in the CDN URL.
-  const testAppHtml = fs.readFileSync(TEST_APP_HTML_PATH, 'utf8');
+  const testAppHtml = fs.readFileSync(paths.testAppHtml, 'utf8');
   checkAllVersionsMatch(testAppHtml, CDN_URL_REGEX, version, 'apps/teams-test-app/index_cdn.html CDN URL', failures);
 
   // Check (no major / no prerelease bump): major version must not change vs. the previous release.
   if (SEMVER_REGEX.test(version)) {
-    const previous = getPreviousChangelogVersion(version);
+    const previous = getPreviousChangelogVersion(version, paths.changelog);
     if (previous) {
       const currentMajor = version.split('.')[0];
       const previousMajor = previous.split('.')[0];
@@ -140,13 +144,13 @@ function validate(version, options = {}) {
   return failures;
 }
 
-module.exports = { validate };
+module.exports = { validate, DEFAULT_PATHS };
 
 if (require.main === module) {
   const args = parseArgs(process.argv.slice(2));
   let version = args.version;
   if (!version || version === true) {
-    version = readJson(TEAMS_JS_PACKAGE_JSON).version;
+    version = readJson(DEFAULT_PATHS.teamsJsPackageJson).version;
     console.log(`No --version provided; using packages/teams-js/package.json version "${version}"`);
   }
   try {
