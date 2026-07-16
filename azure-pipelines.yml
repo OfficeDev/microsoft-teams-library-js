@@ -123,9 +123,11 @@ extends:
         displayName: 'Perf & Android E2E Tests'
         dependsOn: Build
         jobs:
-          # Perf E2E disabled: runs on the ubuntu ExDShared pool (not the Android
-          # KVM pool) and is currently failing independently of the pool migration.
-          # Re-enable once the Perf harness is stabilized.
+          # Perf E2E disabled: the E2ETest1 job runs a Cypress-based E2E test on
+          # the ubuntu ExDShared pool (not the Android KVM pool) and is blocked by
+          # the 1ES network-isolation policies — the same reason the web E2E suite
+          # is migrating from Cypress to Playwright. Unrelated to this Android pool
+          # migration. Re-enable after migrating this job to Playwright.
           # - job: E2ETest1
           #   displayName: 'E2E Test - Perf'
           #   pool:
