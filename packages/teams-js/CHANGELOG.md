@@ -1,8 +1,18 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 17 Jun 2026 17:10:04 GMT and should not be manually modified. -->
+<!-- This log was last generated on Wed, 15 Jul 2026 20:17:53 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.54.0
+
+Wed, 15 Jul 2026 20:17:53 GMT
+
+### Minor changes
+
+- Added `mouseRelay` capability that will forward mouse back/forward (X1/X2) buttons from app iframes to the host for Teams history navigation.
+- Deprecated the `clipboard` capability (`clipboard.write`, `clipboard.read`, `clipboard.isSupported`) and its `ClipboardParams` and `ClipboardSupportedMimeType` types. These APIs may stop working at any time without notice: support for this capability in Teams and other host apps may be removed entirely and independently of a TeamsJS major release, so continued functionality is not guaranteed. The intended long-term replacement is the browser's standardized Clipboard API (`navigator.clipboard`); note that using it directly within Teams hosts is not yet fully supported and depends on native device permission work still being enabled.
+- Added `M365CalendarMeetNow` to the `EventActionSource` enum
 
 ## 2.53.1
 
