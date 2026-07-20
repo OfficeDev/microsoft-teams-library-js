@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Add validDomains for widget-renderer",
+  "packageName": "@microsoft/teams-js",
+  "email": "77021369+jimchou-dev@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
