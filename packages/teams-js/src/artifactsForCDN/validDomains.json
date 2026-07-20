@@ -68,6 +68,9 @@
     "portal.office365.us",
     "portal.apps.mil",
     "www.ohome.apps.mil",
-    "www.office365.us"
+    "www.office365.us",
+    "*.widget-renderer.usercontent.dev.microsoft",
+    "*.widget-renderer.usercontent.microsoft",
+    "*.widget-renderer.usgovcloud-usercontent.microsoft"
   ]
 }
