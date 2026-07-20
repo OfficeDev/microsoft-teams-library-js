@@ -147,6 +147,19 @@ describe('validOrigins', () => {
       result = await validateOrigin(messageOrigin, disableCache);
       expect(result).toBe(true);
     });
+    it('validateOrigin returns true for widget-renderer allowlisted origins', async () => {
+      let messageOrigin = new URL('https://tenant.widget-renderer.usercontent.dev.microsoft');
+      let result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+
+      messageOrigin = new URL('https://tenant.widget-renderer.usercontent.microsoft');
+      result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+
+      messageOrigin = new URL('https://tenant.widget-renderer.usgovcloud-usercontent.microsoft');
+      result = await validateOrigin(messageOrigin, disableCache);
+      expect(result).toBe(true);
+    });
     it("validateOrigin returns true if the protocol of origin is 'http:' and specified in user-supplied list", async () => {
       /* eslint-disable-next-line @microsoft/sdl/no-insecure-url */ /* Intentionally using http here because of what it is testing */
       const messageOrigin = new URL('http://teams.microsoft.com');
