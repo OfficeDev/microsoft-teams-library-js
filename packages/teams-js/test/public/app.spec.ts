@@ -120,8 +120,6 @@ describe('Testing app capability', () => {
         const mockWindow = utils.mockWindow as any;
         mockWindow.parent = utils.parentWindow;
         mockWindow.location.ancestorOrigins = {
-          0: 'https://widget-renderer.usercontent.microsoft',
-          1: 'https://ignored-ancestor.example.com',
           length: 2,
           item: (index: number) =>
             index === 0
