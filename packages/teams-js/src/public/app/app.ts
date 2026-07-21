@@ -693,6 +693,52 @@ export function initialize(validMessageOrigins?: string[]): Promise<void> {
 }
 
 /**
+ * Returns the immediate parent origin when this app is running inside an iframe.
+ *
+ * @remarks
+ * This helper is useful for scenarios where the app must explicitly trust the hosting parent origin during
+ * {@link initialize} by passing `[origin]` as `validMessageOrigins`.
+ *
+ * If no parent origin can be determined, this function returns `null`.
+ *
+ * @example
+ * ```typescript
+ * import { app } from '@microsoft/teams-js';
+ *
+ * const parentOrigin = app.getImmediateParentOrigin();
+ * await app.initialize(parentOrigin ? [parentOrigin] : undefined);
+ * ```
+ *
+ * @returns The immediate parent origin, or `null` when unavailable.
+ */
+export function getImmediateParentOrigin(): string | null {
+  if (inServerSideRenderingEnvironment()) {
+    return null;
+  }
+
+  const currentWindow = Communication.currentWindow ?? window;
+  if (currentWindow.parent === currentWindow) {
+    return null;
+  }
+
+  const ancestorOrigins = (currentWindow.location as Location & { ancestorOrigins?: DOMStringList }).ancestorOrigins;
+  if (ancestorOrigins && ancestorOrigins.length > 0 && ancestorOrigins[0]) {
+    return ancestorOrigins[0];
+  }
+
+  const referrer = currentWindow.document?.referrer;
+  if (!referrer) {
+    return null;
+  }
+
+  try {
+    return new URL(referrer).origin;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * @hidden
  * Undocumented function used to set a mock window for unit tests
  *
