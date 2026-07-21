@@ -722,8 +722,9 @@ export function getImmediateParentOrigin(): string | null {
   }
 
   const ancestorOrigins = (currentWindow.location as Location & { ancestorOrigins?: DOMStringList }).ancestorOrigins;
-  if (ancestorOrigins && ancestorOrigins.length > 0 && ancestorOrigins[0]) {
-    return ancestorOrigins[0];
+  const immediateAncestorOrigin = ancestorOrigins?.item(0);
+  if (immediateAncestorOrigin) {
+    return immediateAncestorOrigin;
   }
 
   const referrer = currentWindow.document?.referrer;

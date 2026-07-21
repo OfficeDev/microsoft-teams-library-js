@@ -123,6 +123,12 @@ describe('Testing app capability', () => {
           0: 'https://widget-renderer.usercontent.microsoft',
           1: 'https://ignored-ancestor.example.com',
           length: 2,
+          item: (index: number) =>
+            index === 0
+              ? 'https://widget-renderer.usercontent.microsoft'
+              : index === 1
+                ? 'https://ignored-ancestor.example.com'
+                : null,
         };
 
         const result = app.getImmediateParentOrigin();
