@@ -428,9 +428,6 @@ export function validateUrl(url: URL, errorToThrow?: Error): void {
   if (hasScriptTags(urlString)) {
     throw errorToThrow || new Error('Invalid Url');
   }
-  if (urlString.length > 2048) {
-    throw errorToThrow || new Error('Url exceeds the maximum size of 2048 characters');
-  }
   if (!isValidHttpsURL(url)) {
     throw errorToThrow || new Error('Url should be a valid https url');
   }
