@@ -52,10 +52,8 @@ jobs:
 
           - script: |
               sudo apt-get update
-              sudo apt-get install -y libnss3-tools mkcert
-
-              if ! command -v mkcert >/dev/null 2>&1; then
-                echo "mkcert was not installed from apt repositories."
+              if ! sudo apt-get install -y libnss3-tools mkcert; then
+                echo "Failed to install mkcert from apt repositories."
                 echo "Use an internal package source (for example ADO Universal Packages) for CFSClean-compliant installs."
                 exit 1
               fi

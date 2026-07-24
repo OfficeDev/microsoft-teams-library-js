@@ -11,8 +11,8 @@ steps:
     displayName: 'Configure CFS-compliant npm registry'
     inputs:
       script: |
-        echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> .npmrc
-        echo "always-auth=true" >> .npmrc
+        echo registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/>> .npmrc
+        echo always-auth=true>> .npmrc
 
   - task: npmAuthenticate@0
     inputs:
@@ -22,7 +22,7 @@ steps:
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        npm install -g pnpm@9.0.6 --globalconfig $(Build.SourcesDirectory)/.npmrc
+        npm install -g pnpm@9.0.6 --globalconfig "$(Build.SourcesDirectory)/.npmrc"
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
   - task: CmdLine@2

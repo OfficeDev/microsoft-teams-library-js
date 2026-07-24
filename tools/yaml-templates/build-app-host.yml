@@ -85,8 +85,22 @@ steps:
     env:
       NEXT_TELEMETRY_DISABLED: '1'
 
-  # Authenticate NuGet so the Blazor test app restores from the CFS-backed feed
-  # (external contributors without credentials fall back to nuget.org automatically).
+  # Generate nuget.config for the Blazor test app at pipeline time so that:
+  # 1. dotnet restore uses the CFS-backed ADO feed (CFSClean compliant)
+  # 2. The file is NOT committed to the repo (avoids SSCA CFS0013 scanner errors
+  #    and allows external contributors to build without it using default nuget.org)
+  - script: |
+      cat > $(ClientSdkProjectDirectory)/apps/blazor-test-app/nuget.config << 'EOF'
+      <?xml version="1.0" encoding="utf-8"?>
+      <configuration>
+        <packageSources>
+          <clear />
+          <add key="CFS-NuGet" value="https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/nuget/v3/index.json" />
+        </packageSources>
+      </configuration>
+      EOF
+    displayName: 'Generate Blazor nuget.config (CFS feed only)'
+
   - task: NuGetAuthenticate@1
 
   - script: |
