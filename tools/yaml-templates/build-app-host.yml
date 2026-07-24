@@ -34,6 +34,18 @@ steps:
       path: $(Pipeline.Workspace)/.pnpm-store
     displayName: Cache client sdk node_modules pnpm
 
+  # Configure and authenticate the CFS-backed npm feed before Corepack prepares
+  # pnpm to avoid public-registry access in isolated (CFSClean) pipelines.
+  - script: |
+      echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> .npmrc
+      echo "always-auth=true" >> .npmrc
+    displayName: 'Configure CFS-compliant npm registry for client sdk'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
   - script: |
       corepack enable
       corepack prepare pnpm@9.0.6 --activate
@@ -66,19 +78,6 @@ steps:
       pnpm build
     displayName: 'Build app hosting sdk'
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-  # Redirect package downloads through the CFS-backed ADO feed to comply with
-  # network isolation policy (CFSClean). The .npmrc checked into the repo does
-  # not set a registry so that external contributors can use npmjs.org directly.
-  - script: |
-      echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> .npmrc
-      echo "always-auth=true" >> .npmrc
-    displayName: 'Configure CFS-compliant npm registry for client sdk'
-    workingDirectory: '$(ClientSdkProjectDirectory)'
-
-  - task: npmAuthenticate@0
-    inputs:
-      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
 
   - script: |
       pnpm install
