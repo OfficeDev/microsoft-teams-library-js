@@ -733,7 +733,15 @@ export function getImmediateParentOrigin(): string | null {
   }
 
   try {
-    return new URL(referrer).origin;
+    const referrerOrigin = new URL(referrer).origin;
+
+    // `document.referrer` can point to this iframe's prior URL after in-frame redirects.
+    // Returning self-origin as the parent would be incorrect; treat this as unavailable.
+    if (referrerOrigin === currentWindow.location.origin) {
+      return null;
+    }
+
+    return referrerOrigin;
   } catch {
     return null;
   }

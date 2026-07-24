@@ -147,6 +147,20 @@ describe('Testing app capability', () => {
         expect(result).toBe('https://widget-renderer.usercontent.microsoft');
       });
 
+      it('returns null when referrer origin matches app origin', () => {
+        const mockWindow = utils.mockWindow as any;
+        mockWindow.parent = utils.parentWindow;
+        mockWindow.location.origin = 'https://my-app.example.com';
+        mockWindow.location.ancestorOrigins = undefined;
+        mockWindow.document = {
+          referrer: 'https://my-app.example.com/redirected/inside/iframe',
+        };
+
+        const result = app.getImmediateParentOrigin();
+
+        expect(result).toBeNull();
+      });
+
       it('returns null when ancestorOrigins is unavailable and document.referrer is invalid', () => {
         const mockWindow = utils.mockWindow as any;
         mockWindow.parent = utils.parentWindow;
