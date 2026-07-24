@@ -34,11 +34,25 @@ steps:
       path: $(Pipeline.Workspace)/.pnpm-store
     displayName: Cache client sdk node_modules pnpm
 
+  # Configure and authenticate the CFS-backed npm feed before Corepack prepares
+  # pnpm to avoid public-registry access in isolated (CFSClean) pipelines.
+  - script: |
+      echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> .npmrc
+      echo "always-auth=true" >> .npmrc
+    displayName: 'Configure CFS-compliant npm registry for client sdk'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
   - script: |
       corepack enable
       corepack prepare pnpm@9.0.6 --activate
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
+    env:
+      COREPACK_NPM_REGISTRY: 'https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/'
 
   - task: npmAuthenticate@0
     inputs:
@@ -69,11 +83,33 @@ steps:
       pnpm install
     displayName: 'Install client sdk dependencies'
     workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+
+  # Generate nuget.config for the Blazor test app at pipeline time so that:
+  # 1. dotnet restore uses the CFS-backed ADO feed (CFSClean compliant)
+  # 2. The file is NOT committed to the repo (avoids SSCA CFS0013 scanner errors
+  #    and allows external contributors to build without it using default nuget.org)
+  - script: |
+      cat > $(ClientSdkProjectDirectory)/apps/blazor-test-app/nuget.config << 'EOF'
+      <?xml version="1.0" encoding="utf-8"?>
+      <configuration>
+        <packageSources>
+          <clear />
+          <add key="CFS-NuGet" value="https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/nuget/v3/index.json" />
+        </packageSources>
+      </configuration>
+      EOF
+    displayName: 'Generate Blazor nuget.config (CFS feed only)'
+
+  - task: NuGetAuthenticate@1
 
   - script: |
       pnpm build-force-blazor
     displayName: 'Build client sdk'
     workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CmdLine@2
     displayName: 'Configure host machine'

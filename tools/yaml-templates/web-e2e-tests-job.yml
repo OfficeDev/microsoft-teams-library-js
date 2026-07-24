@@ -75,11 +75,13 @@ jobs:
               workingDirectory: '$(ClientSdkProjectDirectory)'
 
           - script: |
-              sudo apt-get install -y libnss3-tools
-              curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
-              chmod +x mkcert-v*-linux-amd64
-              sudo mv mkcert-v*-linux-amd64 /usr/local/bin/mkcert
-            displayName: 'Install mkcert using pre-built binary'
+              sudo apt-get update
+              if ! sudo apt-get install -y libnss3-tools mkcert; then
+                echo "Failed to install mkcert from apt repositories."
+                echo "Use an internal package source (for example ADO Universal Packages) for CFSClean-compliant installs."
+                exit 1
+              fi
+            displayName: 'Install mkcert'
             condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
 
           - powershell: |

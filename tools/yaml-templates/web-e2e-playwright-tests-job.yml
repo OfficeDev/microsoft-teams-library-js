@@ -51,10 +51,12 @@ jobs:
             workingDirectory: '$(ClientSdkProjectDirectory)'
 
           - script: |
-              sudo apt-get install -y libnss3-tools
-              curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
-              chmod +x mkcert-v*-linux-amd64
-              sudo mv mkcert-v*-linux-amd64 /usr/local/bin/mkcert
+              sudo apt-get update
+              if ! sudo apt-get install -y libnss3-tools mkcert; then
+                echo "Failed to install mkcert from apt repositories."
+                echo "Use an internal package source (for example ADO Universal Packages) for CFSClean-compliant installs."
+                exit 1
+              fi
             displayName: 'Install mkcert (for SSR test app cert)'
 
           - script: |
@@ -77,6 +79,8 @@ jobs:
               npx playwright install --with-deps chromium
             displayName: 'Install Playwright browsers'
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
+            env:
+              PLAYWRIGHT_DOWNLOAD_HOST: 'https://playwright.azureedge.net'
 
           # runPlaywrightE2ETests.ts handles starting servers (test app,
           # Blazor, Orange, SSR), running the suite for the requested
