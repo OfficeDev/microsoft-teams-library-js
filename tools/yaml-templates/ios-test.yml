@@ -22,6 +22,8 @@ steps:
     inputs:
       targetType: inline
       script: |
+        # TODO(CFS): brew install downloads from github.com. If this triggers a
+        # CFSClean violation, pre-install or upload the binary to ADO Universal Packages.
         brew install xctesthtmlreport
 
         echo "##vso[task.setvariable variable=xctestHtmlReportInstalled]Yes"
@@ -47,6 +49,20 @@ steps:
         corepack enable
         corepack prepare pnpm@9.0.6 --activate
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+
+  # SFI Network Isolation (CFSClean): configure CFS-backed registry for pnpm
+  # so installs do not reach registry.npmjs.org.
+  - task: CmdLine@2
+    displayName: 'Configure CFS npm registry'
+    inputs:
+      script: |
+        echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> $(ClientSdkProjectDirectory)/.npmrc
+        echo "always-auth=true" >> $(ClientSdkProjectDirectory)/.npmrc
+
+  - task: npmAuthenticate@0
+    displayName: 'Authenticate npm (CFS feed)'
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
 
   - task: CmdLine@2
     displayName: 'Install client sdk dependencies'

@@ -65,15 +65,36 @@ steps:
     displayName: 'Build app hosting sdk'
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
+  # Redirect package downloads through the CFS-backed ADO feed to comply with
+  # network isolation policy (CFSClean). The .npmrc checked into the repo does
+  # not set a registry so that external contributors can use npmjs.org directly.
+  - script: |
+      echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> .npmrc
+      echo "always-auth=true" >> .npmrc
+    displayName: 'Configure CFS-compliant npm registry for client sdk'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
   - script: |
       pnpm install
     displayName: 'Install client sdk dependencies'
     workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+
+  # Authenticate NuGet so the Blazor test app restores from the CFS-backed feed
+  # (external contributors without credentials fall back to nuget.org automatically).
+  - task: NuGetAuthenticate@1
 
   - script: |
       pnpm build-force-blazor
     displayName: 'Build client sdk'
     workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CmdLine@2
     displayName: 'Configure host machine'

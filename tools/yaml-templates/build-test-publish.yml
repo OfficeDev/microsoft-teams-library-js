@@ -4,11 +4,25 @@ steps:
     inputs:
       versionSpec: '18.x'
 
+  # Redirect package downloads through the CFS-backed ADO feed to comply with
+  # network isolation policy (CFSClean). The .npmrc checked into the repo does
+  # not set a registry so that external contributors can use npmjs.org directly.
+  - task: CmdLine@2
+    displayName: 'Configure CFS-compliant npm registry'
+    inputs:
+      script: |
+        echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> .npmrc
+        echo "always-auth=true" >> .npmrc
+
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: '.npmrc'
+
   - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        npm install -g pnpm@9.0.6
+        npm install -g pnpm@9.0.6 --globalconfig $(Build.SourcesDirectory)/.npmrc
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
   - task: CmdLine@2
@@ -16,6 +30,9 @@ steps:
     inputs:
       script: |
         pnpm install
+    env:
+      CYPRESS_INSTALL_BINARY: '0'
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CmdLine@2
     displayName: 'Check that changefile was created if needed'
@@ -35,6 +52,8 @@ steps:
     inputs:
       script: |
         pnpm build-force-blazor
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CmdLine@2
     displayName: 'pnpm test'
