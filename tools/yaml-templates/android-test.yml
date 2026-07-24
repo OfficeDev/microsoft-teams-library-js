@@ -29,18 +29,8 @@ steps:
       path: $(Pipeline.Workspace)/.pnpm-store
     displayName: Cache pnpm
 
-  - task: CmdLine@2
-    displayName: 'Setup pnpm'
-    inputs:
-      script: |
-        corepack enable
-        corepack prepare pnpm@9.0.6 --activate
-        pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-    env:
-      COREPACK_NPM_REGISTRY: 'https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/'
-
-  # SFI Network Isolation (CFSClean): configure CFS-backed registry for pnpm
-  # so installs do not reach registry.npmjs.org.
+  # SFI Network Isolation (CFSClean): configure and authenticate against the
+  # CFS-backed npm registry before Corepack prepares pnpm.
   - task: CmdLine@2
     displayName: 'Configure CFS npm registry'
     inputs:
@@ -52,6 +42,16 @@ steps:
     displayName: 'Authenticate npm (CFS feed)'
     inputs:
       workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
+  - task: CmdLine@2
+    displayName: 'Setup pnpm'
+    inputs:
+      script: |
+        corepack enable
+        corepack prepare pnpm@9.0.6 --activate
+        pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+    env:
+      COREPACK_NPM_REGISTRY: 'https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/'
 
   - task: CmdLine@2
     displayName: 'Install client sdk dependencies'

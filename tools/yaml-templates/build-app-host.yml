@@ -39,6 +39,8 @@ steps:
       corepack prepare pnpm@9.0.6 --activate
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
+    env:
+      COREPACK_NPM_REGISTRY: 'https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/'
 
   - task: npmAuthenticate@0
     inputs:
