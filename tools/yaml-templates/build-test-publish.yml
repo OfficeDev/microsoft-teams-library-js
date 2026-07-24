@@ -11,7 +11,7 @@ steps:
     displayName: 'Configure CFS-compliant npm registry'
     inputs:
       script: |
-        cat > "$(Build.SourcesDirectory)/.npmrc" << 'EOF'
+        cat >> "$(Build.SourcesDirectory)/.npmrc" << 'EOF'
         registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/
         always-auth=true
         EOF
