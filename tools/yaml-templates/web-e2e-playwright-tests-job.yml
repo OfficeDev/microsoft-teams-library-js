@@ -49,6 +49,8 @@ jobs:
               pnpm --filter teams-test-app build
             displayName: 'Build teamsjs test app'
             workingDirectory: '$(ClientSdkProjectDirectory)'
+            env:
+              NEXT_TELEMETRY_DISABLED: '1'
 
           - script: |
               sudo apt-get update

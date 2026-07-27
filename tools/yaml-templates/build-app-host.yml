@@ -51,6 +51,12 @@ steps:
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
 
+  - script: |
+      echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> .npmrc
+      echo "always-auth=true" >> .npmrc
+    displayName: 'Configure CFS-compliant npm registry for app hosting sdk'
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
   - task: npmAuthenticate@0
     inputs:
       workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
@@ -66,6 +72,7 @@ steps:
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
     env:
       CYPRESS_INSTALL_BINARY: '0'
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CodeQL3000Init@0
     inputs:

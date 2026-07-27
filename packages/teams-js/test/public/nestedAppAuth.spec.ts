@@ -281,7 +281,7 @@ describe('nestedAppAuth', () => {
   });
 
   describe('addNAATrustedOrigins and deleteNAATrustedOrigins', () => {
-    const validOrigins = ['https://microsoft.com', 'https://contoso.com'];
+    const validOrigins = ['https://microsoft.com', 'https://office.com'];
     const runtimeConfig: Runtime = {
       apiVersion: 4,
       supports: {},
