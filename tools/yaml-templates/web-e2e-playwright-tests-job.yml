@@ -79,8 +79,6 @@ jobs:
               npx playwright install --with-deps chromium
             displayName: 'Install Playwright browsers'
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
-            env:
-              PLAYWRIGHT_DOWNLOAD_HOST: 'https://playwright.azureedge.net'
 
           # runPlaywrightE2ETests.ts handles starting servers (test app,
           # Blazor, Orange, SSR), running the suite for the requested
