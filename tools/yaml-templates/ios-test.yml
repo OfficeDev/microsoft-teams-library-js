@@ -43,7 +43,7 @@ steps:
     displayName: Cache pnpm
 
   # SFI Network Isolation (CFSClean): configure and authenticate against the
-  # CFS-backed npm registry before Corepack prepares pnpm.
+  # CFS-backed npm registry before installing pnpm.
   - task: CmdLine@2
     displayName: 'Configure CFS npm registry'
     inputs:
@@ -69,6 +69,8 @@ steps:
       script: |
         pnpm install
       workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CmdLine@2
     displayName: 'Build client sdk'

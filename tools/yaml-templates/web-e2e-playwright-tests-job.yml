@@ -68,6 +68,8 @@ jobs:
               pnpm --filter ssr-test-app build
             displayName: 'Build teamsjs SSR test app'
             workingDirectory: '$(ClientSdkProjectDirectory)'
+            env:
+              NEXT_TELEMETRY_DISABLED: '1'
 
           # Initialize the .NET HTTPS dev cert so the Blazor test app can
           # serve over https://127.0.0.1:44302.
