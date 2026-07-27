@@ -52,6 +52,7 @@ steps:
     displayName: 'Setup pnpm'
 
   - script: |
+      sed -i '/^registry=/d' .npmrc
       echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> .npmrc
       echo "always-auth=true" >> .npmrc
     displayName: 'Configure CFS-compliant npm registry for app hosting sdk'
