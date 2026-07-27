@@ -72,6 +72,16 @@ steps:
 
   - task: NuGetAuthenticate@1
 
+  # Clean stale Blazor build artifacts to ensure no cached static web assets
+  # (e.g., from previously-referenced FluentUI NuGet package) serve unpkg.com scripts.
+  - task: CmdLine@2
+    displayName: 'Clean Blazor build artifacts'
+    inputs:
+      script: |
+        dotnet clean apps\blazor-test-app\Blazor-Test-App.csproj
+        if exist apps\blazor-test-app\obj rmdir /s /q apps\blazor-test-app\obj
+        if exist apps\blazor-test-app\bin rmdir /s /q apps\blazor-test-app\bin
+
   - task: CmdLine@2
     displayName: 'pnpm build'
     inputs:
