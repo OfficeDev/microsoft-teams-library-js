@@ -95,6 +95,7 @@ jobs:
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
             env:
               CI: 'true'
+              NEXT_TELEMETRY_DISABLED: '1'
 
           - task: PublishTestResults@2
             inputs:

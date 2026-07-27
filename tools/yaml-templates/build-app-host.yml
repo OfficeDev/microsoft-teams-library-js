@@ -75,6 +75,8 @@ steps:
       pnpm build
     displayName: 'Build app hosting sdk'
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - script: |
       pnpm install
@@ -115,6 +117,8 @@ steps:
         sudo chmod -R 755 ./ 
         pnpm run setup
       workingDirectory: '$(AppHostingSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CodeQL3000Finalize@0
     condition: always()

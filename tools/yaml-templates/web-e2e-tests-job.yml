@@ -73,6 +73,8 @@ jobs:
               script: |
                 pnpm build-test-app-local
               workingDirectory: '$(ClientSdkProjectDirectory)'
+            env:
+              NEXT_TELEMETRY_DISABLED: '1'
 
           - script: |
               sudo apt-get update
@@ -95,6 +97,8 @@ jobs:
             displayName: 'Build teamsjs SSR test app'
             workingDirectory: 'microsoft-teams-library-js'
             condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+            env:
+              NEXT_TELEMETRY_DISABLED: '1'
 
           - bash: >
               pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
@@ -105,6 +109,8 @@ jobs:
             displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
+            env:
+              NEXT_TELEMETRY_DISABLED: '1'
 
           - task: PublishTestResults@2
             inputs:

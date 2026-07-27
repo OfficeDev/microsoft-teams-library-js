@@ -76,6 +76,8 @@ steps:
       script: |
         pnpm build-force-blazor
       workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: DownloadSecureFile@1
     name: localhostRootCertificate

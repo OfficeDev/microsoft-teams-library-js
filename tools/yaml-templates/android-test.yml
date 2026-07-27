@@ -63,6 +63,8 @@ steps:
       script: |
         pnpm build-force-blazor
       workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: Bash@3
     displayName: 'Run sample test app in background'
@@ -70,6 +72,8 @@ steps:
       targetType: inline
       script: 'nohup pnpm start-test-app &'
       workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CodeQL3000Init@0
     inputs:
