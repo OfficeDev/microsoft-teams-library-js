@@ -144,7 +144,7 @@ extends:
           #       condition: succeeded()
           #       inputs:
           #         targetType: inline
-          #         script: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+          #         script: 'pnpm exec tsx tools/cli/runAppsWithE2ETests.ts --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
           #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
           #
           #     - task: PublishTestResults@2
