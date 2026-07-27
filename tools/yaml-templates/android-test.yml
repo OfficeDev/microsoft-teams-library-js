@@ -59,6 +59,22 @@ steps:
     env:
       NEXT_TELEMETRY_DISABLED: '1'
 
+  # Generate nuget.config for the Blazor test app so dotnet restore uses the
+  # CFS-backed ADO feed instead of api.nuget.org (CFSClean compliance).
+  - script: |
+      cat > $(ClientSdkProjectDirectory)/apps/blazor-test-app/nuget.config << 'EOF'
+      <?xml version="1.0" encoding="utf-8"?>
+      <configuration>
+        <packageSources>
+          <clear />
+          <add key="CFS-NuGet" value="https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/nuget/v3/index.json" />
+        </packageSources>
+      </configuration>
+      EOF
+    displayName: 'Generate Blazor nuget.config (CFS feed only)'
+
+  - task: NuGetAuthenticate@1
+
   - task: CmdLine@2
     displayName: 'Build client sdk'
     inputs:
