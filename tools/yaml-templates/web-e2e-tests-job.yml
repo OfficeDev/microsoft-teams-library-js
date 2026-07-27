@@ -101,7 +101,7 @@ jobs:
               NEXT_TELEMETRY_DISABLED: '1'
 
           - bash: >
-              pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
+              pnpm exec tsx tools/cli/runAppsWithE2ETests.ts
               --useDataFromLocal=true
               --testPrefixPattern "${{testPrefixPattern}}"
               --envType=${{ variables.envType }}

@@ -84,7 +84,7 @@ jobs:
           # Blazor, Orange, SSR), running the suite for the requested
           # shard, and tearing down on completion.
           - bash: |
-              pnpm exec ts-node tools/cli/runPlaywrightE2ETests.ts \
+              pnpm exec tsx tools/cli/runPlaywrightE2ETests.ts \
                 --useDataFromLocal=true \
                 --targetClientSdkCheckpoint "${{ parameters.versionBranch }}" \
                 --reportFileName "e2e-playwright-report-shard-${{ shardIndex }}" \
