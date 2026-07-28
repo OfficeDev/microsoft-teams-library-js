@@ -82,6 +82,18 @@ steps:
         if exist apps\blazor-test-app\obj rmdir /s /q apps\blazor-test-app\obj
         if exist apps\blazor-test-app\bin rmdir /s /q apps\blazor-test-app\bin
 
+  # Restore NuGet packages as a direct pipeline task so that
+  # NuGetAuthenticate@1 credentials are reliably inherited.
+  # Running dotnet restore through pnpm/node causes the credential
+  # provider plugin to crash (exit code -1) in some agent environments.
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore Blazor NuGet packages'
+    inputs:
+      command: 'restore'
+      projects: 'apps\blazor-test-app\Blazor-Test-App.csproj'
+      feedsToUse: 'config'
+      nugetConfigPath: 'apps\blazor-test-app\nuget.config'
+
   - task: CmdLine@2
     displayName: 'pnpm build'
     inputs:

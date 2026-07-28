@@ -88,6 +88,14 @@ steps:
 
   - task: NuGetAuthenticate@1
 
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore Blazor NuGet packages'
+    inputs:
+      command: 'restore'
+      projects: '$(ClientSdkProjectDirectory)/apps/blazor-test-app/Blazor-Test-App.csproj'
+      feedsToUse: 'config'
+      nugetConfigPath: '$(ClientSdkProjectDirectory)/apps/blazor-test-app/nuget.config'
+
   - task: CmdLine@2
     displayName: 'Build client sdk'
     inputs:
