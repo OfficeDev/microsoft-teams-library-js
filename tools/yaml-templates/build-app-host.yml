@@ -85,6 +85,7 @@ steps:
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
     env:
       NEXT_TELEMETRY_DISABLED: '1'
+      SIZE_LIMIT_FAKE_TIME: '1'
 
   - script: |
       pnpm install
@@ -117,6 +118,7 @@ steps:
     workingDirectory: '$(ClientSdkProjectDirectory)'
     env:
       NEXT_TELEMETRY_DISABLED: '1'
+      SIZE_LIMIT_FAKE_TIME: '1'
 
   - task: CmdLine@2
     displayName: 'Configure host machine'

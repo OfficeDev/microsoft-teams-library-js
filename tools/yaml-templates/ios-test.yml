@@ -96,6 +96,7 @@ steps:
       workingDirectory: '$(ClientSdkProjectDirectory)'
     env:
       NEXT_TELEMETRY_DISABLED: '1'
+      SIZE_LIMIT_FAKE_TIME: '1'
 
   - task: DownloadSecureFile@1
     name: localhostRootCertificate

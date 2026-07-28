@@ -89,6 +89,7 @@ steps:
         pnpm build-force-blazor
     env:
       NEXT_TELEMETRY_DISABLED: '1'
+      SIZE_LIMIT_FAKE_TIME: '1'
 
   - task: CmdLine@2
     displayName: 'pnpm test'

@@ -83,6 +83,7 @@ steps:
       workingDirectory: '$(ClientSdkProjectDirectory)'
     env:
       NEXT_TELEMETRY_DISABLED: '1'
+      SIZE_LIMIT_FAKE_TIME: '1'
 
   - task: Bash@3
     displayName: 'Run sample test app in background'
