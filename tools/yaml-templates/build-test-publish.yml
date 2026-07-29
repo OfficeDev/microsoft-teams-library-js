@@ -4,6 +4,15 @@ steps:
     inputs:
       versionSpec: '18.x'
 
+  # Pin a security-patched .NET SDK so the Blazor test app builds against a
+  # non-vulnerable SDK regardless of the agent image default. Must satisfy the
+  # floor in apps/blazor-test-app/global.json.
+  - task: UseDotNet@2
+    displayName: 'Install .NET SDK 10.0.302 (security-patched)'
+    inputs:
+      packageType: sdk
+      version: '10.0.302'
+
   - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
