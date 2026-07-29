@@ -1038,6 +1038,13 @@ export interface ResumeContext {
    * The content URL that is requested to be loaded
    */
   contentUrl: URL;
+
+  /**
+   * The developer-defined unique ID for the sub-page to navigate to within the entity. This field is
+   * populated from the `subEntityId` parameter of the deep link that triggered the app load/resume.
+   * It corresponds to {@link app.PageInfo.subPageId | app.Context.page.subPageId}.
+   */
+  subPageId?: string;
 }
 
 /**
@@ -1054,6 +1061,12 @@ export interface LoadContext {
    * The content URL that is requested to be loaded
    */
   contentUrl: string;
+
+  /**
+   * The developer-defined unique ID for the sub-entity to navigate to within the entity.
+   * Since {@link LoadContext} is deprecated, please use {@link ResumeContext.subPageId} instead.
+   */
+  subEntityId?: string;
 }
 
 /** Represents information about a frame within a tab or dialog module. */

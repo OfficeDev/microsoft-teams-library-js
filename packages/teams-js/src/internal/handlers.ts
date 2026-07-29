@@ -268,6 +268,7 @@ function convertToResumeContext(context: LoadContext): ResumeContext {
   return {
     entityId: context.entityId,
     contentUrl: new URL(context.contentUrl),
+    ...(context.subEntityId !== undefined && { subPageId: context.subEntityId }),
   };
 }
 
