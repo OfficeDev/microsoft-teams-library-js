@@ -80,7 +80,7 @@ jobs:
             displayName: 'Ensure .NET HTTPS dev certificate for Blazor'
 
           - script: |
-              npx playwright install --with-deps chromium
+              pnpm exec playwright install --with-deps chromium
             displayName: 'Install Playwright browsers'
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
