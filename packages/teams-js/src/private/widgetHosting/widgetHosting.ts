@@ -33,6 +33,12 @@ export function isSupported(): boolean {
   return ensureInitialized(runtime) && !!runtime.supports.widgetHosting;
 }
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ * @beta
+ */
 export async function callTool(widgetId: string, input: IToolInput): Promise<IToolOutput> {
   ensureInitializeCalled();
   widgetHostingLogger('Calling tool with widgetId and input: ', { widgetId, input });
@@ -172,7 +178,12 @@ export function openExternal(widgetId: string, payload: { href: string }): void 
   );
 }
 
-/** Modal close handler function type */
+/**
+ * @hidden
+ * Modal close handler function type
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export type ModalCloseHandlerType = (modalId: string) => void;
 
 /**

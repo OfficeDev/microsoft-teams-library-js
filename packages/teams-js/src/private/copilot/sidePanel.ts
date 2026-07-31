@@ -108,7 +108,12 @@ export async function preCheckUserConsent(request?: UserConsentRequest): Promise
   );
 }
 
-/** Register user action content select handler function type */
+/**
+ * @hidden
+ * Register user action content select handler function type
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export type userActionHandlerType = (selectedContent: Content) => void;
 /**
  * @hidden

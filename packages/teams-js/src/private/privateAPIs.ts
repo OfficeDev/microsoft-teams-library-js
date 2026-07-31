@@ -10,6 +10,8 @@ import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { FilePreviewParameters, UserSettingTypes } from './interfaces';
 
+const privateAPIsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 /**
  * @hidden
  * Upload a custom App manifest directly to both team and personal scopes.
@@ -17,11 +19,7 @@ import { FilePreviewParameters, UserSettingTypes } from './interfaces';
  *
  * @internal
  * Limited to Microsoft-internal use
- *
- * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
-const privateAPIsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
-
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(runtime);
 
