@@ -69,7 +69,7 @@ class SerializableHostEntityId implements ISerializable {
 
 /**
  * @hidden
- * Represents information about a tab instance associated with a host entity like chat, channel or meeting. Cab be a configurable tab or static tab.
+ * Represents information about a tab instance associated with a host entity like chat, channel or meeting. Can be a configurable tab or static tab.
  * @internal
  * Limited to Microsoft-internal use
  */
