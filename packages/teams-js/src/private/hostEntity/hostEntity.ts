@@ -12,6 +12,11 @@ import { ensureInitialized } from '../../internal/internalAPIs';
 import { runtime } from '../../public/runtime';
 import * as tab from './tab';
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export enum AppTypes {
   edu = 'EDU',
   /**
@@ -32,14 +37,20 @@ interface TeamsEntityId {
 }
 
 /**
+ * @hidden
  * Id of message in which channel meeting is created
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export interface TeamsChannelMeetingEntityIds extends TeamsEntityId {
   parentMessageId: string;
 }
 
 /**
+ * @hidden
  * Id of the host entity
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export type HostEntityIds = TeamsEntityId | TeamsChannelMeetingEntityIds;
 

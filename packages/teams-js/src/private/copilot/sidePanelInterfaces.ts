@@ -65,7 +65,12 @@ export interface DraftEmailContent extends BaseEmailContent {
   composeType?: 'new' | 'reply' | 'replyAll' | 'forward'; // Type of compose action
 }
 
-// Union type for usage elsewhere
+/**
+ * @hidden
+ * Union type for usage elsewhere
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export type EmailContent = ServerEmailContent | DraftEmailContent;
 
 /**

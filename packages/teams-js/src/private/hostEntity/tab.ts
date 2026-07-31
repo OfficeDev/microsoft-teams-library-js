@@ -24,14 +24,20 @@ import { AppTypes, HostEntityIds, isSupported as isHostEntitySupported } from '.
 const hostEntityTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
+ * @hidden
  * Represents information about a static tab instance
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export interface StaticTabInstance extends TabInstance {
   tabType: 'StaticTab';
 }
 
 /**
+ * @hidden
  * Represents information about a configurable tab instance
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export interface ConfigurableTabInstance extends TabInstance {
   tabType: 'ConfigurableTab';
@@ -62,7 +68,10 @@ class SerializableHostEntityId implements ISerializable {
 }
 
 /**
+ * @hidden
  * Represents information about a tab instance associated with a host entity like chat, channel or meeting. Cab be a configurable tab or static tab.
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export type HostEntityTabInstance = StaticTabInstance | ConfigurableTabInstance;
 
@@ -83,7 +92,10 @@ class SerializableHostEntityTabInstance implements ISerializable {
 }
 
 /**
+ * @hidden
  * Represents all tabs associated with a host entity like chat, channel or meeting
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export interface HostEntityTabInstances {
   allTabs: HostEntityTabInstance[];

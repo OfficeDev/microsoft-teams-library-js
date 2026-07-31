@@ -20,6 +20,11 @@ import * as fullTrust from './fullTrust/fullTrust';
  */
 const teamsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export enum ChannelType {
   Regular = 0,
   Private = 1,
