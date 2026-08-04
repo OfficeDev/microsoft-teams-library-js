@@ -10,7 +10,7 @@
 #   * mkcert / SSR cert / SSR app build are done unconditionally for every
 #     shard (Playwright distributes tests across shards randomly, so any
 #     shard could run an SSR test).
-#   * `npx playwright install --with-deps chromium` installs the Playwright
+#   * `pnpm exec playwright install --with-deps chromium` installs the Playwright
 #     browser; this isn't needed for Cypress.
 #   * dotnet HTTPS dev cert is initialized for the Blazor test app.
 

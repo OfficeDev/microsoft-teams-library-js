@@ -62,14 +62,6 @@ steps:
     inputs:
       workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
 
-  - script: |
-      echo "=== App Hosting SDK .npmrc ==="
-      cat .npmrc
-      echo "=== pnpm effective registry ==="
-      pnpm config get registry
-    displayName: 'Debug: verify app hosting sdk registry config'
-    workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
   # Install dependencies, skipping Cypress's postinstall binary download.
   # CYPRESS_INSTALL_BINARY is set via the step env (not a bare shell assignment)
   # so that it is exported to the pnpm child process.
@@ -94,14 +86,6 @@ steps:
     env:
       NEXT_TELEMETRY_DISABLED: '1'
       SIZE_LIMIT_FAKE_TIME: '1'
-
-  - script: |
-      echo "=== Client SDK .npmrc ==="
-      cat .npmrc
-      echo "=== pnpm effective registry ==="
-      pnpm config get registry
-    displayName: 'Debug: verify client sdk registry config'
-    workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - script: |
       pnpm install --frozen-lockfile
