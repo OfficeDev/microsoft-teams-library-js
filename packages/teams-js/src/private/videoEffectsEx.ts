@@ -28,6 +28,11 @@ import * as videoEffects from '../public/videoEffects';
  */
 const videoEffectsExTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export const frameProcessingTimeoutInMs = 2000;
 
 const videoPerformanceMonitor = inServerSideRenderingEnvironment()

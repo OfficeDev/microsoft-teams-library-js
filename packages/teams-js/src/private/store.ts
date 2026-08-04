@@ -191,6 +191,7 @@ export async function openSpecificStore(params: OpenSpecificStoreParams): Promis
 }
 
 /**
+ * @hidden
  * Checks if the store capability is supported by the host
  * @returns boolean to represent whether the store capability is supported
  *

@@ -1,13 +1,35 @@
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { RenderingSurfaces } from '../../public';
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface ISecurityPolicy {
   connectDomains?: string[];
   resourceDomains?: string[];
   isTrusted?: boolean;
 }
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export type Theme = 'light' | 'dark';
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export type SafeAreaInsets = {
   top: number;
   bottom: number;
@@ -15,12 +37,27 @@ export type SafeAreaInsets = {
   right: number;
 };
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export type SafeArea = {
   insets: SafeAreaInsets;
 };
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export type DeviceType = 'mobile' | 'tablet' | 'desktop' | 'unknown';
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export type UserAgent = {
   device: { type: DeviceType };
   capabilities: {
@@ -30,7 +67,10 @@ export type UserAgent = {
 };
 
 /**
+ * @hidden
  * Options for requesting a modal dialog
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export interface IModalOptions {
   /** Unique identifier for the modal */
@@ -46,26 +86,52 @@ export interface IModalOptions {
 }
 
 /**
+ * @hidden
  * Response from requesting a modal dialog
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export interface IModalResponse {
   /** A DOM element representing the modal's root */
   modalElement: HTMLElement;
 }
 
-/** Declare generic JSON - serializable structure */
+/**
+ * @hidden
+ * Declare generic JSON - serializable structure
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface JSONObject {
   [key: string]: JSONValue;
 }
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface JSONArray extends Array<JSONValue> {}
 
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export type JSONValue = string | number | boolean | null | JSONObject | JSONArray;
 
-/** Display mode */
+/**
+ * @hidden
+ * Display mode
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export type DisplayMode = 'pip' | 'inline' | 'fullscreen';
 
 /**
+ * @hidden
  * MCP-compatible tool input structure following OpenAI MCP server specification
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export interface IToolInput {
   /** The name of the tool to call */
@@ -75,7 +141,10 @@ export interface IToolInput {
 }
 
 /**
+ * @hidden
  * MCP-compatible tool output structure matching exact MCP schema
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export interface IToolOutput {
   /** Whether the tool call resulted in an error */
@@ -107,7 +176,10 @@ export interface IToolOutput {
 }
 
 /**
+ * @hidden
  * Widget context similar to IWidgetHost structure - simplified for widget rendering
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export interface IWidgetContext {
   /** Unique identifier for the widget instance */

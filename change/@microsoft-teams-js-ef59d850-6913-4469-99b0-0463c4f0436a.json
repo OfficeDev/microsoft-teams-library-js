@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Add missing @hidden tags to private teams-js APIs to prevent them from leaking into public docs",
+  "packageName": "@microsoft/teams-js",
+  "email": "joshlai@microsoft.com",
+  "dependentChangeType": "patch"
+}
