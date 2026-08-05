@@ -138,6 +138,7 @@ export function notifyInstallCompleted(appId: AppId): Promise<void> {
 }
 
 /**
+ * @hidden
  * Checks if the otherAppStateChange capability is supported by the host
  * @returns boolean to represent whether the otherAppStateChange capability is supported
  *

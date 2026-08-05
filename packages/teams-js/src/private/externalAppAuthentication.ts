@@ -323,6 +323,12 @@ export type ComposeResultTypes = 'auth' | 'config' | 'message' | 'result' | 'sil
 /*********** END RESPONSE TYPE ************/
 
 /*********** BEGIN ERROR TYPE ***********/
+/**
+ * @hidden
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface InvokeError {
   errorCode: InvokeErrorCode;
   message?: string;
@@ -668,6 +674,12 @@ export interface ConnectorParameters {
   windowParameters?: OauthWindowProperties;
 }
 
+/**
+ * @hidden
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export class SerializableConnectorParameters implements ISerializable {
   public constructor(private param: ConnectorParameters) {}
 
