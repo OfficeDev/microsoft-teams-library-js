@@ -1,8 +1,20 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 15 Jul 2026 20:17:53 GMT and should not be manually modified. -->
+<!-- This log was last generated on Wed, 05 Aug 2026 18:17:09 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.55.0
+
+Wed, 05 Aug 2026 18:17:09 GMT
+
+### Minor changes
+
+- Add getImmediateParentOrigin helper function
+
+### Patches
+
+- Add missing @hidden tags to private teams-js APIs to prevent them from leaking into public docs
 
 ## 2.54.0
 
