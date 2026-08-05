@@ -64,6 +64,7 @@ describe('contextualSearch', () => {
     it('should throw when contextual search is not supported', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+      expect.assertions(1);
       try {
         contextualSearch.openContextualSearch();
       } catch (e) {
@@ -130,6 +131,7 @@ describe('contextualSearch', () => {
     it('should throw when contextual search is not supported', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+      expect.assertions(1);
       try {
         contextualSearch.closeContextualSearch();
       } catch (e) {
@@ -169,6 +171,7 @@ describe('contextualSearch', () => {
     it('should throw when contextual search is not supported', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+      expect.assertions(1);
 
       try {
         contextualSearch.registerOnContextualSearchOpenedHandler(() => {});
@@ -209,6 +212,7 @@ describe('contextualSearch', () => {
     });
 
     it('should throw when contextual search is not supported', async () => {
+      expect.assertions(1);
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
 
