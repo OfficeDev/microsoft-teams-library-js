@@ -35,7 +35,7 @@ steps:
     displayName: 'Configure CFS npm registry'
     inputs:
       script: |
-        echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> $(ClientSdkProjectDirectory)/.npmrc
+        printf '\nregistry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/\n' >> $(ClientSdkProjectDirectory)/.npmrc
         echo "always-auth=true" >> $(ClientSdkProjectDirectory)/.npmrc
 
   - task: npmAuthenticate@0

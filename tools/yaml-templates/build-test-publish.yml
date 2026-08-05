@@ -13,7 +13,7 @@ steps:
       targetType: inline
       script: |
         $npmrc = Join-Path "$(Build.SourcesDirectory)" ".npmrc"
-        Add-Content -Path $npmrc -Value "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/"
+        Add-Content -Path $npmrc -Value "`nregistry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/"
         Add-Content -Path $npmrc -Value "always-auth=true"
 
   - task: npmAuthenticate@0

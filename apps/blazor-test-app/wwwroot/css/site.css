@@ -75,3 +75,21 @@ code {
     border-radius: 3px;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
 }
+
+/* Loading indicator used by Loading.razor and Welcome.razor. Replaces the
+   FluentProgressRing that was removed to drop the external Fluent UI dependency.
+   Uses the Teams accent color (#6264A7) the ring previously conveyed. */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(98, 100, 167, 0.2);
+    border-top-color: #6264A7;
+    border-radius: 50%;
+    animation: spinner-rotate 0.9s linear infinite;
+}
+
+@keyframes spinner-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}

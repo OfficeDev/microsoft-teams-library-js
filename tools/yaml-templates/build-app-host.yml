@@ -37,7 +37,7 @@ steps:
   # Configure and authenticate the CFS-backed npm feed before installing pnpm
   # to avoid public-registry access in isolated (CFSClean) pipelines.
   - script: |
-      echo "registry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" >> .npmrc
+      printf '\nregistry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/\n' >> .npmrc
       echo "always-auth=true" >> .npmrc
     displayName: 'Configure CFS-compliant npm registry for client sdk'
     workingDirectory: '$(ClientSdkProjectDirectory)'

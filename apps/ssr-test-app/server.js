@@ -3,13 +3,17 @@ const next = require('next');
 const fs = require('fs');
 const path = require('path');
 
-// Serve the production build when one exists (CI E2E runs `next build` first).
-// Running the Next.js dev server instead would trigger its dev-mode version
-// check, which fetches https://registry.npmjs.org/-/package/next/dist-tags and
-// violates CFSClean network isolation. Fall back to dev mode for local,
-// build-free usage.
+// The Next.js dev server fetches registry.npmjs.org for a version check, which
+// violates CFSClean network isolation — so CI E2E must run in production mode.
+// The E2E runner builds this app first and spawns the server with a stripped
+// environment (only PATH), so we detect the build on disk rather than via an
+// env var. Local dev keeps HMR by default; override with NEXT_FORCE_DEV=1 or
+// NEXT_USE_PROD_BUILD=1.
 const hasProductionBuild = fs.existsSync(path.join(__dirname, '.next', 'BUILD_ID'));
-const dev = process.env.NODE_ENV !== 'production' && !hasProductionBuild;
+const forceDev = process.env.NEXT_FORCE_DEV === '1';
+const forceProd = process.env.NODE_ENV === 'production' || process.env.NEXT_USE_PROD_BUILD === '1';
+const dev = forceDev || (!forceProd && !hasProductionBuild);
+
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
