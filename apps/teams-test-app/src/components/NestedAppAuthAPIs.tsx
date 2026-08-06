@@ -258,7 +258,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
           return JSON.stringify(result);
         },
       },
-      defaultInput: JSON.stringify(['https://contoso.com']),
+      defaultInput: JSON.stringify(['https://microsoft.com']),
     });
 
   const DeleteTrustedOrigin = (): React.ReactElement =>
@@ -276,7 +276,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
           return JSON.stringify(result);
         },
       },
-      defaultInput: JSON.stringify(['https://contoso.com']),
+      defaultInput: JSON.stringify(['https://microsoft.com']),
     });
 
   return (
