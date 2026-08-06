@@ -18,8 +18,57 @@ export interface FailureSuccessTestPageProps {
 // Add ?withMessage=true to the URL to include a message in notifyFailure
 // Second POST request will trigger notifySuccess
 
-// Track the number of POST requests received
-let postRequestCount = 0;
+// Track POST requests per app session rather than per server process.
+//
+// A single module-level counter is shared by every request this page ever
+// serves, and four tab definitions point at this same page (plain, customInit,
+// withMessage, and both), so tests observe each other's state. Because the count
+// resets on every second request, the behaviour is parity-dependent: an even
+// count yields notifyFailure, an odd one yields notifySuccess. Any extra POST --
+// a Cypress retry, a host-initiated reload, a refresh -- flips that parity, and
+// the next test then sees notifySuccess where it asserts notifyFailure. It
+// passes again on the following attempt, which is what makes it look flaky
+// rather than broken.
+//
+// The app session id is the correct scope. The host regenerates it when the app,
+// entity or frame context changes, so a page load or tab switch starts a fresh
+// count, while the notifyFailure -> reload -> notifySuccess cycle keeps the same
+// one, which is the sequence this counter exists to track.
+const postRequestCountBySession = new Map<string, number>();
+
+// This server outlives many test runs, so the map is bounded. Entries are only a
+// small integer each, and the oldest session is always the least interesting.
+const maxTrackedSessions = 100;
+
+// Used when the session id cannot be read. Falls back to the previous shared
+// behaviour rather than failing the request, so a body shape change degrades to
+// today's semantics instead of breaking the page.
+const fallbackSessionKey = 'unknown-session';
+
+function getSessionKey(postBody: string): string {
+  try {
+    const parsedBody = JSON.parse(postBody);
+    const sessionId = parsedBody?.hostContext?.appSessionId;
+    return typeof sessionId === 'string' && sessionId.length > 0 ? sessionId : fallbackSessionKey;
+  } catch {
+    return fallbackSessionKey;
+  }
+}
+
+function nextPostCountForSession(sessionKey: string): number {
+  const currentCount = postRequestCountBySession.get(sessionKey) ?? 0;
+  postRequestCountBySession.set(sessionKey, currentCount + 1);
+
+  if (postRequestCountBySession.size > maxTrackedSessions) {
+    // Map preserves insertion order, so the first key is the oldest session.
+    const oldestSessionKey = postRequestCountBySession.keys().next().value;
+    if (oldestSessionKey !== undefined && oldestSessionKey !== sessionKey) {
+      postRequestCountBySession.delete(oldestSessionKey);
+    }
+  }
+
+  return currentCount;
+}
 
 export default function FailureSuccessTestPage(props: FailureSuccessTestPageProps): ReactElement {
   const [teamsContext, setTeamsContext] = useState({});
@@ -81,14 +130,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
   const withMessage = query.withMessage === 'true';
 
   if (req.method === 'POST') {
-    const currentCount = postRequestCount;
-    postRequestCount++;
     const postBody = await parseBody(req);
-
-    // Reset counter after the second request
-    if (postRequestCount >= 2) {
-      postRequestCount = 0;
-    }
+    // Read the body first: the session key comes out of it, and the count has to
+    // be scoped to that session rather than to this server process.
+    const currentCount = nextPostCountForSession(getSessionKey(postBody));
 
     return {
       props: {
