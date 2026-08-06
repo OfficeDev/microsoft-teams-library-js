@@ -7,8 +7,8 @@
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
       "platformsExcluded": ["iOS"],
-      "inputValue": "https://bing.com",
-      "expectedWindowOpenTarget": "https://bing.com"
+      "inputValue": "https://example.invalid",
+      "expectedWindowOpenTarget": "https://example.invalid"
     },
     {
       "title": "openLink startCall API Call - Success",
@@ -90,8 +90,8 @@
       "title": "openLink appLink domain doesn't match API Call - executeDeepLink called",
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
-      "inputValue": "https://microsoft.com/l/entity/testAppId/tasklist123",
-      "expectedWindowOpenTarget": "https://microsoft.com/l/entity/testAppId/tasklist123",
+      "inputValue": "https://example.invalid/l/entity/testAppId/tasklist123",
+      "expectedWindowOpenTarget": "https://example.invalid/l/entity/testAppId/tasklist123",
       "expectedTestAppValue": "Completed"
     }
   ]
