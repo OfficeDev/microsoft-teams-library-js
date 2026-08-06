@@ -36,8 +36,8 @@ export interface FailureSuccessTestPageProps {
 // one, which is the sequence this counter exists to track.
 const postRequestCountBySession = new Map<string, number>();
 
-// This server outlives many test runs, so the map is bounded. Entries are only a
-// small integer each, and the oldest session is always the least interesting.
+// This server outlives many test runs, so the map is bounded, evicting the least
+// recently used session. Entries are one small integer each.
 const maxTrackedSessions = 100;
 
 // Used when the session id cannot be read. Falls back to the previous shared
@@ -57,14 +57,26 @@ function getSessionKey(postBody: string): string {
 
 function nextPostCountForSession(sessionKey: string): number {
   const currentCount = postRequestCountBySession.get(sessionKey) ?? 0;
+
+  // Delete before setting so the key moves to the end of the iteration order.
+  // Map#set does not reorder an existing key, so without this an active session
+  // that happened to be inserted first would stay the "oldest" forever and be
+  // evicted while still in use.
+  postRequestCountBySession.delete(sessionKey);
   postRequestCountBySession.set(sessionKey, currentCount + 1);
 
-  if (postRequestCountBySession.size > maxTrackedSessions) {
-    // Map preserves insertion order, so the first key is the oldest session.
-    const oldestSessionKey = postRequestCountBySession.keys().next().value;
-    if (oldestSessionKey !== undefined && oldestSessionKey !== sessionKey) {
-      postRequestCountBySession.delete(oldestSessionKey);
+  // Evict until the bound holds rather than once per call. A single conditional
+  // delete cannot recover if the map is ever more than one entry over, and the
+  // loop also makes the intent explicit.
+  while (postRequestCountBySession.size > maxTrackedSessions) {
+    const leastRecentlyUsedKey = postRequestCountBySession.keys().next().value;
+    // The key just written is now last, so it can only be first when it is the
+    // only entry -- which cannot exceed the bound. Guard anyway: deleting the
+    // current key would discard the count this request depends on.
+    if (leastRecentlyUsedKey === undefined || leastRecentlyUsedKey === sessionKey) {
+      break;
     }
+    postRequestCountBySession.delete(leastRecentlyUsedKey);
   }
 
   return currentCount;
