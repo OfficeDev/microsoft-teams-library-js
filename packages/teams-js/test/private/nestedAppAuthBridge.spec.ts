@@ -18,7 +18,7 @@ type MockWindow = {
 
 describe('NestedAppAuthBridge', () => {
   let mockWindow: MockWindow;
-  const mockOrigin = 'https://contoso.com';
+  const mockOrigin = 'https://microsoft.com';
 
   beforeEach(() => {
     mockWindow = {
@@ -170,7 +170,7 @@ describe('NestedAppAuthBridge', () => {
 
   it('should not process message if origin is not HTTPS', () => {
     // Setup
-    nestedAppAuthBridge.initialize(mockWindow as unknown as Window, 'https://contoso.com');
+    nestedAppAuthBridge.initialize(mockWindow as unknown as Window, 'https://microsoft.com');
     const bridge = mockWindow.nestedAppAuthBridge as NestedAppAuthBridge;
     const callback = jest.fn();
     bridge.addEventListener('message', callback);
@@ -181,7 +181,7 @@ describe('NestedAppAuthBridge', () => {
     // Fire the event with a valid structure but non-HTTPS origin
     const msg = {
       // eslint-disable-next-line @microsoft/sdl/no-insecure-url
-      origin: 'http://contoso.com',
+      origin: 'http://microsoft.com',
       source: mockWindow.top,
       data: {
         args: [null, JSON.stringify({ messageType: 'NestedAppAuthResponse' })],

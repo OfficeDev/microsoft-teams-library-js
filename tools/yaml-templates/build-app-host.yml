@@ -34,11 +34,29 @@ steps:
       path: $(Pipeline.Workspace)/.pnpm-store
     displayName: Cache client sdk node_modules pnpm
 
+  # Configure and authenticate the CFS-backed npm feed before installing pnpm
+  # to avoid public-registry access in isolated (CFSClean) pipelines.
   - script: |
-      corepack enable
-      corepack prepare pnpm@9.0.6 --activate
+      printf '\nregistry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/\n' >> .npmrc
+      echo "always-auth=true" >> .npmrc
+    displayName: 'Configure CFS-compliant npm registry for client sdk'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
+  - script: |
+      npm install -g pnpm@9.15.9 --registry "https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/" --globalconfig "$(ClientSdkProjectDirectory)/.npmrc"
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
+
+  - script: |
+      sed -i '/^registry=/d' .npmrc
+      printf '\nregistry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/\n' >> .npmrc
+      echo "always-auth=true" >> .npmrc
+    displayName: 'Configure CFS-compliant npm registry for app hosting sdk'
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
   - task: npmAuthenticate@0
     inputs:
@@ -55,6 +73,7 @@ steps:
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
     env:
       CYPRESS_INSTALL_BINARY: '0'
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CodeQL3000Init@0
     inputs:
@@ -64,16 +83,51 @@ steps:
       pnpm build
     displayName: 'Build app hosting sdk'
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      SIZE_LIMIT_FAKE_TIME: '1'
 
   - script: |
-      pnpm install
+      pnpm install --frozen-lockfile
     displayName: 'Install client sdk dependencies'
     workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      CYPRESS_INSTALL_BINARY: '0'
+      NEXT_TELEMETRY_DISABLED: '1'
+
+  # Generate nuget.config for the Blazor test app at pipeline time so that:
+  # 1. dotnet restore uses the CFS-backed ADO feed (CFSClean compliant)
+  # 2. The file is NOT committed to the repo (avoids SSCA CFS0013 scanner errors
+  #    and allows external contributors to build without it using default nuget.org)
+  - script: |
+      cat > $(ClientSdkProjectDirectory)/apps/blazor-test-app/nuget.config << 'EOF'
+      <?xml version="1.0" encoding="utf-8"?>
+      <configuration>
+        <packageSources>
+          <clear />
+          <add key="CFS-NuGet" value="https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/nuget/v3/index.json" />
+        </packageSources>
+      </configuration>
+      EOF
+    displayName: 'Generate Blazor nuget.config (CFS feed only)'
+
+  - task: NuGetAuthenticate@1
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore Blazor NuGet packages'
+    inputs:
+      command: 'restore'
+      projects: '$(ClientSdkProjectDirectory)/apps/blazor-test-app/Blazor-Test-App.csproj'
+      feedsToUse: 'config'
+      nugetConfigPath: '$(ClientSdkProjectDirectory)/apps/blazor-test-app/nuget.config'
 
   - script: |
       pnpm build-force-blazor
     displayName: 'Build client sdk'
     workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      SIZE_LIMIT_FAKE_TIME: '1'
 
   - task: CmdLine@2
     displayName: 'Configure host machine'
@@ -82,6 +136,8 @@ steps:
         sudo chmod -R 755 ./ 
         pnpm run setup
       workingDirectory: '$(AppHostingSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CodeQL3000Finalize@0
     condition: always()
