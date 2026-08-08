@@ -37,6 +37,7 @@ interface IRuntimeV1 extends IBaseRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly contextualSearch?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly bot?: {};
@@ -93,6 +94,7 @@ interface IRuntimeV2 extends IBaseRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly contextualSearch?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly card?: {
@@ -158,6 +160,7 @@ interface IRuntimeV3 extends IBaseRuntime {
     readonly call?: {};
     readonly chat?: {};
     readonly clipboard?: {};
+    readonly contextualSearch?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly card?: {
@@ -236,6 +239,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly call?: {};
     readonly chat?: {};
     readonly clipboard?: {};
+    readonly contextualSearch?: {};
     readonly conversations?: {};
     readonly copilot?: {
       readonly customTelemetry?: {};
@@ -388,6 +392,7 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
     appEntity: {},
     call: {},
     chat: {},
+    contextualSearch: {},
     conversations: {},
     dialog: {
       card: {
