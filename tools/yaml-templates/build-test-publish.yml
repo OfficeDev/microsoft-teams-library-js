@@ -15,6 +15,9 @@ steps:
         $npmrc = Join-Path "$(Build.SourcesDirectory)" ".npmrc"
         Add-Content -Path $npmrc -Value "`nregistry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/"
         Add-Content -Path $npmrc -Value "always-auth=true"
+        # Disable npm/pnpm update-notifier so package managers don't phone home to
+        # registry.npmjs.org to check for newer versions (CFSClean network violation).
+        Add-Content -Path $npmrc -Value "update-notifier=false"
 
   - task: npmAuthenticate@0
     inputs:
@@ -26,6 +29,12 @@ steps:
       script: |
         npm install -g pnpm@9.15.9 --globalconfig "$(Build.SourcesDirectory)/.npmrc"
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+    env:
+      # npm spawns a detached update-check child that re-resolves config outside the
+      # sources dir (ignoring --globalconfig/.npmrc) and defaults to registry.npmjs.org.
+      # This env var is inherited by that child and suppresses the check.
+      NPM_CONFIG_UPDATE_NOTIFIER: 'false'
+      NO_UPDATE_NOTIFIER: '1'
 
   - task: CmdLine@2
     displayName: 'Install repo dependencies'

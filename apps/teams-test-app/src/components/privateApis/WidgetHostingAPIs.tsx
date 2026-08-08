@@ -189,7 +189,7 @@ const WidgetHostingAPIs = (): ReactElement => {
       },
       defaultInput: JSON.stringify({
         widgetId: 'widget-123',
-        href: 'https://www.microsoft.com',
+        href: 'https://example.invalid',
       }),
     });
 
