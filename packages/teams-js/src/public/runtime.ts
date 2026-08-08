@@ -235,7 +235,15 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
-    readonly clipboard?: {};
+    readonly clipboard?: {
+      /**
+       * When present, the host supports reading the clipboard natively in the app
+       * frame (via `navigator.clipboard`) gated by the `clipboard-read` device
+       * permission, instead of the legacy host-proxied `clipboard.readFromClipboard`
+       * path. Absent on older hosts, which fall back to the proxied path.
+       */
+      readonly native?: {};
+    };
     readonly conversations?: {};
     readonly copilot?: {
       readonly customTelemetry?: {};
