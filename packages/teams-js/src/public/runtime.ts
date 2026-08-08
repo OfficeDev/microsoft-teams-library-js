@@ -45,6 +45,7 @@ interface IRuntimeV1 extends IBaseRuntime {
     readonly geoLocation?: {
       readonly map?: {};
     };
+    readonly intune?: {};
     readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};
@@ -107,6 +108,7 @@ interface IRuntimeV2 extends IBaseRuntime {
       readonly map?: {};
     };
     readonly interactive?: {};
+    readonly intune?: {};
     readonly secondaryBrowser?: {};
     readonly location?: {};
     readonly logs?: {};
@@ -174,6 +176,7 @@ interface IRuntimeV3 extends IBaseRuntime {
       readonly map?: {};
     };
     readonly interactive?: {};
+    readonly intune?: {};
     readonly secondaryBrowser?: {};
     readonly location?: {};
     readonly logs?: {};
@@ -266,6 +269,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly tab?: {};
     };
     readonly interactive?: {};
+    readonly intune?: {};
     readonly secondaryBrowser?: {};
     readonly location?: {};
     readonly logs?: {};
