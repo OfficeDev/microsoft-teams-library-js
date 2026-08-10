@@ -10,14 +10,13 @@ const path = require('path');
 // network isolation. Production mode (`next({ dev: false })`) never instantiates
 // the hot reloader, so it makes no such request — CI E2E MUST run in production.
 //
-// Local dev keeps HMR by default. CI forces production via NEXT_USE_PROD_BUILD=1
-// (or NODE_ENV=production); the E2E runner spawns this server with a stripped
-// environment (PATH plus that flag), so we cannot rely on detecting CI any other
-// way.
+// Production is therefore the DEFAULT: the E2E runner spawns this server with a
+// stripped environment (only PATH plus a couple of NEXT_* flags), so it cannot
+// be relied on to opt into production, and depending on that has repeatedly let
+// the server fall back to dev and reach the registry. Opt into dev/HMR
+// explicitly with NEXT_FORCE_DEV=1 (local development over HTTPS).
 const buildIdPath = path.join(__dirname, '.next', 'BUILD_ID');
-const forceDev = process.env.NEXT_FORCE_DEV === '1';
-const forceProd = process.env.NODE_ENV === 'production' || process.env.NEXT_USE_PROD_BUILD === '1';
-const dev = forceDev || (!forceProd && !fs.existsSync(buildIdPath));
+const dev = process.env.NEXT_FORCE_DEV === '1';
 
 // A production start requires an on-disk build. The E2E setup builds this app in
 // a separate step, but if that build is missing when we reach here (skipped,
