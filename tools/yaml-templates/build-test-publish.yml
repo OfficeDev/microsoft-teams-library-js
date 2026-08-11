@@ -57,6 +57,13 @@ steps:
     inputs:
       script: 'node prepBetaRelease.cjs'
       workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
+    env:
+      # prepBetaRelease.cjs runs `npm view @microsoft/teams-js` from packages/teams-js,
+      # which has no .npmrc. npm does not walk up to the repo-root .npmrc, so it would
+      # fall back to registry.npmjs.org (a CFSClean network-isolation violation). Point
+      # npm at the root .npmrc (which npmAuthenticate populated with the CFS feed URL and
+      # its auth token) so the version lookup resolves through the CFS-backed ADO feed.
+      NPM_CONFIG_USERCONFIG: '$(Build.SourcesDirectory)\.npmrc'
 
   # Generate nuget.config for the Blazor test app so dotnet restore uses the
   # CFS-backed ADO feed instead of api.nuget.org (CFSClean compliance).
