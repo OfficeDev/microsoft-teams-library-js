@@ -58,8 +58,8 @@
     "@types/msgpack-lite": "^0.1.11",
     "@types/node": "^20.0.0",
     "@types/pako": "^1.0.7",
-    "@types/react": "^17.0.80",
-    "@types/react-dom": "^17.0.25",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
     "@types/webpack": "^4.41.40",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
@@ -135,8 +135,8 @@
       "picomatch": ">=2.3.1,<3.0.0||>=4.0.4",
       "postcss": "8.5.23",
       "qs": "6.15.2",
-      "react-router": "^6.30.4",
-      "react-router-dom": "^6.30.4",
+      "react-router": "^7.18.0",
+      "react-router-dom": "^7.18.0",
       "semver": "^7.5.2",
       "serialize-javascript": "^3.1.0",
       "set-value": "^2.0.1",
@@ -167,7 +167,7 @@
       "uuid": "GHSA-w5hq-g745-h8pq (CVE-2026-41907): uuid v3/v5/v6 do not validate buffer bounds, allowing silent partial writes. Fixed in uuid 11.1.1, 12.0.1, 13.0.1, and 14.0.0. We override to >=11.1.1 <12.0.0 because uuid 11.x is the only patched line that still ships CJS exports (require condition), which our Jest/ts-jest tooling needs. Once our test tooling supports ESM-only packages, we can widen to >=14.0.0.",
       "qs": "CVE-2026-8723: qs versions <=6.15.0 (including the previously pinned 6.14.2) are vulnerable. Fixed in 6.15.2. We pin to 6.15.2 to stay on the latest patched 6.x line.",
       "next": "CVE-2026-44572 (and related CVE-2026-44573/44574/44575/44578/44579, CVE-2026-45109, GHSA-8h8q-6873-q5fj): next 15.5.15 is vulnerable. Override the ssr-test-app dependency to the latest patched 15.5.x (>=15.5.16) line.",
-      "react-router": "CVE-2026-40181: react-router/react-router-dom 6.30.3 is vulnerable. Fixed in 6.30.4. Override the teams-test-app dependency to the patched 6.30.4 line."
+      "react-router": "CVE-2026-40181: react-router/react-router-dom 6.30.3 is vulnerable, fixed in 6.30.4. CVE-2026-53666 and CVE-2026-53669 (GHSA-wrjc-x8rr-h8h6, incomplete fix for CVE-2025-68470 allowing attacker-supplied paths to cause unexpected external navigations) and CVE-2026-53668 (GHSA-jjmj-jmhj-qwj2, open redirect and XSS vectors) have no fix on the 6.x line and are only fixed in 7.18.0. Override the teams-test-app dependency to the patched 7.18.0 line. react-router 7 requires React 18, so teams-test-app was moved to React 18 as part of this change."
     }
   },
   "dependencies": {
