@@ -140,6 +140,7 @@
       "semver": "^7.5.2",
       "serialize-javascript": "^3.1.0",
       "set-value": "^2.0.1",
+      "sharp": ">=0.35.0",
       "socks": "^2.7.3",
       "string_decoder": "^1.3.0",
       "tar": ">=6.2.1",
@@ -167,7 +168,8 @@
       "uuid": "GHSA-w5hq-g745-h8pq (CVE-2026-41907): uuid v3/v5/v6 do not validate buffer bounds, allowing silent partial writes. Fixed in uuid 11.1.1, 12.0.1, 13.0.1, and 14.0.0. We override to >=11.1.1 <12.0.0 because uuid 11.x is the only patched line that still ships CJS exports (require condition), which our Jest/ts-jest tooling needs. Once our test tooling supports ESM-only packages, we can widen to >=14.0.0.",
       "qs": "CVE-2026-8723: qs versions <=6.15.0 (including the previously pinned 6.14.2) are vulnerable. Fixed in 6.15.2. We pin to 6.15.2 to stay on the latest patched 6.x line.",
       "next": "CVE-2026-44572 (and related CVE-2026-44573/44574/44575/44578/44579, CVE-2026-45109, GHSA-8h8q-6873-q5fj): next 15.5.15 is vulnerable. Override the ssr-test-app dependency to the latest patched 15.5.x (>=15.5.16) line.",
-      "react-router": "CVE-2026-40181: react-router/react-router-dom 6.30.3 is vulnerable. Fixed in 6.30.4. Override the teams-test-app dependency to the patched 6.30.4 line."
+      "react-router": "CVE-2026-40181: react-router/react-router-dom 6.30.3 is vulnerable. Fixed in 6.30.4. Override the teams-test-app dependency to the patched 6.30.4 line.",
+      "sharp": "GHSA-f88m-g3jw-g9cj: sharp <0.35.0 bundles vulnerable libvips builds (two High severity CVSSv4 issues). Fixed in sharp 0.35.0, which ships libvips 8.18.x. We consume sharp only as an optional dependency of next (ssr-test-app), so we override to >=0.35.0 until next depends on a patched sharp."
     }
   },
   "dependencies": {
