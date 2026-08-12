@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Add `DevicePermission.ClipboardRead` and clipboard permission telemetry/runtime foundations for the updated clipboard-read architecture (P0, additive; no behavior change)",
+  "packageName": "@microsoft/teams-js",
+  "email": "leahxia@microsoft.com",
+  "dependentChangeType": "patch"
+}
