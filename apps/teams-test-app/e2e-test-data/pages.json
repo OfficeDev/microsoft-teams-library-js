@@ -56,17 +56,17 @@
       "type": "callResponse",
       "version": ">2.0.0-beta.2",
       "boxSelector": "#box_navigateCrossDomain2",
-      "inputValue": "https://teams-test-tab.azurewebsites.net",
-      "expectedIFrameTarget": "https://teams-test-tab.azurewebsites.net"
+      "inputValue": "https://example.invalid",
+      "expectedIFrameTarget": "https://example.invalid"
     },
     {
       "title": "navigateCrossDomain API Call - Success",
       "type": "callResponse",
       "version": "2.0.0-beta.2",
       "boxSelector": "#box_navigateCrossDomain",
-      "inputValue": "https://teams-test-tab.azurewebsites.net",
+      "inputValue": "https://example.invalid",
       "skipJsonStringifyOnInputValue": true,
-      "expectedIFrameTarget": "https://teams-test-tab.azurewebsites.net"
+      "expectedIFrameTarget": "https://example.invalid"
     },
     {
       "title": "shareDeepLink API Call - Success",

@@ -6,7 +6,7 @@ import { ApiWithTextInput } from './utils';
  * This file contains links and BoxButtons for Browser APIs to test the behavior of link redirection
  */
 
-const teamsTestTabURL = 'https://teams-test-tab.azurewebsites.net/';
+const teamsTestTabURL = 'https://example.invalid/';
 
 const MoveToLink = (): ReactElement =>
   ApiWithTextInput<string>({
@@ -26,7 +26,7 @@ const MoveToLink = (): ReactElement =>
         return Promise.resolve('Moved to new link');
       },
     },
-    defaultInput: '"https://www.bing.com"',
+    defaultInput: '"https://example.invalid"',
   });
 
 const OpenLinkInNewWindow = (): ReactElement =>
@@ -47,7 +47,7 @@ const OpenLinkInNewWindow = (): ReactElement =>
         return Promise.resolve('Link opened');
       },
     },
-    defaultInput: '"https://www.bing.com"',
+    defaultInput: '"https://example.invalid"',
   });
 
 const Links = (): ReactElement => (
@@ -73,7 +73,7 @@ const Links = (): ReactElement => (
       Target Top
     </a>
     <br />
-    <a rel="noreferrer" href="https://www.bing.com/" target="_blank">
+    <a rel="noreferrer" href="https://example.invalid/" target="_blank">
       Target Blank Bing
     </a>
     <br />

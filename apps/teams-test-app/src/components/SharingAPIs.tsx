@@ -51,7 +51,7 @@ const ShareWebContent = (): React.ReactElement =>
       content: [
         {
           type: 'URL',
-          url: 'https://www.bing.com',
+          url: 'https://example.invalid',
           message: 'Bing message',
           preview: false,
         },

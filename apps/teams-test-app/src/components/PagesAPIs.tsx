@@ -200,8 +200,8 @@ const SetCurrentFrame = (): React.ReactElement =>
       },
     },
     defaultInput: JSON.stringify({
-      websiteUrl: 'https://www.bing.com',
-      contentUrl: 'https://www.bing.com',
+      websiteUrl: 'https://example.invalid',
+      contentUrl: 'https://example.invalid',
     }),
   });
 
