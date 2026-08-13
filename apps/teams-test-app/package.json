@@ -19,9 +19,9 @@
     "validate-test-schema": "pnpm -C ../.. validate-test-schema"
   },
   "dependencies": {
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-router-dom": "^6.30.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.18.0"
   },
   "devDependencies": {
     "@microsoft/teams-js": "workspace:*"
