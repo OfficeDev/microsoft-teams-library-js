@@ -392,7 +392,6 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
     appEntity: {},
     call: {},
     chat: {},
-    contextualSearch: {},
     conversations: {},
     dialog: {
       card: {
