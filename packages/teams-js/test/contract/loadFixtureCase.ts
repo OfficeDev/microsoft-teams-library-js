@@ -10,8 +10,18 @@ export interface FixtureCase<TInputValue = unknown, TExpectedWirePayload = unkno
 
 interface FixtureCaseRecord {
   title?: string;
+  version?: string;
   inputValue?: unknown;
   expectedAlertValue?: string;
+}
+
+export interface LoadFixtureCaseOptions {
+  /**
+   * Disambiguates when multiple fixture cases share the same title (several families,
+   * e.g. chat, have duplicate titles differing only by `version`). Must match the case's
+   * `version` string exactly.
+   */
+  version?: string;
 }
 
 interface FixtureFeatureRecord {
@@ -45,6 +55,7 @@ function parseExpectedWirePayload(expectedAlertValue: string): unknown | undefin
 export function loadFixtureCase<TInputValue = unknown, TExpectedWirePayload = unknown>(
   family: string,
   title: string,
+  options: LoadFixtureCaseOptions = {},
 ): FixtureCase<TInputValue, TExpectedWirePayload> {
   const fixturePath = path.resolve(__dirname, '../../../../apps/teams-test-app/e2e-test-data', `${family}.json`);
   const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as FixtureRecord;
@@ -52,12 +63,26 @@ export function loadFixtureCase<TInputValue = unknown, TExpectedWirePayload = un
     ...(fixture.testCases ?? []),
     ...(fixture.featureTests ?? []).flatMap((featureTest) => featureTest.testCases ?? []),
   ];
-  const fixtureCase = testCases.find((testCase) => testCase.title === title);
 
-  if (!fixtureCase) {
-    throw new Error(`Fixture case "${title}" not found in ${fixturePath}`);
+  let matches = testCases.filter((testCase) => testCase.title === title);
+  if (options.version !== undefined) {
+    matches = matches.filter((testCase) => testCase.version === options.version);
   }
 
+  if (matches.length === 0) {
+    const versionHint = options.version !== undefined ? ` (version "${options.version}")` : '';
+    throw new Error(`Fixture case "${title}"${versionHint} not found in ${fixturePath}`);
+  }
+
+  if (matches.length > 1) {
+    const versions = matches.map((testCase) => testCase.version ?? '(no version)').join(', ');
+    throw new Error(
+      `Fixture case "${title}" is ambiguous in ${fixturePath}: ${matches.length} cases match ` +
+        `(versions: ${versions}). Pass options.version to disambiguate.`,
+    );
+  }
+
+  const fixtureCase = matches[0];
   const expectedAlertValue = fixtureCase.expectedAlertValue ?? '';
 
   return {
