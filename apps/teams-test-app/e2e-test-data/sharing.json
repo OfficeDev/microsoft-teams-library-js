@@ -35,7 +35,8 @@
           }
         ]
       },
-      "expectedAlertValue": "shareWebContent called with ##JSON_INPUT_VALUE##"
+      "expectedAlertValue": "shareWebContent called with ##JSON_INPUT_VALUE##",
+      "unitCovered": true
     }
   ]
 }

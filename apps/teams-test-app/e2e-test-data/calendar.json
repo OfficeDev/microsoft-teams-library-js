@@ -27,7 +27,8 @@
         "content": "content"
       },
       "expectedAlertValue": "composeMeeting called with ##JSON_INPUT_VALUE##",
-      "expectedTestAppValue": "Completed"
+      "expectedTestAppValue": "Completed",
+      "unitCovered": true
     }
   ]
 }
