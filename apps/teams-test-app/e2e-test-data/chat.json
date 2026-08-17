@@ -40,7 +40,8 @@
         "message": "testMessage"
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn1\",\"testUpn2\"],\"message\":\"testMessage\"}",
-      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
+      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK.",
+      "unitCovered": true
     },
     {
       "title": "openChat2 API Call - Success",

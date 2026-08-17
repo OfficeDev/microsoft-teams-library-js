@@ -66,7 +66,16 @@
                 "type": "array",
                 "items": { "type": "string" }
               },
-              "skipForCallbackBasedRuns": { "type": "boolean" }
+              "skipForCallbackBasedRuns": { "type": "boolean" },
+              "unitCovered": {
+                "type": "boolean",
+                "description": "True when this case's contract is also proven by fast unit/integration tests (teams-js producer test and/or Hub SDK provider test). Informational on its own: it does not change where the case runs. See e2eScope."
+              },
+              "e2eScope": {
+                "type": "string",
+                "enum": ["pr", "shadow"],
+                "description": "Which browser E2E runs execute this case. 'pr' (default when omitted) runs it in the PR pipeline; 'shadow' moves it off the PR critical path to the scheduled run, which is only appropriate once unitCovered replacements exist and evidence has been collected. A case is never deleted by this field."
+              }
             },
             "required": ["title"]
           },
