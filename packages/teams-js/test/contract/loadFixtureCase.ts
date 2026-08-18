@@ -1,94 +1,49 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import {
+  FixtureFileRecord,
+  parseWirePayloadFromAlert,
+  selectFixtureCase,
+  SelectFixtureCaseOptions,
+} from '../../../../apps/teams-test-app/fixture-contract';
+
+export type LoadFixtureCaseOptions = SelectFixtureCaseOptions;
+
 export interface FixtureCase<TInputValue = unknown, TExpectedWirePayload = unknown> {
   title: string;
   inputValue: TInputValue;
   expectedAlertValue: string;
+  /**
+   * The wire payload the case's alert describes, or `undefined` when the alert does not describe
+   * one. Specs proving an input to wire transformation should assert this is defined.
+   */
   expectedWirePayload?: TExpectedWirePayload;
 }
 
-interface FixtureCaseRecord {
-  title?: string;
-  version?: string;
-  inputValue?: unknown;
-  expectedAlertValue?: string;
-}
+const FIXTURES_DIR = path.resolve(__dirname, '../../../../apps/teams-test-app/e2e-test-data');
 
-export interface LoadFixtureCaseOptions {
-  /**
-   * Disambiguates when multiple fixture cases share the same title (several families,
-   * e.g. chat, have duplicate titles differing only by `version`). Must match the case's
-   * `version` string exactly.
-   */
-  version?: string;
-}
-
-interface FixtureFeatureRecord {
-  testCases?: FixtureCaseRecord[];
-}
-
-interface FixtureRecord {
-  testCases?: FixtureCaseRecord[];
-  featureTests?: FixtureFeatureRecord[];
-}
-
-function parseExpectedWirePayload(expectedAlertValue: string): unknown | undefined {
-  const calledWithMarker = ' called with ';
-  const calledWithIndex = expectedAlertValue.indexOf(calledWithMarker);
-  if (calledWithIndex === -1) {
-    return undefined;
-  }
-
-  const payload = expectedAlertValue.slice(calledWithIndex + calledWithMarker.length).trim();
-  if (!payload.startsWith('{') && !payload.startsWith('[')) {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return undefined;
-  }
-}
-
+/**
+ * Loads a single capability fixture case by title. The parse contract itself lives in
+ * apps/teams-test-app/fixture-contract so this repo and the Hub SDK agree on what a case's fields
+ * mean; only locating the fixtures is repo specific.
+ */
 export function loadFixtureCase<TInputValue = unknown, TExpectedWirePayload = unknown>(
   family: string,
   title: string,
   options: LoadFixtureCaseOptions = {},
 ): FixtureCase<TInputValue, TExpectedWirePayload> {
-  const fixturePath = path.resolve(__dirname, '../../../../apps/teams-test-app/e2e-test-data', `${family}.json`);
-  const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as FixtureRecord;
-  const testCases = [
-    ...(fixture.testCases ?? []),
-    ...(fixture.featureTests ?? []).flatMap((featureTest) => featureTest.testCases ?? []),
-  ];
-
-  let matches = testCases.filter((testCase) => testCase.title === title);
-  if (options.version !== undefined) {
-    matches = matches.filter((testCase) => testCase.version === options.version);
-  }
-
-  if (matches.length === 0) {
-    const versionHint = options.version !== undefined ? ` (version "${options.version}")` : '';
-    throw new Error(`Fixture case "${title}"${versionHint} not found in ${fixturePath}`);
-  }
-
-  if (matches.length > 1) {
-    const versions = matches.map((testCase) => testCase.version ?? '(no version)').join(', ');
-    throw new Error(
-      `Fixture case "${title}" is ambiguous in ${fixturePath}: ${matches.length} cases match ` +
-        `(versions: ${versions}). Pass options.version to disambiguate.`,
-    );
-  }
-
-  const fixtureCase = matches[0];
-  const expectedAlertValue = fixtureCase.expectedAlertValue ?? '';
+  const fixturePath = path.join(FIXTURES_DIR, `${family}.json`);
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as FixtureFileRecord;
+  const fixtureCase = selectFixtureCase(fixture, title, fixturePath, options);
+  const expectedAlertValue = typeof fixtureCase.expectedAlertValue === 'string' ? fixtureCase.expectedAlertValue : '';
 
   return {
     title: fixtureCase.title ?? title,
     inputValue: fixtureCase.inputValue as TInputValue,
     expectedAlertValue,
-    expectedWirePayload: parseExpectedWirePayload(expectedAlertValue) as TExpectedWirePayload | undefined,
+    expectedWirePayload: parseWirePayloadFromAlert(expectedAlertValue, fixtureCase.inputValue) as
+      | TExpectedWirePayload
+      | undefined,
   };
 }
