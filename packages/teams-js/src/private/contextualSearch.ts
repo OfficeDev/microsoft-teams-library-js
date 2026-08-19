@@ -73,7 +73,7 @@ export function openContextualSearch(request?: OpenContextualSearchRequest): Pro
     throw errorNotSupportedOnPlatform;
   }
 
-  const args = request?.triggerSource ? [request.triggerSource] : [];
+  const args = [request?.triggerSource];
 
   return callFunctionInHost(
     ApiName.ContextualSearch_OpenContextualSearch,

@@ -108,7 +108,7 @@ describe('contextualSearch', () => {
     });
 
     it('should not pass triggerSource when it is not provided', async () => {
-      expect.assertions(2);
+      expect.assertions(3);
 
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(contextualSearchRuntimeConfig);
@@ -118,7 +118,8 @@ describe('contextualSearch', () => {
       const message = utils.findMessageByFunc(ApiName.ContextualSearch_OpenContextualSearch);
 
       expect(message).not.toBeNull();
-      expect(message?.args?.length).toBe(0);
+      expect(message?.args?.length).toBe(1);
+      expect(message?.args?.[0]).toBeUndefined();
     });
   });
 
