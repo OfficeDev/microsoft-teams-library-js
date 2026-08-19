@@ -102,15 +102,15 @@ export interface FileResult {
    */
   error?: SdkError;
   /**
-   * File chunk which will be assemebled and converted into a blob
+   * File chunk which will be assembled and converted into a blob
    */
   fileChunk: FileChunk;
   /**
-   * File index of the file for which chunk data is getting recieved
+   * File index of the file for which chunk data is getting received
    */
   fileIndex: number;
   /**
-   * File type/MIME type which is getting recieved
+   * File type/MIME type which is getting received
    */
   fileType: string;
   /**
