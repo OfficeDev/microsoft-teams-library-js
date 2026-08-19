@@ -23,9 +23,14 @@ import {
 } from '../../src/internal/deepLinkUtilities';
 
 export function validateDeepLinkPrefix(deepLink: URL, expectedPathName: string): void {
-  expect(deepLink.protocol.toLowerCase() === teamsDeepLinkProtocol);
-  expect(deepLink.host.toLowerCase() === teamsDeepLinkHost);
-  expect(deepLink.pathname.toLowerCase() === expectedPathName);
+  validateDeepLinkProtocolAndHost(deepLink);
+  expect(deepLink.pathname.toLowerCase()).toEqual(expectedPathName.toLowerCase());
+}
+
+function validateDeepLinkProtocolAndHost(deepLink: URL): void {
+  // URL.protocol includes the trailing colon, e.g. 'https:'
+  expect(deepLink.protocol.toLowerCase()).toEqual(`${teamsDeepLinkProtocol}:`);
+  expect(deepLink.host.toLowerCase()).toEqual(teamsDeepLinkHost);
 }
 
 export function validateCalendarDeepLinkPrefix(calendarDeepLink: URL): void {
@@ -113,8 +118,7 @@ export function validateCalendarDeepLinkContent(calendarDeepLink: URL, expectedC
 }
 
 export function validateAppInstallDialogDeepLink(appInstallDialogDeepLink: URL, expectedAppId: string): void {
-  expect(appInstallDialogDeepLink.protocol.toLowerCase()).toEqual(`${teamsDeepLinkProtocol}:`);
-  expect(appInstallDialogDeepLink.host.toLowerCase()).toEqual(teamsDeepLinkHost);
+  validateDeepLinkProtocolAndHost(appInstallDialogDeepLink);
   expect(appInstallDialogDeepLink.pathname).toEqual(
     teamsDeepLinkUrlPathForAppInstall + encodeURIComponent(expectedAppId),
   );
@@ -133,6 +137,39 @@ function validateOptionalDeepLinkParameter(deepLink: URL, parameterName: string,
     expect(urlValues).toHaveLength(0);
   }
 }
+
+describe('deepLinkConstants', () => {
+  /*
+   * The validate* helpers below compare a generated deep link against the same constants used to
+   * build it, which cannot catch a change to a constant's value. Deep link protocol, host, paths,
+   * and parameter names are a contract with host applications, so pin the literal values here --
+   * changing one should be a deliberate act that requires updating this test.
+   */
+  it('should use the expected protocol and host', () => {
+    expect(teamsDeepLinkProtocol).toEqual('https');
+    expect(teamsDeepLinkHost).toEqual('teams.microsoft.com');
+  });
+
+  it('should use the expected url paths', () => {
+    expect(teamsDeepLinkUrlPathForChat).toEqual('/l/chat/0/0');
+    expect(teamsDeepLinkUrlPathForCall).toEqual('/l/call/0/0');
+    expect(teamsDeepLinkUrlPathForCalendar).toEqual('/l/meeting/new');
+    expect(teamsDeepLinkUrlPathForAppInstall).toEqual('/l/app/');
+  });
+
+  it('should use the expected url parameter names', () => {
+    expect(teamsDeepLinkUsersUrlParameterName).toEqual('users');
+    expect(teamsDeepLinkTopicUrlParameterName).toEqual('topicName');
+    expect(teamsDeepLinkMessageUrlParameterName).toEqual('message');
+    expect(teamsDeepLinkWithVideoUrlParameterName).toEqual('withVideo');
+    expect(teamsDeepLinkSourceUrlParameterName).toEqual('source');
+    expect(teamsDeepLinkAttendeesUrlParameterName).toEqual('attendees');
+    expect(teamsDeepLinkStartTimeUrlParameterName).toEqual('startTime');
+    expect(teamsDeepLinkEndTimeUrlParameterName).toEqual('endTime');
+    expect(teamsDeepLinkSubjectUrlParameterName).toEqual('subject');
+    expect(teamsDeepLinkContentUrlParameterName).toEqual('content');
+  });
+});
 
 describe('chatUtilities', () => {
   describe('createTeamsDeepLinkForChat', () => {
