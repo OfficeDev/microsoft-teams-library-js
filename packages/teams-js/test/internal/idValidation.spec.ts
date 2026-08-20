@@ -5,9 +5,11 @@ import {
   minimumValidAppIdLength,
   validateAppIdInstance,
   validateSafeContent,
+  validateSafeStringInstance,
   validateStringLength,
 } from '../../src/internal/idValidation';
 import { AppId } from '../../src/public/appId';
+import { ValidatedSafeString } from '../../src/public/validatedSafeString';
 
 describe('doesStringContainNonPrintableCharacters', () => {
   test('should return true for strings with only non-printable characters', () => {
@@ -99,5 +101,26 @@ describe('validateAppIdInstance', () => {
   test('should not throw error when appId is an instance of AppId', () => {
     const appIdInstance = new AppId('app-id-that-does-not-throw');
     expect(() => validateAppIdInstance(appIdInstance)).not.toThrow();
+  });
+});
+
+describe('validateSafeStringInstance', () => {
+  test('should throw error when the string is an object but not instance of ValidatedSafeString', () => {
+    expect(() => validateSafeStringInstance({ Object: 'object' } as unknown as ValidatedSafeString)).toThrowError(
+      'The string ([object Object]) is invalid; it is not an instance of ValidatedSafeString class.',
+    );
+  });
+
+  test('should throw error when the string is an instance of an object other than ValidatedSafeString', () => {
+    class NotValidatedSafeString {}
+    const notValidatedSafeStringInstance = new NotValidatedSafeString();
+    expect(() =>
+      validateSafeStringInstance(notValidatedSafeStringInstance as unknown as ValidatedSafeString),
+    ).toThrowError('The string ([object Object]) is invalid; it is not an instance of ValidatedSafeString class.');
+  });
+
+  test('should not throw error when the string is an instance of ValidatedSafeString', () => {
+    const validatedSafeStringInstance = new ValidatedSafeString('string-that-does-not-throw');
+    expect(() => validateSafeStringInstance(validatedSafeStringInstance)).not.toThrow();
   });
 });
