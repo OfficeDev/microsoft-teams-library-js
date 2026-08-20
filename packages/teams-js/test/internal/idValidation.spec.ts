@@ -120,7 +120,9 @@ describe('validateSafeStringInstance', () => {
   });
 
   test('should not throw error when the string is an instance of ValidatedSafeString', () => {
-    const validatedSafeStringInstance = new ValidatedSafeString('string-that-does-not-throw');
+    // Reuses a string already asserted as valid by the validateSafeContent tests above, so this test
+    // stays focused on the instanceof check rather than on the constructor's content validation.
+    const validatedSafeStringInstance = new ValidatedSafeString('8e6523aa-97f9-49ad-8614-75cae22f6597');
     expect(() => validateSafeStringInstance(validatedSafeStringInstance)).not.toThrow();
   });
 });
