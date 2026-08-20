@@ -126,7 +126,7 @@ export function throwExceptionIfMobileApiIsNotSupported(
 
 /**
  * @hidden
- * Processes the valid origins specifuied by the user, de-duplicates and converts them into a regexp
+ * Processes the valid origins specified by the user, de-duplicates and converts them into a regexp
  * which is used later for message source/origin validation
  *
  * @internal
