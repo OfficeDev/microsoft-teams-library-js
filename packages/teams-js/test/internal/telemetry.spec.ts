@@ -73,7 +73,7 @@ describe('telemetry', () => {
     });
 
     it("test isFollowingApiVersionTagFormat with apiVersionTag 'V4_apiName4' - expect false", () => {
-      const result = isFollowingApiVersionTagFormat('V4_apiName3');
+      const result = isFollowingApiVersionTagFormat('V4_apiName4');
       expect(result).toBe(false);
     });
   });
