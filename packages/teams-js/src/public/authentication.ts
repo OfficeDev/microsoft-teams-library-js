@@ -366,14 +366,19 @@ export function notifyFailure(reason?: string, _callbackUrl?: string): void {
 export interface LegacyCallBacks {
   /**
    * @deprecated
-   * As of TeamsJS v2.0.0, this property has been deprecated in favor of a Promise-based pattern.
+   * As of TeamsJS v2.0.0, this property has been deprecated in favor of the `Promise` returned from
+   * {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
+   * and {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>}.
    *
    * A function that is called if the request succeeds.
    */
   successCallback?: (result: string) => void;
   /**
    * @deprecated
-   * As of TeamsJS v2.0.0, this property has been deprecated in favor of a Promise-based pattern.
+   * As of TeamsJS v2.0.0, this property has been deprecated in favor of the `Promise` returned from
+   * {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
+   * and {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>},
+   * which rejects with the reason for the failure.
    *
    * A function that is called if the request fails, with the reason for the failure.
    */
@@ -618,7 +623,8 @@ export enum DataResidency {
 
 /**
  * @deprecated
- * As of TeamsJS v2.0.0, this interface has been deprecated in favor of a Promise-based pattern.
+ * As of TeamsJS v2.0.0, this interface has been deprecated in favor of the `Promise` returned from
+ * {@link authentication.getUser authentication.getUser(): Promise\<UserProfile\>}.
  * @hidden
  * Describes the UserRequest. Success callback describes how a successful request is handled.
  * Failure callback describes how a failed request is handled.
