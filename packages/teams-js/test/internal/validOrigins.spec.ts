@@ -1,6 +1,6 @@
 import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { resetValidOriginsCache, validateOrigin } from '../../src/internal/validOrigins';
+import { prefetchOriginsFromCDN, resetValidOriginsCache, validateOrigin } from '../../src/internal/validOrigins';
 import * as app from '../../src/public/app/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -724,6 +724,108 @@ describe('validOrigins', () => {
       const result = await validateOrigin(messageOrigin, disableCache);
       expect(abortSpy).toBeCalledTimes(1);
       expect(result).toBe(false);
+    });
+  });
+
+  describe('testing prefetchOriginsFromCDN', () => {
+    let utils: Utils = new Utils();
+    beforeEach(() => {
+      // Set a mock window for testing
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      app._initialize(utils.mockWindow);
+      GlobalVars.isFramelessWindow = false;
+      resetValidOriginsCache();
+    });
+
+    afterAll(() => {
+      GlobalVars.isFramelessWindow = false;
+    });
+    afterEach(() => {
+      // Reset the object since it's a singleton
+      if (app._uninitialize) {
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        app._uninitialize();
+      }
+    });
+
+    it('prefetchOriginsFromCDN warms the cache so later validations use the CDN list without fetching again', async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          status: 200,
+          ok: true,
+          json: async () => {
+            return { validOrigins: ['prefetched.example.com'] };
+          },
+        } as Response),
+      );
+
+      await prefetchOriginsFromCDN();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      // This origin is only known because of the prefetch, and it is served from the cache
+      const messageOrigin = new URL('https://prefetched.example.com');
+      const result = await validateOrigin(messageOrigin);
+      expect(result).toBe(true);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('prefetchOriginsFromCDN only initiates a single fetch call when called repeatedly', async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          status: 200,
+          ok: true,
+          json: async () => {
+            return { validOrigins: ['prefetched.example.com'] };
+          },
+        } as Response),
+      );
+
+      await prefetchOriginsFromCDN();
+      await prefetchOriginsFromCDN();
+      await prefetchOriginsFromCDN();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('prefetchOriginsFromCDN resolves and falls back to the hardcoded list when the fetch call fails', async () => {
+      global.fetch = jest.fn(() => Promise.resolve({ status: 503, ok: false } as Response));
+
+      await expect(prefetchOriginsFromCDN()).resolves.toBeUndefined();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      const fallbackOrigin = new URL('https://teams.microsoft.com');
+      expect(await validateOrigin(fallbackOrigin)).toBe(true);
+
+      const unknownOrigin = new URL('https://badorigin.example.com');
+      expect(await validateOrigin(unknownOrigin)).toBe(false);
+    });
+
+    it('prefetchOriginsFromCDN resolves and falls back to the hardcoded list when the fetch call rejects', async () => {
+      global.fetch = jest.fn(() => Promise.reject(new Error('Network failure')));
+
+      await expect(prefetchOriginsFromCDN()).resolves.toBeUndefined();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      const fallbackOrigin = new URL('https://teams.microsoft.com');
+      expect(await validateOrigin(fallbackOrigin)).toBe(true);
+    });
+
+    it('prefetchOriginsFromCDN resolves and falls back to the hardcoded list when the CDN returns an invalid list', async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          status: 200,
+          ok: true,
+          json: async () => {
+            return { badExample: 'badLink' };
+          },
+        } as Response),
+      );
+
+      await expect(prefetchOriginsFromCDN()).resolves.toBeUndefined();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      const fallbackOrigin = new URL('https://teams.microsoft.com');
+      expect(await validateOrigin(fallbackOrigin)).toBe(true);
     });
   });
 });
