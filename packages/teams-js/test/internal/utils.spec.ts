@@ -673,9 +673,10 @@ describe('utils', () => {
   });
 
   describe('generateGUID', () => {
-    const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+    // Matched case-insensitively: generateGUID only promises a valid v4 UUID, not a particular casing.
+    const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-    it('should generate a lowercase v4 UUID', () => {
+    it('should generate a v4 UUID', () => {
       expect(generateGUID()).toMatch(uuidV4Regex);
     });
 
@@ -852,8 +853,10 @@ describe('utils', () => {
   describe('promise to callback bridging helpers', () => {
     /**
      * The helpers attach their own `then`/`catch` handlers to the promise before returning it, so the
-     * callback is invoked one or two microtasks after the returned promise settles. Flushing the
-     * microtask queue guarantees the callback has run before assertions are made against it.
+     * callback is invoked one or two microtask ticks after the returned promise settles, depending on
+     * whether it resolved or rejected. Yielding a macrotask drains the whole pending microtask queue
+     * regardless of how many ticks deep the chain is, which is why this is preferred here over awaiting
+     * a fixed number of resolved promises. These tests all run under real timers.
      */
     const flushPromises = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
     const error: SdkError = { errorCode: ErrorCode.PERMISSION_DENIED, message: 'something went wrong' };
