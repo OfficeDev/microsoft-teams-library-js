@@ -26,6 +26,10 @@ export type showLocationCallbackFunctionType = (error: SdkError, status: boolean
 
 /**
  * @deprecated
+ * As of 2.1.0, this interface is no longer needed. Instead of setting `allowChooseLocation`, call one of the following functions:
+ * - {@link geoLocation.getCurrentLocation geoLocation.getCurrentLocation(): Promise\<geoLocation.Location\>} to get the current location.
+ * - {@link geoLocation.map.chooseLocation geoLocation.map.chooseLocation(): Promise\<geoLocation.Location\>} to choose location on map.
+ *
  * Data Structure to set the location properties in getLocation call.
  */
 export interface LocationProps {
@@ -46,7 +50,9 @@ export interface LocationProps {
 
 /**
  * @deprecated
- * Data struture to represent the location information
+ * As of 2.1.0, please use {@link geoLocation.Location} instead.
+ *
+ * Data structure to represent the location information
  */
 export interface Location {
   /**
@@ -70,8 +76,8 @@ export interface Location {
 /**
  * @deprecated
  * As of 2.1.0, please use one of the following functions:
- * - {@link geoLocation.getCurrentLocation geoLocation.getCurrentLocation(): Promise\<Location\>} to get the current location.
- * - {@link geoLocation.map.chooseLocation geoLocation.map.chooseLocation(): Promise\<Location\>} to choose location on map.
+ * - {@link geoLocation.getCurrentLocation geoLocation.getCurrentLocation(): Promise\<geoLocation.Location\>} to get the current location.
+ * - {@link geoLocation.map.chooseLocation geoLocation.map.chooseLocation(): Promise\<geoLocation.Location\>} to choose location on map.
  *
  * Fetches user location
  * @param props {@link LocationProps} - Specifying how the location request is handled
@@ -103,7 +109,7 @@ export function getLocation(props: LocationProps, callback: getLocationCallbackF
 
 /**
  * @deprecated
- * As of 2.1.0, please use {@link geoLocation.map.showLocation geoLocation.map.showLocation(location: Location): Promise\<void\>} instead.
+ * As of 2.1.0, please use {@link geoLocation.map.showLocation geoLocation.map.showLocation(location: geoLocation.Location): Promise\<void\>} instead.
  *
  * Shows the location on map corresponding to the given coordinates
  *
