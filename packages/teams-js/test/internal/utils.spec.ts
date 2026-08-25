@@ -1,17 +1,29 @@
 import {
   base64ToBlob,
+  callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise,
+  callCallbackWithErrorOrResultFromPromiseAndReturnPromise,
+  callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise,
+  callCallbackWithSdkErrorFromPromiseAndReturnPromise,
   compareSDKVersions,
   createTeamsAppLink,
+  deepFreeze,
+  generateGUID,
   getBase64StringFromBlob,
   hasScriptTags,
   isPrimitiveOrPlainObject,
   normalizeAgeGroupValue,
+  runWithTimeout,
   validateId,
   validateUrl,
   validateUuid,
 } from '../../src/internal/utils';
 import { AppId, pages } from '../../src/public';
-import { ClipboardSupportedMimeType, LegalAgeGroupClassification } from '../../src/public/interfaces';
+import {
+  ClipboardSupportedMimeType,
+  ErrorCode,
+  LegalAgeGroupClassification,
+  SdkError,
+} from '../../src/public/interfaces';
 import { IBaseRuntime } from '../../src/public/runtime';
 import { UUID } from '../../src/public/uuidObject';
 
@@ -656,6 +668,372 @@ describe('utils', () => {
         const result = normalizeAgeGroupValue(input);
 
         expect(result.hostVersionsInfo?.appEligibilityInformation?.ageGroup).toBe(LegalAgeGroupClassification.NotAdult);
+      });
+    });
+  });
+
+  describe('generateGUID', () => {
+    const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
+    it('should generate a lowercase v4 UUID', () => {
+      expect(generateGUID()).toMatch(uuidV4Regex);
+    });
+
+    it('should generate a value accepted by validateUuid', () => {
+      expect(() => validateUuid(generateGUID())).not.toThrow();
+    });
+
+    it('should generate a different value on each call', () => {
+      const generatedIds = new Set(Array.from({ length: 1000 }, () => generateGUID()));
+      expect(generatedIds.size).toBe(1000);
+    });
+  });
+
+  describe('deepFreeze', () => {
+    it('should freeze a flat object and return the same instance', () => {
+      const original = { a: 1, b: 'two' };
+      const frozen = deepFreeze(original);
+
+      expect(frozen).toBe(original);
+      expect(Object.isFrozen(frozen)).toBe(true);
+    });
+
+    it('should prevent mutation of a frozen property', () => {
+      const frozen = deepFreeze({ a: 1 });
+
+      expect(() => {
+        frozen.a = 2;
+      }).toThrow(TypeError);
+      expect(frozen.a).toBe(1);
+    });
+
+    it('should prevent adding new properties to a frozen object', () => {
+      const frozen: { a: number; b?: number } = deepFreeze<{ a: number; b?: number }>({ a: 1 });
+
+      expect(() => {
+        frozen.b = 2;
+      }).toThrow(TypeError);
+      expect(frozen.b).toBeUndefined();
+    });
+
+    it('should freeze nested objects recursively', () => {
+      const frozen = deepFreeze({ level1: { level2: { level3: { value: 'deep' } } } });
+
+      expect(Object.isFrozen(frozen)).toBe(true);
+      expect(Object.isFrozen(frozen.level1)).toBe(true);
+      expect(Object.isFrozen(frozen.level1.level2)).toBe(true);
+      expect(Object.isFrozen(frozen.level1.level2.level3)).toBe(true);
+      expect(() => {
+        frozen.level1.level2.level3.value = 'changed';
+      }).toThrow(TypeError);
+    });
+
+    it('should freeze arrays and the objects they contain', () => {
+      const frozen = deepFreeze({ items: [{ id: 1 }, { id: 2 }] });
+
+      expect(Object.isFrozen(frozen.items)).toBe(true);
+      expect(Object.isFrozen(frozen.items[0])).toBe(true);
+      expect(Object.isFrozen(frozen.items[1])).toBe(true);
+      expect(() => frozen.items.push({ id: 3 })).toThrow(TypeError);
+      expect(frozen.items).toHaveLength(2);
+    });
+
+    it('should freeze an array passed in directly', () => {
+      const frozen = deepFreeze(['a', 'b']);
+
+      expect(Object.isFrozen(frozen)).toBe(true);
+      expect(() => frozen.pop()).toThrow(TypeError);
+    });
+
+    it('should skip null and undefined properties without throwing', () => {
+      const original: { nullValue: null; undefinedValue: undefined; nested: { value: number } } = {
+        nullValue: null,
+        undefinedValue: undefined,
+        nested: { value: 1 },
+      };
+      const frozen = deepFreeze(original);
+
+      expect(Object.isFrozen(frozen)).toBe(true);
+      expect(Object.isFrozen(frozen.nested)).toBe(true);
+      expect(frozen.nullValue).toBeNull();
+      expect(frozen.undefinedValue).toBeUndefined();
+    });
+
+    it('should leave function properties callable while freezing the object', () => {
+      const frozen = deepFreeze({ callMe: () => 'called' });
+
+      expect(Object.isFrozen(frozen)).toBe(true);
+      expect(frozen.callMe()).toBe('called');
+    });
+
+    it('should handle an empty object', () => {
+      expect(Object.isFrozen(deepFreeze({}))).toBe(true);
+    });
+  });
+
+  describe('runWithTimeout', () => {
+    const timeoutError: SdkError = { errorCode: ErrorCode.INTERNAL_ERROR, message: 'operation timed out' };
+    const actionError: SdkError = { errorCode: ErrorCode.PERMISSION_DENIED, message: 'action failed' };
+
+    afterEach(() => {
+      jest.useRealTimers();
+      jest.restoreAllMocks();
+    });
+
+    it('should resolve with the result of the action when it completes before the timeout', async () => {
+      await expect(runWithTimeout(() => Promise.resolve('result'), 1000, timeoutError)).resolves.toBe('result');
+    });
+
+    it('should reject with the timeout error when the action never completes', async () => {
+      jest.useFakeTimers();
+
+      const promise = runWithTimeout(() => new Promise<string>(() => {}), 100, timeoutError);
+      const rejection = expect(promise).rejects.toBe(timeoutError);
+      jest.advanceTimersByTime(100);
+
+      await rejection;
+    });
+
+    it('should not reject before the full timeout period has elapsed', async () => {
+      jest.useFakeTimers();
+      const onRejected = jest.fn();
+
+      const promise = runWithTimeout(() => new Promise<string>(() => {}), 100, timeoutError).catch(onRejected);
+      jest.advanceTimersByTime(99);
+      await Promise.resolve();
+      expect(onRejected).not.toHaveBeenCalled();
+
+      jest.advanceTimersByTime(1);
+      await promise;
+      expect(onRejected).toHaveBeenCalledWith(timeoutError);
+    });
+
+    it('should still reject with the timeout error when the action completes after the timeout elapsed', async () => {
+      jest.useFakeTimers();
+      let completeAction: (result: string) => void = () => {};
+
+      const promise = runWithTimeout<string, SdkError>(
+        () =>
+          new Promise<string>((resolve) => {
+            completeAction = resolve;
+          }),
+        100,
+        timeoutError,
+      );
+      const rejection = expect(promise).rejects.toBe(timeoutError);
+      jest.advanceTimersByTime(100);
+      await rejection;
+
+      completeAction('too late');
+      await expect(promise).rejects.toBe(timeoutError);
+    });
+
+    it('should reject with the error from the action when the action fails before the timeout', async () => {
+      await expect(runWithTimeout(() => Promise.reject(actionError), 1000, timeoutError)).rejects.toBe(actionError);
+    });
+
+    it('should clear the pending timeout once the action resolves', async () => {
+      const clearTimeoutSpy = jest.spyOn(globalThis, 'clearTimeout');
+
+      await runWithTimeout(() => Promise.resolve('result'), 1000, timeoutError);
+
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+    });
+
+    it('should clear the pending timeout once the action rejects', async () => {
+      const clearTimeoutSpy = jest.spyOn(globalThis, 'clearTimeout');
+
+      await expect(runWithTimeout(() => Promise.reject(actionError), 1000, timeoutError)).rejects.toBe(actionError);
+
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('promise to callback bridging helpers', () => {
+    /**
+     * The helpers attach their own `then`/`catch` handlers to the promise before returning it, so the
+     * callback is invoked one or two microtasks after the returned promise settles. Flushing the
+     * microtask queue guarantees the callback has run before assertions are made against it.
+     */
+    const flushPromises = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
+    const error: SdkError = { errorCode: ErrorCode.PERMISSION_DENIED, message: 'something went wrong' };
+
+    describe('callCallbackWithErrorOrResultFromPromiseAndReturnPromise', () => {
+      it('should call the callback with undefined error and the result on success', async () => {
+        const callback = jest.fn();
+
+        const result = await callCallbackWithErrorOrResultFromPromiseAndReturnPromise(
+          () => Promise.resolve('result'),
+          callback,
+        );
+
+        await flushPromises();
+        expect(result).toBe('result');
+        expect(callback).toHaveBeenCalledWith(undefined, 'result');
+      });
+
+      it('should call the callback with the error and reject the returned promise on failure', async () => {
+        const callback = jest.fn();
+
+        const promise = callCallbackWithErrorOrResultFromPromiseAndReturnPromise(() => Promise.reject(error), callback);
+
+        await expect(promise).rejects.toBe(error);
+        await flushPromises();
+        expect(callback).toHaveBeenCalledWith(error);
+      });
+
+      it('should forward the additional arguments to the wrapped function', async () => {
+        const funcHelper = jest.fn((..._args: unknown[]) => Promise.resolve('result'));
+
+        await callCallbackWithErrorOrResultFromPromiseAndReturnPromise(funcHelper, undefined, 'first', 2, true);
+
+        expect(funcHelper).toHaveBeenCalledWith('first', 2, true);
+      });
+
+      it('should not throw when no callback is provided', async () => {
+        await expect(
+          callCallbackWithErrorOrResultFromPromiseAndReturnPromise(() => Promise.resolve('result')),
+        ).resolves.toBe('result');
+        await expect(
+          callCallbackWithErrorOrResultFromPromiseAndReturnPromise(() => Promise.reject(error)),
+        ).rejects.toBe(error);
+        await flushPromises();
+      });
+    });
+
+    describe('callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise', () => {
+      it('should call the callback with undefined error and true on success', async () => {
+        const callback = jest.fn();
+
+        await callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise(() => Promise.resolve(), callback);
+
+        await flushPromises();
+        expect(callback).toHaveBeenCalledWith(undefined, true);
+      });
+
+      it('should ignore the resolved value and always report true on success', async () => {
+        const callback = jest.fn();
+
+        await callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise(() => Promise.resolve('ignored'), callback);
+
+        await flushPromises();
+        expect(callback).toHaveBeenCalledWith(undefined, true);
+      });
+
+      it('should call the callback with the error and false on failure', async () => {
+        const callback = jest.fn();
+
+        const promise = callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise(
+          () => Promise.reject(error),
+          callback,
+        );
+
+        await expect(promise).rejects.toBe(error);
+        await flushPromises();
+        expect(callback).toHaveBeenCalledWith(error, false);
+      });
+
+      it('should forward the additional arguments to the wrapped function', async () => {
+        const funcHelper = jest.fn((..._args: unknown[]) => Promise.resolve());
+
+        await callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise(funcHelper, undefined, 'first', 2);
+
+        expect(funcHelper).toHaveBeenCalledWith('first', 2);
+      });
+
+      it('should not throw when no callback is provided', async () => {
+        await expect(
+          callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise(() => Promise.resolve()),
+        ).resolves.toBeUndefined();
+        await expect(
+          callCallbackWithErrorOrBooleanFromPromiseAndReturnPromise(() => Promise.reject(error)),
+        ).rejects.toBe(error);
+        await flushPromises();
+      });
+    });
+
+    describe('callCallbackWithSdkErrorFromPromiseAndReturnPromise', () => {
+      it('should call the callback with null on success', async () => {
+        const callback = jest.fn();
+
+        await callCallbackWithSdkErrorFromPromiseAndReturnPromise(() => Promise.resolve(), callback);
+
+        await flushPromises();
+        expect(callback).toHaveBeenCalledWith(null);
+      });
+
+      it('should call the callback with the error on failure', async () => {
+        const callback = jest.fn();
+
+        const promise = callCallbackWithSdkErrorFromPromiseAndReturnPromise(() => Promise.reject(error), callback);
+
+        await expect(promise).rejects.toBe(error);
+        await flushPromises();
+        expect(callback).toHaveBeenCalledWith(error);
+      });
+
+      it('should forward the additional arguments to the wrapped function', async () => {
+        const funcHelper = jest.fn((..._args: unknown[]) => Promise.resolve());
+
+        await callCallbackWithSdkErrorFromPromiseAndReturnPromise(funcHelper, undefined, 'first', 2);
+
+        expect(funcHelper).toHaveBeenCalledWith('first', 2);
+      });
+
+      it('should not throw when no callback is provided', async () => {
+        await expect(
+          callCallbackWithSdkErrorFromPromiseAndReturnPromise(() => Promise.resolve()),
+        ).resolves.toBeUndefined();
+        await expect(callCallbackWithSdkErrorFromPromiseAndReturnPromise(() => Promise.reject(error))).rejects.toBe(
+          error,
+        );
+        await flushPromises();
+      });
+    });
+
+    describe('callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise', () => {
+      it('should call the callback with a null error and the result on success', async () => {
+        const callback = jest.fn();
+
+        const result = await callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise(
+          () => Promise.resolve('result'),
+          callback,
+        );
+
+        await flushPromises();
+        expect(result).toBe('result');
+        expect(callback).toHaveBeenCalledWith(null, 'result');
+      });
+
+      it('should call the callback with the error and a null result on failure', async () => {
+        const callback = jest.fn();
+
+        const promise = callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise(
+          () => Promise.reject(error),
+          callback,
+        );
+
+        await expect(promise).rejects.toBe(error);
+        await flushPromises();
+        expect(callback).toHaveBeenCalledWith(error, null);
+      });
+
+      it('should forward the additional arguments to the wrapped function', async () => {
+        const funcHelper = jest.fn((..._args: unknown[]) => Promise.resolve('result'));
+
+        await callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise(funcHelper, undefined, 'first', 2);
+
+        expect(funcHelper).toHaveBeenCalledWith('first', 2);
+      });
+
+      it('should not throw when no callback is provided', async () => {
+        await expect(
+          callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise(() => Promise.resolve('result')),
+        ).resolves.toBe('result');
+        await expect(
+          callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise(() => Promise.reject(error)),
+        ).rejects.toBe(error);
+        await flushPromises();
       });
     });
   });
