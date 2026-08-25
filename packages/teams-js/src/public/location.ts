@@ -26,6 +26,10 @@ export type showLocationCallbackFunctionType = (error: SdkError, status: boolean
 
 /**
  * @deprecated
+ * As of 2.1.0, this interface is no longer needed. Instead of setting `allowChooseLocation`, call one of the following functions:
+ * - {@link geoLocation.getCurrentLocation geoLocation.getCurrentLocation(): Promise\<Location\>} to get the current location.
+ * - {@link geoLocation.map.chooseLocation geoLocation.map.chooseLocation(): Promise\<Location\>} to choose location on map.
+ *
  * Data Structure to set the location properties in getLocation call.
  */
 export interface LocationProps {
@@ -46,6 +50,8 @@ export interface LocationProps {
 
 /**
  * @deprecated
+ * As of 2.1.0, please use {@link geoLocation.Location} instead.
+ *
  * Data struture to represent the location information
  */
 export interface Location {
