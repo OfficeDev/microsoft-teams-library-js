@@ -729,6 +729,8 @@ describe('validOrigins', () => {
 
   describe('testing prefetchOriginsFromCDN', () => {
     let utils: Utils = new Utils();
+    // The baseline fetch mock installed by test/setupTest.ts, captured before any test overwrites it
+    const originalFetch = global.fetch;
     beforeEach(() => {
       // Set a mock window for testing
       utils = new Utils();
@@ -747,6 +749,9 @@ describe('validOrigins', () => {
         utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
         app._uninitialize();
       }
+      // Restore the shared state these tests mutate so nothing leaks into other suites
+      global.fetch = originalFetch;
+      resetValidOriginsCache();
     });
 
     it('prefetchOriginsFromCDN warms the cache so later validations use the CDN list without fetching again', async () => {
@@ -770,7 +775,31 @@ describe('validOrigins', () => {
       expect(global.fetch).toHaveBeenCalledTimes(1);
     });
 
-    it('prefetchOriginsFromCDN only initiates a single fetch call when called repeatedly', async () => {
+    it('prefetchOriginsFromCDN only initiates a single fetch call when concurrent callers race the in-flight request', async () => {
+      let resolveFetch: (response: Response) => void = () => {};
+      global.fetch = jest.fn(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveFetch = resolve;
+          }),
+      );
+
+      // All three callers start before the first fetch settles, so they must share the in-flight promise
+      const prefetches = Promise.all([prefetchOriginsFromCDN(), prefetchOriginsFromCDN(), prefetchOriginsFromCDN()]);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      resolveFetch({
+        status: 200,
+        ok: true,
+        json: async () => {
+          return { validOrigins: ['prefetched.example.com'] };
+        },
+      } as Response);
+      await prefetches;
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('prefetchOriginsFromCDN only initiates a single fetch call when called again after the first one resolves', async () => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
           status: 200,
