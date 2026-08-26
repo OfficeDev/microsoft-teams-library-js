@@ -331,17 +331,20 @@ describe('webStorage', () => {
     });
 
     it('should return the same host name to callers that race on a cold cache', async () => {
-      expect.assertions(2);
+      expect.assertions(3);
 
       mockHostName(HostName.teams);
 
-      // The cache is only populated after getContext resolves, so callers that start before then
-      // each issue their own getContext request. They must still agree on the resulting host name.
-      // If in-flight de-duplication is ever added, the expected call count below becomes 1.
+      // The cache is only populated once getContext resolves, so racing callers may each issue
+      // their own request. Assert the observable contract rather than the request count: every
+      // caller agrees on the host name, and the cache is warm once the race settles.
       const hostNames = await Promise.all([getCachedHostName(), getCachedHostName(), getCachedHostName()]);
 
       expect(hostNames).toStrictEqual([HostName.teams, HostName.teams, HostName.teams]);
-      expect(getContextSpy).toHaveBeenCalledTimes(3);
+
+      const callsDuringRace = getContextSpy.mock.calls.length;
+      await expect(getCachedHostName()).resolves.toStrictEqual(HostName.teams);
+      expect(getContextSpy).toHaveBeenCalledTimes(callsDuringRace);
     });
 
     it('should call getContext again once the cached host name has been cleared', async () => {
