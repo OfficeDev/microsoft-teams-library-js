@@ -28,15 +28,19 @@ function flushPromises(): Promise<void> {
 describe('videoEffectsUtils', () => {
   describe('createEffectParameterChangeCallback', () => {
     let sendMessageToParentSpy: jest.SpyInstance;
+    let reportApplyingVideoEffect: jest.Mock;
+    let reportVideoEffectChanged: jest.Mock;
     let videoPerformanceMonitor: VideoPerformanceMonitor;
 
     beforeEach(() => {
       sendMessageToParentSpy = jest
         .spyOn(communicationModule, 'sendMessageToParent')
         .mockImplementation(() => undefined);
+      reportApplyingVideoEffect = jest.fn();
+      reportVideoEffectChanged = jest.fn();
       videoPerformanceMonitor = {
-        reportApplyingVideoEffect: jest.fn(),
-        reportVideoEffectChanged: jest.fn(),
+        reportApplyingVideoEffect,
+        reportVideoEffectChanged,
       } as unknown as VideoPerformanceMonitor;
     });
 
@@ -49,9 +53,12 @@ describe('videoEffectsUtils', () => {
 
       createEffectParameterChangeCallback(effectCallback, videoPerformanceMonitor)('effectId', 'effectParam');
 
-      expect(videoPerformanceMonitor.reportApplyingVideoEffect).toHaveBeenCalledWith('effectId', 'effectParam');
+      expect(reportApplyingVideoEffect).toHaveBeenCalledWith('effectId', 'effectParam');
       expect(effectCallback).toHaveBeenCalledWith('effectId', 'effectParam');
-      expect(videoPerformanceMonitor.reportVideoEffectChanged).not.toHaveBeenCalled();
+      expect(reportApplyingVideoEffect.mock.invocationCallOrder[0]).toBeLessThan(
+        effectCallback.mock.invocationCallOrder[0],
+      );
+      expect(reportVideoEffectChanged).not.toHaveBeenCalled();
       expect(sendMessageToParentSpy).not.toHaveBeenCalled();
     });
 
@@ -61,7 +68,7 @@ describe('videoEffectsUtils', () => {
       createEffectParameterChangeCallback(effectCallback, videoPerformanceMonitor)('effectId', 'effectParam');
       await flushPromises();
 
-      expect(videoPerformanceMonitor.reportVideoEffectChanged).toHaveBeenCalledWith('effectId', 'effectParam');
+      expect(reportVideoEffectChanged).toHaveBeenCalledWith('effectId', 'effectParam');
       expect(sendMessageToParentSpy).toHaveBeenCalledWith(effectChangedApiVersionTag, 'video.videoEffectReadiness', [
         true,
         'effectId',
@@ -76,7 +83,7 @@ describe('videoEffectsUtils', () => {
       createEffectParameterChangeCallback(effectCallback, videoPerformanceMonitor)('effectId', 'effectParam');
       await flushPromises();
 
-      expect(videoPerformanceMonitor.reportVideoEffectChanged).not.toHaveBeenCalled();
+      expect(reportVideoEffectChanged).not.toHaveBeenCalled();
       expect(sendMessageToParentSpy).toHaveBeenCalledWith(effectFailureApiVersionTag, 'video.videoEffectReadiness', [
         false,
         'effectId',
@@ -105,8 +112,8 @@ describe('videoEffectsUtils', () => {
       createEffectParameterChangeCallback(effectCallback, videoPerformanceMonitor)(undefined);
       await flushPromises();
 
-      expect(videoPerformanceMonitor.reportApplyingVideoEffect).toHaveBeenCalledWith('', undefined);
-      expect(videoPerformanceMonitor.reportVideoEffectChanged).toHaveBeenCalledWith('', undefined);
+      expect(reportApplyingVideoEffect).toHaveBeenCalledWith('', undefined);
+      expect(reportVideoEffectChanged).toHaveBeenCalledWith('', undefined);
       expect(effectCallback).toHaveBeenCalledWith(undefined, undefined);
       expect(sendMessageToParentSpy).toHaveBeenCalledWith(effectChangedApiVersionTag, 'video.videoEffectReadiness', [
         true,
