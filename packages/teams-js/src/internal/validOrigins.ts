@@ -66,11 +66,21 @@ async function getValidOriginsListFromCDN(shouldDisableCache: boolean = false): 
   }
 }
 
-function isValidOriginsJSONValid(validOriginsJSON: string): boolean {
-  let validOriginsCDN = JSON.parse(validOriginsJSON);
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Exported so the JSON validation can be unit tested directly.
+ */
+export function isValidOriginsJSONValid(validOriginsJSON: string): boolean {
+  let validOriginsCDN;
   try {
     validOriginsCDN = JSON.parse(validOriginsJSON);
   } catch (_) {
+    validateOriginLogger('isValidOriginsFromCDN call failed to parse the valid origins list from CDN');
+    return false;
+  }
+  if (!validOriginsCDN) {
     return false;
   }
   if (!validOriginsCDN.validOrigins) {
