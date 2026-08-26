@@ -318,7 +318,7 @@ describe('webStorage', () => {
       getContextSpy.mockResolvedValue({ app: { host: { name: hostName } } } as unknown as appModule.Context);
     }
 
-    it('should only call getContext once no matter how many times it is called', async () => {
+    it('should only call getContext once for repeated sequential calls', async () => {
       expect.assertions(4);
 
       mockHostName(HostName.teams);
@@ -328,6 +328,20 @@ describe('webStorage', () => {
       await expect(getCachedHostName()).resolves.toStrictEqual(HostName.teams);
 
       expect(getContextSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return the same host name to callers that race on a cold cache', async () => {
+      expect.assertions(2);
+
+      mockHostName(HostName.teams);
+
+      // The cache is only populated after getContext resolves, so callers that start before then
+      // each issue their own getContext request. They must still agree on the resulting host name.
+      // If in-flight de-duplication is ever added, the expected call count below becomes 1.
+      const hostNames = await Promise.all([getCachedHostName(), getCachedHostName(), getCachedHostName()]);
+
+      expect(hostNames).toStrictEqual([HostName.teams, HostName.teams, HostName.teams]);
+      expect(getContextSpy).toHaveBeenCalledTimes(3);
     });
 
     it('should call getContext again once the cached host name has been cleared', async () => {
