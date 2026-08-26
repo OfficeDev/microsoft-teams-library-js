@@ -304,6 +304,8 @@ describe('webStorage', () => {
     let getContextSpy: jest.SpyInstance<Promise<appModule.Context>, []>;
 
     beforeEach(() => {
+      // Ensure the module-level cache is empty regardless of what ran before this describe block
+      clearWebStorageCachedHostNameForTests();
       getContextSpy = jest.spyOn(appModule, 'getContext');
     });
 
