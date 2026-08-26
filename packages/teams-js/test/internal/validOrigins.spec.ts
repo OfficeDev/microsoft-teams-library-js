@@ -881,6 +881,27 @@ describe('validOrigins', () => {
       expect(isValidOriginsJSONValid(JSON.stringify({ badExample: 'badLink' }))).toBe(false);
     });
 
+    it.each([
+      ['a string', 'example.com'],
+      ['a number', 5],
+      ['an object', { 'example.com': true }],
+      ['null', null],
+      ['a boolean', true],
+    ])(
+      'returns false instead of throwing when validOrigins is %s rather than an array',
+      (_description, validOrigins) => {
+        let result: boolean | undefined;
+        expect(() => {
+          result = isValidOriginsJSONValid(JSON.stringify({ validOrigins }));
+        }).not.toThrow();
+        expect(result).toBe(false);
+      },
+    );
+
+    it('returns false when the validOrigins array contains a non-string entry', () => {
+      expect(isValidOriginsJSONValid(JSON.stringify({ validOrigins: ['valid.example.com', 5] }))).toBe(false);
+    });
+
     it('returns false when the validOrigins list contains an unparsable origin', () => {
       expect(isValidOriginsJSONValid(JSON.stringify({ validOrigins: ['valid.example.com', 'not a host'] }))).toBe(
         false,

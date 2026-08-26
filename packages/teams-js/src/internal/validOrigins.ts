@@ -79,13 +79,13 @@ export function isValidOriginsJSONValid(validOriginsJSON: string): boolean {
   } catch (_) {
     return false;
   }
-  if (!validOriginsCDN) {
-    return false;
-  }
-  if (!validOriginsCDN.validOrigins) {
+  if (!validOriginsCDN || !Array.isArray(validOriginsCDN.validOrigins)) {
     return false;
   }
   for (const validOrigin of validOriginsCDN.validOrigins) {
+    if (typeof validOrigin !== 'string') {
+      return false;
+    }
     try {
       new URL('https://' + validOrigin);
     } catch (_) {
