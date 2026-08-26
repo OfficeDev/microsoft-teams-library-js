@@ -67,8 +67,8 @@ npm view @microsoft/teams-js versions --json
 
 ```bash
 git checkout main && git pull
-git checkout -b release/<x.y.z>
-git push --set-upstream origin release/<x.y.z>
+git checkout -b "release/<x.y.z>"
+git push --set-upstream origin "release/<x.y.z>"
 ```
 
 Push it with **no changes**. The bump lands via PR in the next step, so the branch history stays reviewable.
@@ -76,10 +76,10 @@ Push it with **no changes**. The bump lands via PR in the next step, so the bran
 ### 3. Prepare the bump on a working branch
 
 ```bash
-git checkout -b <alias>/release_<x.y.z>-1
+git checkout -b "<alias>/release_<x.y.z>-1"
 node tools/cli/preRelease.js
 git commit -am "Prepare release <x.y.z>"
-git push --set-upstream origin <alias>/release_<x.y.z>-1
+git push --set-upstream origin "<alias>/release_<x.y.z>-1"
 ```
 
 `preRelease.js` runs `pnpm install` and `pnpm build`, reads the integrity hash from `packages/teams-js/dist/umd/MicrosoftTeams-manifest.json`, and rewrites the version carriers with it. It needs a successful build to produce that manifest, so a failure here is real and must be fixed, not retried past.
@@ -113,7 +113,7 @@ Follow the internal runbook for the specifics.
 A green pipeline is not proof of publication. Check both:
 
 ```bash
-npm view @microsoft/teams-js@<x.y.z> version
+npm view "@microsoft/teams-js@<x.y.z>" version
 
 curl -sL -o /dev/null -w "%{http_code} %{size_download}\n" \
   "https://res.cdn.office.net/teams-js/<x.y.z>/js/MicrosoftTeams.min.js"
@@ -163,13 +163,13 @@ Not worth capturing:
 
 **This file is public. Keep it that way.** Everything internal, pipeline identifiers, internal URLs, approval-system names, individual names or aliases, and internal distribution lists, belongs in the internal runbook and must not be added here. **Never paste raw pipeline output**: logs carry tokens, request ids, SAS URLs, and internal identities. Describe the symptom in your own words. If a learning cannot be written down without an internal detail, record it internally and leave a neutral pointer here.
 
-**Write it the way the rest of this file is written:** evergreen and imperative, stating the invariant a future run must hold rather than the incident that revealed it. "A green pipeline is not proof the version reached the CDN" still reads correctly in a year; "the 2.55.0 run failed on the 25th" does not.
+**Write it the way the rest of this file is written:** evergreen and imperative, stating the invariant a future run must hold rather than the incident that revealed it. "A green pipeline is not proof the version reached the CDN" still reads correctly in a year; "the release failed last Tuesday" does not.
 
 Mechanics. This is a standalone PR touching skill files only; never fold it into a release branch, whose diff has to stay limited to the version carriers.
 
 ```bash
 git fetch origin main
-git switch -c <alias>/release-skill-learnings-$(date +%Y%m%d) origin/main
+git switch -c "<alias>/release-skill-learnings-$(date +%Y%m%d)" origin/main
 # Edit only .github/skills/release-teamsjs/**
 git add -A && git commit -m "Record what the <version> release taught the release skill"
 git push -u origin HEAD
