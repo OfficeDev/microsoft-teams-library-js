@@ -73,7 +73,7 @@ async function getValidOriginsListFromCDN(shouldDisableCache: boolean = false): 
  * Exported so the JSON validation can be unit tested directly.
  */
 export function isValidOriginsJSONValid(validOriginsJSON: string): boolean {
-  let validOriginsCDN;
+  let validOriginsCDN: { validOrigins?: unknown } | null;
   try {
     validOriginsCDN = JSON.parse(validOriginsJSON);
   } catch (_) {
