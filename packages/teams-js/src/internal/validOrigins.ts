@@ -77,7 +77,6 @@ export function isValidOriginsJSONValid(validOriginsJSON: string): boolean {
   try {
     validOriginsCDN = JSON.parse(validOriginsJSON);
   } catch (_) {
-    validateOriginLogger('isValidOriginsFromCDN call failed to parse the valid origins list from CDN');
     return false;
   }
   if (!validOriginsCDN) {

@@ -870,8 +870,11 @@ describe('validOrigins', () => {
       ['the literal string undefined', 'undefined'],
       ['a JSON null literal', 'null'],
     ])('returns false instead of throwing for %s', (_description, validOriginsJSON) => {
-      expect(() => isValidOriginsJSONValid(validOriginsJSON)).not.toThrow();
-      expect(isValidOriginsJSONValid(validOriginsJSON)).toBe(false);
+      let result: boolean | undefined;
+      expect(() => {
+        result = isValidOriginsJSONValid(validOriginsJSON);
+      }).not.toThrow();
+      expect(result).toBe(false);
     });
 
     it('returns false when the parsed JSON has no validOrigins property', () => {
