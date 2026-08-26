@@ -86,6 +86,10 @@ steps:
         Write-Host "Generated $configPath"
         Get-Content $configPath
 
+  - template: install-dotnet-sdk.yml
+    parameters:
+      workingDirectory: '$(Build.SourcesDirectory)/apps/blazor-test-app'
+
   - task: NuGetAuthenticate@1
 
   # Clean stale Blazor build artifacts to ensure no cached static web assets
