@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated documentation for `search` capability.",
+  "packageName": "@microsoft/teams-js",
+  "email": "edwardlee@microsoft.com",
+  "dependentChangeType": "none"
+}
