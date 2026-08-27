@@ -29,7 +29,7 @@ Versioning is [beachball](https://microsoft.github.io/beachball/), configured in
 - `disallowedChangeTypes: ['major', 'prerelease']`
 - `ignorePatterns` includes `*.md`, so a docs-only change needs no change file.
 
-Contributors add change files with `pnpm changefile` (see `CONTRIBUTING.md`). A release consumes every pending change file, folds them into `CHANGELOG.md`, and deletes them.
+Contributors add change files with `pnpm changefile` (see `CONTRIBUTING.md`). A release consumes every pending change file, folds them into `packages/teams-js/CHANGELOG.md`, and deletes them.
 
 ## Confirmation gates
 
@@ -48,11 +48,27 @@ State the version, the branch, and where you will stop (the internal pipeline st
 Never bake a version into this file, a script, or a comment.
 
 ```bash
+set -e
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Working tree must be clean before reading the release version." >&2
+  exit 1
+fi
+
+restore_bump() {
+  git restore --source=HEAD --worktree --staged -- \
+    packages/teams-js/package.json \
+    packages/teams-js/CHANGELOG.md \
+    pnpm-lock.yaml \
+    change
+}
+trap restore_bump EXIT
+
 # What beachball would bump to, from the pending change files.
 pnpm beachball bump
 node -p "require('./packages/teams-js/package.json').version"
-# Undo the local bump once you have read it; the release branch does the real one.
-git checkout -- .
+restore_bump
+trap - EXIT
 ```
 
 Confirm the version is not already taken:
@@ -63,7 +79,11 @@ npm view @microsoft/teams-js versions --json
 
 **Gate.** Show the version and the branch you will cut. Wait for an explicit yes.
 
-### 2. Cut the release branch
+### 2. Establish the release branch
+
+The public workflow in `.github/workflows/prerelease.yml` runs `preRelease.js` before creating and force-pushing `release/<x.y.z>`. The generated files are still uncommitted when that branch is pushed; the later `create-pull-request` step commits them on its working branch and opens the bump PR against `release/<x.y.z>`.
+
+For a manual release, create the same unchanged base branch explicitly:
 
 ```bash
 git checkout main && git pull
@@ -71,9 +91,9 @@ git checkout -b "release/<x.y.z>"
 git push --set-upstream origin "release/<x.y.z>"
 ```
 
-Push it with **no changes**. The bump lands via PR in the next step, so the branch history stays reviewable.
+Do not commit the bump directly to this branch. It lands through the PR in the next step, matching the public workflow's remote branch result.
 
-### 3. Prepare the bump on a working branch
+### 3. Prepare the bump on a manual working branch
 
 ```bash
 git checkout -b "<alias>/release_<x.y.z>-1"
@@ -86,10 +106,10 @@ git push --set-upstream origin "<alias>/release_<x.y.z>-1"
 
 > Note the capital R in `preRelease.js`. The lowercase spelling resolves on Windows and fails on macOS and Linux.
 
-Open a PR from `<alias>/release_<x.y.z>-1` into `release/<x.y.z>` (**not** into `main`), with the changelog's new version section as the description. A reviewer should confirm the PR has:
+Open a PR from `<alias>/release_<x.y.z>-1` into `release/<x.y.z>` (**not** into `main`), with the new `packages/teams-js/CHANGELOG.md` version section as the description. A reviewer should confirm the PR has:
 
 - every pending change file deleted
-- `CHANGELOG.md` with a new version section holding those entries, matching the PR description
+- `packages/teams-js/CHANGELOG.md` with a new version section holding those entries, matching the PR description
 - `packages/teams-js/package.json` at the new version
 - `packages/teams-js/README.md` script `src` and integrity hash pointing at the new version
 - the teams-test-app CDN html and its `package.json` likewise
