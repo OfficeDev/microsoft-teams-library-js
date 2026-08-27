@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Point the `LegacyCallBacks` and `UserRequest` deprecation notices at their concrete Promise-based replacements.",
+  "packageName": "@microsoft/teams-js",
+  "email": "edwardlee@microsoft.com",
+  "dependentChangeType": "none"
+}
