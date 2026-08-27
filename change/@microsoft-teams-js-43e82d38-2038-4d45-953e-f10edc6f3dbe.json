@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Fix `isValidOriginsJSONValid` so a malformed valid-origins payload from the CDN returns `false` instead of throwing out of origin validation.",
+  "packageName": "@microsoft/teams-js",
+  "email": "edwardlee@microsoft.com",
+  "dependentChangeType": "none"
+}
