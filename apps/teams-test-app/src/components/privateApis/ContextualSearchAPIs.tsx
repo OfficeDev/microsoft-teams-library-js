@@ -14,13 +14,8 @@ const ContextualSearchAPIs = (): ReactElement => {
     ApiWithoutInput({
       name: 'checkContextualSearchCapability',
       title: 'Check if Contextual Search is supported',
-      onClick: async () => {
-        try {
-          return `Contextual Search module ${contextualSearch.isSupported() ? 'is' : 'is not'} supported`;
-        } catch (error) {
-          return `Error: ${error}`;
-        }
-      },
+      onClick: async () =>
+        `Contextual Search module ${contextualSearch.isSupported() ? 'is' : 'is not'} supported`,
     });
 
   const OpenContextualSearch = (): ReactElement =>
