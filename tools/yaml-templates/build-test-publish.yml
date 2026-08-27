@@ -4,18 +4,46 @@ steps:
     inputs:
       versionSpec: '18.x'
 
+  # Redirect package downloads through the CFS-backed ADO feed to comply with
+  # network isolation policy (CFSClean). The .npmrc checked into the repo does
+  # not set a registry so that external contributors can use npmjs.org directly.
+  - task: PowerShell@2
+    displayName: 'Configure CFS-compliant npm registry'
+    inputs:
+      targetType: inline
+      script: |
+        $npmrc = Join-Path "$(Build.SourcesDirectory)" ".npmrc"
+        Add-Content -Path $npmrc -Value "`nregistry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/"
+        Add-Content -Path $npmrc -Value "always-auth=true"
+        # Disable npm/pnpm update-notifier so package managers don't phone home to
+        # registry.npmjs.org to check for newer versions (CFSClean network violation).
+        Add-Content -Path $npmrc -Value "update-notifier=false"
+
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: '$(Build.SourcesDirectory)/.npmrc'
+
   - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        npm install -g pnpm@9.0.6
+        npm install -g pnpm@9.15.9 --globalconfig "$(Build.SourcesDirectory)/.npmrc"
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+    env:
+      # npm spawns a detached update-check child that re-resolves config outside the
+      # sources dir (ignoring --globalconfig/.npmrc) and defaults to registry.npmjs.org.
+      # This env var is inherited by that child and suppresses the check.
+      NPM_CONFIG_UPDATE_NOTIFIER: 'false'
+      NO_UPDATE_NOTIFIER: '1'
 
   - task: CmdLine@2
     displayName: 'Install repo dependencies'
     inputs:
       script: |
         pnpm install
+    env:
+      CYPRESS_INSTALL_BINARY: '0'
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CmdLine@2
     displayName: 'Check that changefile was created if needed'
@@ -29,18 +57,75 @@ steps:
     inputs:
       script: 'node prepBetaRelease.cjs'
       workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
+    env:
+      # prepBetaRelease.cjs runs `npm view @microsoft/teams-js` from packages/teams-js,
+      # which has no .npmrc. npm does not walk up to the repo-root .npmrc, so it would
+      # fall back to registry.npmjs.org (a CFSClean network-isolation violation). Point
+      # npm at the root .npmrc (which npmAuthenticate populated with the CFS feed URL and
+      # its auth token) so the version lookup resolves through the CFS-backed ADO feed.
+      NPM_CONFIG_USERCONFIG: '$(Build.SourcesDirectory)\.npmrc'
+
+  # Generate nuget.config for the Blazor test app so dotnet restore uses the
+  # CFS-backed ADO feed instead of api.nuget.org (CFSClean compliance).
+  - task: PowerShell@2
+    displayName: 'Generate Blazor nuget.config (CFS feed only)'
+    inputs:
+      targetType: inline
+      script: |
+        $configPath = 'apps\blazor-test-app\nuget.config'
+        $lines = @(
+          '<?xml version="1.0" encoding="utf-8"?>',
+          '<configuration>',
+          '  <packageSources>',
+          '    <clear />',
+          '    <add key="CFS-NuGet" value="https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/nuget/v3/index.json" />',
+          '  </packageSources>',
+          '</configuration>'
+        )
+        $lines | Set-Content -Path $configPath
+        Write-Host "Generated $configPath"
+        Get-Content $configPath
+
+  - task: NuGetAuthenticate@1
+
+  # Clean stale Blazor build artifacts to ensure no cached static web assets
+  # (e.g., from previously-referenced FluentUI NuGet package) serve unpkg.com scripts.
+  - task: CmdLine@2
+    displayName: 'Clean Blazor build artifacts'
+    inputs:
+      script: |
+        dotnet clean apps\blazor-test-app\Blazor-Test-App.csproj
+        if exist apps\blazor-test-app\obj rmdir /s /q apps\blazor-test-app\obj
+        if exist apps\blazor-test-app\bin rmdir /s /q apps\blazor-test-app\bin
+
+  # Restore NuGet packages as a direct pipeline task so that
+  # NuGetAuthenticate@1 credentials are reliably inherited.
+  # Running dotnet restore through pnpm/node causes the credential
+  # provider plugin to crash (exit code -1) in some agent environments.
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore Blazor NuGet packages'
+    inputs:
+      command: 'restore'
+      projects: 'apps\blazor-test-app\Blazor-Test-App.csproj'
+      feedsToUse: 'config'
+      nugetConfigPath: 'apps\blazor-test-app\nuget.config'
 
   - task: CmdLine@2
     displayName: 'pnpm build'
     inputs:
       script: |
         pnpm build-force-blazor
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      SIZE_LIMIT_FAKE_TIME: '1'
 
   - task: CmdLine@2
     displayName: 'pnpm test'
     inputs:
       script: |
         pnpm test
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: PublishTestResults@2
     inputs:

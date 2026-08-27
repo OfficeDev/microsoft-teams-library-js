@@ -29,12 +29,25 @@ steps:
       path: $(Pipeline.Workspace)/.pnpm-store
     displayName: Cache pnpm
 
+  # SFI Network Isolation (CFSClean): configure and authenticate against the
+  # CFS-backed npm registry before installing pnpm.
+  - task: CmdLine@2
+    displayName: 'Configure CFS npm registry'
+    inputs:
+      script: |
+        printf '\nregistry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/\n' >> $(ClientSdkProjectDirectory)/.npmrc
+        echo "always-auth=true" >> $(ClientSdkProjectDirectory)/.npmrc
+
+  - task: npmAuthenticate@0
+    displayName: 'Authenticate npm (CFS feed)'
+    inputs:
+      workingFile: '$(ClientSdkProjectDirectory)/.npmrc'
+
   - task: CmdLine@2
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        corepack enable
-        corepack prepare pnpm@9.0.6 --activate
+        npm install -g pnpm@9.15.9 --globalconfig "$(ClientSdkProjectDirectory)/.npmrc"
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
   - task: CmdLine@2
@@ -43,6 +56,32 @@ steps:
       script: |
         pnpm install
       workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+
+  # Generate nuget.config for the Blazor test app so dotnet restore uses the
+  # CFS-backed ADO feed instead of api.nuget.org (CFSClean compliance).
+  - script: |
+      cat > $(ClientSdkProjectDirectory)/apps/blazor-test-app/nuget.config << 'EOF'
+      <?xml version="1.0" encoding="utf-8"?>
+      <configuration>
+        <packageSources>
+          <clear />
+          <add key="CFS-NuGet" value="https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/nuget/v3/index.json" />
+        </packageSources>
+      </configuration>
+      EOF
+    displayName: 'Generate Blazor nuget.config (CFS feed only)'
+
+  - task: NuGetAuthenticate@1
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore Blazor NuGet packages'
+    inputs:
+      command: 'restore'
+      projects: '$(ClientSdkProjectDirectory)/apps/blazor-test-app/Blazor-Test-App.csproj'
+      feedsToUse: 'config'
+      nugetConfigPath: '$(ClientSdkProjectDirectory)/apps/blazor-test-app/nuget.config'
 
   - task: CmdLine@2
     displayName: 'Build client sdk'
@@ -50,6 +89,9 @@ steps:
       script: |
         pnpm build-force-blazor
       workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      SIZE_LIMIT_FAKE_TIME: '1'
 
   - task: Bash@3
     displayName: 'Run sample test app in background'
@@ -57,6 +99,8 @@ steps:
       targetType: inline
       script: 'nohup pnpm start-test-app &'
       workingDirectory: '$(ClientSdkProjectDirectory)'
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
 
   - task: CodeQL3000Init@0
     inputs:

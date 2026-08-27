@@ -10,7 +10,7 @@
 #   * mkcert / SSR cert / SSR app build are done unconditionally for every
 #     shard (Playwright distributes tests across shards randomly, so any
 #     shard could run an SSR test).
-#   * `npx playwright install --with-deps chromium` installs the Playwright
+#   * `pnpm exec playwright install --with-deps chromium` installs the Playwright
 #     browser; this isn't needed for Cypress.
 #   * dotnet HTTPS dev cert is initialized for the Blazor test app.
 
@@ -49,12 +49,16 @@ jobs:
               pnpm --filter teams-test-app build
             displayName: 'Build teamsjs test app'
             workingDirectory: '$(ClientSdkProjectDirectory)'
+            env:
+              NEXT_TELEMETRY_DISABLED: '1'
 
           - script: |
-              sudo apt-get install -y libnss3-tools
-              curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
-              chmod +x mkcert-v*-linux-amd64
-              sudo mv mkcert-v*-linux-amd64 /usr/local/bin/mkcert
+              sudo apt-get update
+              if ! sudo apt-get install -y libnss3-tools mkcert; then
+                echo "Failed to install mkcert from apt repositories."
+                echo "Use an internal package source (for example ADO Universal Packages) for CFSClean-compliant installs."
+                exit 1
+              fi
             displayName: 'Install mkcert (for SSR test app cert)'
 
           - script: |
@@ -66,6 +70,8 @@ jobs:
               pnpm --filter ssr-test-app build
             displayName: 'Build teamsjs SSR test app'
             workingDirectory: '$(ClientSdkProjectDirectory)'
+            env:
+              NEXT_TELEMETRY_DISABLED: '1'
 
           # Initialize the .NET HTTPS dev cert so the Blazor test app can
           # serve over https://127.0.0.1:44302.
@@ -74,7 +80,7 @@ jobs:
             displayName: 'Ensure .NET HTTPS dev certificate for Blazor'
 
           - script: |
-              npx playwright install --with-deps chromium
+              pnpm exec playwright install --with-deps chromium
             displayName: 'Install Playwright browsers'
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
@@ -82,7 +88,7 @@ jobs:
           # Blazor, Orange, SSR), running the suite for the requested
           # shard, and tearing down on completion.
           - bash: |
-              pnpm exec ts-node tools/cli/runPlaywrightE2ETests.ts \
+              pnpm exec tsx tools/cli/runPlaywrightE2ETests.ts \
                 --useDataFromLocal=true \
                 --targetClientSdkCheckpoint "${{ parameters.versionBranch }}" \
                 --reportFileName "e2e-playwright-report-shard-${{ shardIndex }}" \
@@ -93,6 +99,7 @@ jobs:
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
             env:
               CI: 'true'
+              NEXT_TELEMETRY_DISABLED: '1'
 
           - task: PublishTestResults@2
             inputs:

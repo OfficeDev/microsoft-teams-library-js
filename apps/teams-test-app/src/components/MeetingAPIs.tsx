@@ -253,7 +253,7 @@ const ShareAppContentToStage = (): React.ReactElement =>
       },
     },
     defaultInput: JSON.stringify({
-      appContentUrl: 'https://www.bing.com',
+      appContentUrl: 'https://example.invalid',
       shareOptions: { sharingProtocol: meeting.SharingProtocol.ScreenShare },
     }),
   });

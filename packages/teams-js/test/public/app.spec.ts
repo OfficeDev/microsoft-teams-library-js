@@ -106,6 +106,75 @@ describe('Testing app capability', () => {
       });
     });
 
+    describe('Testing app.getImmediateParentOrigin function', () => {
+      it('returns null when app is not running in an iframe', () => {
+        const mockWindow = utils.mockWindow as any;
+        mockWindow.parent = mockWindow;
+
+        const result = app.getImmediateParentOrigin();
+
+        expect(result).toBeNull();
+      });
+
+      it('returns immediate parent origin from location.ancestorOrigins when available', () => {
+        const mockWindow = utils.mockWindow as any;
+        mockWindow.parent = utils.parentWindow;
+        mockWindow.location.ancestorOrigins = {
+          length: 2,
+          item: (index: number) =>
+            index === 0
+              ? 'https://widget-renderer.usercontent.microsoft'
+              : index === 1
+                ? 'https://ignored-ancestor.example.com'
+                : null,
+        };
+
+        const result = app.getImmediateParentOrigin();
+
+        expect(result).toBe('https://widget-renderer.usercontent.microsoft');
+      });
+
+      it('returns origin derived from document.referrer when ancestorOrigins is unavailable', () => {
+        const mockWindow = utils.mockWindow as any;
+        mockWindow.parent = utils.parentWindow;
+        mockWindow.location.ancestorOrigins = undefined;
+        mockWindow.document = {
+          referrer: 'https://widget-renderer.usercontent.microsoft/embed/page?foo=bar',
+        };
+
+        const result = app.getImmediateParentOrigin();
+
+        expect(result).toBe('https://widget-renderer.usercontent.microsoft');
+      });
+
+      it('returns null when referrer origin matches app origin', () => {
+        const mockWindow = utils.mockWindow as any;
+        mockWindow.parent = utils.parentWindow;
+        mockWindow.location.origin = 'https://my-app.example.com';
+        mockWindow.location.ancestorOrigins = undefined;
+        mockWindow.document = {
+          referrer: 'https://my-app.example.com/redirected/inside/iframe',
+        };
+
+        const result = app.getImmediateParentOrigin();
+
+        expect(result).toBeNull();
+      });
+
+      it('returns null when ancestorOrigins is unavailable and document.referrer is invalid', () => {
+        const mockWindow = utils.mockWindow as any;
+        mockWindow.parent = utils.parentWindow;
+        mockWindow.location.ancestorOrigins = undefined;
+        mockWindow.document = {
+          referrer: 'not-a-valid-url',
+        };
+
+        const result = app.getImmediateParentOrigin();
+
+        expect(result).toBeNull();
+      });
+    });
+
     describe('Testing app.initialize function', () => {
       it('app.initialize message contains all necessary data', () => {
         app.initialize();

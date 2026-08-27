@@ -26,6 +26,12 @@ import { ChatMembersInformation } from './interfaces';
  */
 const conversationsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
+/**
+ * @hidden
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface OpenConversationRequest {
   /**
    * @hidden
@@ -242,6 +248,7 @@ export function getChatMembers(): Promise<ChatMembersInformation> {
 }
 
 /**
+ * @hidden
  * Checks if the conversations capability is supported by the host
  * @returns boolean to represent whether conversations capability is supported
  *

@@ -108,5 +108,5 @@ extends:
                 displayName: View Published Package URLs
                 inputs:
                   targetType: 'filePath'
-                  filePath: 'microsoft-teams-library-js-pipeline/scripts/view-published-pkg-urls.ps1'
+                  filePath: 'microsoft-teams-library-js-pipeline/scripts/view-published-packages-urls.ps1'
                   arguments: -PIPELINE_WORKSPACE $(System.DefaultWorkingDirectory)

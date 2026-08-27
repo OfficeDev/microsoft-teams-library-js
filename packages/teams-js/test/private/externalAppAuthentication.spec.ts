@@ -1420,7 +1420,7 @@ describe('externalAppAuthentication', () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          let dummyUrl = 'https://contoso.com?param=';
+          let dummyUrl = 'https://microsoft.com?param=';
           while (dummyUrl.length < 2050) {
             dummyUrl += 'a';
           }

@@ -73,13 +73,17 @@ jobs:
               script: |
                 pnpm build-test-app-local
               workingDirectory: '$(ClientSdkProjectDirectory)'
+            env:
+              NEXT_TELEMETRY_DISABLED: '1'
 
           - script: |
-              sudo apt-get install -y libnss3-tools
-              curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
-              chmod +x mkcert-v*-linux-amd64
-              sudo mv mkcert-v*-linux-amd64 /usr/local/bin/mkcert
-            displayName: 'Install mkcert using pre-built binary'
+              sudo apt-get update
+              if ! sudo apt-get install -y libnss3-tools mkcert; then
+                echo "Failed to install mkcert from apt repositories."
+                echo "Use an internal package source (for example ADO Universal Packages) for CFSClean-compliant installs."
+                exit 1
+              fi
+            displayName: 'Install mkcert'
             condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
 
           - powershell: |
@@ -93,9 +97,11 @@ jobs:
             displayName: 'Build teamsjs SSR test app'
             workingDirectory: 'microsoft-teams-library-js'
             condition: and(succeeded(), ${{ eq(testPrefixPattern, '{[S],[s]}') }})
+            env:
+              NEXT_TELEMETRY_DISABLED: '1'
 
           - bash: >
-              pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
+              pnpm exec tsx tools/cli/runAppsWithE2ETests.ts
               --useDataFromLocal=true
               --testPrefixPattern "${{testPrefixPattern}}"
               --envType=${{ variables.envType }}
@@ -103,6 +109,8 @@ jobs:
             displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
+            env:
+              NEXT_TELEMETRY_DISABLED: '1'
 
           - task: PublishTestResults@2
             inputs:
