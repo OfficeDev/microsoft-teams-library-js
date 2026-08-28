@@ -674,6 +674,39 @@ appLogger(
 logWhereTeamsJsIsBeingUsed();
 
 /**
+ * Options controlling how the library resolves which message origins it trusts.
+ *
+ * @remarks
+ * These options exist for apps deployed outside the prod cloud. Supplying either property
+ * switches origin validation to *replace* semantics: the origin list teamsjs was built with is
+ * discarded and only the origins supplied here (together with any patterns passed as
+ * `validMessageOrigins`) are trusted. No request is made to the built-in CDN.
+ *
+ * Most apps should not set these. Apps running in a sovereign cloud should instead prefer a
+ * cloud-specific build of teamsjs, which ships only that cloud's origins; these options are for
+ * cases where a single build must serve more than one cloud.
+ *
+ * @example
+ * ```typescript
+ * await app.initialize(undefined, {
+ *   validOriginsUrl: 'https://statics.gov.teams.microsoft.us/teams-js/validDomains/json/validDomains.json',
+ * });
+ * ```
+ */
+export interface AppInitializationOptions {
+  /**
+   * URL of a JSON document shaped like `{ "validOrigins": string[] }` listing the origins to
+   * trust. Typically the valid-domains document published within the target sovereign cloud.
+   */
+  validOriginsUrl?: string;
+  /**
+   * Origins to trust, supplied inline. May be combined with {@link validOriginsUrl}, in which case
+   * both sets are trusted and neither the bundled nor the CDN list is used.
+   */
+  validOriginsList?: string[];
+}
+
+/**
  * Initializes the library.
  *
  * @remarks
@@ -683,12 +716,15 @@ logWhereTeamsJsIsBeingUsed();
  * will be hosted on a custom domain (i.e., not a standard Microsoft 365 host like Teams, Outlook, etc.) Most apps will never need
  * to pass a value for this parameter.
  * Any domains passed in the array must define a scheme to be able to be processed. Examples: https://www.example.com, chrome://
+ * @param options - Optionally replace the set of origins this library trusts by default. See
+ * {@link AppInitializationOptions}. Most apps will never need to pass a value for this parameter.
  * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
  */
-export function initialize(validMessageOrigins?: string[]): Promise<void> {
+export function initialize(validMessageOrigins?: string[], options?: AppInitializationOptions): Promise<void> {
   return appHelpers.appInitializeHelper(
     getApiVersionTag(appTelemetryVersionNumber, ApiName.App_Initialize),
     validMessageOrigins,
+    options,
   );
 }
 

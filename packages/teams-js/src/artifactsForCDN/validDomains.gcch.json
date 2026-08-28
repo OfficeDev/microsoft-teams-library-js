@@ -1,0 +1,11 @@
+{
+  "cloud": "gcch",
+  "validOriginsCdnEndpoint": "https://res.cdn.office.net/teams-js/validDomains/json/validDomains.gcch.json",
+  "teamsDeepLinkHost": "gov.teams.microsoft.us",
+  "validOrigins": [
+    "gov.teams.microsoft.us",
+    "outlook.office365.us",
+    "portal.office365.us",
+    "www.office365.us"
+  ]
+}

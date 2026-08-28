@@ -1,0 +1,6 @@
+{
+  "cloud": "gallatin",
+  "validOriginsCdnEndpoint": "https://res.cdn.office.net/teams-js/validDomains/json/validDomains.gallatin.json",
+  "teamsDeepLinkHost": "teams.microsoftonline.cn",
+  "validOrigins": ["teams.microsoftonline.cn"]
+}

@@ -1,4 +1,4 @@
-import * as validOriginsJSON from '../artifactsForCDN/validDomains.json';
+import { bundledTeamsDeepLinkHost, bundledValidOrigins, bundledValidOriginsCdnEndpoint } from './cloudEnvironment';
 
 /**
  * @hidden
@@ -112,21 +112,15 @@ export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
 
 /**
  * @hidden
- * Fallback list of valid origins in JSON format
+ * Fallback list of valid origins for the cloud this bundle targets.
+ *
+ * In a sovereign build this contains only that cloud's origins; prod origins are not
+ * present in the bundle at all.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-const validOriginsLocal = validOriginsJSON;
-
-/**
- * @hidden
- * Fallback list of valid origins
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export const validOriginsFallback = validOriginsLocal.validOrigins;
+export const validOriginsFallback = bundledValidOrigins;
 
 /**
  * @hidden
@@ -139,14 +133,14 @@ export const ORIGIN_LIST_FETCH_TIMEOUT_IN_MS: number = 1500;
 
 /**
  * @hidden
- * CDN endpoint of the list of valid origins
+ * CDN endpoint of the list of valid origins for the cloud this bundle targets, or `null` when
+ * the cloud has no reachable CDN (air-gapped). When `null`, {@link validOriginsFallback} is
+ * authoritative and no network call is made.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export const validOriginsCdnEndpoint = new URL(
-  'https://res.cdn.office.net/teams-js/validDomains/json/validDomains.json',
-);
+export const validOriginsCdnEndpoint: URL | null = bundledValidOriginsCdnEndpoint;
 
 /**
  * @hidden
@@ -159,12 +153,12 @@ export const teamsDeepLinkProtocol = 'https';
 
 /**
  * @hidden
- * The host used for deep links into Teams
+ * The host used for deep links into Teams, for the cloud this bundle targets.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export const teamsDeepLinkHost = 'teams.microsoft.com';
+export const teamsDeepLinkHost = bundledTeamsDeepLinkHost;
 
 /** @hidden */
 export const errorLibraryNotInitialized = 'The library has not yet been initialized';

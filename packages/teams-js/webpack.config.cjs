@@ -8,10 +8,15 @@ const WebpackAssetsManifest = require('webpack-assets-manifest');
 const libraryName = 'microsoftTeams';
 const { expect } = require('expect');
 const path = require('path');
-const { DefinePlugin } = require('webpack');
+const { DefinePlugin, NormalModuleReplacementPlugin } = require('webpack');
 const packageVersion = require('./package.json').version;
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 const { ProvidePlugin } = require('webpack');
+const { getTargetCloud, getArtifactPathForCloud, getDistSuffixForCloud, DEFAULT_ARTIFACT } = require('./cloudBuild.cjs');
+
+const targetCloud = getTargetCloud();
+const cloudArtifact = getArtifactPathForCloud(targetCloud);
+const distSuffix = getDistSuffixForCloud(targetCloud);
 
 module.exports = {
   entry: {
@@ -22,7 +27,7 @@ module.exports = {
     filename: '[name].js',
     // the following setting is required for SRI to work
     crossOriginLoading: 'anonymous',
-    path: path.resolve(__dirname, 'dist/umd'),
+    path: path.resolve(__dirname, `dist/umd${distSuffix}`),
     library: {
       name: libraryName,
       type: 'umd',
@@ -70,6 +75,16 @@ module.exports = {
   plugins: [
     new DefinePlugin({
       PACKAGE_VERSION: JSON.stringify(packageVersion),
+      TEAMSJS_CLOUD: JSON.stringify(targetCloud),
+    }),
+
+    // Sovereign builds swap the bundled valid-domains artifact. Prod origins are never
+    // imported in a sovereign build, so they cannot appear in the emitted bundle.
+    new NormalModuleReplacementPlugin(/validDomains\.json$/, (resource) => {
+      const requested = path.resolve(resource.context, resource.request);
+      if (requested === DEFAULT_ARTIFACT && cloudArtifact !== DEFAULT_ARTIFACT) {
+        resource.request = cloudArtifact;
+      }
     }),
 
     // https://www.npmjs.com/package/webpack-subresource-integrity
@@ -89,24 +104,31 @@ module.exports = {
     {
       apply: (compiler) => {
         compiler.hooks.done.tap('wsi-test', () => {
-          const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/umd/MicrosoftTeams-manifest.json'), 'utf-8'));
+          const manifest = JSON.parse(
+            readFileSync(join(__dirname, `dist/umd${distSuffix}/MicrosoftTeams-manifest.json`), 'utf-8'),
+          );
           // If for some reason hash was not generated for the assets, this test will fail in build.
           expect(manifest['MicrosoftTeams.min.js'].integrity).toMatch(/sha384-.*/);
         });
       },
     },
 
-    new FileManagerPlugin({
-      events: {
-        onEnd: {
-          copy: [
-            {
-              source: './dist/umd/MicrosoftTeams.min.js',
-              destination: '../../apps/blazor-test-app/wwwroot/js/MicrosoftTeams.min.js',
+    // The Blazor test app only consumes the prod build.
+    ...(distSuffix === ''
+      ? [
+          new FileManagerPlugin({
+            events: {
+              onEnd: {
+                copy: [
+                  {
+                    source: './dist/umd/MicrosoftTeams.min.js',
+                    destination: '../../apps/blazor-test-app/wwwroot/js/MicrosoftTeams.min.js',
+                  },
+                ],
+              },
             },
-          ],
-        },
-      },
-    }),
+          }),
+        ]
+      : []),
   ],
 };

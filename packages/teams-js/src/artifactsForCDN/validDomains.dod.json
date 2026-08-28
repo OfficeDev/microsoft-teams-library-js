@@ -1,0 +1,12 @@
+{
+  "cloud": "dod",
+  "validOriginsCdnEndpoint": "https://res.cdn.office.net/teams-js/validDomains/json/validDomains.dod.json",
+  "teamsDeepLinkHost": "dod.teams.microsoft.us",
+  "validOrigins": [
+    "dod.teams.microsoft.us",
+    "outlook-dod.office365.us",
+    "webmail.apps.mil",
+    "portal.apps.mil",
+    "www.ohome.apps.mil"
+  ]
+}

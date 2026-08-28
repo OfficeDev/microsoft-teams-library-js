@@ -20,6 +20,7 @@ import {
   normalizeAgeGroupValue,
   runWithTimeout,
 } from '../internal/utils';
+import { prefetchOriginsFromCDN, setValidOriginsOverride } from '../internal/validOrigins';
 import * as app from '../public/app/app';
 import { FrameContexts } from '../public/constants';
 import * as dialog from '../public/dialog/dialog';
@@ -53,10 +54,14 @@ export interface NotifySuccessResponse {
   hasFinishedSuccessfully: true | 'unknown';
 }
 
-export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
+export function appInitializeHelper(
+  apiVersionTag: string,
+  validMessageOrigins?: string[],
+  options?: app.AppInitializationOptions,
+): Promise<void> {
   if (!inServerSideRenderingEnvironment()) {
     return runWithTimeout(
-      () => initializeHelper(apiVersionTag, validMessageOrigins),
+      () => initializeHelper(apiVersionTag, validMessageOrigins, options),
       initializationTimeoutInMs,
       new Error('SDK initialization timed out.'),
     );
@@ -131,12 +136,51 @@ export async function callNotifySuccessInHost(apiVersionTag: string): Promise<No
 }
 
 const initializeHelperLogger = appLogger.extend('initializeHelper');
-function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
+
+/**
+ * Applies the app's valid-origins configuration before the host handshake begins.
+ *
+ * When the app supplies an override, the origins teamsjs was built with are discarded entirely
+ * and no CDN call is made. Otherwise the CDN list is warmed in the background — this is where the
+ * prefetch now happens, rather than on module import, so that importing teamsjs never emits a
+ * network request before the app has had a chance to configure itself.
+ */
+function applyValidOriginsConfiguration(options?: app.AppInitializationOptions): void {
+  const hasOverride = options?.validOriginsUrl !== undefined || options?.validOriginsList !== undefined;
+
+  if (hasOverride) {
+    let overrideUrl: URL | undefined;
+    if (options?.validOriginsUrl !== undefined) {
+      try {
+        overrideUrl = new URL(options.validOriginsUrl);
+      } catch (_) {
+        throw new Error(`validOriginsUrl is not a valid URL: ${options.validOriginsUrl}`);
+      }
+    }
+    setValidOriginsOverride({ list: options?.validOriginsList, url: overrideUrl });
+    return;
+  }
+
+  // No override: warm the cache for this cloud. Deliberately fire-and-forget; validateOrigin
+  // awaits the same in-flight promise if a message arrives first.
+  void prefetchOriginsFromCDN();
+}
+
+function initializeHelper(
+  apiVersionTag: string,
+  validMessageOrigins?: string[],
+  options?: app.AppInitializationOptions,
+): Promise<void> {
   return new Promise<void>((resolve) => {
     // Independent components might not know whether the SDK is initialized so might call it to be safe.
     // Just no-op if that happens to make it easier to use.
     if (!GlobalVars.initializeCalled) {
       GlobalVars.initializeCalled = true;
+
+      // Origin configuration must be applied before the host handshake starts, because the host's
+      // response to the initialize message is itself origin-validated.
+      applyValidOriginsConfiguration(options);
+
       Handlers.initializeHandlers();
       GlobalVars.initializePromise = initializeCommunication(validMessageOrigins, apiVersionTag).then(
         ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
