@@ -114,9 +114,33 @@ Open a PR from `<alias>/release_<x.y.z>-1` into `release/<x.y.z>` (**not** into 
 - `packages/teams-js/README.md` script `src` and integrity hash pointing at the new version
 - the teams-test-app CDN html and its `package.json` likewise
 
-### 4. Create the GitHub release, marked prerelease
+### 4. Merge the bump PR, verify the branch, then create the GitHub release
 
-Tag `v<x.y.z>`, target `release/<x.y.z>`, title `v<x.y.z>`, body = the new changelog section. Tick **prerelease**. Do not attach binaries; publishing adds them.
+The bump PR from step 3 **must be merged into `release/<x.y.z>` before the tag is cut**. Do not continue while the PR is open. Fetch the exact remote branch and fail closed unless its package manifest carries the expected version:
+
+```bash
+set -euo pipefail
+
+expected_version="<x.y.z>"
+release_ref="refs/remotes/origin/release/$expected_version"
+
+git fetch origin \
+  "+refs/heads/release/$expected_version:$release_ref"
+
+release_version=$(
+  git show "${release_ref}:packages/teams-js/package.json" |
+    node -p 'JSON.parse(require("fs").readFileSync(0, "utf8")).version'
+)
+
+if [ "$release_version" != "$expected_version" ]; then
+  echo "Release branch version is $release_version; expected $expected_version." >&2
+  exit 1
+fi
+
+printf 'Verified release/%s at version %s\n' "$expected_version" "$release_version"
+```
+
+Only after that check succeeds, tag `v<x.y.z>`, target `release/<x.y.z>`, title `v<x.y.z>`, and use the new changelog section as the body. Tick **prerelease**. Do not attach binaries; publishing adds them.
 
 It stays a prerelease until step 6 confirms the artifacts are actually live. A release marked "latest" while the CDN is still empty points consumers at something that is not there.
 
