@@ -46,6 +46,30 @@ function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction
   return actionItem && Object.prototype.hasOwnProperty.call(actionItem, 'secondaryId');
 }
 
+/**
+ * Builds a minimal valid Context to use as the payload of a contextChange event.
+ */
+function createChangedContext(frameContext: FrameContexts): app.Context {
+  return {
+    app: {
+      locale: 'someChangedLocale',
+      theme: 'someChangedTheme',
+      sessionId: 'changedAppSessionId',
+      host: {
+        name: HostName.orange,
+        clientType: HostClientType.web,
+        sessionId: 'changedHostSessionId',
+      },
+      appId: new AppId('mock.m365testapp.test'),
+    },
+    page: {
+      id: 'someChangedEntityId',
+      frameContext,
+    },
+    dialogParameters: {},
+  };
+}
+
 describe('Testing app capability', () => {
   const mockErrorMessage = 'Something went wrong...';
   const loadContext: LoadContext = {
@@ -1064,6 +1088,76 @@ describe('Testing app capability', () => {
       });
     });
 
+    describe('Testing app.registerOnContextChangeHandler function', () => {
+      it('app.registerOnContextChangeHandler should not allow calls before initialization', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        expect(() => app.registerOnContextChangeHandler(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('app.registerOnContextChangeHandler should allow deregistration before initialization', () => {
+        expect(() => app.registerOnContextChangeHandler(null as unknown as app.contextHandler)).not.toThrowError();
+      });
+
+      it('app.registerOnContextChangeHandler should send a registerHandler message for the contextChange event', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        app.registerOnContextChangeHandler(() => {});
+
+        const registerHandlerMessages = utils.messages.filter((message) => message.func === 'registerHandler');
+        expect(registerHandlerMessages.length).toBe(1);
+        expect(registerHandlerMessages[0].args).toEqual(['contextChange']);
+      });
+
+      it('app.registerOnContextChangeHandler should not send a registerHandler message when deregistering', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        app.registerOnContextChangeHandler(null as unknown as app.contextHandler);
+
+        expect(utils.findMessageByFunc('registerHandler')).toBeNull();
+      });
+
+      Object.values(FrameContexts).forEach((context) => {
+        it(`app.registerOnContextChangeHandler should successfully register a context change handler from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const changedContext = createChangedContext(context);
+          let newContext: app.Context | undefined;
+          app.registerOnContextChangeHandler((updatedContext) => {
+            newContext = updatedContext;
+          });
+          await utils.sendMessage('contextChange', changedContext);
+          expect(newContext).toEqual(changedContext);
+        });
+      });
+
+      it('app.registerOnContextChangeHandler should replace a previously registered handler', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const changedContext = createChangedContext(FrameContexts.content);
+
+        const handlerOne = jest.fn();
+        app.registerOnContextChangeHandler(handlerOne);
+        const handlerTwo = jest.fn();
+        app.registerOnContextChangeHandler(handlerTwo);
+
+        await utils.sendMessage('contextChange', changedContext);
+
+        expect(handlerTwo).toHaveBeenCalledWith(changedContext);
+        expect(handlerOne).not.toHaveBeenCalled();
+      });
+
+      it('app.registerOnContextChangeHandler should not invoke a deregistered handler', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const handler = jest.fn();
+        app.registerOnContextChangeHandler(handler);
+        app.registerOnContextChangeHandler(null as unknown as app.contextHandler);
+
+        await utils.sendMessage('contextChange', createChangedContext(FrameContexts.content));
+
+        expect(handler).not.toHaveBeenCalled();
+      });
+    });
+
     it('should listen to frame messages for a frameless window', () => {
       utils.initializeAsFrameless(['https://www.example.com']);
 
@@ -2042,6 +2136,62 @@ describe('Testing app capability', () => {
           } as DOMMessageEvent);
           expect(newTheme).toBe('someTheme');
         });
+      });
+    });
+
+    describe('Testing app.registerOnContextChangeHandler function', () => {
+      it('app.registerOnContextChangeHandler should not allow calls before initialization', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        expect(() => app.registerOnContextChangeHandler(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('app.registerOnContextChangeHandler should send a registerHandler message for the contextChange event', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        app.registerOnContextChangeHandler(() => {});
+
+        const registerHandlerMessages = utils.messages.filter((message) => message.func === 'registerHandler');
+        expect(registerHandlerMessages.length).toBe(1);
+        expect(registerHandlerMessages[0].args).toEqual(['contextChange']);
+      });
+
+      Object.values(FrameContexts).forEach((context) => {
+        it(`app.registerOnContextChangeHandler should successfully register a context change handler from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const changedContext = createChangedContext(context);
+          let newContext: app.Context | undefined;
+          app.registerOnContextChangeHandler((updatedContext) => {
+            newContext = updatedContext;
+          });
+          await utils.respondToFramelessMessage({
+            data: {
+              func: 'contextChange',
+              args: [changedContext],
+            },
+          } as DOMMessageEvent);
+          expect(newContext).toEqual(changedContext);
+        });
+      });
+
+      it('app.registerOnContextChangeHandler should replace a previously registered handler', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const changedContext = createChangedContext(FrameContexts.content);
+
+        const handlerOne = jest.fn();
+        app.registerOnContextChangeHandler(handlerOne);
+        const handlerTwo = jest.fn();
+        app.registerOnContextChangeHandler(handlerTwo);
+
+        await utils.respondToFramelessMessage({
+          data: {
+            func: 'contextChange',
+            args: [changedContext],
+          },
+        } as DOMMessageEvent);
+
+        expect(handlerTwo).toHaveBeenCalledWith(changedContext);
+        expect(handlerOne).not.toHaveBeenCalled();
       });
     });
 
