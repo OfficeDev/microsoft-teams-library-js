@@ -45,7 +45,7 @@ export interface RuntimeFeatureFlags {
 // Default runtime feature flags
 const defaultFeatureFlags: RuntimeFeatureFlags = {
   disableEnforceOriginMatchForChildResponses: false,
-} as const;
+};
 
 // Object that stores the current runtime feature flag state. A copy is taken so that callers of
 // getCurrentFeatureFlagsState() never receive a reference to defaultFeatureFlags itself.

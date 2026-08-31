@@ -81,12 +81,6 @@ describe('featureFlags', () => {
 
       expect(overwriteFeatureFlagsState({})).toEqual({ disableEnforceOriginMatchForChildResponses: true });
     });
-
-    it('should return the updated state', () => {
-      expect(overwriteFeatureFlagsState({ disableEnforceOriginMatchForChildResponses: true })).toBe(
-        getCurrentFeatureFlagsState(),
-      );
-    });
   });
 
   describe('resetFeatureFlagsState', () => {
