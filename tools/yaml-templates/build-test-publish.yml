@@ -119,6 +119,27 @@ steps:
       NEXT_TELEMETRY_DISABLED: '1'
       SIZE_LIMIT_FAKE_TIME: '1'
 
+  # Sovereign cloud variants. Run after the main build because `pnpm build` cleans dist/, which
+  # would otherwise wipe these. Each variant swaps the bundled valid-domains artifact so it
+  # contains only its own cloud's origins.
+  - task: CmdLine@2
+    displayName: 'pnpm build sovereign cloud variants'
+    inputs:
+      workingDirectory: 'packages/teams-js'
+      script: |
+        pnpm build-clouds
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+
+  # Fails the build if any entry point declared in package.json `exports` is missing, or if the
+  # exports map and the build config disagree about which clouds exist.
+  - task: CmdLine@2
+    displayName: 'Verify package exports'
+    inputs:
+      workingDirectory: 'packages/teams-js'
+      script: |
+        pnpm verify-exports
+
   - task: CmdLine@2
     displayName: 'pnpm test'
     inputs:
@@ -182,6 +203,16 @@ steps:
       contents: '**\?(*.js|*.ts|*.map)'
       targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
+
+  # Sovereign cloud bundles, kept in per-cloud folders alongside the prod one so a script-tag
+  # consumer in a sovereign cloud can load the build for that cloud.
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: 'packages\teams-js\dist'
+      contents: 'umd-*\**\?(*.js|*.ts|*.map)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js-clouds'
+      flattenFolders: false
+    displayName: 'Copy TeamsJS sovereign cloud content for CDN'
 
   - task: CopyFiles@2
     inputs:

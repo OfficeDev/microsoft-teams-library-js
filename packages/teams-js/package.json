@@ -11,17 +11,68 @@
   "main": "./dist/umd/MicrosoftTeams.min.js",
   "typings": "./dist/esm/packages/teams-js/dts/index.d.ts",
   "module": "./dist/esm/packages/teams-js/src/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/packages/teams-js/dts/index.d.ts",
+      "import": "./dist/esm/packages/teams-js/src/index.js",
+      "require": "./dist/umd/MicrosoftTeams.min.js",
+      "default": "./dist/umd/MicrosoftTeams.min.js"
+    },
+    "./gcch": {
+      "types": "./dist/esm-gcch/packages/teams-js/dts/index.d.ts",
+      "import": "./dist/esm-gcch/packages/teams-js/src/index.js",
+      "require": "./dist/umd-gcch/MicrosoftTeams.min.js",
+      "default": "./dist/umd-gcch/MicrosoftTeams.min.js"
+    },
+    "./dod": {
+      "types": "./dist/esm-dod/packages/teams-js/dts/index.d.ts",
+      "import": "./dist/esm-dod/packages/teams-js/src/index.js",
+      "require": "./dist/umd-dod/MicrosoftTeams.min.js",
+      "default": "./dist/umd-dod/MicrosoftTeams.min.js"
+    },
+    "./gallatin": {
+      "types": "./dist/esm-gallatin/packages/teams-js/dts/index.d.ts",
+      "import": "./dist/esm-gallatin/packages/teams-js/src/index.js",
+      "require": "./dist/umd-gallatin/MicrosoftTeams.min.js",
+      "default": "./dist/umd-gallatin/MicrosoftTeams.min.js"
+    },
+    "./ag08": {
+      "types": "./dist/esm-ag08/packages/teams-js/dts/index.d.ts",
+      "import": "./dist/esm-ag08/packages/teams-js/src/index.js",
+      "require": "./dist/umd-ag08/MicrosoftTeams.min.js",
+      "default": "./dist/umd-ag08/MicrosoftTeams.min.js"
+    },
+    "./ag09": {
+      "types": "./dist/esm-ag09/packages/teams-js/dts/index.d.ts",
+      "import": "./dist/esm-ag09/packages/teams-js/src/index.js",
+      "require": "./dist/umd-ag09/MicrosoftTeams.min.js",
+      "default": "./dist/umd-ag09/MicrosoftTeams.min.js"
+    },
+    "./package.json": "./package.json",
+    "./dist/*": "./dist/*"
+  },
+  "typesVersions": {
+    "*": {
+      "gcch": ["./dist/esm-gcch/packages/teams-js/dts/index.d.ts"],
+      "dod": ["./dist/esm-dod/packages/teams-js/dts/index.d.ts"],
+      "gallatin": ["./dist/esm-gallatin/packages/teams-js/dts/index.d.ts"],
+      "ag08": ["./dist/esm-ag08/packages/teams-js/dts/index.d.ts"],
+      "ag09": ["./dist/esm-ag09/packages/teams-js/dts/index.d.ts"]
+    }
+  },
   "scripts": {
     "build": "pnpm clean && pnpm lint && pnpm build-rollup && pnpm build-webpack && pnpm docs:validate && pnpm size",
     "build-rollup": "pnpm clean && rollup -c",
     "build-webpack": "webpack",
+    "build-all-clouds": "pnpm build && pnpm build-clouds",
+    "build-clouds": "pnpm build-cloud:gcch && pnpm build-cloud:dod && pnpm build-cloud:gallatin && pnpm build-cloud:ag08 && pnpm build-cloud:ag09",
     "build-cloud": "rollup -c && webpack",
-    "build-all-clouds": "pnpm build && pnpm build-cloud:gcch && pnpm build-cloud:dod && pnpm build-cloud:gallatin && pnpm build-cloud:ag08 && pnpm build-cloud:ag09",
     "build-cloud:gcch": "cross-env TEAMSJS_CLOUD=gcch pnpm build-cloud",
     "build-cloud:dod": "cross-env TEAMSJS_CLOUD=dod pnpm build-cloud",
     "build-cloud:gallatin": "cross-env TEAMSJS_CLOUD=gallatin pnpm build-cloud",
     "build-cloud:ag08": "cross-env TEAMSJS_CLOUD=ag08 pnpm build-cloud",
     "build-cloud:ag09": "cross-env TEAMSJS_CLOUD=ag09 pnpm build-cloud",
+    "verify-exports": "node ./scripts/verifyExports.cjs",
     "clean": "rimraf ./dist",
     "docs": "pnpm typedoc",
     "docs:validate": "pnpm typedoc --emit none",

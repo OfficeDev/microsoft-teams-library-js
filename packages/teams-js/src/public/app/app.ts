@@ -689,7 +689,7 @@ logWhereTeamsJsIsBeingUsed();
  * @example
  * ```typescript
  * await app.initialize(undefined, {
- *   validOriginsUrl: 'https://statics.gov.teams.microsoft.us/teams-js/validDomains/json/validDomains.json',
+ *   validOriginsUrl: 'https://res.cdn.office.net/teams-js/validDomains/json/validDomains.gcch.json',
  * });
  * ```
  */

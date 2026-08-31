@@ -21,7 +21,7 @@ import { Utils } from '../utils';
  */
 describe('sovereign cloud valid origins', () => {
   describe('cloudEnvironment', () => {
-    it('defaults to the prod cloud when built without TEAMSJS_CLOUD', () => {
+    it('resolves the cloud from the bundled artifact, defaulting to prod', () => {
       expect(currentCloudEnvironment).toBe('prod');
       expect(isSovereignCloud()).toBe(false);
     });
@@ -86,6 +86,13 @@ describe('sovereign cloud valid origins', () => {
         expect(json.teamsDeepLinkHost).not.toBe(prod.teamsDeepLinkHost);
       }
     });
+
+    it('declares a cloud matching its own filename, so an aliased build cannot mismatch', () => {
+      for (const { file, json } of artifacts) {
+        const expected = file === 'validDomains.json' ? 'prod' : file.replace('validDomains.', '').replace('.json', '');
+        expect(json.cloud).toBe(expected);
+      }
+    });
   });
 
   describe('valid origins override (replace semantics)', () => {
@@ -111,9 +118,7 @@ describe('sovereign cloud valid origins', () => {
     });
 
     it('throws when the override specifies neither a list nor a url', () => {
-      expect(() => setValidOriginsOverride({})).toThrow(
-        'A valid origins override must specify at least one of `list` or `url`.',
-      );
+      expect(() => setValidOriginsOverride({})).toThrow('A valid origins override must specify a list or a url.');
       expect(hasValidOriginsOverride()).toBe(false);
     });
 

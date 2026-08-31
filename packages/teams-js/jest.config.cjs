@@ -6,7 +6,6 @@ module.exports = {
   ...commonSettings,
   globals: {
     PACKAGE_VERSION: packageVersion,
-    TEAMSJS_CLOUD: 'prod',
     fetch: global.fetch,
   },
   setupFilesAfterEnv: ['./test/setupTest.ts'],

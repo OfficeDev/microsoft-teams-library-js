@@ -63,9 +63,15 @@ export default [
         preventAssignment: true,
         'process.env.NODE_ENV': JSON.stringify('production'),
         PACKAGE_VERSION: JSON.stringify(packageJson.version),
-        TEAMSJS_CLOUD: JSON.stringify(targetCloud),
       }),
-      typescript(),
+      typescript({
+        // tsconfig.json pins outDir/declarationDir to the prod paths. A cloud build writes to its
+        // own directory, and @rollup/plugin-typescript requires outDir to sit inside rollup's
+        // `dir`, so both are overridden here rather than in tsconfig (which is shared with
+        // `tsc --noEmit` and other tooling).
+        outDir: `dist/esm${distSuffix}`,
+        declarationDir: `dist/esm${distSuffix}/packages/teams-js/dts`,
+      }),
       json(),
       commonjs(),
       nodePolyfills(),
