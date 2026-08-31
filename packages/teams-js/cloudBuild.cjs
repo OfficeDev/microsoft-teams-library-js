@@ -13,6 +13,7 @@
  */
 
 const path = require('path');
+const fs = require('fs');
 
 /** The default public/commercial cloud. Produces the existing, unsuffixed output. */
 const PROD = 'prod';
@@ -34,9 +35,25 @@ function getTargetCloud() {
 
 /**
  * Absolute path to the valid-domains artifact for the target cloud.
+ *
+ * Also asserts that the artifact declares the cloud it is being used for. The artifact is the
+ * runtime source of truth, so a mis-wired alias would otherwise produce a bundle that silently
+ * trusts the wrong cloud's origins. Failing here turns that into a build error instead.
  */
 function getArtifactPathForCloud(cloud) {
-  return cloud === PROD ? DEFAULT_ARTIFACT : path.resolve(__dirname, `src/artifactsForCDN/validDomains.${cloud}.json`);
+  const artifactPath =
+    cloud === PROD ? DEFAULT_ARTIFACT : path.resolve(__dirname, `src/artifactsForCDN/validDomains.${cloud}.json`);
+
+  if (!fs.existsSync(artifactPath)) {
+    throw new Error(`No valid-domains artifact for cloud "${cloud}" at ${artifactPath}`);
+  }
+  const declared = JSON.parse(fs.readFileSync(artifactPath, 'utf8')).cloud;
+  if (declared !== cloud) {
+    throw new Error(
+      `Artifact ${path.basename(artifactPath)} declares cloud "${declared}" but is being used for a "${cloud}" build.`,
+    );
+  }
+  return artifactPath;
 }
 
 /**

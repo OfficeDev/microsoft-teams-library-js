@@ -75,7 +75,6 @@ module.exports = {
   plugins: [
     new DefinePlugin({
       PACKAGE_VERSION: JSON.stringify(packageVersion),
-      TEAMSJS_CLOUD: JSON.stringify(targetCloud),
     }),
 
     // Sovereign builds swap the bundled valid-domains artifact. Prod origins are never

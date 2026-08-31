@@ -140,30 +140,27 @@ const initializeHelperLogger = appLogger.extend('initializeHelper');
 /**
  * Applies the app's valid-origins configuration before the host handshake begins.
  *
- * When the app supplies an override, the origins teamsjs was built with are discarded entirely
- * and no CDN call is made. Otherwise the CDN list is warmed in the background — this is where the
- * prefetch now happens, rather than on module import, so that importing teamsjs never emits a
- * network request before the app has had a chance to configure itself.
+ * When the app supplies an override, the origins teamsjs was built with are discarded entirely.
+ * Otherwise the list is warmed in the background — this is where the prefetch happens, rather than
+ * on module import, so that importing teamsjs never emits a network request before the app has had
+ * a chance to configure itself.
+ *
+ * An invalid `validOriginsUrl` throws from the `URL` constructor, which fails initialization rather
+ * than silently falling back to origins the app asked not to trust.
  */
 function applyValidOriginsConfiguration(options?: app.AppInitializationOptions): void {
-  const hasOverride = options?.validOriginsUrl !== undefined || options?.validOriginsList !== undefined;
+  const { validOriginsUrl, validOriginsList } = options ?? {};
 
-  if (hasOverride) {
-    let overrideUrl: URL | undefined;
-    if (options?.validOriginsUrl !== undefined) {
-      try {
-        overrideUrl = new URL(options.validOriginsUrl);
-      } catch (_) {
-        throw new Error(`validOriginsUrl is not a valid URL: ${options.validOriginsUrl}`);
-      }
-    }
-    setValidOriginsOverride({ list: options?.validOriginsList, url: overrideUrl });
-    return;
+  if (validOriginsUrl !== undefined || validOriginsList !== undefined) {
+    setValidOriginsOverride({
+      list: validOriginsList,
+      url: validOriginsUrl === undefined ? undefined : new URL(validOriginsUrl),
+    });
+  } else {
+    // Deliberately fire-and-forget; validateOrigin awaits the same in-flight promise if a message
+    // arrives first.
+    void prefetchOriginsFromCDN();
   }
-
-  // No override: warm the cache for this cloud. Deliberately fire-and-forget; validateOrigin
-  // awaits the same in-flight promise if a message arrives first.
-  void prefetchOriginsFromCDN();
 }
 
 function initializeHelper(
