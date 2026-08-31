@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Initialized the runtime feature flags with a copy of the defaults so that `getCurrentFeatureFlagsState()` no longer returns a reference to the shared defaults object.",
+  "packageName": "@microsoft/teams-js",
+  "email": "edwardlee@microsoft.com",
+  "dependentChangeType": "none"
+}
