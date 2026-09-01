@@ -3,5 +3,5 @@
   "comment": "Added SharePoint domains to the valid origins list.",
   "packageName": "@microsoft/teams-js",
   "email": "chyua+odspmdb@microsoft.com",
-  "dependentChangeType": "patch"
+  "dependentChangeType": "none"
 }

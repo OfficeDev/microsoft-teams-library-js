@@ -44,6 +44,13 @@ describe('validOrigins', () => {
       const result = await validateOrigin(messageOrigin, disableCache);
       expect(result).toBe(true);
     });
+    it.each(['https://contoso.sharepoint.com', 'https://contoso.sharepoint-df.com'])(
+      'validateOrigin returns true for SharePoint origin %s in teams pre-known allowlist',
+      async (origin) => {
+        const result = await validateOrigin(new URL(origin), disableCache);
+        expect(result).toBe(true);
+      },
+    );
     it('validateOrigin returns false if origin is not in teams pre-known allowlist', async () => {
       const messageOrigin = new URL('https://badorigin.example.com');
       const result = await validateOrigin(messageOrigin, disableCache);
