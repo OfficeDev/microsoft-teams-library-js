@@ -5,6 +5,47 @@ on:
     types: [closed]
 
 jobs:
+  CreatePrerelease:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: create-prerelease-${{ github.event.pull_request.base.ref }}
+      cancel-in-progress: false
+      queue: max
+    steps:
+      - name: Checkout release candidate
+        uses: actions/checkout@v4.1.1
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          path: release-candidate
+          persist-credentials: false
+
+      - name: Checkout release automation
+        uses: actions/checkout@v4.1.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          path: release-automation
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '18.x'
+
+      - name: Create or update GitHub prerelease
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          node release-automation/tools/cli/create-github-release.js \
+            --base-ref "$BASE_REF" \
+            --target "$TARGET_SHA" \
+            --package-file release-candidate/packages/teams-js/package.json \
+            --changelog-file release-candidate/packages/teams-js/CHANGELOG.md
+
   PostMerge:
     # this job will only run if the PR has been merged
     if: github.event.pull_request.merged == true
