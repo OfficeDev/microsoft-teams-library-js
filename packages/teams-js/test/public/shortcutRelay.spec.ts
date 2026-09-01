@@ -141,5 +141,124 @@ describe('shortcutRelay capability', () => {
         expect(prev).toBe(noop);
       });
     });
+
+    describe('resetIsShortcutRelayCapabilityEnabled()', () => {
+      let addEventListenerSpy: jest.SpyInstance;
+      let removeEventListenerSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        addEventListenerSpy = jest.spyOn(document, 'addEventListener');
+        removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
+      });
+
+      afterEach(() => {
+        addEventListenerSpy.mockRestore();
+        removeEventListenerSpy.mockRestore();
+      });
+
+      const keydownListenersAdded = (): number =>
+        addEventListenerSpy.mock.calls.filter(([type]) => type === 'keydown').length;
+      const keydownListenersRemoved = (): number =>
+        removeEventListenerSpy.mock.calls.filter(([type]) => type === 'keydown').length;
+
+      /**
+       * The capability keeps module-level state that survives between tests in this file, so
+       * normalize it before asserting on listener bookkeeping.
+       */
+      const initializeSupportedAndReset = async (): Promise<void> => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { shortcutRelay: {} } });
+        shortcutRelay.resetIsShortcutRelayCapabilityEnabled();
+        addEventListenerSpy.mockClear();
+        removeEventListenerSpy.mockClear();
+      };
+
+      const enableAndRespond = async (shortcuts: string[], overridableShortcuts: string[] = []): Promise<void> => {
+        utils.messages = [];
+        const enablePromise = shortcutRelay.enableShortcutRelayCapability();
+        const request = utils.findMessageByFunc(ApiName.ShortcutRelay_GetHostShortcuts);
+        expect(request).not.toBeNull();
+        utils.respondToFramelessMessage({
+          data: { id: request?.id, args: [{ shortcuts, overridableShortcuts }] },
+        } as DOMMessageEvent);
+        await enablePromise;
+      };
+
+      const dispatchCtrlS = (): void => {
+        document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 's', ctrlKey: true, bubbles: true }));
+      };
+
+      it('should throw before initialization', () => {
+        utils.uninitializeRuntimeConfig();
+        expect(() => shortcutRelay.resetIsShortcutRelayCapabilityEnabled()).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      it('should throw when capability not supported in runtime', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: {} });
+
+        expect.assertions(1);
+        try {
+          shortcutRelay.resetIsShortcutRelayCapabilityEnabled();
+        } catch (e) {
+          expect(e).toEqual(errorNotSupportedOnPlatform);
+        }
+      });
+
+      it('stops forwarding shortcuts that were previously registered by the host', async () => {
+        await initializeSupportedAndReset();
+        await enableAndRespond(['ctrl+s']);
+
+        utils.messages = [];
+        dispatchCtrlS();
+        expect(utils.findMessageByFunc(ApiName.ShortcutRelay_ForwardShortcutEvent)).not.toBeNull();
+
+        shortcutRelay.resetIsShortcutRelayCapabilityEnabled();
+
+        utils.messages = [];
+        dispatchCtrlS();
+        expect(utils.findMessageByFunc(ApiName.ShortcutRelay_ForwardShortcutEvent)).toBeNull();
+      });
+
+      it('drops the overridable shortcut handler', async () => {
+        await initializeSupportedAndReset();
+        const handler = jest.fn(() => true);
+        expect(shortcutRelay.setOverridableShortcutHandler(handler)).toBeUndefined();
+
+        shortcutRelay.resetIsShortcutRelayCapabilityEnabled();
+
+        expect(shortcutRelay.setOverridableShortcutHandler(undefined)).toBeUndefined();
+      });
+
+      it('does not add a second keydown listener when the capability is enabled twice', async () => {
+        await initializeSupportedAndReset();
+        await enableAndRespond(['ctrl+s']);
+        await enableAndRespond(['ctrl+s']);
+
+        expect(keydownListenersAdded()).toBe(1);
+        expect(keydownListenersRemoved()).toBe(0);
+      });
+
+      it('leaves exactly one keydown listener attached after an enable -> reset -> enable cycle', async () => {
+        await initializeSupportedAndReset();
+
+        await enableAndRespond(['ctrl+s']);
+        expect(keydownListenersAdded()).toBe(1);
+        expect(keydownListenersRemoved()).toBe(0);
+
+        shortcutRelay.resetIsShortcutRelayCapabilityEnabled();
+        expect(keydownListenersRemoved()).toBe(1);
+
+        await enableAndRespond(['ctrl+s']);
+        expect(keydownListenersAdded()).toBe(2);
+        expect(keydownListenersAdded() - keydownListenersRemoved()).toBe(1);
+
+        utils.messages = [];
+        dispatchCtrlS();
+        expect(utils.messages.filter((m) => m.func === ApiName.ShortcutRelay_ForwardShortcutEvent)).toHaveLength(1);
+      });
+    });
   });
 });
