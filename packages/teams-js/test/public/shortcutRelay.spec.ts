@@ -152,6 +152,13 @@ describe('shortcutRelay capability', () => {
       });
 
       afterEach(() => {
+        // Tests here enable the capability, which keeps module-level state and a document keydown
+        // listener alive past the test. Tear it down so later tests never start from a dirty state.
+        // Tests that intentionally leave the runtime uninitialized or unsupported have nothing to
+        // reset, and calling reset in those states would throw.
+        if (GlobalVars.initializeCompleted && shortcutRelay.isSupported()) {
+          shortcutRelay.resetIsShortcutRelayCapabilityEnabled();
+        }
         addEventListenerSpy.mockRestore();
         removeEventListenerSpy.mockRestore();
       });
