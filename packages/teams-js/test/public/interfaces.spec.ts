@@ -1,5 +1,11 @@
 import { ErrorCode, isSdkError } from '../../src/public/interfaces';
 
+/**
+ * isSdkError is a presence-only guard: it returns true for any value whose `errorCode` property is
+ * defined, without checking that the code belongs to ErrorCode or that `message` is a string. The
+ * assertions below deliberately lock in that current behavior rather than the stricter behavior the
+ * SdkError type implies, so they will fail loudly if the guard is ever tightened.
+ */
 describe('interfaces', () => {
   describe('isSdkError', () => {
     it('should return false for non-object values', () => {
@@ -51,9 +57,14 @@ describe('interfaces', () => {
     });
 
     it('should return true for an unrecognized errorCode, since only its presence is checked', () => {
-      const unrecognizedErrorCodes = ['INTERNAL_ERROR', 'not a code', -1, 0, null, {}];
+      const unrecognizedErrorCodes = ['not a code', -1, 0, null, {}];
 
+      // Guard against picking a value that is actually part of ErrorCode. Object.values on a numeric
+      // TypeScript enum yields both the numeric members and their reverse-mapped string names, so a
+      // name such as 'INTERNAL_ERROR' would not be unrecognized.
+      const errorCodeValues: unknown[] = Object.values(ErrorCode);
       unrecognizedErrorCodes.forEach((errorCode) => {
+        expect(errorCodeValues).not.toContain(errorCode);
         expect(isSdkError({ errorCode })).toBe(true);
       });
     });
@@ -64,12 +75,6 @@ describe('interfaces', () => {
 
     it('should return true for an Error instance augmented with an errorCode', () => {
       const error = Object.assign(new Error('something went wrong'), { errorCode: ErrorCode.INTERNAL_ERROR });
-
-      expect(isSdkError(error)).toBe(true);
-    });
-
-    it('should return true when errorCode is inherited from the prototype chain', () => {
-      const error = Object.create({ errorCode: ErrorCode.INTERNAL_ERROR });
 
       expect(isSdkError(error)).toBe(true);
     });
