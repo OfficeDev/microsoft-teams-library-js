@@ -50,18 +50,32 @@ The TeamsJS Client library contains a [Change Log](./packages/teams-js/CHANGELOG
 
 Beachball generates JSON change files based on a few simple answers from you:
 
-- Change type: this can be one of four types: Major, Minor, Patch, and None. In addition to the descriptions provided in the prompt, the following can help guide which type to choose:
+- Change type: contributor PRs select from Minor, Patch, and None. In addition to the descriptions provided in the prompt, the following can help guide which type to choose:
 
-  - Major - when you make incompatible API changes,
   - Minor - when you add functionality in a backwards compatible manner,
-  - Patch - when you make backwards compatible bug fixes
+  - Patch - when you make backwards compatible bug fixes,
   - None - when the change does not affect the published package in any way.
+
+  The Major and Prerelease change types are gated by `disallowedChangeTypes` in [beachball.config.js](./beachball.config.js) and are not available from the interactive prompt. See [Cutting a major or prerelease release](#cutting-a-major-or-prerelease-release) for the maintainer procedure.
 
 - Describe changes: Type your own message or choose one of the commit messages. Try to make it descriptive - it will help you if you need to locate the change file later.
   - Please use past tense (e.g., "Added comments to \`app.initialize\`")
   - Enclose function/interface/enum/etc. names in backticks
 
 And that's it! As easy as hitting 'enter' twice. Beachball will automatically commit the change file you've created. All you have to do is run `pnpm changefile` in the monorepo root to do the above change file generation as the last step in your branch to make sure your PR is ready for review. Our pipelines will check to see if you generated a change file and will fail if you forgot. If they do, please create the change file as per the steps listed and update the content accordingly.
+
+### Cutting a major or prerelease release
+
+The `major` and `prerelease` change types are intentionally excluded from the interactive change-file prompt so an ordinary contributor PR cannot introduce a major or prerelease version bump. This gate is enforced by `disallowedChangeTypes` in [beachball.config.js](./beachball.config.js), and `beachball check` will reject a hand-authored change file that uses either type while the gate is in place. Beachball also silently demotes a disallowed type at bump time, so the gate must be relaxed at the moment `beachball bump` runs, not just when the change file is authored.
+
+To ship a major or prerelease version, a maintainer must:
+
+1. Open a coordinated release PR that removes the relevant entry (`'major'` and/or `'prerelease'`) from `disallowedChangeTypes` in [beachball.config.js](./beachball.config.js).
+2. Add the corresponding change file by hand under [change](./change) with `"type"` set to `"major"` or `"prerelease"`, `"dependentChangeType"` set to `"patch"` (matching the shape beachball generates), the correct `"packageName"`, and a clear description of the breaking change.
+3. Merge the coordinated release PR to `main`, then trigger the release workflow so it runs `beachball bump` against the relaxed configuration and produces the release PR at the intended version.
+4. Immediately after the release workflow has produced its release branch and PR, open a follow-up PR that restores `disallowedChangeTypes` to `['major', 'prerelease']` on `main` and land it before any other contributor change file is authored. Do not wait for the release PR itself to merge, since the bumped release PR carries its own already-bumped versions and does not re-read the config.
+
+Do not bypass the gate by pointing beachball at an alternate configuration in CI, and do not leave `disallowedChangeTypes` relaxed between releases.
 
 ## Contributor License
 

@@ -50,6 +50,12 @@ module.exports = {
       return [prompt.changeType, description];
     },
   },
+  // Major and prerelease version bumps are intentionally gated so an
+  // ordinary contributor PR cannot introduce one. The interactive
+  // `pnpm changefile` prompt hides these types, and `beachball check`
+  // rejects a hand-authored change file that uses either one. For the
+  // maintainer procedure that ships a major or prerelease version, see
+  // "Cutting a major or prerelease release" in CONTRIBUTING.md.
   disallowedChangeTypes: ['major', 'prerelease'],
   generateChangelog: true,
   hooks: { postbump },
