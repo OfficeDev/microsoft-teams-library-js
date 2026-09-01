@@ -211,11 +211,51 @@ Not worth capturing:
 
 Mechanics. This is a standalone PR touching skill files only; never fold it into a release branch, whose diff has to stay limited to the version carriers.
 
+Start from a clean tree on a fresh branch:
+
 ```bash
+set -e
+
+# You reach this step straight off a release, so the tree still holds bumped
+# version carriers and build output. Uncommitted changes follow you onto a new
+# branch, so refuse to start rather than carry that residue into a skill-only PR.
+if [ -n "$(git status --porcelain --untracked-files=all)" ]; then
+  echo "Working tree must be clean before starting a skill-learnings branch." >&2
+  echo "Finish or discard the release changes, stash intentional work with" >&2
+  echo "'git stash push --include-untracked', or use a separate clean worktree." >&2
+  exit 1
+fi
+
 git fetch origin main
-git switch -c "<alias>/release-skill-learnings-$(date +%Y%m%d)" origin/main
-# Edit only .github/skills/release-teamsjs/**
-git add -A && git commit -m "Record what the <version> release taught the release skill"
+git switch -c "<alias>/release-skill-learnings-$(date +%Y%m%d-%H%M%S)" origin/main
+```
+
+Now edit only `.github/skills/release-teamsjs/**`. When the edits are done, stage and commit exactly that path:
+
+```bash
+set -e
+
+git add -- .github/skills/release-teamsjs
+
+# Never `git add -A` here: a blanket add is what lets release residue into a
+# skill-only PR. Enforce the scope instead of trusting a visual check, and keep
+# rename detection off so a move out of the directory cannot hide its deletion.
+staged="$(git diff --cached --name-only --no-renames)"
+if [ -z "$staged" ]; then
+  echo "Nothing staged under .github/skills/release-teamsjs; there is no learning to record." >&2
+  exit 1
+fi
+while IFS= read -r path; do
+  case "$path" in
+    .github/skills/release-teamsjs/*) ;;
+    *)
+      echo "Refusing to commit a staged path outside the release skill: $path" >&2
+      exit 1
+      ;;
+  esac
+done <<< "$staged"
+
+git commit -m "Record what the <version> release taught the release skill"
 git push -u origin HEAD
 ```
 
