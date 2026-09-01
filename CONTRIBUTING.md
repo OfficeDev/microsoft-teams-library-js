@@ -66,14 +66,14 @@ And that's it! As easy as hitting 'enter' twice. Beachball will automatically co
 
 ### Cutting a major or prerelease release
 
-The `major` and `prerelease` change types are intentionally excluded from the interactive change-file prompt so an ordinary contributor PR cannot introduce a major or prerelease version bump. This gate is enforced by `disallowedChangeTypes` in [beachball.config.js](./beachball.config.js), and `beachball check` will reject a hand-authored change file that uses either type while the gate is in place. Beachball also silently demotes a disallowed type at bump time, so the gate must be relaxed at the moment `beachball bump` runs, not just when the change file is authored.
+The `major` and `prerelease` change types are intentionally excluded from the interactive change-file prompt so an ordinary contributor PR cannot introduce a major or prerelease version bump. This gate is enforced by `disallowedChangeTypes` in [beachball.config.js](./beachball.config.js), and `beachball check` will reject a hand-authored change file that uses either type while the gate is in place. Beachball also silently demotes a disallowed type at bump time with no warning: with the current `['major', 'prerelease']` gate, a hand-authored `"type": "major"` file collapses to a `premajor` bump (so a maintainer expecting `3.0.0` would ship `3.0.0-0`), and a `"type": "prerelease"` file collapses to `none` (so the change file is dropped from the release entirely). The gate therefore must be relaxed at the moment `beachball bump` runs, not just when the change file is authored.
 
 To ship a major or prerelease version, a maintainer must:
 
 1. Open a coordinated release PR that removes the relevant entry (`'major'` and/or `'prerelease'`) from `disallowedChangeTypes` in [beachball.config.js](./beachball.config.js).
 2. Add the corresponding change file by hand under [change](./change) with `"type"` set to `"major"` or `"prerelease"`, `"dependentChangeType"` set to `"patch"` (matching the shape beachball generates), the correct `"packageName"`, and a clear description of the breaking change.
 3. Merge the coordinated release PR to `main`, then trigger the release workflow so it runs `beachball bump` against the relaxed configuration and produces the release PR at the intended version.
-4. Immediately after the release workflow has produced its release branch and PR, open a follow-up PR that restores `disallowedChangeTypes` to `['major', 'prerelease']` on `main` and land it before any other contributor change file is authored. Do not wait for the release PR itself to merge, since the bumped release PR carries its own already-bumped versions and does not re-read the config.
+4. Immediately after the release workflow has produced its release branch and its release PR, open a separate follow-up PR against `main` that restores `disallowedChangeTypes` to `['major', 'prerelease']` in [beachball.config.js](./beachball.config.js), and land that follow-up PR on `main` before any other contributor change file is authored. Do not wait for the release PR itself to merge, since it carries its own already-bumped versions and does not re-read the config once the workflow has run.
 
 Do not bypass the gate by pointing beachball at an alternate configuration in CI, and do not leave `disallowedChangeTypes` relaxed between releases.
 
