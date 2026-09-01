@@ -2,11 +2,17 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as app from '../../src/public/app/app';
-import { FrameContexts } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import * as search from '../../src/public/search';
 import { Utils } from '../utils';
 
 const dataError = 'Something went wrong...';
+
+const emptyHandler = (): void => {};
+
+const closedQuery: search.SearchQuery = { searchTerm: 'closed term', timestamp: 100 };
+const executedQuery: search.SearchQuery = { searchTerm: 'executed term', timestamp: 200 };
+const changedQuery: search.SearchQuery = { searchTerm: 'changed term', timestamp: 300 };
 
 describe('Search', () => {
   describe('Framed', () => {
@@ -111,6 +117,147 @@ describe('Search', () => {
           utils.respondToMessage(closeSearchMessage, data.success);
           await expect(promise).resolves.not.toThrow();
         }
+      });
+    });
+
+    describe('registerHandlers', () => {
+      it('FRAMED: should not allow calls before initialization', () => {
+        expect(() => search.registerHandlers(emptyHandler, emptyHandler)).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      const allowedContexts = [FrameContexts.content];
+      Object.values(FrameContexts).forEach((frameContext) => {
+        if (allowedContexts.includes(frameContext)) {
+          return;
+        }
+        it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { search: {} } });
+
+          expect(() => search.registerHandlers(emptyHandler, emptyHandler)).toThrowError(
+            new Error(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${frameContext}".`,
+            ),
+          );
+        });
+      });
+
+      it('FRAMED: should throw if the runtime does not support search', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+        expect.assertions(1);
+        try {
+          search.registerHandlers(emptyHandler, emptyHandler);
+        } catch (e) {
+          expect(e).toEqual(errorNotSupportedOnPlatform);
+        }
+      });
+
+      it('FRAMED: should register and dispatch all three handlers', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { search: {} } });
+
+        const onClosed = jest.fn();
+        const onExecute = jest.fn();
+        const onChange = jest.fn();
+        search.registerHandlers(onClosed, onExecute, onChange);
+
+        const registeredHandlerNames = utils.messages
+          .filter((message) => message.func === 'registerHandler')
+          .map((message) => message.args && message.args[0]);
+        expect(registeredHandlerNames).toEqual(['search.queryClose', 'search.queryExecute', 'search.queryChange']);
+
+        await utils.sendMessage('search.queryClose', closedQuery);
+        await utils.sendMessage('search.queryExecute', executedQuery);
+        await utils.sendMessage('search.queryChange', changedQuery);
+
+        expect(onClosed).toHaveBeenCalledWith(closedQuery);
+        expect(onExecute).toHaveBeenCalledWith(executedQuery);
+        expect(onChange).toHaveBeenCalledWith(changedQuery);
+      });
+
+      it('FRAMED: should not register the change handler when it is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { search: {} } });
+
+        const onClosed = jest.fn();
+        const onExecute = jest.fn();
+        search.registerHandlers(onClosed, onExecute);
+
+        const registeredHandlerNames = utils.messages
+          .filter((message) => message.func === 'registerHandler')
+          .map((message) => message.args && message.args[0]);
+        expect(registeredHandlerNames).toEqual(['search.queryClose', 'search.queryExecute']);
+
+        await utils.sendMessage('search.queryChange', changedQuery);
+        expect(onClosed).not.toHaveBeenCalled();
+        expect(onExecute).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('unregisterHandlers', () => {
+      it('FRAMED: should not allow calls before initialization', () => {
+        expect(() => search.unregisterHandlers()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      const allowedContexts = [FrameContexts.content];
+      Object.values(FrameContexts).forEach((frameContext) => {
+        if (allowedContexts.includes(frameContext)) {
+          return;
+        }
+        it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { search: {} } });
+
+          expect(() => search.unregisterHandlers()).toThrowError(
+            new Error(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${frameContext}".`,
+            ),
+          );
+        });
+      });
+
+      it('FRAMED: should throw if the runtime does not support search', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+        expect.assertions(1);
+        try {
+          search.unregisterHandlers();
+        } catch (e) {
+          expect(e).toEqual(errorNotSupportedOnPlatform);
+        }
+      });
+
+      it('FRAMED: should send the unregister message and remove every handler', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { search: {} } });
+
+        const onClosed = jest.fn();
+        const onExecute = jest.fn();
+        const onChange = jest.fn();
+        search.registerHandlers(onClosed, onExecute, onChange);
+
+        search.unregisterHandlers();
+
+        const unregisterMessage = utils.findMessageByFunc('search.unregister');
+        expect(unregisterMessage).not.toBeNull();
+        expect(unregisterMessage?.args?.length).toEqual(0);
+
+        await utils.sendMessage('search.queryClose', closedQuery);
+        await utils.sendMessage('search.queryExecute', executedQuery);
+        await utils.sendMessage('search.queryChange', changedQuery);
+
+        expect(onClosed).not.toHaveBeenCalled();
+        expect(onExecute).not.toHaveBeenCalled();
+        expect(onChange).not.toHaveBeenCalled();
       });
     });
   });
@@ -230,6 +377,161 @@ describe('Search', () => {
           },
         } as DOMMessageEvent);
         await expect(promise).resolves.not.toThrow();
+      });
+    });
+
+    describe('registerHandlers', () => {
+      it('FRAMELESS: should not allow calls before initialization', () => {
+        expect(() => search.registerHandlers(emptyHandler, emptyHandler)).toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      const allowedContexts = [FrameContexts.content];
+      Object.values(FrameContexts).forEach((frameContext) => {
+        if (allowedContexts.includes(frameContext)) {
+          return;
+        }
+        it(`FRAMELESS: should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { search: {} } });
+
+          expect(() => search.registerHandlers(emptyHandler, emptyHandler)).toThrowError(
+            new Error(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${frameContext}".`,
+            ),
+          );
+        });
+      });
+
+      it('FRAMELESS: should throw if the runtime does not support search', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+        expect.assertions(1);
+        try {
+          search.registerHandlers(emptyHandler, emptyHandler);
+        } catch (e) {
+          expect(e).toEqual(errorNotSupportedOnPlatform);
+        }
+      });
+
+      it('FRAMELESS: should register and dispatch all three handlers', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { search: {} } });
+
+        const onClosed = jest.fn();
+        const onExecute = jest.fn();
+        const onChange = jest.fn();
+        search.registerHandlers(onClosed, onExecute, onChange);
+
+        const registeredHandlerNames = utils.messages
+          .filter((message) => message.func === 'registerHandler')
+          .map((message) => message.args && message.args[0]);
+        expect(registeredHandlerNames).toEqual(['search.queryClose', 'search.queryExecute', 'search.queryChange']);
+
+        utils.respondToFramelessMessage({
+          data: { func: 'search.queryClose', args: [closedQuery] },
+        } as DOMMessageEvent);
+        utils.respondToFramelessMessage({
+          data: { func: 'search.queryExecute', args: [executedQuery] },
+        } as DOMMessageEvent);
+        utils.respondToFramelessMessage({
+          data: { func: 'search.queryChange', args: [changedQuery] },
+        } as DOMMessageEvent);
+
+        expect(onClosed).toHaveBeenCalledWith(closedQuery);
+        expect(onExecute).toHaveBeenCalledWith(executedQuery);
+        expect(onChange).toHaveBeenCalledWith(changedQuery);
+      });
+
+      it('FRAMELESS: should not register the change handler when it is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { search: {} } });
+
+        const onClosed = jest.fn();
+        const onExecute = jest.fn();
+        search.registerHandlers(onClosed, onExecute);
+
+        const registeredHandlerNames = utils.messages
+          .filter((message) => message.func === 'registerHandler')
+          .map((message) => message.args && message.args[0]);
+        expect(registeredHandlerNames).toEqual(['search.queryClose', 'search.queryExecute']);
+
+        utils.respondToFramelessMessage({
+          data: { func: 'search.queryChange', args: [changedQuery] },
+        } as DOMMessageEvent);
+        expect(onClosed).not.toHaveBeenCalled();
+        expect(onExecute).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('unregisterHandlers', () => {
+      it('FRAMELESS: should not allow calls before initialization', () => {
+        expect(() => search.unregisterHandlers()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      const allowedContexts = [FrameContexts.content];
+      Object.values(FrameContexts).forEach((frameContext) => {
+        if (allowedContexts.includes(frameContext)) {
+          return;
+        }
+        it(`FRAMELESS: should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { search: {} } });
+
+          expect(() => search.unregisterHandlers()).toThrowError(
+            new Error(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${frameContext}".`,
+            ),
+          );
+        });
+      });
+
+      it('FRAMELESS: should throw if the runtime does not support search', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+        expect.assertions(1);
+        try {
+          search.unregisterHandlers();
+        } catch (e) {
+          expect(e).toEqual(errorNotSupportedOnPlatform);
+        }
+      });
+
+      it('FRAMELESS: should send the unregister message and remove every handler', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { search: {} } });
+
+        const onClosed = jest.fn();
+        const onExecute = jest.fn();
+        const onChange = jest.fn();
+        search.registerHandlers(onClosed, onExecute, onChange);
+
+        search.unregisterHandlers();
+
+        const unregisterMessage = utils.findMessageByFunc('search.unregister');
+        expect(unregisterMessage).not.toBeNull();
+        expect(unregisterMessage?.args?.length).toEqual(0);
+
+        utils.respondToFramelessMessage({
+          data: { func: 'search.queryClose', args: [closedQuery] },
+        } as DOMMessageEvent);
+        utils.respondToFramelessMessage({
+          data: { func: 'search.queryExecute', args: [executedQuery] },
+        } as DOMMessageEvent);
+        utils.respondToFramelessMessage({
+          data: { func: 'search.queryChange', args: [changedQuery] },
+        } as DOMMessageEvent);
+
+        expect(onClosed).not.toHaveBeenCalled();
+        expect(onExecute).not.toHaveBeenCalled();
+        expect(onChange).not.toHaveBeenCalled();
       });
     });
   });
