@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Point the `location.LocationProps` and `location.Location` deprecation notices at their concrete `geoLocation` replacements.",
-  "packageName": "@microsoft/teams-js",
-  "email": "edwardlee@microsoft.com",
-  "dependentChangeType": "none"
-}
