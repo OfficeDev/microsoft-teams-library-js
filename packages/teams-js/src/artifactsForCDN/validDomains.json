@@ -25,6 +25,8 @@
     "word.office.com",
     "excel.office.com",
     "powerpoint.office.com",
+    "*.sharepoint.com",
+    "*.sharepoint-df.com",
     "www.officeppe.com",
     "*.www.microsoft365.com",
     "www.microsoft365.com",
