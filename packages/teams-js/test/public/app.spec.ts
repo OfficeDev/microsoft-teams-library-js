@@ -2,6 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { ensureInitialized } from '../../src/internal/internalAPIs';
+import * as internalUtils from '../../src/internal/utils';
 import { AppId, dialog, menus, pages } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import {
@@ -72,6 +73,8 @@ function createChangedContext(frameContext: FrameContexts): app.Context {
 
 describe('Testing app capability', () => {
   const mockErrorMessage = 'Something went wrong...';
+  /** Mirrors the (non-exported) initializationTimeoutInMs constant in src/internal/appHelpers.ts */
+  const initializationTimeoutInMs = 60000;
   const loadContext: LoadContext = {
     entityId: 'testEntityId',
     contentUrl: 'https://localhost:4000',
@@ -539,6 +542,59 @@ describe('Testing app capability', () => {
         await utils.respondToMessage(initMessage!!, FrameContexts.content);
         expect(initPromise).resolves.toBeFalsy();
       });
+
+      describe('Testing app.initialize in a server-side rendering environment', () => {
+        afterEach(() => {
+          jest.restoreAllMocks();
+        });
+
+        it('app.initialize should resolve without initializing anything when there is no window object', async () => {
+          const inServerSideRenderingEnvironmentSpy = jest
+            .spyOn(internalUtils, 'inServerSideRenderingEnvironment')
+            .mockReturnValue(true);
+
+          await expect(app.initialize()).resolves.toBeUndefined();
+
+          expect(inServerSideRenderingEnvironmentSpy).toHaveBeenCalled();
+          expect(utils.messages.length).toBe(0);
+          expect(app.isInitialized()).toBe(false);
+          expect(GlobalVars.initializeCalled).toBe(false);
+          expect(GlobalVars.initializePromise).toBeUndefined();
+        });
+      });
+
+      describe('Testing app.initialize timeout behavior', () => {
+        beforeEach(() => {
+          jest.useFakeTimers();
+        });
+
+        afterEach(() => {
+          jest.useRealTimers();
+        });
+
+        it('app.initialize should reject if the host never responds within the initialization timeout', async () => {
+          const initPromise = app.initialize();
+
+          // The host is intentionally never responded to, so only the timeout can settle the promise.
+          expect(utils.findMessageByFunc('initialize')).not.toBeNull();
+
+          jest.advanceTimersByTime(initializationTimeoutInMs);
+
+          await expect(initPromise).rejects.toThrowError(new Error('SDK initialization timed out.'));
+        });
+
+        it('app.initialize should not reject with a timeout if the host responds before the timeout elapses', async () => {
+          const initPromise = app.initialize();
+
+          const initMessage = utils.findMessageByFunc('initialize');
+          await utils.respondToMessage(initMessage!!, FrameContexts.content);
+          await expect(initPromise).resolves.toBeUndefined();
+
+          jest.advanceTimersByTime(initializationTimeoutInMs);
+
+          await expect(initPromise).resolves.toBeUndefined();
+        });
+      });
     });
 
     describe('Testing app.getContext function', () => {
@@ -857,8 +913,26 @@ describe('Testing app capability', () => {
     });
 
     describe('Testing app.notifySuccess function', () => {
-      it('app.notifySuccess should not allow calls before initialization', () => {
-        expect(app.notifySuccess).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      it('app.notifySuccess should not allow calls before initialization', async () => {
+        expect(GlobalVars.initializeCompleted).toBe(false);
+        expect(GlobalVars.initializePromise).toBeUndefined();
+
+        await expect(app.notifySuccess()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('app.notifySuccess should not allow calls after uninitialization', async () => {
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        await utils.respondToMessage(initMessage!!, FrameContexts.content);
+        await initPromise;
+
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        app._uninitialize();
+
+        expect(GlobalVars.initializeCompleted).toBe(false);
+        expect(GlobalVars.initializePromise).toBeUndefined();
+
+        await expect(app.notifySuccess()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('app.notifySuccess should allow calls after initialization called, but before it finished', async () => {
@@ -1925,8 +1999,11 @@ describe('Testing app capability', () => {
     });
 
     describe('Testing app.notifySuccess function', () => {
-      it('app.notifySuccess should not allow calls before initialization', () => {
-        expect(app.notifySuccess).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      it('app.notifySuccess should not allow calls before initialization', async () => {
+        expect(GlobalVars.initializeCompleted).toBe(false);
+        expect(GlobalVars.initializePromise).toBeUndefined();
+
+        await expect(app.notifySuccess()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('app.notifySuccess should allow calls after initialization called, but before it finished', async () => {
