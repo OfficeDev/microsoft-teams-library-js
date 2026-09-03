@@ -55,6 +55,8 @@ jobs:
         run: pnpm build
       - name: Run Unit Tests
         run: pnpm test
+      - name: Test release tooling
+        run: node --test tools/cli/create-github-release.test.js
       - name: Check for lint errors
         run: pnpm lint
 
