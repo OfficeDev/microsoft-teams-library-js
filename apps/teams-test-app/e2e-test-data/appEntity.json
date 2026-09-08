@@ -17,7 +17,8 @@
         "subEntityId": "abc"
       },
       "expectedAlertValue": "appEntity.selectAppEntity called with 123 + books,animals + abc",
-      "expectedTestAppValue": "{\"appId\":\"007\",\"appIconUrl\":\"appIncon_pengiun.com\",\"contentUrl\":\"contentUrl.com\",\"displayName\":\"penguin\",\"websiteUrl\":\"penguin.com\"}"
+      "expectedTestAppValue": "{\"appId\":\"007\",\"appIconUrl\":\"appIncon_pengiun.com\",\"contentUrl\":\"contentUrl.com\",\"displayName\":\"penguin\",\"websiteUrl\":\"penguin.com\"}",
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "SelectAppEntity API Call - Success",
@@ -29,7 +30,8 @@
         "categories": ["books", "animals"]
       },
       "expectedAlertValue": "appEntity.selectAppEntity called with 123 + books,animals",
-      "expectedTestAppValue": "{\"appId\":\"007\",\"appIconUrl\":\"appIncon_pengiun.com\",\"contentUrl\":\"contentUrl.com\",\"displayName\":\"penguin\",\"websiteUrl\":\"penguin.com\"}"
+      "expectedTestAppValue": "{\"appId\":\"007\",\"appIconUrl\":\"appIncon_pengiun.com\",\"contentUrl\":\"contentUrl.com\",\"displayName\":\"penguin\",\"websiteUrl\":\"penguin.com\"}",
+      "skipForCallbackBasedRuns": true
     }
   ]
 }

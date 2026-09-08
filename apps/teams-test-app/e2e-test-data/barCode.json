@@ -12,20 +12,23 @@
       "type": "callResponse",
       "boxSelector": "#box_requestBarCodePermission",
       "isRequestPermissionCall": { "repeatRequestPermissionCall": false },
-      "expectedTestAppValue": "true"
+      "expectedTestAppValue": "true",
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "repeated requestBarCodePermission API Call with no dialog- Success",
       "type": "callResponse",
       "boxSelector": "#box_requestBarCodePermission",
       "isRequestPermissionCall": { "repeatRequestPermissionCall": true },
-      "expectedTestAppValue": "true"
+      "expectedTestAppValue": "true",
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "hasBarCodePermission API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_hasBarCodePermission",
-      "expectedTestAppValue": "false"
+      "expectedTestAppValue": "false",
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "scanBarCode API Call - Success",
@@ -37,7 +40,8 @@
       },
       "inputValue": {},
       "expectedTestAppValue": "\"scannedCode\"",
-      "expectedAlertValue": ["scanBarCode called with {}"]
+      "expectedAlertValue": ["scanBarCode called with {}"],
+      "skipForCallbackBasedRuns": true
     },
     {
       "title": "scanBarCode API Call - Failure",
@@ -49,7 +53,8 @@
         "consentPermission": false
       },
       "inputValue": {},
-      "expectedTestAppValue": "Error: {\"errorCode\":1000,\"message\":\"user has explicitly not consented for device permission\"}"
+      "expectedTestAppValue": "Error: {\"errorCode\":1000,\"message\":\"user has explicitly not consented for device permission\"}",
+      "skipForCallbackBasedRuns": true
     }
   ]
 }
