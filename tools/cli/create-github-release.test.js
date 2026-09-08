@@ -190,7 +190,9 @@ test('GitHub client bounds requests, refuses redirects, separates auth failure f
   const client = new GitHubClient({
     token: 'synthetic-token',
     fetchImpl: async (url, options) => {
-      assert.match(url, /^https:\/\/api.github.com\/repos\/OfficeDev\/microsoft-teams-library-js\//);
+      const destination = new URL(url);
+      assert.equal(destination.origin, 'https://api.github.com');
+      assert.ok(destination.pathname.startsWith('/repos/OfficeDev/microsoft-teams-library-js/'));
       assert.equal(options.redirect, 'error');
       assert.ok(options.signal instanceof AbortSignal);
       return { status, ok: status === 200, json: async () => ({}) };
@@ -252,7 +254,7 @@ test('actual producer, verifier and finalizer CLIs rehearse against HTTP doubles
       response.writeHead(body === undefined ? 404 : 200);
       response.end(Buffer.isBuffer(body) ? body : JSON.stringify(body));
     } catch (error) {
-      response.writeHead(500);
+      response.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
       response.end(error.message);
     }
   });
