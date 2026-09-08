@@ -14,7 +14,9 @@ requires second-person approval and the internal TeamsJS runbook. The executable
 verification-receipt lifecycle introduced by
 [#3156](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3156) is a prerequisite:
 **stop until its tools are reviewed, landed, and present in the source commit.** Do not invent
-replacement commands.
+replacement commands. Once landed, follow
+[`tools/cli/release-lifecycle.md`](../../../tools/cli/release-lifecycle.md) for the authoritative
+public interface.
 
 Everything here is public-safe. Never paste internal URLs, pipeline identifiers, approval-system
 names, raw pipeline logs, signed URLs, tokens, or internal identities into a public artifact.
@@ -330,31 +332,63 @@ Do not continue while the PR is open.
 ### 5. Build the merged release commit and produce the approved plan
 
 After the bump PR merges, fetch `refs/remotes/origin/release/<version>` explicitly and require its
-package version to equal `version`. Queue the repository's reviewed build for that exact commit.
+package version to equal `version`. Queue the reviewed build for that exact commit. The public
+Post Release workflow records source/tooling identity and runs a no-publish rehearsal; its merge,
+notification, or `unverified-candidate.json` output is not a publisher or publication evidence.
 
-Use the landed #3156 producer to create a plan from the approved build and its immutable outputs.
-The plan must identify the exact release component, semantic version, channel, source commit, build,
-tool revision, complete npm/CDN target set, and independent build-derived artifact identities.
-Persist its deterministic digest with the build.
+Before a real release, the publishing authority must integrate a reviewed producer and independent
+approval adapter into the existing publisher. It exports the final npm tarball and entire CDN
+version directory from the same pinned approved build, after the last transformation. The
+directory inventory includes every deployed `.js`, `.ts`, and `.map` file. Source must be the
+reviewed release commit, and tooling must be the reviewed default-branch helper revision.
 
-Stop if the plan is empty, has duplicate or unresolved targets, names a different source/version,
-or derives an expected hash from npm, the CDN, or any other observed destination. HTTP status and
-byte-count printouts are diagnostics, not a release plan.
+Only that producer runs:
 
-### 6. Create the candidate and publish through the existing gates
+```bash
+set -euo pipefail
+if ! plan_digest="$(
+  node tools/cli/release-plan.js produce \
+    "$APPROVED_IDENTITY_FILE" \
+    "$FINAL_NPM_TARBALL" \
+    "$FINAL_CDN_VERSION_DIRECTORY" \
+    "$NEW_PLAN_FILE"
+)"; then
+  echo "Approved-build plan production failed." >&2
+  exit 1
+fi
+printf 'Plan digest: %s\n' "$plan_digest"
+```
 
-Create the GitHub candidate only through the landed #3156 lifecycle tool, targeting the exact
-merged release commit and plan. Keep it a prerelease. The internal publication remains a separate
-step and still requires the existing second-person approval. Publication must consume the approved
-build named by the plan, not rebuild a mutable branch.
+Persist the canonical digest with the immutable plan. Approval must bind the digest and source
+independently of the supplied plan. Stop on an incomplete inventory, unresolved value, wrong
+source/tool revision, or any expected hash derived from an observed feed.
 
-Do not claim that publishing has started before approval. Do not weaken environment, locking,
-branch-protection, or self-approval policies.
+### 6. Publish through the existing gates
+
+The plan-producing CLI does not publish, approve, choose an npm dist-tag, or replace the publisher.
+The internal publication step still requires the existing second-person approval and must consume
+the approved build behind the plan. Do not claim publication started before approval or weaken
+environment, locking, branch-protection, or self-approval policies.
 
 ### 7. Reconcile every target and finalize only from a complete receipt
 
-After every publish attempt, including a partial failure, run the landed #3156 receipt consumer for
-the entire plan target set. Retry scope may not shrink the expected set.
+After every publish attempt, including partial failure, verify the entire plan:
+
+```bash
+set -euo pipefail
+if ! node tools/cli/release-plan.js verify \
+  "$PLAN_FILE" \
+  "$INDEPENDENTLY_APPROVED_PLAN_DIGEST" \
+  "$INDEPENDENTLY_APPROVED_SOURCE_SHA" \
+  "$NEW_RECEIPT_FILE"; then
+  echo "Publication receipt is incomplete; do not finalize." >&2
+  exit 1
+fi
+```
+
+The command records every target and exits nonzero for partial, conflicting, or unknown outcomes.
+Retry scope may not shrink the target set. It independently downloads and hashes the npm tarball
+and every planned CDN object; the plan represents the full `.js`, `.ts`, and `.map` inventory.
 
 For npm and the CDN, `present-matching` requires the actual artifact/content identity to match the
 independent build-derived expectation and any applicable source reference. A version string,
@@ -362,71 +396,36 @@ folder, HTTP 200, download size, package-page rendering, or pipeline success is 
 Authentication errors, malformed responses, generic 404s, and skipped jobs are `unknown`, not
 authoritative absence.
 
-Only a receipt with the expected plan digest, exactly one current observation for every target,
-and `complete: true` permits:
+Only a receipt with the independently approved digest/source, exactly one current
+`present-matching` observation per target, and `complete: true` permits metadata finalization:
 
-1. promoting the GitHub candidate to the final/latest release,
-2. merging `release/<version>` back to `main`,
-3. updating downstream compatibility pins,
-4. announcing the release, and
-5. recording final bundle measurements.
+```bash
+set -euo pipefail
+node tools/cli/create-github-release.js \
+  "$PLAN_FILE" \
+  "$RECEIPT_FILE" \
+  "$INDEPENDENTLY_APPROVED_PLAN_DIGEST" \
+  "$INDEPENDENTLY_APPROVED_SOURCE_SHA"
+```
+
+This command re-verifies publication, creates immutable `candidate/<version>/<planDigest>` and the
+annotated `v<version>` exactly once, and checks their remote peeled source. It never edits, retags,
+or promotes a release. GitHub release metadata remains `prerelease: true` and `make_latest: false`.
+Any later manual promotion, merge-back, compatibility update, or announcement still requires the
+complete receipt and existing operational approval.
 
 If publication is partial, report it as partial. Derive recovery from the receipt. Never republish
 an append-only package to repair metadata, and never move a published final tag.
 
 ### 8. Feed back a durable learning
 
-At the end, decide whether this run taught the public skill something that would have changed the
-procedure. Most runs teach nothing and should open no skill PR.
-
-If a correction is needed, start from a clean, newly created worktree at current `origin/main`; edit
-only `.github/skills/release-teamsjs/**`; stage exactly that directory; reject any staged path
-outside it; and open a draft PR for human review. Never fold skill changes into the release branch.
-A retro may tighten a gate or correct a fact, but it may not relax confirmation, approval,
-plan/receipt completeness, or artifact verification.
+Record a durable correction only when it would have changed this run. Use a clean new worktree at
+current `origin/main`, edit/stage only `.github/skills/release-teamsjs/**`, reject other staged
+paths, and open a draft PR. Never relax confirmation, approval, completeness, or verification.
 
 ## Major and prerelease candidates
 
-No reviewed public procedure safely releases a blocked `major` or `prerelease` change. Do not:
-
-- relax `disallowedChangeTypes` on `main` and promise to restore it later,
-- point CI at an alternate permissive config,
-- claim the CLI will silently demote a blocked type, or
-- assume one prerelease change file wins over other pending change types.
-
-A future route must be executable and maintainer-approved, isolate its candidate policy, preserve
-the contributor guard, pin source, calculate all pending changes, assert the exact semantic
-version, and retain all publication/receipt gates. Until it lands, stop and design it separately.
-
-## Failure modes
-
-- **Dirty preview tree**: use a clean owned worktree; never hide, clean, or restore unrelated files.
-- **Blocked `major`/`prerelease`**: expected; validation fails before writes. Do not remove the guard.
-- **Version mismatch**: the complete change set differs from intent. Stop rather than override it.
-- **Preparation/manifest failure**: do not commit or push partial carriers.
-- **Only npm or CDN matches**: keep the candidate unpromoted and reconcile every target.
-- **Absent, stale, partial, conflicting, or unknown receipt**: do not finalize.
-- **`main` moved after confirmation**: retain the pin or restart preview and confirmation.
-
-## Hard rules
-
-- Pin source before version confirmation and keep the pair together.
-- Preview in a disposable worktree; never mutate and restore a developer checkout.
-- Check command success and all untracked files at every status fence.
-- Never use `git clean` or broad `git restore` in this workflow.
-- Never stage broadly; allow only reviewed release output.
-- Never force-push `main` or a release branch.
-- A release is npm and CDN together, proven against the approved build plan.
-- A second person remains a hard publication dependency.
-- Candidate first; final/latest only after a complete receipt.
-- Keep the learning loop, and keep public guidance public-safe.
-
-## Reference files
-
-- `beachball.config.js` - contributor versioning policy
-- `CONTRIBUTING.md` - contributor change-file menu and policy
-- `tools/cli/prepare-release.js` - pinned disposable preview and preparation verifier
-- `tools/cli/preRelease.js` - bump, build, integrity extraction, and carrier updates
-- `tools/releases/build-release.yml` - release artifact build
-- `.github/workflows/prerelease.yml` - public preparation workflow
-- `.github/workflows/postrelease.yml` - release-branch merge follow-up
+No reviewed public procedure safely releases a blocked `major` or `prerelease` change. Never relax
+the guard, use a permissive config, claim demotion, or assume prerelease outranks other pending types.
+A future approved executable route must isolate policy, pin source, calculate all changes, assert
+the exact version, and retain every gate. Until then, stop and design it separately.
