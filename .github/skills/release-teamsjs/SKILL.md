@@ -1,294 +1,432 @@
 ---
 name: release-teamsjs
-description: Use when releasing @microsoft/teams-js from this repo - cutting the release branch, landing the version bump, creating the GitHub release, and verifying the published package on npm and the CDN. Triggers on phrases like "release teams-js", "cut a teamsjs release", "ship 2.56.0", "publish teams-js".
+description: Use when releasing @microsoft/teams-js from this repo - pinning and previewing the source, preparing the bump, creating the candidate, and requiring complete npm and CDN verification before finalization.
 ---
 
 # release-teamsjs
 
 Interactive workflow for releasing `@microsoft/teams-js`.
 
-## Scope of this file
+## Scope and prerequisite
 
-This covers the parts of a release that live in this repository: versioning, the release branch, the bump PR, the GitHub release, and verifying what actually got published.
+This covers the public, repository-owned parts of a release. Internal npm/CDN publication still
+requires second-person approval and the internal TeamsJS runbook. The executable release-plan and
+verification-receipt lifecycle introduced by
+[#3156](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3156) is a prerequisite:
+**stop until its tools are reviewed, landed, and present in the source commit.** Do not invent
+replacement commands.
 
-**Queuing the release pipelines is a separate, internal step.** The pipelines that publish to npm and the CDN run in Microsoft's internal Azure DevOps and require an approval that a second person must grant. Their identifiers, the approval mechanics, and the internal runbook are documented internally and are deliberately not repeated here. If you are a Microsoft employee, follow the internal TeamsJS release wiki for those steps; if you are an external contributor, releases are cut by the maintainers and you should not need this file.
+Everything here is public-safe. Never paste internal URLs, pipeline identifiers, approval-system
+names, raw pipeline logs, signed URLs, tokens, or internal identities into a public artifact.
 
-Everything below is safe to follow from a public checkout.
+## Beachball behavior in this repository
 
-## When to use
+The installed Beachball version is pinned in `pnpm-lock.yaml`. For Beachball 2.62:
 
-- User says "release teams-js" / "cut a release" / "ship `<x.y.z>`" / similar
-- A new version of `@microsoft/teams-js` needs to be prepared and published
+- `bump` validates before calculating or writing. A hand-authored `major` or `prerelease` file is
+  rejected while disallowed, not silently demoted.
+- The stable-package prompt offers `patch`, `minor`, and `none`. Beachball also recognizes
+  `prerelease`, `prepatch`, `preminor`, `premajor`, and `major`; the checked-in guard disallows only
+  `major` and `prerelease`. Do not silently change that policy.
+- `--config` is an alias for `--config-path`. `--type` controls change-file creation. `bump`
+  supports `--prerelease-prefix`; there is no `--prerelease` switch. None of these flags is, by
+  itself, a reviewed TeamsJS major/prerelease release procedure.
+- `publish: false` and `push: false` mean Beachball writes versions and changelogs but does not
+  publish or push them.
 
-## How versioning works
+Contributors use `pnpm changefile`; see `CONTRIBUTING.md`. A stable release consumes the full set of
+pending change files, updates `packages/teams-js/CHANGELOG.md`, and deletes the consumed files.
 
-Versioning is [beachball](https://microsoft.github.io/beachball/), configured in `beachball.config.js`:
+## Non-negotiable gates
 
-- `publish: false` and `push: false`, so beachball computes versions and writes the changelog but never publishes. The pipelines do that.
-- `scope: ['packages/teams-js']`
-- `disallowedChangeTypes: ['major', 'prerelease']`
-- `ignorePatterns` includes `*.md`, so a docs-only change needs no change file.
-
-Contributors add change files with `pnpm changefile` (see `CONTRIBUTING.md`). A release consumes every pending change file, folds them into `packages/teams-js/CHANGELOG.md`, and deletes them.
-
-## Confirmation gates
-
-This skill has one **mandatory confirmation gate**: version selection. Publishing burns a version on the public npm registry permanently, and npm does not allow unpublishing on demand after 72 hours.
-
-The gate applies regardless of how the session was started. Pre-approval text in an initial prompt ("proceed end to end", "I approve the gates") **does not satisfy it**; only an explicit reply in the conversation, after the version and branch are shown, counts. In autopilot or non-interactive mode, stop calling tools, emit a clearly marked `AUTOPILOT HOLD - RELEASE SKILL CONFIRMATION GATE` with the details, and yield.
+1. **Exact source and version confirmation.** Show the pinned commit and version computed from all
+   pending changes. Only a later explicit reply counts. In non-interactive mode, emit
+   `AUTOPILOT HOLD - RELEASE SKILL CONFIRMATION GATE` and stop.
+2. **No checkout mutation for preview.** Preview only in the disposable worktree created by
+   `tools/cli/prepare-release.js`.
+3. **Real review boundaries.** Version confirmation happens before any release branch is created.
+   Generated bump output is reviewed before staging or committing.
+4. **Approved build plan.** Publish from one pinned approved build and its immutable outputs, never
+   a mutable checkout or observed feed.
+5. **Complete receipt.** Finalization requires every planned target to be `present-matching`.
 
 ## Workflow
 
-### 0. Summarize what you are about to do
+### 0. State the intended operation
 
-State the version, the branch, and where you will stop (the internal pipeline step). One short block, before touching anything.
+State the requested release line, that source and version confirmation will follow, and that the
+workflow stops at the separately approved internal publication step. Do not imply that publishing
+has started while preparation or approval is pending.
 
-### 1. Read the version at runtime
+### 1. Pin the source and preview the version without touching the checkout
 
-Never bake a version into this file, a script, or a comment.
-
-```bash
-set -e
-
-if [ -n "$(git status --porcelain)" ]; then
-  echo "Working tree must be clean before reading the release version." >&2
-  exit 1
-fi
-
-restore_bump() {
-  git restore --source=HEAD --worktree --staged -- \
-    packages/teams-js/package.json \
-    packages/teams-js/CHANGELOG.md \
-    pnpm-lock.yaml \
-    change
-}
-trap restore_bump EXIT
-
-# What beachball would bump to, from the pending change files.
-pnpm beachball bump
-node -p "require('./packages/teams-js/package.json').version"
-restore_bump
-trap - EXIT
-```
-
-Confirm the version is not already taken:
-
-```bash
-npm view @microsoft/teams-js versions --json
-```
-
-**Gate.** Show the version and the branch you will cut. Wait for an explicit yes.
-
-### 2. Establish the release branch
-
-The public workflow in `.github/workflows/prerelease.yml` runs `preRelease.js` before creating and force-pushing `release/<x.y.z>`. The generated files are still uncommitted when that branch is pushed; the later `create-pull-request` step commits them on its working branch and opens the bump PR against `release/<x.y.z>`.
-
-For a manual release, create the same unchanged base branch explicitly:
-
-```bash
-git checkout main && git pull
-git checkout -b "release/<x.y.z>"
-git push --set-upstream origin "release/<x.y.z>"
-```
-
-Do not commit the bump directly to this branch. It lands through the PR in the next step, matching the public workflow's remote branch result.
-
-### 3. Prepare the bump on a manual working branch
-
-```bash
-git checkout -b "<alias>/release_<x.y.z>-1"
-node tools/cli/preRelease.js
-git commit -am "Prepare release <x.y.z>"
-git push --set-upstream origin "<alias>/release_<x.y.z>-1"
-```
-
-`preRelease.js` runs `pnpm install` and `pnpm build`, reads the integrity hash from `packages/teams-js/dist/umd/MicrosoftTeams-manifest.json`, and rewrites the version carriers with it. It needs a successful build to produce that manifest, so a failure here is real and must be fixed, not retried past.
-
-> Note the capital R in `preRelease.js`. The lowercase spelling resolves on Windows and fails on macOS and Linux.
-
-Open a PR from `<alias>/release_<x.y.z>-1` into `release/<x.y.z>` (**not** into `main`), with the new `packages/teams-js/CHANGELOG.md` version section as the description. A reviewer should confirm the PR has:
-
-- every pending change file deleted
-- `packages/teams-js/CHANGELOG.md` with a new version section holding those entries, matching the PR description
-- `packages/teams-js/package.json` at the new version
-- `packages/teams-js/README.md` script `src` and integrity hash pointing at the new version
-- the teams-test-app CDN html and its `package.json` likewise
-
-### 4. Merge the bump PR, verify the branch, then create the GitHub release
-
-The bump PR from step 3 **must be merged into `release/<x.y.z>` before the tag is cut**. Do not continue while the PR is open. Fetch the exact remote branch and fail closed unless its package manifest carries the expected version:
+Start in a clean, dedicated worktree. Explicitly check the status command itself and include every
+untracked file; local `status.showUntrackedFiles` configuration must not weaken the check.
 
 ```bash
 set -euo pipefail
 
-expected_version="<x.y.z>"
-release_ref="refs/remotes/origin/release/$expected_version"
-
-git fetch origin \
-  "+refs/heads/release/$expected_version:$release_ref"
-
-release_version=$(
-  git show "${release_ref}:packages/teams-js/package.json" |
-    node -p 'JSON.parse(require("fs").readFileSync(0, "utf8")).version'
-)
-
-if [ "$release_version" != "$expected_version" ]; then
-  echo "Release branch version is $release_version; expected $expected_version." >&2
+if ! checkout_status="$(git status --porcelain=v1 --untracked-files=all)"; then
+  echo "Unable to verify working-tree status." >&2
+  exit 1
+fi
+if [ -n "$checkout_status" ]; then
+  echo "Working tree must be clean, including untracked files." >&2
+  printf '%s\n' "$checkout_status" >&2
   exit 1
 fi
 
-printf 'Verified release/%s at version %s\n' "$expected_version" "$release_version"
+if ! git fetch origin '+refs/heads/main:refs/remotes/origin/main'; then
+  echo "Unable to fetch origin/main." >&2
+  exit 1
+fi
+if ! source_commit="$(git rev-parse 'refs/remotes/origin/main^{commit}')"; then
+  echo "Unable to pin origin/main." >&2
+  exit 1
+fi
+case "$source_commit" in
+  ''|*[!0-9a-f]*) echo "Pinned source is not a full commit SHA." >&2; exit 1 ;;
+  *) [ "${#source_commit}" -eq 40 ] || exit 1 ;;
+esac
+
+if ! preview_json="$(
+  node tools/cli/prepare-release.js preview \
+    --source-commit "$source_commit"
+)"; then
+  echo "Version preview failed." >&2
+  exit 1
+fi
+printf '%s\n' "$preview_json"
+if ! version="$(
+  node -e '
+    const result = JSON.parse(process.argv[1]);
+    if (typeof result.version !== "string") throw new Error("Missing version");
+    process.stdout.write(result.version);
+  ' "$preview_json"
+)"; then
+  echo "Unable to read the previewed version." >&2
+  exit 1
+fi
 ```
 
-Only after that check succeeds, tag `v<x.y.z>`, target `release/<x.y.z>`, title `v<x.y.z>`, and use the new changelog section as the body. Tick **prerelease**. Do not attach binaries; publishing adds them.
+The helper creates a detached worktree at exactly `source_commit`, installs its frozen dependency
+graph without lifecycle scripts, and invokes that source's Beachball with publishing, pushing,
+tags, and commits disabled. It checks only expected preview paths changed, explicitly requires the
+lockfile update to succeed (Beachball 2.62 only warns on failure), and removes the worktree. It never
+restores or cleans the developer checkout.
 
-It stays a prerelease until step 6 confirms the artifacts are actually live. A release marked "latest" while the CDN is still empty points consumers at something that is not there.
-
-### 5. Publish (internal step)
-
-The build and release pipelines run in internal Azure DevOps. A release deploys a pinned build's artifacts rather than publishing from source, so the version those artifacts carry is the version that ships, whatever branch you believe you are on. Confirm the build is green for `release/<x.y.z>` and note which build the release will consume.
-
-Publishing requires an approval that **someone other than the person releasing** must grant. Plan for a second person; a release stops here without one.
-
-Follow the internal runbook for the specifics.
-
-### 6. Verify on npm and the CDN, fail closed
-
-A green pipeline is not proof of publication. Check both:
+Read `version` from the JSON result. Check that the version is not already published:
 
 ```bash
-npm view "@microsoft/teams-js@<x.y.z>" version
-
-curl -sL -o /dev/null -w "%{http_code} %{size_download}\n" \
-  "https://res.cdn.office.net/teams-js/<x.y.z>/js/MicrosoftTeams.min.js"
+set -euo pipefail
+if npm_result="$(npm view "@microsoft/teams-js@$version" version 2>&1)"; then
+  echo "@microsoft/teams-js@$version already exists." >&2
+  exit 1
+fi
+case "$npm_result" in
+  *E404*) ;;
+  *)
+    echo "Unable to establish whether @microsoft/teams-js@$version exists." >&2
+    printf '%s\n' "$npm_result" >&2
+    exit 1
+    ;;
+esac
 ```
 
-A release is **npm and the CDN together**. A version on one but not the other is half-published, not finished.
-
-npm's package page can lag publication by up to about 40 minutes. `npm view` and the version-specific page `https://www.npmjs.com/package/@microsoft/teams-js/v/<x.y.z>` update sooner. Treat `npm view`, not the browsable page, as the answer.
-
-**Do not judge the release by the pipeline's status field.** A successful release does not necessarily report a clean success, for reasons documented internally. Decide from the feed and the CDN.
-
-### 7. Merge back, promote the release, update dependents
-
-- PR `release/<x.y.z>` into `main`. If `main` moved while you were releasing, do **not** force-push `main` and do **not** edit the deployed release branch. Cut `<alias>/cleanup_release_<x.y.z>` from the release branch, merge `main` into it, and PR that. A change file may be needed: `pnpm changefile`, type `none`, comment `Released <x.y.z>`.
-- Edit the GitHub release: untick prerelease, tick **Set as the latest release**.
-- Update downstream consumers that pin a TeamsJS version for back-compat testing, so the new version is covered.
-- Announce the release on the team's channel.
-- Record the published bundle size:
+**Gate.** Show `source_commit`, `version`, the intended `release/<version>` branch, and the planned
+channel. Wait for explicit confirmation. After confirmation, rerun the same pinned preview with an
+exact assertion before any branch mutation:
 
 ```bash
-curl -sL -o /dev/null -w "%{size_download}\n" \
-  "https://res.cdn.office.net/teams-js/<x.y.z>/js/MicrosoftTeams.min.js"
+set -euo pipefail
+if ! node tools/cli/prepare-release.js preview \
+  --source-commit "$source_commit" \
+  --expected-version "$version"; then
+  echo "The confirmed source/version pair no longer validates." >&2
+  exit 1
+fi
 ```
 
-### 8. Feed back what this run taught the skill
+Never replace `source_commit` with a later `origin/main` value after confirmation. A different
+source requires a new preview and a new confirmation.
 
-A release is the only time anyone exercises this skill end to end, and whatever it taught you dies with the session unless you write it down. Close every run by deciding whether the skill itself needs to change, and when it does, open a PR against it.
+### 2. Create the unchanged release branch from the confirmed source
 
-**The bar: would knowing this at the start have changed what you did?**
-
-Worth capturing:
-
-- A failure that isn't in the failure modes below, with the symptom that identifies it and the recovery that worked
-- A fact here that turned out wrong or stale
-- A step ambiguous enough that you had to guess, where guessing wrong would have burned a version on npm
-- An invariant you had to discover, which a future run should be able to assume
-
-Not worth capturing:
-
-- The story of this release, which version shipped and which builds ran. That is history; it belongs in the PR description.
-- A transient infrastructure blip with no repeatable signature
-- Anything the skill already says. Sharpen the existing line rather than appending a near-duplicate: two rules that overlap will eventually disagree, and then neither can be trusted.
-
-**Most runs teach nothing, and that is the healthy outcome.** A clean release against an accurate skill ends here with no PR. Opening one every run trains reviewers to skim them, which costs more than the occasional learning you let slip.
-
-**A retro may tighten this skill. It may never loosen it.** Adding a check, correcting a fact, or making a warning louder is in scope. Removing the confirmation gate, relaxing the npm and CDN verification, or making the publish approval anything other than a second person is not, even when that gate is exactly what cost you time on this run. If a gate looks wrong, leave it standing and argue for the change in the PR description, where a human decides. Nothing enforces this rule, so the reviewer is the enforcement.
-
-**This file is public. Keep it that way.** Everything internal, pipeline identifiers, internal URLs, approval-system names, individual names or aliases, and internal distribution lists, belongs in the internal runbook and must not be added here. **Never paste raw pipeline output**: logs carry tokens, request ids, SAS URLs, and internal identities. Describe the symptom in your own words. If a learning cannot be written down without an internal detail, record it internally and leave a neutral pointer here.
-
-**Write it the way the rest of this file is written:** evergreen and imperative, stating the invariant a future run must hold rather than the incident that revealed it. "A green pipeline is not proof the version reached the CDN" still reads correctly in a year; "the release failed last Tuesday" does not.
-
-Mechanics. This is a standalone PR touching skill files only; never fold it into a release branch, whose diff has to stay limited to the version carriers.
-
-Start from a clean tree on a fresh branch:
+The branch must not already exist. Every remote query, branch mutation, and push is a stopping
+point on failure.
 
 ```bash
-set -e
+set -euo pipefail
+release_ref="refs/heads/release/$version"
 
-# You reach this step straight off a release, so the tree still holds bumped
-# version carriers and build output. Uncommitted changes follow you onto a new
-# branch, so refuse to start rather than carry that residue into a skill-only PR.
-if [ -n "$(git status --porcelain --untracked-files=all)" ]; then
-  echo "Working tree must be clean before starting a skill-learnings branch." >&2
-  echo "Finish or discard the release changes, stash intentional work with" >&2
-  echo "'git stash push --include-untracked', or use a separate clean worktree." >&2
+if existing_release="$(git ls-remote --exit-code --heads origin "$release_ref")"; then
+  echo "$release_ref already exists; refusing to reuse it." >&2
+  printf '%s\n' "$existing_release" >&2
+  exit 1
+else
+  status=$?
+  if [ "$status" -ne 2 ]; then
+    echo "Unable to prove that $release_ref is absent." >&2
+    exit "$status"
+  fi
+fi
+
+if ! git push origin "$source_commit:$release_ref"; then
+  echo "Failed to create $release_ref." >&2
+  exit 1
+fi
+if ! remote_release="$(git ls-remote --exit-code --heads origin "$release_ref")"; then
+  echo "Unable to verify $release_ref after push." >&2
+  exit 1
+fi
+remote_release="${remote_release%%$'\t'*}"
+if [ "$remote_release" != "$source_commit" ]; then
+  echo "$release_ref is $remote_release; expected $source_commit." >&2
+  exit 1
+fi
+```
+
+Never force-push a release branch.
+
+### 3. Prepare the bump in a separate worktree
+
+Choose a new path outside every existing checkout. Do not reuse an old release worktree.
+
+```bash
+set -euo pipefail
+working_branch="<alias>/release_$version-1"
+release_worktree="<new-user-owned-path>"
+
+if [ -e "$release_worktree" ]; then
+  echo "Release worktree path already exists: $release_worktree" >&2
+  exit 1
+fi
+if ! git worktree add -b "$working_branch" "$release_worktree" "$source_commit"; then
+  echo "Unable to create the pinned release worktree." >&2
+  exit 1
+fi
+if ! prepared_head="$(git -C "$release_worktree" rev-parse HEAD)"; then
+  exit 1
+fi
+if [ "$prepared_head" != "$source_commit" ]; then
+  echo "Release worktree is not at the confirmed source." >&2
+  exit 1
+fi
+if ! prepared_status="$(git -C "$release_worktree" status --porcelain=v1 --untracked-files=all)"; then
+  exit 1
+fi
+if [ -n "$prepared_status" ]; then
+  echo "New release worktree is not clean." >&2
   exit 1
 fi
 
-git fetch origin main
-git switch -c "<alias>/release-skill-learnings-$(date +%Y%m%d-%H%M%S)" origin/main
+if ! (cd "$release_worktree" && node tools/cli/preRelease.js); then
+  echo "Release preparation failed; do not stage, commit, or push." >&2
+  exit 1
+fi
+if ! (
+  cd "$release_worktree" &&
+    node tools/cli/prepare-release.js verify \
+      --source-commit "$source_commit" \
+      --expected-version "$version"
+); then
+  echo "Generated release output failed verification." >&2
+  exit 1
+fi
 ```
 
-Now edit only `.github/skills/release-teamsjs/**`. When the edits are done, stage and commit exactly that path:
+`preRelease.js` runs Beachball, installs, builds, reads the generated UMD integrity value, and
+updates the version carriers. Its failure is final for this attempt. Do not commit or push partial
+output.
+
+**Review boundary.** Inspect the full diff. Confirm every pending change file was consumed, the
+changelog section and PR description agree, both package manifests have the exact confirmed
+version, and both CDN examples have the same build-derived integrity value. Make any intentional
+release-note edits now, then rerun `prepare-release.js verify`. An edit that changes the source
+commit or expected paths requires a new preparation.
+
+### 4. Stage, commit, and push only the reviewed preparation
 
 ```bash
-set -e
+set -euo pipefail
 
-git add -- .github/skills/release-teamsjs
-
-# Never `git add -A` here: a blanket add is what lets release residue into a
-# skill-only PR. Enforce the scope instead of trusting a visual check, and keep
-# rename detection off so a move out of the directory cannot hide its deletion.
-staged="$(git diff --cached --name-only --no-renames)"
+if ! git -C "$release_worktree" add -- \
+  packages/teams-js/package.json \
+  packages/teams-js/CHANGELOG.md \
+  packages/teams-js/README.md \
+  apps/teams-test-app/package.json \
+  apps/teams-test-app/index_cdn.html \
+  pnpm-lock.yaml; then
+  exit 1
+fi
+if ! tracked_change_files="$(git -C "$release_worktree" ls-files -- 'change/*.json')"; then
+  exit 1
+fi
+if [ -z "$tracked_change_files" ]; then
+  echo "Pinned source has no tracked change files to consume." >&2
+  exit 1
+fi
+if ! git -C "$release_worktree" add -A -- ':(top,glob)change/*.json'; then
+  exit 1
+fi
+if ! tracked_json_changelog="$(
+  git -C "$release_worktree" ls-files -- packages/teams-js/CHANGELOG.json
+)"; then
+  exit 1
+fi
+if [ -n "$tracked_json_changelog" ]; then
+  if ! git -C "$release_worktree" add -A -- packages/teams-js/CHANGELOG.json; then
+    exit 1
+  fi
+fi
+if ! staged="$(git -C "$release_worktree" diff --cached --name-only --no-renames)"; then
+  exit 1
+fi
 if [ -z "$staged" ]; then
-  echo "Nothing staged under .github/skills/release-teamsjs; there is no learning to record." >&2
+  echo "No release preparation is staged." >&2
   exit 1
 fi
-while IFS= read -r path; do
-  case "$path" in
-    .github/skills/release-teamsjs/*) ;;
-    *)
-      echo "Refusing to commit a staged path outside the release skill: $path" >&2
-      exit 1
-      ;;
+while IFS= read -r staged_path; do
+  case "$staged_path" in
+    packages/teams-js/package.json|packages/teams-js/CHANGELOG.md|packages/teams-js/README.md|\
+    apps/teams-test-app/package.json|apps/teams-test-app/index_cdn.html|pnpm-lock.yaml|\
+    packages/teams-js/CHANGELOG.json|change/*.json) ;;
+    *) echo "Unexpected staged release path: $staged_path" >&2; exit 1 ;;
   esac
 done <<< "$staged"
 
-git commit -m "Record what the <version> release taught the release skill"
-git push -u origin HEAD
+if ! git -C "$release_worktree" commit -m "Prepare release $version"; then
+  echo "Release preparation commit failed." >&2
+  exit 1
+fi
+if ! committed_status="$(git -C "$release_worktree" status --porcelain=v1 --untracked-files=all)"; then
+  exit 1
+fi
+if [ -n "$committed_status" ]; then
+  echo "Release worktree has residue after commit." >&2
+  printf '%s\n' "$committed_status" >&2
+  exit 1
+fi
+if ! git -C "$release_worktree" push --set-upstream origin "$working_branch"; then
+  echo "Release preparation push failed." >&2
+  exit 1
+fi
+if ! local_head="$(git -C "$release_worktree" rev-parse HEAD)"; then
+  exit 1
+fi
+if ! remote_head="$(git ls-remote --exit-code --heads origin "refs/heads/$working_branch")"; then
+  exit 1
+fi
+remote_head="${remote_head%%$'\t'*}"
+if [ "$remote_head" != "$local_head" ]; then
+  echo "Remote working branch does not match the reviewed commit." >&2
+  exit 1
+fi
 ```
 
-Open the PR as a **draft**. `*.md` is in beachball's `ignorePatterns`, so no change file is needed.
+Open the bump PR from `working_branch` into `release/<version>`, not `main`. Do not attach binaries.
+Do not continue while the PR is open.
 
-**Never auto-complete it.** A skill editing its own instructions is precisely the change that needs a human in the loop.
+### 5. Build the merged release commit and produce the approved plan
 
-If the run taught you nothing, say so in one line and stop. An empty PR is worse than no PR.
+After the bump PR merges, fetch `refs/remotes/origin/release/<version>` explicitly and require its
+package version to equal `version`. Queue the repository's reviewed build for that exact commit.
+
+Use the landed #3156 producer to create a plan from the approved build and its immutable outputs.
+The plan must identify the exact release component, semantic version, channel, source commit, build,
+tool revision, complete npm/CDN target set, and independent build-derived artifact identities.
+Persist its deterministic digest with the build.
+
+Stop if the plan is empty, has duplicate or unresolved targets, names a different source/version,
+or derives an expected hash from npm, the CDN, or any other observed destination. HTTP status and
+byte-count printouts are diagnostics, not a release plan.
+
+### 6. Create the candidate and publish through the existing gates
+
+Create the GitHub candidate only through the landed #3156 lifecycle tool, targeting the exact
+merged release commit and plan. Keep it a prerelease. The internal publication remains a separate
+step and still requires the existing second-person approval. Publication must consume the approved
+build named by the plan, not rebuild a mutable branch.
+
+Do not claim that publishing has started before approval. Do not weaken environment, locking,
+branch-protection, or self-approval policies.
+
+### 7. Reconcile every target and finalize only from a complete receipt
+
+After every publish attempt, including a partial failure, run the landed #3156 receipt consumer for
+the entire plan target set. Retry scope may not shrink the expected set.
+
+For npm and the CDN, `present-matching` requires the actual artifact/content identity to match the
+independent build-derived expectation and any applicable source reference. A version string,
+folder, HTTP 200, download size, package-page rendering, or pipeline success is insufficient.
+Authentication errors, malformed responses, generic 404s, and skipped jobs are `unknown`, not
+authoritative absence.
+
+Only a receipt with the expected plan digest, exactly one current observation for every target,
+and `complete: true` permits:
+
+1. promoting the GitHub candidate to the final/latest release,
+2. merging `release/<version>` back to `main`,
+3. updating downstream compatibility pins,
+4. announcing the release, and
+5. recording final bundle measurements.
+
+If publication is partial, report it as partial. Derive recovery from the receipt. Never republish
+an append-only package to repair metadata, and never move a published final tag.
+
+### 8. Feed back a durable learning
+
+At the end, decide whether this run taught the public skill something that would have changed the
+procedure. Most runs teach nothing and should open no skill PR.
+
+If a correction is needed, start from a clean, newly created worktree at current `origin/main`; edit
+only `.github/skills/release-teamsjs/**`; stage exactly that directory; reject any staged path
+outside it; and open a draft PR for human review. Never fold skill changes into the release branch.
+A retro may tighten a gate or correct a fact, but it may not relax confirmation, approval,
+plan/receipt completeness, or artifact verification.
+
+## Major and prerelease candidates
+
+No reviewed public procedure safely releases a blocked `major` or `prerelease` change. Do not:
+
+- relax `disallowedChangeTypes` on `main` and promise to restore it later,
+- point CI at an alternate permissive config,
+- claim the CLI will silently demote a blocked type, or
+- assume one prerelease change file wins over other pending change types.
+
+A future route must be executable and maintainer-approved, isolate its candidate policy, preserve
+the contributor guard, pin source, calculate all pending changes, assert the exact semantic
+version, and retain all publication/receipt gates. Until it lands, stop and design it separately.
 
 ## Failure modes
 
-- **`preRelease.js` cannot find the manifest** → the build inside it failed. Fix the build; the integrity hash cannot be produced without one.
-- **The version is on npm but the CDN URL 404s** → half-published. Do not promote the GitHub release to latest, and do not announce. Resolve the CDN publish first.
-- **A PR merged into `main` mid-release and the release branch will not merge back** → expected. Use the intermediate branch in step 7; never force-push `main` or edit a deployed release branch.
-- **A release failed and the branch is now obsolete** → `release/*` branches are protected. Deleting one needs repo admin: enable **Allow deletions** on the `release/` branch rule, `git push origin --delete release/<x.y.z>`, then disable it again. Check the version carefully before deleting.
-- **The publish approval went to fewer people than expected** → an access-configuration problem on the approver side, not a pipeline bug. Raise it internally.
+- **Dirty preview tree**: use a clean owned worktree; never hide, clean, or restore unrelated files.
+- **Blocked `major`/`prerelease`**: expected; validation fails before writes. Do not remove the guard.
+- **Version mismatch**: the complete change set differs from intent. Stop rather than override it.
+- **Preparation/manifest failure**: do not commit or push partial carriers.
+- **Only npm or CDN matches**: keep the candidate unpromoted and reconcile every target.
+- **Absent, stale, partial, conflicting, or unknown receipt**: do not finalize.
+- **`main` moved after confirmation**: retain the pin or restart preview and confirmation.
 
-## Hard-learned rules
+## Hard rules
 
-- **Read the version at runtime**, from `package.json` and the npm feed. Never bake a "known" version anywhere; it goes stale immediately.
-- **A release is npm AND the CDN.** Verify both before calling it done.
-- **The build that gets deployed decides what ships**, not the branch you think you are on.
-- **The publish approver cannot be the person releasing.** That makes a second person a hard dependency, not a formality.
-- **Never judge a release by the pipeline's status field.** Judge it by the feed and the CDN.
-- **Never change a release branch after it has deployed, and never force-push `main`.** Together those leave the intermediate branch as the only move, which is the intended one.
-- **Prerelease first, latest only after verification.**
-- **This skill is maintained by the runs that use it.** Everything above was learned by a release going wrong once. When a run teaches you something the next one needs, step 8 says how to fold it back in, and equally, when a run teaches you nothing, it should end with no PR.
+- Pin source before version confirmation and keep the pair together.
+- Preview in a disposable worktree; never mutate and restore a developer checkout.
+- Check command success and all untracked files at every status fence.
+- Never use `git clean` or broad `git restore` in this workflow.
+- Never stage broadly; allow only reviewed release output.
+- Never force-push `main` or a release branch.
+- A release is npm and CDN together, proven against the approved build plan.
+- A second person remains a hard publication dependency.
+- Candidate first; final/latest only after a complete receipt.
+- Keep the learning loop, and keep public guidance public-safe.
 
-## Reference files in this repo
+## Reference files
 
-- `beachball.config.js` - versioning config
-- `tools/cli/preRelease.js` - the version bump: builds, reads the UMD integrity hash, rewrites the carriers
-- `tools/releases/build-release.yml` - the build that stages the release artifacts
-- `.github/workflows/prerelease.yml` - a manual `workflow_dispatch` that runs `preRelease.js` and pushes a `release/<version>` branch
-- `.github/workflows/postrelease.yml` - fires when a PR into `release/*` merges; reads the changelog and notifies downstream
-- `CONTRIBUTING.md` - change files and the beachball workflow
+- `beachball.config.js` - contributor versioning policy
+- `CONTRIBUTING.md` - contributor change-file menu and policy
+- `tools/cli/prepare-release.js` - pinned disposable preview and preparation verifier
+- `tools/cli/preRelease.js` - bump, build, integrity extraction, and carrier updates
+- `tools/releases/build-release.yml` - release artifact build
+- `.github/workflows/prerelease.yml` - public preparation workflow
+- `.github/workflows/postrelease.yml` - release-branch merge follow-up

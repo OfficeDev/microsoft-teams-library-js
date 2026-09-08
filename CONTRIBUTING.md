@@ -50,18 +50,25 @@ The TeamsJS Client library contains a [Change Log](./packages/teams-js/CHANGELOG
 
 Beachball generates JSON change files based on a few simple answers from you:
 
-- Change type: this can be one of four types: Major, Minor, Patch, and None. In addition to the descriptions provided in the prompt, the following can help guide which type to choose:
+- Change type: for the current stable package and checked-in policy, the interactive contributor menu contains Minor, Patch, and None. In addition to the descriptions provided in the prompt, the following can help guide which type to choose:
 
-  - Major - when you make incompatible API changes,
   - Minor - when you add functionality in a backwards compatible manner,
-  - Patch - when you make backwards compatible bug fixes
+  - Patch - when you make backwards compatible bug fixes,
   - None - when the change does not affect the published package in any way.
+
+  Beachball also recognizes `prerelease`, `prepatch`, `preminor`, `premajor`, and `major` change-file types. The repository's `disallowedChangeTypes` policy explicitly blocks `major` and `prerelease`; `prepatch`, `preminor`, and `premajor` are not part of the interactive contributor menu, but the current policy does not block a hand-authored file that uses them. Do not hand-author one as part of an ordinary contribution. Maintainers must use a reviewed, release-specific procedure that preserves the contributor policy and verifies the exact resulting version across all pending change files.
 
 - Describe changes: Type your own message or choose one of the commit messages. Try to make it descriptive - it will help you if you need to locate the change file later.
   - Please use past tense (e.g., "Added comments to \`app.initialize\`")
   - Enclose function/interface/enum/etc. names in backticks
 
 And that's it! As easy as hitting 'enter' twice. Beachball will automatically commit the change file you've created. All you have to do is run `pnpm changefile` in the monorepo root to do the above change file generation as the last step in your branch to make sure your PR is ready for review. Our pipelines will check to see if you generated a change file and will fail if you forgot. If they do, please create the change file as per the steps listed and update the content accordingly.
+
+### Major and prerelease releases
+
+Beachball validates change files before it calculates or writes a bump. With the checked-in policy, a hand-authored `major` or `prerelease` change file is rejected; it is not silently converted to another type.
+
+Do not temporarily relax `disallowedChangeTypes` on `main`, point CI at a permissive alternate config, or rely on a follow-up policy-restoration PR. A supported major or prerelease route must first land as an executable, maintainer-reviewed procedure that operates on an isolated pinned candidate, keeps the contributor policy in place, considers the complete pending change set, and asserts the exact intended semantic version. Until that procedure exists, coordinate the release mechanism in a separate PR rather than changing the contributor guard during a release.
 
 ## Contributor License
 

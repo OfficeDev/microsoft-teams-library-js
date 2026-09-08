@@ -55,6 +55,8 @@ jobs:
         run: pnpm build
       - name: Run Unit Tests
         run: pnpm test
+      - name: Test release preparation
+        run: node --test tools/cli/prepare-release.test.js
       - name: Check for lint errors
         run: pnpm lint
 
