@@ -8,7 +8,9 @@ const { spawnSync } = require('child_process');
 const repositoryRoot = path.resolve(__dirname, '../..');
 const helperPath = path.join(__dirname, 'prepare-release.js');
 const testRoot = path.join(repositoryRoot, `.release-helper-tests-${randomUUID()}`);
-const actualGit = run(process.platform === 'win32' ? 'where.exe' : 'which', ['git']).stdout.trim().split(/\r?\n/)[0];
+const actualGit = run(process.platform === 'win32' ? 'where.exe' : 'which', ['git'])
+  .stdout.trim()
+  .split(/\r?\n/)[0];
 const beachballBin =
   process.env.PREPARE_RELEASE_TEST_BEACHBALL_BIN ||
   require.resolve('beachball/bin/beachball.js', { paths: [repositoryRoot] });
@@ -143,13 +145,7 @@ function runHelper(repoPath, args, env) {
 }
 
 function previewArguments(repoPath, expectedVersion) {
-  return [
-    'preview',
-    '--source-commit',
-    git(repoPath, ['rev-parse', 'HEAD']),
-    '--expected-version',
-    expectedVersion,
-  ];
+  return ['preview', '--source-commit', git(repoPath, ['rev-parse', 'HEAD']), '--expected-version', expectedVersion];
 }
 
 test('previews an exact version without changing the source checkout or contributor policy', () => {

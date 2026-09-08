@@ -51,7 +51,6 @@ The TeamsJS Client library contains a [Change Log](./packages/teams-js/CHANGELOG
 Beachball generates JSON change files based on a few simple answers from you:
 
 - Change type: for the current stable package and checked-in policy, the interactive contributor menu contains Minor, Patch, and None. In addition to the descriptions provided in the prompt, the following can help guide which type to choose:
-
   - Minor - when you add functionality in a backwards compatible manner,
   - Patch - when you make backwards compatible bug fixes,
   - None - when the change does not affect the published package in any way.

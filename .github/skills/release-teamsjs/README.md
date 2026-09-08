@@ -29,7 +29,7 @@ does not prove artifact identity. A partial or unknown receipt keeps the candida
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `SKILL.md` | Complete workflow, confirmation boundaries, failure modes, and learning loop. |
-| `README.md` | Public overview. |
+| File        | Purpose                                                                       |
+| ----------- | ----------------------------------------------------------------------------- |
+| `SKILL.md`  | Complete workflow, confirmation boundaries, failure modes, and learning loop. |
+| `README.md` | Public overview.                                                              |
