@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { MessageRequest, MessageResponse } from '../../src/internal/messageObjects';
 import { UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
 import {
@@ -6,6 +7,7 @@ import {
   registerUserSettingsChangeHandler,
   sendCustomEvent,
   sendCustomMessage,
+  uploadCustomApp,
 } from '../../src/private/privateAPIs';
 import { activateChildProxyingCommunication } from '../../src/public';
 import * as app from '../../src/public/app/app';
@@ -664,6 +666,58 @@ describe('AppSDK-privateAPIs', () => {
 
       expect(callbackCalled).toBe(false);
       expect(callbackArgs).toBeNull();
+    });
+  });
+
+  describe('uploadCustomApp', () => {
+    const manifestBlob = new Blob(['{ "manifestVersion": "1.16" }'], { type: 'application/json' });
+
+    it('should not allow calls before initialization', () => {
+      expect(() => uploadCustomApp(manifestBlob)).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('should pass the manifest blob to the host', async () => {
+      expect.assertions(1);
+      await utils.initializeWithContext(FrameContexts.content);
+
+      uploadCustomApp(manifestBlob);
+
+      const message = utils.findMessageByActionName('uploadCustomApp');
+      expect(message.args).toEqual([manifestBlob]);
+    });
+
+    it('should invoke the supplied onComplete callback with the host response', async () => {
+      expect.assertions(2);
+      await utils.initializeWithContext(FrameContexts.content);
+
+      const onComplete = jest.fn();
+      uploadCustomApp(manifestBlob, onComplete);
+
+      const message = utils.findMessageByActionName('uploadCustomApp');
+      await utils.respondToMessage(message, false, 'someReason');
+
+      expect(onComplete).toHaveBeenCalledTimes(1);
+      expect(onComplete.mock.calls[0].slice(0, 2)).toEqual([false, 'someReason']);
+    });
+
+    it('should fall back to the generic onComplete handler and throw when the host reports failure', async () => {
+      expect.assertions(1);
+      await utils.initializeWithContext(FrameContexts.content);
+
+      uploadCustomApp(manifestBlob);
+
+      const message = utils.findMessageByActionName('uploadCustomApp');
+      await expect(utils.respondToMessage(message, false, 'someReason')).rejects.toThrowError('someReason');
+    });
+
+    it('should fall back to the generic onComplete handler and not throw when the host reports success', async () => {
+      expect.assertions(1);
+      await utils.initializeWithContext(FrameContexts.content);
+
+      uploadCustomApp(manifestBlob);
+
+      const message = utils.findMessageByActionName('uploadCustomApp');
+      await expect(utils.respondToMessage(message, true)).resolves.toBeUndefined();
     });
   });
 
