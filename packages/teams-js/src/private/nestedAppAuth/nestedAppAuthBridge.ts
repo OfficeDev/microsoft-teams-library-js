@@ -1,3 +1,12 @@
+/**
+ * @beta
+ * @hidden
+ * Nested app authentication bridge for Microsoft-internal apps.
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { v4 as generateUUID } from 'uuid';
 
 /**
