@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Correct the TSDoc on `validateUuidInstance`, which incorrectly described it as checking whether an id is an instance of `ValidatedSafeString` rather than `UUID`.",
-  "packageName": "@microsoft/teams-js",
-  "email": "edwardlee@microsoft.com",
-  "dependentChangeType": "none"
-}
