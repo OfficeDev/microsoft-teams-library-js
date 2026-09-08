@@ -1,403 +1,298 @@
 const assert = require('node:assert/strict');
+const { execFile } = require('node:child_process');
 const fs = require('node:fs');
+const http = require('node:http');
 const os = require('node:os');
 const path = require('node:path');
-const { afterEach, describe, it } = require('node:test');
+const { test } = require('node:test');
+const { promisify } = require('node:util');
+const { GitHubClient, finalizeRelease, readTag } = require('./create-github-release');
+const { fixture, source, identity, npmBytes, cdnFiles } = require('./test/release-fixtures');
 
-const {
-  GitHubClient,
-  createOrUpdatePrerelease,
-  isReleaseVersion,
-  parseArgs,
-  readReleaseCandidate,
-  resolveTagCommitSha,
-} = require('./create-github-release');
-
-const version = '2.56.0';
-const baseRef = `release/${version}`;
-const targetSha = 'a'.repeat(40);
-const notes = 'Release notes';
-const temporaryDirectories = [];
-
-function createClient(overrides = {}) {
-  return {
-    getBranchReference: async () => ({ object: { type: 'commit', sha: targetSha } }),
-    getTagReference: async () => undefined,
-    getAnnotatedTag: async () => {
-      throw new Error('Unexpected annotated tag lookup.');
+function clientFixture() {
+  const refs = new Map();
+  const annotations = new Map();
+  const releases = new Map();
+  const writes = [];
+  const client = {
+    getTagReference: async (tag) => refs.get(tag),
+    getAnnotatedTag: async (sha) => annotations.get(sha),
+    createTagReference: async (tag, sha) => {
+      writes.push(['ref', tag, sha]);
+      assert.equal(refs.has(tag), false);
+      refs.set(tag, { ref: `refs/tags/${tag}`, object: { type: annotations.has(sha) ? 'tag' : 'commit', sha } });
     },
-    getReleaseByTag: async () => undefined,
-    createTagReference: async () => {
-      throw new Error('Unexpected tag creation.');
+    createAnnotatedTag: async (tag, sha, digest) => {
+      writes.push(['annotation', tag]);
+      const objectSha = 'd'.repeat(40);
+      annotations.set(objectSha, { message: `teamsjs-plan-sha256:${digest}`, object: { type: 'commit', sha } });
+      return { sha: objectSha };
     },
-    updateTagReference: async () => {
-      throw new Error('Unexpected tag update.');
+    getReleaseByTag: async (tag) => releases.get(tag),
+    createRelease: async (release) => {
+      writes.push(['release', release]);
+      releases.set(release.tag_name, release);
     },
-    createRelease: async () => {
-      throw new Error('Unexpected release creation.');
-    },
-    updateRelease: async () => {
-      throw new Error('Unexpected release update.');
-    },
-    ...overrides,
   };
+  return { client, refs, annotations, releases, writes };
 }
 
-function createCandidateFiles(packageVersion = version) {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'teamsjs-release-'));
-  const packageFile = path.join(directory, 'package.json');
-  const changelogFile = path.join(directory, 'CHANGELOG.md');
-  temporaryDirectories.push(directory);
-
-  fs.writeFileSync(packageFile, JSON.stringify({ version: packageVersion }));
-  fs.writeFileSync(changelogFile, `# Changelog\n\n## ${version}\n\n${notes}\n\n## 2.55.0\n\nPrevious notes\n`);
-
-  return { packageFile, changelogFile };
-}
-
-afterEach(() => {
-  while (temporaryDirectories.length > 0) {
-    fs.rmSync(temporaryDirectories.pop(), { recursive: true });
-  }
+test('creates immutable plan candidate and annotated final tag only after all targets match', async () => {
+  const state = clientFixture();
+  const input = fixture();
+  const result = await finalizeRelease({ ...input, client: state.client });
+  assert.equal(result.candidateTag, `candidate/3.0.0/${input.approvedDigest}`);
+  assert.equal((await readTag(state.client, result.tag)).sha, source);
+  assert.equal((await readTag(state.client, result.tag)).annotation, `teamsjs-plan-sha256:${input.approvedDigest}`);
+  assert.equal(state.releases.get(result.tag).prerelease, true);
+  assert.equal(state.releases.get(result.tag).make_latest, 'false');
+  const count = state.writes.length;
+  assert.equal((await finalizeRelease({ ...input, client: state.client })).action, 'unchanged');
+  assert.equal(state.writes.length, count);
 });
 
-describe('createOrUpdatePrerelease', () => {
-  it('creates the tag and a prerelease without marking it latest', async () => {
-    let tagSha;
-    let createdRelease;
-    const client = createClient({
-      getTagReference: async () => (tagSha ? { object: { type: 'commit', sha: tagSha } } : undefined),
-      createTagReference: async (_tag, sha) => {
-        tagSha = sha;
-      },
-      createRelease: async (release) => {
-        createdRelease = release;
-      },
-    });
+test('external promotion never triggers a release edit or moves a final reference', async () => {
+  const state = clientFixture();
+  const input = fixture();
+  await finalizeRelease({ ...input, client: state.client });
+  state.releases.get('v3.0.0').prerelease = false;
+  const original = structuredClone([...state.refs]);
+  const writes = state.writes.length;
+  await finalizeRelease({ ...input, client: state.client });
+  assert.deepEqual([...state.refs], original);
+  assert.equal(state.writes.length, writes);
+  assert.equal(state.releases.get('v3.0.0').prerelease, false);
+  assert.equal('updateTagReference' in state.client, false);
+});
 
-    const result = await createOrUpdatePrerelease({ baseRef, version, targetSha, notes, client });
+test('server-normalized annotation newline preserves identity on retries', async () => {
+  const state = clientFixture();
+  const input = fixture();
+  await finalizeRelease({ ...input, client: state.client });
+  state.annotations.get('d'.repeat(40)).message += '\n';
+  const writes = state.writes.length;
+  await finalizeRelease({ ...input, client: state.client });
+  assert.equal(state.writes.length, writes);
+});
 
-    assert.deepEqual(result, { action: 'created', tag: 'v2.56.0' });
-    assert.equal(tagSha, targetSha);
-    assert.deepEqual(createdRelease, {
-      name: 'v2.56.0 (prerelease)',
-      body: notes,
-      draft: false,
-      prerelease: true,
-      make_latest: 'false',
-      tag_name: 'v2.56.0',
-    });
+for (const [name, edit] of [
+  [
+    'incomplete',
+    (input) => {
+      input.receipt.complete = false;
+    },
+  ],
+  [
+    'missing CDN',
+    (input) => {
+      input.receipt.observations.pop();
+    },
+  ],
+  [
+    'wrong source',
+    (input) => {
+      input.approvedSource = 'f'.repeat(40);
+    },
+  ],
+  [
+    'wrong plan',
+    (input) => {
+      input.approvedDigest = 'f'.repeat(64);
+    },
+  ],
+  [
+    'stale',
+    (input) => {
+      input.now += 16 * 60 * 1000;
+    },
+  ],
+  [
+    'unknown target',
+    (input) => {
+      input.receipt.observations[1].state = 'unknown';
+    },
+  ],
+]) {
+  test(`refuses ${name} publication evidence before any write`, async () => {
+    const state = clientFixture();
+    const input = fixture();
+    edit(input);
+    await assert.rejects(finalizeRelease({ ...input, client: state.client }));
+    assert.deepEqual(state.writes, []);
   });
+}
 
-  it('updates an existing prerelease without moving a matching tag', async () => {
-    let updatedRelease;
-    const client = createClient({
-      getTagReference: async () => ({ object: { type: 'commit', sha: targetSha } }),
-      getReleaseByTag: async () => ({ id: 42, prerelease: true }),
-      updateRelease: async (releaseId, release) => {
-        updatedRelease = { releaseId, release };
-      },
-    });
-
-    const result = await createOrUpdatePrerelease({ baseRef, version, targetSha, notes, client });
-
-    assert.deepEqual(result, { action: 'updated', tag: 'v2.56.0' });
-    assert.equal(updatedRelease.releaseId, 42);
-    assert.deepEqual(updatedRelease.release, { body: notes });
+for (const conflict of ['commit', 'plan', 'legacy-lightweight']) {
+  test(`refuses existing final tag with conflicting ${conflict} identity without changing it`, async () => {
+    const state = clientFixture();
+    const input = fixture();
+    await finalizeRelease({ ...input, client: state.client });
+    const annotation = state.annotations.get('d'.repeat(40));
+    if (conflict === 'commit') annotation.object.sha = 'f'.repeat(40);
+    if (conflict === 'plan') annotation.message = `teamsjs-plan-sha256:${'f'.repeat(64)}`;
+    if (conflict === 'legacy-lightweight') state.refs.get('v3.0.0').object = { type: 'commit', sha: source };
+    const original = structuredClone([...state.refs]);
+    const writes = state.writes.length;
+    await assert.rejects(finalizeRelease({ ...input, client: state.client }), /conflicts/);
+    assert.equal(state.writes.length, writes);
+    assert.deepEqual([...state.refs], original);
   });
+}
 
-  it('advances a prerelease tag when a later release fix merges', async () => {
-    let tagSha = 'b'.repeat(40);
-    let updateCalled = false;
-    const client = createClient({
-      getTagReference: async () => ({ object: { type: 'commit', sha: tagSha } }),
-      getReleaseByTag: async () => ({ id: 42, prerelease: true }),
-      updateTagReference: async (_tag, sha, force) => {
-        assert.equal(force, false);
-        tagSha = sha;
-      },
-      updateRelease: async () => {
-        updateCalled = true;
-      },
-    });
+test('a denied ref creation cannot be reported as a completed release', async () => {
+  const state = clientFixture();
+  state.client.createTagReference = async () => {
+    throw new Error('HTTP 403');
+  };
+  await assert.rejects(finalizeRelease({ ...fixture(), client: state.client }), /403/);
+  assert.equal(state.releases.size, 0);
+});
 
-    const result = await createOrUpdatePrerelease({ baseRef, version, targetSha, notes, client });
+test('a concurrent conflicting create fails without patch, rollback, or release creation', async () => {
+  const state = clientFixture();
+  state.client.createTagReference = async (tag) => {
+    state.refs.set(tag, { ref: `refs/tags/${tag}`, object: { type: 'commit', sha: 'f'.repeat(40) } });
+    throw new Error('HTTP 422 reference exists');
+  };
+  await assert.rejects(finalizeRelease({ ...fixture(), client: state.client }), /422/);
+  assert.equal(state.releases.size, 0);
+  assert.equal([...state.refs.values()][0].object.sha, 'f'.repeat(40));
+});
 
-    assert.deepEqual(result, { action: 'updated', tag: 'v2.56.0' });
-    assert.equal(tagSha, targetSha);
-    assert.equal(updateCalled, true);
+test('missing remote persistence fails even after an accepted create request', async () => {
+  const state = clientFixture();
+  state.client.createTagReference = async () => {};
+  await assert.rejects(finalizeRelease({ ...fixture(), client: state.client }), /conflicts/);
+  assert.equal(state.releases.size, 0);
+});
+
+test('metadata failure retries metadata only and retains the original annotated tag object', async () => {
+  const state = clientFixture();
+  const input = fixture();
+  const create = state.client.createRelease;
+  state.client.createRelease = async () => {
+    throw new Error('HTTP 503');
+  };
+  await assert.rejects(finalizeRelease({ ...input, client: state.client }), /503/);
+  const refs = structuredClone([...state.refs]);
+  const count = state.writes.length;
+  state.client.createRelease = create;
+  await finalizeRelease({ ...input, client: state.client });
+  assert.deepEqual([...state.refs], refs);
+  assert.deepEqual(
+    state.writes.slice(count).map(([kind]) => kind),
+    ['release'],
+  );
+});
+
+test('GitHub client bounds requests, refuses redirects, separates auth failure from missing ref', async () => {
+  let status = 403;
+  const client = new GitHubClient({
+    token: 'synthetic-token',
+    fetchImpl: async (url, options) => {
+      assert.match(url, /^https:\/\/api.github.com\/repos\/OfficeDev\/microsoft-teams-library-js\//);
+      assert.equal(options.redirect, 'error');
+      assert.ok(options.signal instanceof AbortSignal);
+      return { status, ok: status === 200, json: async () => ({}) };
+    },
   });
+  await assert.rejects(client.getTagReference('v3.0.0'), /403/);
+  status = 404;
+  assert.equal(await client.getTagReference('v3.0.0'), undefined);
+  status = 500;
+  await assert.rejects(client.getTagReference('v3.0.0'), /500/);
+});
 
-  it('restores the tag if the prerelease is promoted during an update', async () => {
-    const originalSha = 'b'.repeat(40);
-    let tagSha = originalSha;
-    let releaseLookup = 0;
-    const client = createClient({
-      getTagReference: async () => ({ object: { type: 'commit', sha: tagSha } }),
-      getReleaseByTag: async () => {
-        releaseLookup += 1;
-        return { id: 42, prerelease: releaseLookup < 3 };
-      },
-      updateTagReference: async (_tag, sha, force) => {
-        if (sha === originalSha) {
-          assert.equal(force, true);
+test('actual producer, verifier and finalizer CLIs rehearse against HTTP doubles without publishing', async (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'release-lifecycle-'));
+  t.after(() => fs.rmSync(directory, { recursive: true }));
+  const state = clientFixture();
+  const { plan, approvedDigest } = fixture();
+  let cdnMissing = false;
+  const server = http.createServer(async (request, response) => {
+    try {
+      const url = new URL(decodeURIComponent(request.url.slice(1)));
+      let body;
+      if (url.hostname === 'registry.npmjs.org') {
+        body = url.pathname.endsWith('.tgz')
+          ? npmBytes
+          : {
+              name: plan.release.component,
+              version: plan.release.version,
+              gitHead: source,
+              dist: { tarball: plan.targets[0].destination, integrity: plan.targets[0].integrity },
+            };
+      } else if (url.hostname === 'res.cdn.office.net') {
+        body = cdnMissing ? undefined : cdnFiles[url.pathname.split('/').slice(3).join('/')];
+      } else {
+        assert.equal(url.hostname, 'api.github.com');
+        assert.equal(request.headers.authorization, 'Bearer synthetic-token');
+        const chunks = [];
+        for await (const chunk of request) chunks.push(chunk);
+        const input = chunks.length ? JSON.parse(Buffer.concat(chunks)) : undefined;
+        const apiPath = decodeURIComponent(url.pathname.replace('/repos/OfficeDev/microsoft-teams-library-js', ''));
+        if (request.method === 'GET' && apiPath.startsWith('/git/ref/tags/')) {
+          body = await state.client.getTagReference(apiPath.slice('/git/ref/tags/'.length));
+        } else if (request.method === 'GET' && apiPath.startsWith('/git/tags/')) {
+          body = await state.client.getAnnotatedTag(apiPath.slice('/git/tags/'.length));
+        } else if (request.method === 'GET' && apiPath.startsWith('/releases/tags/')) {
+          body = await state.client.getReleaseByTag(apiPath.slice('/releases/tags/'.length));
+        } else if (request.method === 'POST' && apiPath === '/git/refs') {
+          await state.client.createTagReference(input.ref.slice('refs/tags/'.length), input.sha);
+          body = {};
+        } else if (request.method === 'POST' && apiPath === '/git/tags') {
+          body = await state.client.createAnnotatedTag(input.tag, input.object, input.message.split(':')[1]);
+        } else if (request.method === 'POST' && apiPath === '/releases') {
+          await state.client.createRelease(input);
+          body = input;
         } else {
-          assert.equal(force, false);
+          throw new Error(`Unexpected HTTP mutation: ${request.method} ${apiPath}`);
         }
-        tagSha = sha;
-      },
+      }
+      response.writeHead(body === undefined ? 404 : 200);
+      response.end(Buffer.isBuffer(body) ? body : JSON.stringify(body));
+    } catch (error) {
+      response.writeHead(500);
+      response.end(error.message);
+    }
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => {
+    server.close();
+    server.closeAllConnections();
+  });
+  const preload = path.join(directory, 'http-double.cjs');
+  fs.writeFileSync(
+    preload,
+    `const originalFetch = globalThis.fetch;
+  globalThis.fetch = (url, options) => originalFetch(
+    'http://127.0.0.1:${server.address().port}/' + encodeURIComponent(url), options);`,
+  );
+  const identityFile = path.join(directory, 'identity.json');
+  const npmFile = path.join(directory, 'package.tgz');
+  const cdnDirectory = path.join(directory, 'cdn');
+  const planFile = path.join(directory, 'plan.json');
+  const receiptFile = path.join(directory, 'receipt.json');
+  fs.writeFileSync(identityFile, JSON.stringify(identity));
+  fs.writeFileSync(npmFile, npmBytes);
+  fs.mkdirSync(path.join(cdnDirectory, 'js'), { recursive: true });
+  for (const [name, bytes] of Object.entries(cdnFiles)) fs.writeFileSync(path.join(cdnDirectory, name), bytes);
+  const run = (script, args) =>
+    promisify(execFile)(process.execPath, ['--require', preload, path.join(__dirname, script), ...args], {
+      env: { ...process.env, NODE_OPTIONS: '', GITHUB_TOKEN: 'synthetic-token', GH_TOKEN: '' },
     });
-
-    await assert.rejects(
-      createOrUpdatePrerelease({ baseRef, version, targetSha, notes, client }),
-      /was promoted while its tag was being updated/,
-    );
-    assert.equal(tagSha, originalSha);
-  });
-
-  it('leaves an existing full release unchanged on a matching commit', async () => {
-    const client = createClient({
-      getTagReference: async () => ({ object: { type: 'commit', sha: targetSha } }),
-      getReleaseByTag: async () => ({ id: 42, prerelease: false }),
-    });
-
-    const result = await createOrUpdatePrerelease({ baseRef, version, targetSha, notes, client });
-
-    assert.deepEqual(result, { action: 'unchanged', tag: 'v2.56.0' });
-  });
-
-  it('refuses to move a full release tag', async () => {
-    const client = createClient({
-      getTagReference: async () => ({ object: { type: 'commit', sha: 'b'.repeat(40) } }),
-      getReleaseByTag: async () => ({ id: 42, prerelease: false }),
-    });
-
-    await assert.rejects(
-      createOrUpdatePrerelease({ baseRef, version, targetSha, notes, client }),
-      /Full release v2.56.0 points to a different commit/,
-    );
-  });
-
-  it('refuses to reuse an orphaned tag from a different commit', async () => {
-    let tagSha = 'b'.repeat(40);
-    const client = createClient({
-      getTagReference: async () => ({ object: { type: 'commit', sha: tagSha } }),
-      updateTagReference: async (_tag, sha) => {
-        tagSha = sha;
-        throw new Error('Not a fast-forward update.');
-      },
-    });
-
-    await assert.rejects(
-      createOrUpdatePrerelease({ baseRef, version, targetSha, notes, client }),
-      /Not a fast-forward update/,
-    );
-  });
-
-  it('recovers an orphaned tag left by a partial earlier run', async () => {
-    let tagSha = 'b'.repeat(40);
-    let releaseCreated = false;
-    const client = createClient({
-      getTagReference: async () => ({ object: { type: 'commit', sha: tagSha } }),
-      updateTagReference: async (_tag, sha, force) => {
-        assert.equal(force, false);
-        tagSha = sha;
-      },
-      createRelease: async () => {
-        releaseCreated = true;
-      },
-    });
-
-    const result = await createOrUpdatePrerelease({ baseRef, version, targetSha, notes, client });
-
-    assert.deepEqual(result, { action: 'created', tag: 'v2.56.0' });
-    assert.equal(tagSha, targetSha);
-    assert.equal(releaseCreated, true);
-  });
-
-  it('does not publish an orphaned tag after the branch advances', async () => {
-    let branchLookup = 0;
-    let releaseCreated = false;
-    const client = createClient({
-      getBranchReference: async () => {
-        branchLookup += 1;
-        return { object: { type: 'commit', sha: branchLookup === 1 ? targetSha : 'b'.repeat(40) } };
-      },
-      getTagReference: async () => ({ object: { type: 'commit', sha: targetSha } }),
-      createRelease: async () => {
-        releaseCreated = true;
-      },
-    });
-
-    const result = await createOrUpdatePrerelease({ baseRef, version, targetSha, notes, client });
-
-    assert.deepEqual(result, { action: 'stale', tag: 'v2.56.0' });
-    assert.equal(releaseCreated, false);
-  });
-
-  it('skips a stale workflow run instead of rewinding the tag', async () => {
-    const client = createClient({
-      getBranchReference: async () => ({ object: { type: 'commit', sha: 'b'.repeat(40) } }),
-    });
-
-    const result = await createOrUpdatePrerelease({ baseRef, version, targetSha, notes, client });
-
-    assert.deepEqual(result, { action: 'stale', tag: 'v2.56.0' });
-  });
-
-  it('rejects a target that is not a full commit SHA', async () => {
-    const client = createClient();
-
-    await assert.rejects(
-      createOrUpdatePrerelease({ baseRef, version, targetSha: 'abc123', notes, client }),
-      /full commit SHA/,
-    );
-  });
-});
-
-describe('resolveTagCommitSha', () => {
-  it('resolves annotated tags to their commit', async () => {
-    const tagObjectSha = 'b'.repeat(40);
-    const client = createClient({
-      getTagReference: async () => ({ object: { type: 'tag', sha: tagObjectSha } }),
-      getAnnotatedTag: async (sha) => {
-        assert.equal(sha, tagObjectSha);
-        return { object: { type: 'commit', sha: targetSha } };
-      },
-    });
-
-    assert.equal(await resolveTagCommitSha(client, 'v2.56.0'), targetSha);
-  });
-
-  it('rejects malformed tag objects', async () => {
-    const client = createClient({
-      getTagReference: async () => ({ object: { type: 'commit' } }),
-    });
-
-    await assert.rejects(resolveTagCommitSha(client, 'v2.56.0'), /invalid Git object/);
-  });
-});
-
-describe('readReleaseCandidate', () => {
-  it('reads a matching package version and changelog section', () => {
-    const files = createCandidateFiles();
-
-    assert.deepEqual(
-      readReleaseCandidate({
-        baseRef: `release/${version}`,
-        targetSha,
-        ...files,
-      }),
-      {
-        eligible: true,
-        baseRef: `release/${version}`,
-        version,
-        targetSha,
-        notes,
-      },
-    );
-  });
-
-  it('skips test release branches without reading candidate files', () => {
-    assert.deepEqual(
-      readReleaseCandidate({
-        baseRef: 'release/test-esrp-release',
-        targetSha,
-        packageFile: 'missing-package.json',
-        changelogFile: 'missing-changelog.md',
-      }),
-      {
-        eligible: false,
-        version: 'test-esrp-release',
-      },
-    );
-  });
-
-  it('rejects a package version that does not match the release branch', () => {
-    const files = createCandidateFiles('2.55.0');
-
-    assert.throws(
-      () =>
-        readReleaseCandidate({
-          baseRef: `release/${version}`,
-          targetSha,
-          ...files,
-        }),
-      /does not match package version/,
-    );
-  });
-
-  it('rejects a missing changelog section', () => {
-    const files = createCandidateFiles();
-    fs.writeFileSync(files.changelogFile, '# Changelog\n\n## 2.55.0\n\nPrevious notes\n');
-
-    assert.throws(
-      () =>
-        readReleaseCandidate({
-          baseRef: `release/${version}`,
-          targetSha,
-          ...files,
-        }),
-      /was not found in the changelog/,
-    );
-  });
-
-  it('rejects an empty changelog section', () => {
-    const files = createCandidateFiles();
-    fs.writeFileSync(files.changelogFile, `# Changelog\n\n## ${version}\n\n## 2.55.0\n\nPrevious notes\n`);
-
-    assert.throws(
-      () =>
-        readReleaseCandidate({
-          baseRef: `release/${version}`,
-          targetSha,
-          ...files,
-        }),
-      /must not be empty/,
-    );
-  });
-});
-
-describe('GitHubClient', () => {
-  it('treats only a not-found response as an absent release', async () => {
-    const notFoundClient = new GitHubClient({
-      repository: 'owner/repository',
-      token: 'token',
-      fetchImpl: async () => ({ status: 404, ok: false }),
-    });
-    const failedClient = new GitHubClient({
-      repository: 'owner/repository',
-      token: 'token',
-      fetchImpl: async () => ({ status: 500, ok: false }),
-    });
-
-    assert.equal(await notFoundClient.getReleaseByTag('v2.56.0'), undefined);
-    assert.equal(await notFoundClient.getTagReference('v2.56.0'), undefined);
-    await assert.rejects(failedClient.getReleaseByTag('v2.56.0'), /HTTP 500/);
-    await assert.rejects(failedClient.getTagReference('v2.56.0'), /HTTP 500/);
-  });
-});
-
-describe('parseArgs', () => {
-  it('rejects missing required arguments', () => {
-    assert.throws(() => parseArgs([]), /Missing required argument: --base-ref/);
-  });
-
-  it('rejects flags that could change prerelease behavior', () => {
-    assert.throws(
-      () => parseArgs(['--base-ref', `release/${version}`, '--prerelease', 'false']),
-      /Invalid argument: --prerelease/,
-    );
-  });
-});
-
-describe('isReleaseVersion', () => {
-  it('accepts release versions and rejects test release branches', () => {
-    assert.equal(isReleaseVersion('2.56.0'), true);
-    assert.equal(isReleaseVersion('01.2.3'), false);
-    assert.equal(isReleaseVersion('1.02.3'), false);
-    assert.equal(isReleaseVersion('1.2.03'), false);
-    assert.equal(isReleaseVersion('test-esrp-release'), false);
-    assert.equal(isReleaseVersion('test/owner/scenario'), false);
-  });
+  const produced = await run('release-plan.js', ['produce', identityFile, npmFile, cdnDirectory, planFile]);
+  assert.equal(produced.stdout.trim(), approvedDigest);
+  await run('release-plan.js', ['verify', planFile, approvedDigest, source, receiptFile]);
+  const args = [planFile, receiptFile, approvedDigest, source];
+  cdnMissing = true;
+  await assert.rejects(run('create-github-release.js', args), /Incomplete or mismatched receipt/);
+  assert.equal(state.writes.length, 0);
+  cdnMissing = false;
+  await run('create-github-release.js', args);
+  assert.equal(state.releases.get('v3.0.0').prerelease, true);
+  const writes = state.writes.length;
+  state.releases.get('v3.0.0').prerelease = false;
+  await run('create-github-release.js', args);
+  assert.equal(state.writes.length, writes);
 });

@@ -5,13 +5,13 @@ on:
     types: [closed]
 
 jobs:
-  CreatePrerelease:
+  ValidateCandidate:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     concurrency:
-      group: create-prerelease-${{ github.event.pull_request.base.ref }}
+      group: validate-candidate-${{ github.event.pull_request.base.ref }}
       cancel-in-progress: false
       queue: max
     steps:
@@ -34,17 +34,29 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: Create or update GitHub prerelease
+      - name: Rehearse release lifecycle without publication
+        run: node --test release-automation/tools/cli/release-plan.test.js release-automation/tools/cli/create-github-release.test.js release-automation/tools/cli/release-candidate.test.js
+
+      - name: Record unverified candidate
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TARGET_SHA: ${{ github.event.pull_request.merge_commit_sha }}
         run: |
-          node release-automation/tools/cli/create-github-release.js \
-            --base-ref "$BASE_REF" \
-            --target "$TARGET_SHA" \
-            --package-file release-candidate/packages/teams-js/package.json \
-            --changelog-file release-candidate/packages/teams-js/CHANGELOG.md
+          set -euo pipefail
+          test "$(git -C release-candidate rev-parse HEAD)" = "$TARGET_SHA"
+          tooling_sha="$(git -C release-automation rev-parse HEAD)"
+          node release-automation/tools/cli/release-candidate.js \
+            "$BASE_REF" "$TARGET_SHA" "$tooling_sha" \
+            release-candidate/packages/teams-js/package.json \
+            release-candidate/packages/teams-js/CHANGELOG.md \
+            unverified-candidate.json
+
+      - name: Persist unverified candidate identity
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: unverified-candidate-${{ github.event.pull_request.merge_commit_sha }}
+          path: unverified-candidate.json
+          if-no-files-found: error
 
   PostMerge:
     # this job will only run if the PR has been merged
