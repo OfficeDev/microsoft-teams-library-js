@@ -146,7 +146,7 @@ describe('internalAPIs', () => {
       ]);
     });
 
-    it('should leave the existing origins untouched when passed an empty array', () => {
+    it('should preserve the existing origin values when passed an empty array', () => {
       GlobalVars.additionalValidOrigins = ['https://existing.example.com'];
 
       processAdditionalValidOrigins([]);
