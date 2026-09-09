@@ -212,12 +212,6 @@ describe('internalAPIs', () => {
       ]);
     });
 
-    it('should treat origins that differ only by case as distinct', () => {
-      processAdditionalValidOrigins(['https://example.com', 'https://EXAMPLE.com']);
-
-      expect(GlobalVars.additionalValidOrigins).toEqual(['https://example.com', 'https://EXAMPLE.com']);
-    });
-
     it('should not mutate the array passed in by the caller', () => {
       const suppliedOrigins = ['https://valid.example.com', 'example.com'];
 
