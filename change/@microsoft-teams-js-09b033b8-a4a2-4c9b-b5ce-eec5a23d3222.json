@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Fix `isActionExecuteResponse` so a `null` or non-object response from the host returns `false` instead of throwing a `TypeError`, allowing the intended `INTERNAL_ERROR` to surface.",
+  "packageName": "@microsoft/teams-js",
+  "email": "edwardlee@microsoft.com",
+  "dependentChangeType": "none"
+}

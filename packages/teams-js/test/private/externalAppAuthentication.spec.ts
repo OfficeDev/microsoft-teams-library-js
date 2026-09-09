@@ -1472,4 +1472,39 @@ describe('externalAppAuthentication', () => {
       return expect(externalAppAuthentication.isSupported()).toEqual(false);
     });
   });
+
+  describe('isActionExecuteResponse', () => {
+    const validResponse = {
+      responseType: externalAppAuthentication.InvokeResponseType.ActionExecuteInvokeResponse,
+      value: {},
+      statusCode: 200,
+      type: 'type',
+    };
+
+    it('should return true for a valid IActionExecuteResponse', () => {
+      expect(externalAppAuthentication.isActionExecuteResponse(validResponse)).toEqual(true);
+    });
+
+    it('should return false without throwing for null and undefined responses', () => {
+      expect(externalAppAuthentication.isActionExecuteResponse(null)).toEqual(false);
+      expect(externalAppAuthentication.isActionExecuteResponse(undefined)).toEqual(false);
+    });
+
+    it('should return false for non-object responses', () => {
+      expect(externalAppAuthentication.isActionExecuteResponse('response')).toEqual(false);
+      expect(externalAppAuthentication.isActionExecuteResponse(1)).toEqual(false);
+      expect(externalAppAuthentication.isActionExecuteResponse(true)).toEqual(false);
+    });
+
+    it('should return false when a required property is missing', () => {
+      expect(externalAppAuthentication.isActionExecuteResponse({ ...validResponse, responseType: undefined })).toEqual(
+        false,
+      );
+      expect(externalAppAuthentication.isActionExecuteResponse({ ...validResponse, value: undefined })).toEqual(false);
+      expect(externalAppAuthentication.isActionExecuteResponse({ ...validResponse, statusCode: undefined })).toEqual(
+        false,
+      );
+      expect(externalAppAuthentication.isActionExecuteResponse({ ...validResponse, type: undefined })).toEqual(false);
+    });
+  });
 });
