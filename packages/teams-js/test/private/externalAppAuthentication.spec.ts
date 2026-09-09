@@ -1581,7 +1581,7 @@ describe('externalAppAuthentication', () => {
       ).toBe(false);
     });
 
-    it('should return false when errorCode matches an enum key rather than its value', () => {
+    it('should return false when errorCode differs from a valid value only by casing', () => {
       expect(externalAppAuthentication.isInvokeError({ errorCode: 'internal_error' })).toBe(false);
     });
 
