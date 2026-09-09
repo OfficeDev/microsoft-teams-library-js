@@ -140,10 +140,12 @@ const initializeHelperLogger = appLogger.extend('initializeHelper');
 /**
  * Applies the app's valid-origins configuration before the host handshake begins.
  *
- * When the app supplies an override, the origins teamsjs was built with are discarded entirely.
- * Otherwise the list is warmed in the background — this is where the prefetch happens, rather than
- * on module import, so that importing teamsjs never emits a network request before the app has had
- * a chance to configure itself.
+ * When the app supplies an override, the origins teamsjs was built with are discarded entirely, and
+ * the import-time prefetch for the bundled cloud is abandoned so its response cannot reinstate them.
+ *
+ * Otherwise the list is warmed — normally a no-op, because `validOrigins.ts` already started the
+ * fetch for this bundle's cloud when it was imported. This call remains as the trigger for any entry
+ * point that reaches initialization without that side effect having run.
  *
  * An invalid `validOriginsUrl` throws from the `URL` constructor, which fails initialization rather
  * than silently falling back to origins the app asked not to trust.

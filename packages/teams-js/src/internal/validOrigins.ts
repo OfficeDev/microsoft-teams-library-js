@@ -9,6 +9,35 @@ const validateOriginLogger = getLogger('validateOrigin');
 let validOriginsPromise: Promise<string[]> | undefined;
 
 /**
+ * Incremented whenever the origins configuration changes.
+ *
+ * A fetch captures this when it is issued and compares it on resolution. A request made under a
+ * superseded configuration must not reach the cache: its handler resolves the local list lazily, so
+ * without this guard a fetch started against the built-in endpoint could land after an app-supplied
+ * override was applied and write `[the app's list] + [the built-in origins]` -- handing back exactly
+ * the origins the app asked to stop trusting.
+ */
+let configurationEpoch = 0;
+
+/**
+ * The most recently issued fetch, so it can be torn down when an app replaces the configuration
+ * underneath it. Not cleared once the fetch settles: aborting an already-settled controller is a
+ * no-op, and {@link configurationEpoch} is what actually invalidates the result.
+ */
+let inFlightFetchController: AbortController | undefined;
+
+/**
+ * The origins to use when a response arrives for a configuration that has since been replaced.
+ *
+ * Shared by both the success and failure paths so the superseded response is discarded identically
+ * however it ends, and so the message is only emitted into the bundle once.
+ */
+function supersededOrigins(): string[] {
+  validateOriginLogger('Ignoring valid origins response from a superseded configuration');
+  return localOrigins();
+}
+
+/**
  * @hidden
  * An app-supplied replacement for the built-in valid-origins list.
  *
@@ -60,6 +89,10 @@ export function setValidOriginsOverride(override: ValidOriginsOverride): void {
     throw new Error('A valid origins override must specify a list or a url.');
   }
   originsOverride = override;
+  // A prefetch for the bundled cloud may already be in flight. Bumping the epoch stops its result
+  // from landing; aborting additionally frees the connection, since the response is now unwanted.
+  configurationEpoch++;
+  inFlightFetchController?.abort();
   validOriginsCache = [];
   validOriginsPromise = undefined;
   validateOriginLogger('Valid origins override applied; the built-in list will not be used');
@@ -80,10 +113,9 @@ export function hasValidOriginsOverride(): boolean {
  * @hidden
  * Warms the valid-origins cache.
  *
- * This is intentionally *not* invoked when this module is imported. Doing so would make merely
- * importing teamsjs emit a network request before the app has had any chance to configure which
- * cloud it is running in. It is instead triggered from `app.initialize`, and is a no-op when there
- * is no endpoint to fetch from.
+ * Invoked once when this module is imported (see the bottom of this file) and again from
+ * `app.initialize`, where it is a no-op if the import-time call is already in flight. It is also a
+ * no-op when there is no endpoint to fetch from.
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -121,6 +153,11 @@ async function getValidOriginsList(shouldDisableCache: boolean = false): Promise
   validateOriginLogger('Initiating fetch call to acquire valid origins list from %s', endpoint);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), ORIGIN_LIST_FETCH_TIMEOUT_IN_MS);
+  // Captured so the result can be discarded if the configuration changes while this is in flight.
+  const issuedAtEpoch = configurationEpoch;
+  inFlightFetchController = controller;
+
+  const isStale = (): boolean => issuedAtEpoch !== configurationEpoch;
 
   validOriginsPromise = fetch(endpoint, { signal: controller.signal })
     .then((response) => {
@@ -130,6 +167,12 @@ async function getValidOriginsList(shouldDisableCache: boolean = false): Promise
       }
       validateOriginLogger('Fetch call completed and retrieved valid origins list');
       return response.json().then((validOriginsCDN) => {
+        if (isStale()) {
+          // The app replaced the origins configuration while this was in flight, so this response
+          // describes a list it no longer trusts. Returning the current local list instead is what
+          // stops the superseded origins from being reinstated.
+          return supersededOrigins();
+        }
         if (isValidOriginsJSONValid(JSON.stringify(validOriginsCDN))) {
           validOriginsCache = localOrigins().concat(validOriginsCDN.validOrigins);
           return validOriginsCache;
@@ -140,6 +183,10 @@ async function getValidOriginsList(shouldDisableCache: boolean = false): Promise
     })
     .catch((e) => {
       clearTimeout(timeoutId);
+      if (isStale()) {
+        // Includes the deliberate abort from abandonInFlightFetch(), which is not a failure.
+        return supersededOrigins();
+      }
       if (e.name === 'AbortError') {
         validateOriginLogger(
           `validOrigins fetch call failed due to Timeout of ${ORIGIN_LIST_FETCH_TIMEOUT_IN_MS} ms. Defaulting to fallback list`,
@@ -253,7 +300,33 @@ function validateOriginWithValidOriginsList(messageOrigin: URL, validOriginsList
  * This function is only used for testing to reset the valid origins cache and ignore prefetched values.
  */
 export function resetValidOriginsCache(): void {
+  // Deliberately does not abort: this is a test helper, so there is no connection worth freeing, and
+  // aborting here would be observable to tests that count aborts on the real timeout path.
+  configurationEpoch++;
   validOriginsCache = [];
   validOriginsPromise = undefined;
   originsOverride = undefined;
 }
+
+/**
+ * Warms the cache for the cloud this bundle targets, at module scope.
+ *
+ * Safe to do on import *because* the cloud is fixed at build time: `cloudBuild.cjs` aliases the
+ * valid-domains artifact to the target cloud's, so `validOriginsCdnEndpoint` is a compile-time
+ * constant and this bundle contains no other cloud's endpoint. Under the subpath-exports delivery
+ * model, choosing `@microsoft/teams-js/gcch` is itself the declaration of which cloud to warm — the
+ * app has nothing left to configure that would change the answer.
+ *
+ * Doing this here rather than in `app.initialize` keeps the fetch off the critical path: it
+ * overlaps whatever the app does before initializing, so a host handshake that arrives later does
+ * not wait on it.
+ *
+ * Two cases still resolve the endpoint later, and both are handled:
+ *   - Air-gapped clouds carry a null endpoint, so this is a no-op and emits no request.
+ *   - An app that supplies its own list or URL calls `setValidOriginsOverride`, which abandons this
+ *     fetch so its response cannot reinstate the origins the app replaced.
+ *
+ * `validOrigins.ts` is declared in `sideEffects` (package.json) and `treeshake.moduleSideEffects`
+ * (rollup.config.mjs) so this survives bundling.
+ */
+prefetchOriginsFromCDN();
