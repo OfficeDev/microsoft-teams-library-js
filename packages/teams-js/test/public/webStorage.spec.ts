@@ -1,7 +1,8 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ApiName } from '../../src/internal/telemetry';
-import { clearWebStorageCachedHostNameForTests } from '../../src/internal/webStorageHelpers';
+import { clearWebStorageCachedHostNameForTests, getCachedHostName } from '../../src/internal/webStorageHelpers';
 import { app, Context } from '../../src/public';
+import * as appModule from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType, HostName } from '../../src/public/constants';
 import * as webStorage from '../../src/public/webStorage';
 import { Utils } from '../utils';
@@ -296,6 +297,69 @@ describe('webStorage', () => {
       );
 
       expect(result).toStrictEqual(true);
+    });
+  });
+
+  describe('webStorageHelpers.getCachedHostName', () => {
+    let getContextSpy: jest.SpyInstance<Promise<appModule.Context>, []>;
+
+    beforeEach(() => {
+      // Ensure the module-level cache is empty regardless of what ran before this describe block
+      clearWebStorageCachedHostNameForTests();
+      getContextSpy = jest.spyOn(appModule, 'getContext');
+    });
+
+    afterEach(() => {
+      clearWebStorageCachedHostNameForTests();
+      getContextSpy.mockRestore();
+    });
+
+    function mockHostName(hostName: HostName): void {
+      getContextSpy.mockResolvedValue({ app: { host: { name: hostName } } } as unknown as appModule.Context);
+    }
+
+    it('should only call getContext once for repeated sequential calls', async () => {
+      expect.assertions(4);
+
+      mockHostName(HostName.teams);
+
+      await expect(getCachedHostName()).resolves.toStrictEqual(HostName.teams);
+      await expect(getCachedHostName()).resolves.toStrictEqual(HostName.teams);
+      await expect(getCachedHostName()).resolves.toStrictEqual(HostName.teams);
+
+      expect(getContextSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return the same host name to callers that race on a cold cache', async () => {
+      expect.assertions(3);
+
+      mockHostName(HostName.teams);
+
+      // The cache is only populated once getContext resolves, so racing callers may each issue
+      // their own request. Assert the observable contract rather than the request count: every
+      // caller agrees on the host name, and the cache is warm once the race settles.
+      const hostNames = await Promise.all([getCachedHostName(), getCachedHostName(), getCachedHostName()]);
+
+      expect(hostNames).toStrictEqual([HostName.teams, HostName.teams, HostName.teams]);
+
+      const callsDuringRace = getContextSpy.mock.calls.length;
+      await expect(getCachedHostName()).resolves.toStrictEqual(HostName.teams);
+      expect(getContextSpy).toHaveBeenCalledTimes(callsDuringRace);
+    });
+
+    it('should call getContext again once the cached host name has been cleared', async () => {
+      expect.assertions(4);
+
+      mockHostName(HostName.teams);
+
+      await expect(getCachedHostName()).resolves.toStrictEqual(HostName.teams);
+      expect(getContextSpy).toHaveBeenCalledTimes(1);
+
+      clearWebStorageCachedHostNameForTests();
+      mockHostName(HostName.outlook);
+
+      await expect(getCachedHostName()).resolves.toStrictEqual(HostName.outlook);
+      expect(getContextSpy).toHaveBeenCalledTimes(2);
     });
   });
 });

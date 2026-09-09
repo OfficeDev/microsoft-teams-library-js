@@ -40,6 +40,7 @@ import PagesCurrentAppAPIs from '../components/PagesCurrentAppAPIs';
 import PagesTabsAPIs from '../components/PagesTabsAPIs';
 import PeopleAPIs from '../components/PeopleAPIs';
 import ChatAPIs from '../components/privateApis/ChatAPIs';
+import ContextualSearchAPIs from '../components/privateApis/ContextualSearchAPIs';
 import CopilotAPIs from '../components/privateApis/CopilotAPIs';
 import ExternalAppAuthenticationAPIs from '../components/privateApis/ExternalAppAuthenticationAPIs';
 import ExternalAppAuthenticationForCEAAPIs from '../components/privateApis/ExternalAppAuthenticationForCEAAPIs';
@@ -113,6 +114,7 @@ export const TestApp: React.FC = () => {
       { name: 'CallAPIs', component: <CallAPIs /> },
       { name: 'ChatAPIs', component: <ChatAPIs /> },
       { name: 'ClipboardAPIs', component: <ClipboardAPIs /> },
+      { name: 'ContextualSearchAPIs', component: <ContextualSearchAPIs /> },
       { name: 'CookieAccessComponent', component: <CookieAccessComponent /> },
       { name: 'CopilotAPIs', component: <CopilotAPIs /> },
       { name: 'CustomAPIs', component: <CustomAPIs /> },

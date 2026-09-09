@@ -2,8 +2,11 @@ import {
   createFile,
   decodeAttachment,
   isMediaCallForImageOutputFormats,
+  isMediaCallForNonFullScreenVideoMode,
+  isMediaCallForVideoAndImageInputs,
   validateGetMediaInputs,
   validatePeoplePickerInput,
+  validateScanBarCodeInput,
   validateSelectMediaInputs,
   validateViewImagesInput,
 } from '../../src/internal/mediaUtil';
@@ -210,6 +213,163 @@ describe('mediaUtil', () => {
       maxMediaCount: 10,
     };
     const result = isMediaCallForImageOutputFormats(mediaInput);
+    expect(result).toBeFalsy();
+  });
+
+  /**
+   * Validate isMediaCallForVideoAndImageInputs
+   */
+  it('test isMediaCallForVideoAndImageInputs with null param', () => {
+    const result = isMediaCallForVideoAndImageInputs(null);
+    expect(result).toBeFalsy();
+  });
+
+  it('test isMediaCallForVideoAndImageInputs with undefined param', () => {
+    const result = isMediaCallForVideoAndImageInputs(undefined);
+    expect(result).toBeFalsy();
+  });
+
+  it('test isMediaCallForVideoAndImageInputs success with VideoAndImage media type', () => {
+    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.VideoAndImage, maxMediaCount: 10 };
+    const result = isMediaCallForVideoAndImageInputs(mediaInput);
+    expect(result).toBeTruthy();
+  });
+
+  it('test isMediaCallForVideoAndImageInputs success with videoAndImageProps on a non-VideoAndImage media type', () => {
+    const mediaInput: media.MediaInputs = {
+      mediaType: media.MediaType.Image,
+      videoAndImageProps: { maxDuration: 10 },
+      maxMediaCount: 10,
+    };
+    const result = isMediaCallForVideoAndImageInputs(mediaInput);
+    expect(result).toBeTruthy();
+  });
+
+  it('test isMediaCallForVideoAndImageInputs with Image media type and no videoAndImageProps', () => {
+    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Image, maxMediaCount: 10 };
+    const result = isMediaCallForVideoAndImageInputs(mediaInput);
+    expect(result).toBeFalsy();
+  });
+
+  it('test isMediaCallForVideoAndImageInputs with Video media type and no videoAndImageProps', () => {
+    const mediaInput: media.MediaInputs = {
+      mediaType: media.MediaType.Video,
+      videoProps: {},
+      maxMediaCount: 10,
+    };
+    const result = isMediaCallForVideoAndImageInputs(mediaInput);
+    expect(result).toBeFalsy();
+  });
+
+  /**
+   * Validate isMediaCallForNonFullScreenVideoMode
+   */
+  it('test isMediaCallForNonFullScreenVideoMode with null param', () => {
+    const result = isMediaCallForNonFullScreenVideoMode(null);
+    expect(result).toBeFalsy();
+  });
+
+  it('test isMediaCallForNonFullScreenVideoMode with undefined param', () => {
+    const result = isMediaCallForNonFullScreenVideoMode(undefined);
+    expect(result).toBeFalsy();
+  });
+
+  it('test isMediaCallForNonFullScreenVideoMode success with isFullScreenMode false', () => {
+    const mediaInput: media.MediaInputs = {
+      mediaType: media.MediaType.Video,
+      videoProps: { isFullScreenMode: false },
+      maxMediaCount: 10,
+    };
+    const result = isMediaCallForNonFullScreenVideoMode(mediaInput);
+    expect(result).toBeTruthy();
+  });
+
+  it('test isMediaCallForNonFullScreenVideoMode success with isFullScreenMode omitted', () => {
+    const mediaInput: media.MediaInputs = {
+      mediaType: media.MediaType.Video,
+      videoProps: {},
+      maxMediaCount: 10,
+    };
+    const result = isMediaCallForNonFullScreenVideoMode(mediaInput);
+    expect(result).toBeTruthy();
+  });
+
+  it('test isMediaCallForNonFullScreenVideoMode with isFullScreenMode true', () => {
+    const mediaInput: media.MediaInputs = {
+      mediaType: media.MediaType.Video,
+      videoProps: { isFullScreenMode: true },
+      maxMediaCount: 10,
+    };
+    const result = isMediaCallForNonFullScreenVideoMode(mediaInput);
+    expect(result).toBeFalsy();
+  });
+
+  it('test isMediaCallForNonFullScreenVideoMode with Video media type and no videoProps', () => {
+    const mediaInput: media.MediaInputs = { mediaType: media.MediaType.Video, maxMediaCount: 10 };
+    const result = isMediaCallForNonFullScreenVideoMode(mediaInput);
+    expect(result).toBeFalsy();
+  });
+
+  it('test isMediaCallForNonFullScreenVideoMode with non-Video media type', () => {
+    const mediaInput: media.MediaInputs = {
+      mediaType: media.MediaType.VideoAndImage,
+      videoProps: { isFullScreenMode: false },
+      maxMediaCount: 10,
+    };
+    const result = isMediaCallForNonFullScreenVideoMode(mediaInput);
+    expect(result).toBeFalsy();
+  });
+
+  /**
+   * Validate Scan BarCode Input
+   */
+  it('test validateScanBarCodeInput success with null param', () => {
+    const result = validateScanBarCodeInput(null);
+    expect(result).toBeTruthy();
+  });
+
+  it('test validateScanBarCodeInput success with undefined param', () => {
+    const result = validateScanBarCodeInput(undefined);
+    expect(result).toBeTruthy();
+  });
+
+  it('test validateScanBarCodeInput success with empty config', () => {
+    const result = validateScanBarCodeInput({});
+    expect(result).toBeTruthy();
+  });
+
+  it('test validateScanBarCodeInput success with undefined timeOutIntervalInSec', () => {
+    const result = validateScanBarCodeInput({ timeOutIntervalInSec: undefined });
+    expect(result).toBeTruthy();
+  });
+
+  it('test validateScanBarCodeInput failure with null timeOutIntervalInSec', () => {
+    const result = validateScanBarCodeInput({ timeOutIntervalInSec: null });
+    expect(result).toBeFalsy();
+  });
+
+  it('test validateScanBarCodeInput failure with timeOutIntervalInSec of 0', () => {
+    const result = validateScanBarCodeInput({ timeOutIntervalInSec: 0 });
+    expect(result).toBeFalsy();
+  });
+
+  it('test validateScanBarCodeInput failure with negative timeOutIntervalInSec', () => {
+    const result = validateScanBarCodeInput({ timeOutIntervalInSec: -1 });
+    expect(result).toBeFalsy();
+  });
+
+  it('test validateScanBarCodeInput success with lowest valid timeOutIntervalInSec', () => {
+    const result = validateScanBarCodeInput({ timeOutIntervalInSec: 1 });
+    expect(result).toBeTruthy();
+  });
+
+  it('test validateScanBarCodeInput success with highest valid timeOutIntervalInSec', () => {
+    const result = validateScanBarCodeInput({ timeOutIntervalInSec: 60 });
+    expect(result).toBeTruthy();
+  });
+
+  it('test validateScanBarCodeInput failure with timeOutIntervalInSec above the max', () => {
+    const result = validateScanBarCodeInput({ timeOutIntervalInSec: 61 });
     expect(result).toBeFalsy();
   });
 });

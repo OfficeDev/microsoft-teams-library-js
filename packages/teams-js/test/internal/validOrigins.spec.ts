@@ -1,6 +1,11 @@
 import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { resetValidOriginsCache, validateOrigin } from '../../src/internal/validOrigins';
+import {
+  isValidOriginsJSONValid,
+  prefetchOriginsFromCDN,
+  resetValidOriginsCache,
+  validateOrigin,
+} from '../../src/internal/validOrigins';
 import * as app from '../../src/public/app/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -724,6 +729,189 @@ describe('validOrigins', () => {
       const result = await validateOrigin(messageOrigin, disableCache);
       expect(abortSpy).toBeCalledTimes(1);
       expect(result).toBe(false);
+    });
+  });
+
+  describe('testing prefetchOriginsFromCDN', () => {
+    let utils: Utils = new Utils();
+    // The baseline fetch mock installed by test/setupTest.ts, captured before any test overwrites it
+    const originalFetch = global.fetch;
+    beforeEach(() => {
+      // Set a mock window for testing
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      app._initialize(utils.mockWindow);
+      GlobalVars.isFramelessWindow = false;
+      resetValidOriginsCache();
+    });
+
+    afterAll(() => {
+      GlobalVars.isFramelessWindow = false;
+    });
+    afterEach(() => {
+      // Reset the object since it's a singleton
+      if (app._uninitialize) {
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        app._uninitialize();
+      }
+      // Restore the shared state these tests mutate so nothing leaks into other suites
+      global.fetch = originalFetch;
+      resetValidOriginsCache();
+    });
+
+    it('prefetchOriginsFromCDN warms the cache so later validations use the CDN list without fetching again', async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          status: 200,
+          ok: true,
+          json: async () => {
+            return { validOrigins: ['prefetched.example.com'] };
+          },
+        } as Response),
+      );
+
+      await prefetchOriginsFromCDN();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      // This origin is only known because of the prefetch, and it is served from the cache
+      const messageOrigin = new URL('https://prefetched.example.com');
+      const result = await validateOrigin(messageOrigin);
+      expect(result).toBe(true);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('prefetchOriginsFromCDN only initiates a single fetch call when concurrent callers race the in-flight request', async () => {
+      let resolveFetch: (response: Response) => void = () => {};
+      global.fetch = jest.fn(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveFetch = resolve;
+          }),
+      );
+
+      // All three callers start before the first fetch settles, so they must share the in-flight promise
+      const prefetches = Promise.all([prefetchOriginsFromCDN(), prefetchOriginsFromCDN(), prefetchOriginsFromCDN()]);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      resolveFetch({
+        status: 200,
+        ok: true,
+        json: async () => {
+          return { validOrigins: ['prefetched.example.com'] };
+        },
+      } as Response);
+      await prefetches;
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('prefetchOriginsFromCDN only initiates a single fetch call when called again after the first one resolves', async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          status: 200,
+          ok: true,
+          json: async () => {
+            return { validOrigins: ['prefetched.example.com'] };
+          },
+        } as Response),
+      );
+
+      await prefetchOriginsFromCDN();
+      await prefetchOriginsFromCDN();
+      await prefetchOriginsFromCDN();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('prefetchOriginsFromCDN resolves and falls back to the hardcoded list when the fetch call fails', async () => {
+      global.fetch = jest.fn(() => Promise.resolve({ status: 503, ok: false } as Response));
+
+      await expect(prefetchOriginsFromCDN()).resolves.toBeUndefined();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      const fallbackOrigin = new URL('https://teams.microsoft.com');
+      expect(await validateOrigin(fallbackOrigin)).toBe(true);
+
+      const unknownOrigin = new URL('https://badorigin.example.com');
+      expect(await validateOrigin(unknownOrigin)).toBe(false);
+    });
+
+    it('prefetchOriginsFromCDN resolves and falls back to the hardcoded list when the fetch call rejects', async () => {
+      global.fetch = jest.fn(() => Promise.reject(new Error('Network failure')));
+
+      await expect(prefetchOriginsFromCDN()).resolves.toBeUndefined();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      const fallbackOrigin = new URL('https://teams.microsoft.com');
+      expect(await validateOrigin(fallbackOrigin)).toBe(true);
+    });
+
+    it('prefetchOriginsFromCDN resolves and falls back to the hardcoded list when the CDN returns an invalid list', async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          status: 200,
+          ok: true,
+          json: async () => {
+            return { badExample: 'badLink' };
+          },
+        } as Response),
+      );
+
+      await expect(prefetchOriginsFromCDN()).resolves.toBeUndefined();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      const fallbackOrigin = new URL('https://teams.microsoft.com');
+      expect(await validateOrigin(fallbackOrigin)).toBe(true);
+    });
+  });
+
+  describe('testing isValidOriginsJSONValid', () => {
+    it.each([
+      ['a malformed JSON string', '{ "validOrigins": '],
+      ['an empty string', ''],
+      ['the literal string undefined', 'undefined'],
+      ['a JSON null literal', 'null'],
+    ])('returns false instead of throwing for %s', (_description, validOriginsJSON) => {
+      let result: boolean | undefined;
+      expect(() => {
+        result = isValidOriginsJSONValid(validOriginsJSON);
+      }).not.toThrow();
+      expect(result).toBe(false);
+    });
+
+    it('returns false when the parsed JSON has no validOrigins property', () => {
+      expect(isValidOriginsJSONValid(JSON.stringify({ badExample: 'badLink' }))).toBe(false);
+    });
+
+    it.each([
+      ['a string', 'example.com'],
+      ['a number', 5],
+      ['an object', { 'example.com': true }],
+      ['null', null],
+      ['a boolean', true],
+    ])(
+      'returns false instead of throwing when validOrigins is %s rather than an array',
+      (_description, validOrigins) => {
+        let result: boolean | undefined;
+        expect(() => {
+          result = isValidOriginsJSONValid(JSON.stringify({ validOrigins }));
+        }).not.toThrow();
+        expect(result).toBe(false);
+      },
+    );
+
+    it('returns false when the validOrigins array contains a non-string entry', () => {
+      expect(isValidOriginsJSONValid(JSON.stringify({ validOrigins: ['valid.example.com', 5] }))).toBe(false);
+    });
+
+    it('returns false when the validOrigins list contains an unparsable origin', () => {
+      expect(isValidOriginsJSONValid(JSON.stringify({ validOrigins: ['valid.example.com', 'not a host'] }))).toBe(
+        false,
+      );
+    });
+
+    it('returns true for a well formed valid origins list', () => {
+      expect(isValidOriginsJSONValid(JSON.stringify({ validOrigins: ['valid.example.com', '*.example.com'] }))).toBe(
+        true,
+      );
     });
   });
 });

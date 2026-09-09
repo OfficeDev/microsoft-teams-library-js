@@ -1,4 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { handleDialogMessage, storedMessages } from '../../src/internal/dialogHelpers';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { doesHandlerExist } from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
@@ -1967,6 +1968,107 @@ describe('Dialog', () => {
           });
         });
       });
+    });
+  });
+
+  describe('handleDialogMessage', () => {
+    let utils: Utils = new Utils();
+
+    beforeEach(() => {
+      utils = new Utils();
+      utils.messages = [];
+      storedMessages.length = 0;
+    });
+
+    afterEach(() => {
+      app._uninitialize();
+      storedMessages.length = 0;
+    });
+
+    it('should do nothing when GlobalVars.frameContext is not set', async () => {
+      await utils.initializeWithContext(FrameContexts.task);
+      GlobalVars.frameContext = undefined;
+
+      handleDialogMessage('someMessage');
+
+      expect(storedMessages).toEqual([]);
+      expect(doesHandlerExist('messageForChild')).toBeTruthy();
+    });
+
+    it('should store messages when in the task frame context', async () => {
+      await utils.initializeWithContext(FrameContexts.task);
+
+      await utils.sendMessage('messageForChild', 'firstMessage');
+      await utils.sendMessage('messageForChild', 'secondMessage');
+
+      expect(storedMessages).toEqual(['firstMessage', 'secondMessage']);
+      expect(doesHandlerExist('messageForChild')).toBeTruthy();
+    });
+
+    it('should remove the messageForChild handler when not in the task frame context', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      expect(doesHandlerExist('messageForChild')).toBeTruthy();
+
+      await utils.sendMessage('messageForChild', 'someMessage');
+
+      expect(storedMessages).toEqual([]);
+      expect(doesHandlerExist('messageForChild')).toBeFalsy();
+    });
+
+    it('should replay stored messages to the listener registered through registerOnMessageFromParent', async () => {
+      await utils.initializeWithContext(FrameContexts.task);
+      utils.setRuntimeConfig({
+        apiVersion: latestRuntimeApiVersion,
+        supports: { dialog: { url: { parentCommunication: {} } } },
+      });
+
+      await utils.sendMessage('messageForChild', 'firstMessage');
+      await utils.sendMessage('messageForChild', 'secondMessage');
+
+      const receivedMessages: string[] = [];
+      dialog.url.parentCommunication.registerOnMessageFromParent((message) => receivedMessages.push(message));
+
+      expect(receivedMessages).toEqual(['firstMessage', 'secondMessage']);
+      expect(storedMessages).toEqual([]);
+    });
+  });
+
+  describe('dialog.url.submit frame context warning', () => {
+    let utils: Utils = new Utils();
+    let warnSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      utils = new Utils();
+      utils.messages = [];
+      warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warnSpy.mockRestore();
+      app._uninitialize();
+    });
+
+    it('should warn when submit is called from the content frame context', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      warnSpy.mockClear();
+
+      dialog.url.submit('someResult');
+
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('dialog.submit should not be called from FrameContext.content.'),
+      );
+      expect(utils.findMessageByFunc('tasks.completeTask')).not.toBeNull();
+    });
+
+    it('should not warn when submit is called from the task frame context', async () => {
+      await utils.initializeWithContext(FrameContexts.task);
+      warnSpy.mockClear();
+
+      dialog.url.submit('someResult');
+
+      expect(warnSpy).not.toHaveBeenCalled();
+      expect(utils.findMessageByFunc('tasks.completeTask')).not.toBeNull();
     });
   });
 });

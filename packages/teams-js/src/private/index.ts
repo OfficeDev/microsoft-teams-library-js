@@ -18,6 +18,7 @@ export {
   registerUserSettingsChangeHandler,
   openFilePreview,
 } from './privateAPIs';
+export * as contextualSearch from './contextualSearch';
 export * as conversations from './conversations';
 //It is necessary to export ConversationResponse and OpenConversationRequest from conversations.ts individually as well
 //to keep the named exports so as to not break the existing consumers directly referencing the named exports.

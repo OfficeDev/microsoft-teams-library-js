@@ -45,10 +45,11 @@ export interface RuntimeFeatureFlags {
 // Default runtime feature flags
 const defaultFeatureFlags: RuntimeFeatureFlags = {
   disableEnforceOriginMatchForChildResponses: false,
-} as const;
+};
 
-// Object that stores the current runtime feature flag state
-let runtimeFeatureFlags = defaultFeatureFlags;
+// Object that stores the current runtime feature flag state. A copy is taken so that callers of
+// getCurrentFeatureFlagsState() never receive a reference to defaultFeatureFlags itself.
+let runtimeFeatureFlags: RuntimeFeatureFlags = { ...defaultFeatureFlags };
 
 /**
  * @returns The current state of the runtime feature flags.
@@ -73,4 +74,16 @@ export function setFeatureFlagsState(featureFlags: RuntimeFeatureFlags): void {
 export function overwriteFeatureFlagsState(newFeatureFlags: Partial<RuntimeFeatureFlags>): RuntimeFeatureFlags {
   setFeatureFlagsState({ ...runtimeFeatureFlags, ...newFeatureFlags });
   return getCurrentFeatureFlagsState();
+}
+
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use.
+ *
+ * Restores the runtime feature flags to their default values. This mirrors {@link resetBuildFeatureFlags}
+ * and is intended for test teardown so that a flag set by one test cannot leak into later ones.
+ */
+export function resetFeatureFlagsState(): void {
+  setFeatureFlagsState({ ...defaultFeatureFlags });
 }
