@@ -1,0 +1,51 @@
+name: Orchestrate Release
+
+# Runs when a release PR (into a release/* branch) merges. Creates an annotated
+# tag and a GitHub *pre-release* with notes sourced from the changelog, marked
+# as pending the ADO prod publish. Phase 2 promotes this to a full release after
+# prod publish succeeds. Also keeps the existing downstream TeamsFx notification.
+on:
+  pull_request:
+    branches: [release/*]
+    types: [closed]
+
+jobs:
+  Orchestrate:
+    # this job will only run if the PR has been merged
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '18.x'
+
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Extract version
+        id: extract_version
+        run: echo "version=${GITHUB_BASE_REF#release/}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate release notes from changelog
+        run: node tools/cli/extract-changelog-section.js ${{ steps.extract_version.outputs.version }} > release-notes.md
+
+      - name: Create GitHub pre-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node tools/cli/create-github-release.js \
+            --version ${{ steps.extract_version.outputs.version }} \
+            --target ${{ github.base_ref }} \
+            --notes-file release-notes.md \
+            --prerelease
+
+      - name: Notify TeamsFx Repo
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.TEAMSFX_REPO_ACCESS_TOKEN }}
+          repository: OfficeDev/TeamsFx
+          event-type: teamsjs-released
+          client-payload: '{"version": "${{ steps.extract_version.outputs.version }}"}'
