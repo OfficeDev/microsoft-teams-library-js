@@ -8,11 +8,19 @@ import {
   PreCheckContextResponse,
   SidePanelError,
   SidePanelErrorCode,
+  SidePanelErrorImpl,
   UserConsent,
 } from '../../src/private/copilot/sidePanelInterfaces';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { Cohort, EduType, ErrorCode, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
+import {
+  Cohort,
+  EduType,
+  ErrorCode,
+  LegalAgeGroupClassification,
+  Persona,
+  SdkError,
+} from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
 import { UUID } from '../../src/public/uuidObject';
 import { Utils } from '../utils';
@@ -604,6 +612,71 @@ describe('copilot', () => {
         };
         utils.setRuntimeConfig(runtimeWithSidePanel);
         expect(copilot.sidePanel.isSupported()).toBeTruthy();
+      });
+    });
+
+    describe('isResponseAReportableError', () => {
+      it.each([
+        ['null', null],
+        ['undefined', undefined],
+        ['a string', 'not_an_error'],
+        ['a number', 42],
+        ['a boolean', true],
+        ['a function', (): void => {}],
+      ])('should return false for %s', (_label, value) => {
+        expect.assertions(1);
+        expect(copilot.sidePanel.isResponseAReportableError(value)).toBe(false);
+      });
+
+      it.each([
+        ['an empty object', {}],
+        ['an object without an errorCode', { message: 'something went wrong' }],
+        ['an object with an explicitly undefined errorCode', { errorCode: undefined, message: 'no code' }],
+        ['an empty array', []],
+        ['an Error instance without an errorCode', new Error('plain error')],
+      ])('should return false for %s', (_label, value) => {
+        expect.assertions(1);
+        expect(copilot.sidePanel.isResponseAReportableError(value)).toBe(false);
+      });
+
+      it.each(Object.values(SidePanelErrorCode))('should return true for the %s side panel error code', (errorCode) => {
+        expect.assertions(2);
+        expect(copilot.sidePanel.isResponseAReportableError({ errorCode, message: 'an error message' })).toBe(true);
+        // message is optional on SidePanelError, so its absence must not change the result
+        expect(copilot.sidePanel.isResponseAReportableError({ errorCode })).toBe(true);
+      });
+
+      it('should return true for a SidePanelErrorImpl instance', () => {
+        expect.assertions(1);
+        const error = new SidePanelErrorImpl(SidePanelErrorCode.ConsentNotAccepted, 'consent required');
+        expect(copilot.sidePanel.isResponseAReportableError(error)).toBe(true);
+      });
+
+      it('should return true for an SdkError, whose numeric errorCode is not a SidePanelErrorCode', () => {
+        expect.assertions(1);
+        const sdkError: SdkError = { errorCode: ErrorCode.INTERNAL_ERROR, message: 'An error occurred' };
+        expect(copilot.sidePanel.isResponseAReportableError(sdkError)).toBe(true);
+      });
+
+      it('should return true for an unrecognized errorCode, since isSdkError only checks that one is present', () => {
+        expect.assertions(1);
+        expect(copilot.sidePanel.isResponseAReportableError({ errorCode: 'some_unmapped_code' })).toBe(true);
+      });
+
+      it('should return true for a side panel error code with a non-string message, via the isSdkError fallback', () => {
+        expect.assertions(1);
+        expect(
+          copilot.sidePanel.isResponseAReportableError({ errorCode: SidePanelErrorCode.OtherError, message: 42 }),
+        ).toBe(true);
+      });
+
+      it('should narrow the type of the error when used as a type guard', () => {
+        expect.assertions(1);
+        const err: unknown = { errorCode: SidePanelErrorCode.PageContentBlockedDlp, message: 'blocked' };
+        if (copilot.sidePanel.isResponseAReportableError(err)) {
+          const narrowed: SidePanelError | SdkError = err;
+          expect(narrowed.errorCode).toBe(SidePanelErrorCode.PageContentBlockedDlp);
+        }
       });
     });
 
