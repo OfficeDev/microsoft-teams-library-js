@@ -3,6 +3,11 @@
  * @internal
  * Limited to Microsoft-internal use
  */
+/**
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export * as logs from './logs';
 export {
   ChatMembersInformation,
