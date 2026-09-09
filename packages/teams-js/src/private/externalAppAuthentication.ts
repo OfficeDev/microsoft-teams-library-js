@@ -158,6 +158,10 @@ export class SerializableActionExecuteInvokeRequest implements ISerializable {
  * @param response The object to check whether it is of IActionExecuteResponse type
  */
 export function isActionExecuteResponse(response: unknown): response is IActionExecuteResponse {
+  if (typeof response !== 'object' || response === null) {
+    return false;
+  }
+
   const actionResponse = response as IActionExecuteResponse;
 
   return (
