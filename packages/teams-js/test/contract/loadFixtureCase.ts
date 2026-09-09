@@ -3,6 +3,7 @@ import * as path from 'path';
 
 import {
   FixtureFileRecord,
+  normalizeAlertValues,
   parseWirePayloadFromAlert,
   selectFixtureCase,
   SelectFixtureCaseOptions,
@@ -13,7 +14,12 @@ export type LoadFixtureCaseOptions = SelectFixtureCaseOptions;
 export interface FixtureCase<TInputValue = unknown, TExpectedWirePayload = unknown> {
   title: string;
   inputValue: TInputValue;
-  expectedAlertValue: string;
+  /**
+   * The case's alerts. A case may declare one alert or, when it expects a sequence of host calls,
+   * several — so this is always a list rather than a single string that array-valued fixtures would
+   * have to be flattened into.
+   */
+  expectedAlertValues: string[];
   /**
    * The wire payload the case's alert describes, or `undefined` when the alert does not describe
    * one. Specs proving an input to wire transformation should assert this is defined.
@@ -36,13 +42,12 @@ export function loadFixtureCase<TInputValue = unknown, TExpectedWirePayload = un
   const fixturePath = path.join(FIXTURES_DIR, `${family}.json`);
   const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as FixtureFileRecord;
   const fixtureCase = selectFixtureCase(fixture, title, fixturePath, options);
-  const expectedAlertValue = typeof fixtureCase.expectedAlertValue === 'string' ? fixtureCase.expectedAlertValue : '';
 
   return {
     title: fixtureCase.title ?? title,
     inputValue: fixtureCase.inputValue as TInputValue,
-    expectedAlertValue,
-    expectedWirePayload: parseWirePayloadFromAlert(expectedAlertValue, fixtureCase.inputValue) as
+    expectedAlertValues: normalizeAlertValues(fixtureCase.expectedAlertValue),
+    expectedWirePayload: parseWirePayloadFromAlert(fixtureCase.expectedAlertValue, fixtureCase.inputValue) as
       | TExpectedWirePayload
       | undefined,
   };

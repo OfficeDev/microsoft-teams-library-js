@@ -47,6 +47,25 @@ const JSON_INPUT_VALUE_PLACEHOLDER = '##JSON_INPUT_VALUE##';
 /** Separator after which an `expectedAlertValue` describes the payload the host received. */
 const CALLED_WITH_MARKER = 'called with ';
 
+/**
+ * Normalizes a case's `expectedAlertValue` to the alerts it describes.
+ *
+ * The schema allows either a single alert string or an array of them. An array means the case
+ * expects a SEQUENCE of host calls — media's `getMedia` case alerts on `selectMedia` first and then
+ * on `getMedia` — rather than alternative wordings of one call.
+ */
+export function normalizeAlertValues(expectedAlertValue: unknown): string[] {
+  if (typeof expectedAlertValue === 'string') {
+    return [expectedAlertValue];
+  }
+
+  if (Array.isArray(expectedAlertValue)) {
+    return expectedAlertValue.filter((alert): alert is string => typeof alert === 'string');
+  }
+
+  return [];
+}
+
 /** Flattens a fixture file's top-level cases together with any nested feature-test cases. */
 export function getFixtureCases(fixture: FixtureFileRecord): FixtureCaseRecord[] {
   return [
@@ -55,25 +74,14 @@ export function getFixtureCases(fixture: FixtureFileRecord): FixtureCaseRecord[]
   ];
 }
 
-/**
- * Extracts the wire payload a case's `expectedAlertValue` describes.
- *
- * Returns `undefined` when the alert does not describe a payload — either prose that names
- * individual values, or an alert whose wording changed and no longer parses. Callers proving a
- * teams-js input to wire transformation should assert the result is defined, so a reworded fixture
- * surfaces instead of silently falling back to the untransformed input.
- */
-export function parseWirePayloadFromAlert(expectedAlertValue: unknown, inputValue: unknown): unknown | undefined {
-  if (typeof expectedAlertValue !== 'string') {
-    return undefined;
-  }
-
-  const markerIndex = expectedAlertValue.indexOf(CALLED_WITH_MARKER);
+/** Extracts the payload a single alert string describes, or `undefined` when it describes none. */
+function parseWirePayloadFromSingleAlert(alert: string, inputValue: unknown): unknown | undefined {
+  const markerIndex = alert.indexOf(CALLED_WITH_MARKER);
   if (markerIndex === -1) {
     return undefined;
   }
 
-  const payload = expectedAlertValue.slice(markerIndex + CALLED_WITH_MARKER.length).trim();
+  const payload = alert.slice(markerIndex + CALLED_WITH_MARKER.length).trim();
 
   if (payload === JSON_INPUT_VALUE_PLACEHOLDER) {
     return inputValue;
@@ -88,6 +96,31 @@ export function parseWirePayloadFromAlert(expectedAlertValue: unknown, inputValu
   } catch {
     return undefined;
   }
+}
+
+/**
+ * Extracts the wire payload a case's `expectedAlertValue` describes. Accepts either alert form: a
+ * single-alert array describes one call just as a bare string does.
+ *
+ * Returns `undefined` when the alert does not describe a single payload — prose that names
+ * individual values, wording that no longer parses, or a case alerting on SEVERAL host calls.
+ *
+ * The multi-alert case is deliberately not resolved by taking the first entry that parses. Those
+ * entries belong to different functions: media's `getMedia` case alerts on `selectMedia` first, so
+ * guessing would hand back another function's payload — confidently wrong, which is worse than
+ * `undefined`. Covering such a family needs an assertion over the call sequence, not a single
+ * expected payload.
+ *
+ * Callers proving a teams-js input to wire transformation should assert the result is defined, so a
+ * reworded fixture surfaces instead of silently falling back to the untransformed input.
+ */
+export function parseWirePayloadFromAlert(expectedAlertValue: unknown, inputValue: unknown): unknown | undefined {
+  const alerts = normalizeAlertValues(expectedAlertValue);
+  if (alerts.length !== 1) {
+    return undefined;
+  }
+
+  return parseWirePayloadFromSingleAlert(alerts[0], inputValue);
 }
 
 /**
