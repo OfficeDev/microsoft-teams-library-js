@@ -519,4 +519,148 @@ describe('clipboard', () => {
       });
     });
   });
+
+  describe('Testing clipboard.readNative function', () => {
+    let utils: Utils = new Utils();
+
+    beforeEach(() => {
+      utils = new Utils();
+      utils.messages = [];
+    });
+
+    afterEach(() => {
+      app._uninitialize();
+    });
+
+    it('clipboard.readNative should not allow calls before initialization', async () => {
+      await expect(clipboard.readNative()).rejects.toThrowError(errorLibraryNotInitialized);
+    });
+
+    it('clipboard.readNative should throw error if clipboard is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+      try {
+        await clipboard.readNative();
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
+
+    it('clipboard.readNative should throw error if navigator.clipboard.read is unavailable', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
+      const originalClipboard = navigator.clipboard;
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { write: jest.fn() },
+        writable: true,
+        configurable: true,
+      });
+      await expect(clipboard.readNative()).rejects.toThrowError(
+        'Native Clipboard API (navigator.clipboard.read) is not available in this environment',
+      );
+      Object.defineProperty(navigator, 'clipboard', {
+        value: originalClipboard,
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    it('clipboard.readNative should call navigator.clipboard.read when available', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
+      const mockClipboardItems = [{ types: ['text/plain'], getType: jest.fn() }];
+      const originalClipboard = navigator.clipboard;
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { read: jest.fn().mockResolvedValue(mockClipboardItems) },
+        writable: true,
+        configurable: true,
+      });
+      const result = await clipboard.readNative();
+      expect(result).toEqual(mockClipboardItems);
+      expect(navigator.clipboard.read).toHaveBeenCalledTimes(1);
+      Object.defineProperty(navigator, 'clipboard', {
+        value: originalClipboard,
+        writable: true,
+        configurable: true,
+      });
+    });
+  });
+
+  describe('Testing clipboard.hasPermission function', () => {
+    let utils: Utils = new Utils();
+
+    beforeEach(() => {
+      utils = new Utils();
+      utils.messages = [];
+    });
+
+    afterEach(() => {
+      app._uninitialize();
+    });
+
+    it('clipboard.hasPermission should not allow calls before initialization', () => {
+      return expect(() => clipboard.hasPermission()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('clipboard.hasPermission should throw error if permissions is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
+      try {
+        clipboard.hasPermission();
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
+
+    it('clipboard.hasPermission should send permissions.has message with clipboard-read', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {}, permissions: {} } });
+      const promise = clipboard.hasPermission();
+      const message = utils.findMessageByFunc('permissions.has');
+      expect(message).not.toBeNull();
+      expect(message!.args).toContain('clipboard-read');
+      await utils.respondToMessage(message!, undefined, true);
+      const result = await promise;
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('Testing clipboard.requestPermission function', () => {
+    let utils: Utils = new Utils();
+
+    beforeEach(() => {
+      utils = new Utils();
+      utils.messages = [];
+    });
+
+    afterEach(() => {
+      app._uninitialize();
+    });
+
+    it('clipboard.requestPermission should not allow calls before initialization', () => {
+      return expect(() => clipboard.requestPermission()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('clipboard.requestPermission should throw error if permissions is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
+      try {
+        clipboard.requestPermission();
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
+
+    it('clipboard.requestPermission should send permissions.request message with clipboard-read', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {}, permissions: {} } });
+      const promise = clipboard.requestPermission();
+      const message = utils.findMessageByFunc('permissions.request');
+      expect(message).not.toBeNull();
+      expect(message!.args).toContain('clipboard-read');
+      await utils.respondToMessage(message!, undefined, true);
+      const result = await promise;
+      expect(result).toBe(true);
+    });
+  });
 });
