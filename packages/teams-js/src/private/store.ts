@@ -1,3 +1,12 @@
+/**
+ * @beta
+ * @hidden
+ * Namespace to open the app store.
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { callFunctionInHost } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -5,15 +14,6 @@ import { DialogSize } from '../public';
 import { AppId } from '../public/appId';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-
-/**
- * @beta
- * @hidden
- * @module
- * Namespace to open app store
- * @internal
- * Limited to Microsoft-internal use
- */
 
 /**
  * @beta
