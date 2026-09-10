@@ -27,6 +27,10 @@ describe('fixture alert parsing', () => {
       expect(normalizeAlertValues(undefined)).toEqual([]);
       expect(normalizeAlertValues(42)).toEqual([]);
     });
+
+    it('rejects a mixed-type array instead of dropping invalid entries', () => {
+      expect(normalizeAlertValues(['selectMedia called with {"mediaType":1}', 123])).toEqual([]);
+    });
   });
 
   describe('parseWirePayloadFromAlert', () => {
@@ -48,6 +52,10 @@ describe('fixture alert parsing', () => {
       const alerts = ['selectMedia called with {"mediaType":1}', 'getMedia called with {"id":"ABC"}'];
 
       expect(parseWirePayloadFromAlert(alerts, undefined)).toBeUndefined();
+    });
+
+    it('does not parse a mixed-type array as a single alert', () => {
+      expect(parseWirePayloadFromAlert(['selectMedia called with {"mediaType":1}', 123], undefined)).toBeUndefined();
     });
 
     it('still returns undefined for prose that names values instead of a payload', () => {

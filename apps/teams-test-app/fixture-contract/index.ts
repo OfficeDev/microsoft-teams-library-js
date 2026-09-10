@@ -60,7 +60,7 @@ export function normalizeAlertValues(expectedAlertValue: unknown): string[] {
   }
 
   if (Array.isArray(expectedAlertValue)) {
-    return expectedAlertValue.filter((alert): alert is string => typeof alert === 'string');
+    return expectedAlertValue.every((alert): alert is string => typeof alert === 'string') ? expectedAlertValue : [];
   }
 
   return [];
