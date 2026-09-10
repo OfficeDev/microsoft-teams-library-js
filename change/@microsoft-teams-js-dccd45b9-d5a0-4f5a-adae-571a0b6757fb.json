@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `contextualSearch` capability APIs for opening, closing, and monitoring the Teams contextual search pane",
-  "packageName": "@microsoft/teams-js",
-  "email": "julietscaria@microsoft.com_msteamsmdb",
-  "dependentChangeType": "patch"
-}

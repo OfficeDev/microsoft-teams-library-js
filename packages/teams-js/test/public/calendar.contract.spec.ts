@@ -1,7 +1,7 @@
 import { FrameContexts } from '../../src/public';
 import * as app from '../../src/public/app/app';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import * as calendar from '../../src/public/calendar';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { loadFixtureCase } from '../contract/loadFixtureCase';
 import { Utils } from '../utils';
 

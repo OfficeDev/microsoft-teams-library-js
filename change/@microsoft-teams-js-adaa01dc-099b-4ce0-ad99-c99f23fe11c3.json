@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Updated `nanoid` to 3.3.18 to address CVE-2026-67213.",
-  "packageName": "@microsoft/teams-js",
-  "email": "maggiegong@microsoft.com",
-  "dependentChangeType": "none"
-}
