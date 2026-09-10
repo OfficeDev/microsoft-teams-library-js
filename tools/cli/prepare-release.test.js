@@ -311,6 +311,13 @@ test('rejects push and other unsupported CLI arguments before repository mutatio
   });
   assert.notStrictEqual(result.status, 0);
   assert.match(result.stderr, /Unsupported or incomplete argument: --push/);
+  const usage = run(process.execPath, [helperPath], { check: false });
+  assert.notStrictEqual(usage.status, 0);
+  assert.match(usage.stderr, /preview\|prepare\|verify\|stage\|check-staged/);
+  const missingVersion = run(process.execPath, [helperPath, 'check-staged', '--source-commit', 'a'.repeat(40)], {
+    check: false,
+  });
+  assert.match(missingVersion.stderr, /--expected-version is required for check-staged/);
 });
 
 test('verifies only complete, unstaged preparation output from the pinned source', () => {

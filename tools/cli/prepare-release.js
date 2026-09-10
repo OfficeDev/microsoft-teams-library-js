@@ -26,6 +26,7 @@ const REQUIRED_PREPARED_PATHS = [
 const SEMVER_PATTERN =
   /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*)?$/;
 const CHANGE_TYPES = ['none', 'prerelease', 'prepatch', 'patch', 'preminor', 'minor', 'premajor', 'major'];
+const COMMANDS = ['preview', 'prepare', 'verify', 'stage', 'check-staged'];
 const BUILD_ENV = Object.fromEntries(
   Object.entries(process.env).filter(
     ([name]) =>
@@ -64,9 +65,9 @@ function repositoryRoot(cwd) {
 
 function parseArguments(argv) {
   const [command, ...rest] = argv;
-  if (!['preview', 'prepare', 'verify', 'stage', 'check-staged'].includes(command)) {
+  if (!COMMANDS.includes(command)) {
     throw new Error(
-      'Usage: prepare-release.js <preview|prepare|verify> --source-commit <SHA> [--expected-version <semver>] [--intent-file <approved.json>]',
+      `Usage: prepare-release.js <${COMMANDS.join('|')}> --source-commit <SHA> [--expected-version <semver>] [--intent-file <approved.json>]`,
     );
   }
 
@@ -92,7 +93,7 @@ function parseArguments(argv) {
     throw new Error('--expected-version must be an exact semantic version');
   }
   if (command !== 'preview' && !expectedVersion) {
-    throw new Error('--expected-version is required for prepare/verify');
+    throw new Error(`--expected-version is required for ${command}`);
   }
   if (['verify', 'stage', 'check-staged'].includes(command) && values['--intent-file'])
     throw new Error('Verification does not consume an exception intent');
