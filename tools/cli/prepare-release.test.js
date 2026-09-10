@@ -8,7 +8,7 @@ const { spawnSync } = require('child_process');
 
 const repositoryRoot = path.resolve(__dirname, '../..');
 const helperPath = path.join(__dirname, 'prepare-release.js');
-const testRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'release-helper-tests-'));
+const testRoot = fs.mkdtempSync(path.join(os.tmpdir(), "release helper's tests-"));
 const actualGit = run(process.platform === 'win32' ? 'where.exe' : 'which', ['git'])
   .stdout.trim()
   .split(/\r?\n/)[0];
@@ -498,7 +498,10 @@ else process.exitCode=spawnSync(process.env.ACTUAL_GIT,process.argv.slice(2),{st
 test('runbook fences parse and stop after status, branch, commit, or denied push failures', () => {
   const skill = fs.readFileSync(path.join(repositoryRoot, '.github/skills/release-teamsjs/SKILL.md'), 'utf8');
   const blocks = [...skill.matchAll(/```bash\n([\s\S]*?)```/g)].map((match) => match[1]);
-  for (const block of blocks) run('bash', ['-n'], { input: block });
+  for (const block of blocks) {
+    const result = spawnSync('bash', ['-n'], { input: block, encoding: 'utf8' });
+    assert.strictEqual(result.status, 0, result.stderr);
+  }
   for (const failedCommand of ['status', 'switch', 'commit', 'push']) {
     const block = blocks.find((value) =>
       failedCommand === 'status'
@@ -525,8 +528,9 @@ if(args.includes(process.env.FAIL_COMMAND)) process.exitCode=71;`,
       `#!/bin/sh\nexec "${process.execPath}" "$(dirname "$0")/git.js" "$@"\n`,
     );
     fs.writeFileSync(path.join(binPath, 'node'), `#!/bin/sh\nexit 0\n`);
-    const result = run('bash', ['-c', block], {
-      check: false,
+    const result = spawnSync('bash', ['-s'], {
+      input: block,
+      encoding: 'utf8',
       env: {
         ...process.env,
         PATH: `${binPath}${path.delimiter}${process.env.PATH}`,
@@ -629,8 +633,9 @@ if(args[0]==='rev-parse')console.log((args[1]==='HEAD'?'b':'a').repeat(40));`,
   fs.writeFileSync(path.join(binPath, 'git'), `#!/bin/sh\nexec "${process.execPath}" "$(dirname "$0")/git.js" "$@"\n`);
   fs.writeFileSync(path.join(binPath, 'node'), `#!/bin/sh\ntouch "${marker}"\nexit 0\n`);
   fs.chmodSync(path.join(binPath, 'node'), 0o755);
-  const result = run('bash', ['-c', block], {
-    check: false,
+  const result = spawnSync('bash', ['-s'], {
+    input: block,
+    encoding: 'utf8',
     env: { ...process.env, PATH: `${binPath}${path.delimiter}${process.env.PATH}` },
   });
   assert.notStrictEqual(result.status, 0);
