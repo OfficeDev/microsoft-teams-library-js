@@ -2,6 +2,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import {
   isCurrentSDKVersionAtLeast,
   isHostClientMobile,
+  processAdditionalValidOrigins,
   throwExceptionIfMobileApiIsNotSupported,
 } from '../../src/internal/internalAPIs';
 import { HostClientType } from '../../src/public/constants';
@@ -10,10 +11,12 @@ import { ErrorCode, SdkError } from '../../src/public/interfaces';
 describe('internalAPIs', () => {
   const originalHostClientType = GlobalVars.hostClientType;
   const originalClientSupportedSDKVersion = GlobalVars.clientSupportedSDKVersion;
+  const originalAdditionalValidOrigins = GlobalVars.additionalValidOrigins;
 
   afterEach(() => {
     GlobalVars.hostClientType = originalHostClientType;
     GlobalVars.clientSupportedSDKVersion = originalClientSupportedSDKVersion;
+    GlobalVars.additionalValidOrigins = originalAdditionalValidOrigins;
   });
 
   describe('isHostClientMobile', () => {
@@ -125,6 +128,106 @@ describe('internalAPIs', () => {
       GlobalVars.clientSupportedSDKVersion = '2.1.0';
 
       expect(() => throwExceptionIfMobileApiIsNotSupported('2.0.1')).not.toThrow();
+    });
+  });
+
+  describe('processAdditionalValidOrigins', () => {
+    beforeEach(() => {
+      GlobalVars.additionalValidOrigins = [];
+    });
+
+    it('should keep valid origins in the order they were supplied', () => {
+      processAdditionalValidOrigins(['https://*.example.com', 'http://localhost:4000', 'msteams://teams.contoso.com']);
+
+      expect(GlobalVars.additionalValidOrigins).toEqual([
+        'https://*.example.com',
+        'http://localhost:4000',
+        'msteams://teams.contoso.com',
+      ]);
+    });
+
+    it('should preserve the existing origin values when passed an empty array', () => {
+      GlobalVars.additionalValidOrigins = ['https://existing.example.com'];
+
+      processAdditionalValidOrigins([]);
+
+      expect(GlobalVars.additionalValidOrigins).toEqual(['https://existing.example.com']);
+    });
+
+    it('should filter out entries that are not strings', () => {
+      const originsWithNonStrings = [
+        'https://valid.example.com',
+        null,
+        undefined,
+        42,
+        true,
+        { origin: 'https://object.example.com' },
+        ['https://array.example.com'],
+      ] as unknown as string[];
+
+      processAdditionalValidOrigins(originsWithNonStrings);
+
+      expect(GlobalVars.additionalValidOrigins).toEqual(['https://valid.example.com']);
+    });
+
+    it('should filter out origins that are not valid patterns', () => {
+      processAdditionalValidOrigins([
+        'https://valid.example.com',
+        'example.com',
+        '',
+        '://missing-protocol.example.com',
+        '1https://leading-digit.example.com',
+        'not a url at all',
+      ]);
+
+      expect(GlobalVars.additionalValidOrigins).toEqual(['https://valid.example.com']);
+    });
+
+    it('should de-duplicate repeated origins within a single call', () => {
+      processAdditionalValidOrigins([
+        'https://first.example.com',
+        'https://second.example.com',
+        'https://first.example.com',
+        'https://first.example.com',
+      ]);
+
+      expect(GlobalVars.additionalValidOrigins).toEqual(['https://first.example.com', 'https://second.example.com']);
+    });
+
+    it('should accumulate origins across repeated calls', () => {
+      processAdditionalValidOrigins(['https://first.example.com']);
+      processAdditionalValidOrigins(['https://second.example.com']);
+
+      expect(GlobalVars.additionalValidOrigins).toEqual(['https://first.example.com', 'https://second.example.com']);
+    });
+
+    it('should not re-add an origin that was already stored by an earlier call', () => {
+      processAdditionalValidOrigins(['https://first.example.com', 'https://second.example.com']);
+      processAdditionalValidOrigins(['https://second.example.com', 'https://third.example.com']);
+
+      expect(GlobalVars.additionalValidOrigins).toEqual([
+        'https://first.example.com',
+        'https://second.example.com',
+        'https://third.example.com',
+      ]);
+    });
+
+    it('should not mutate the array passed in by the caller', () => {
+      const suppliedOrigins = ['https://valid.example.com', 'example.com'];
+
+      processAdditionalValidOrigins(suppliedOrigins);
+
+      expect(suppliedOrigins).toEqual(['https://valid.example.com', 'example.com']);
+    });
+
+    it('should replace the additionalValidOrigins array rather than mutating the previous one', () => {
+      const previousOrigins = ['https://first.example.com'];
+      GlobalVars.additionalValidOrigins = previousOrigins;
+
+      processAdditionalValidOrigins(['https://second.example.com']);
+
+      expect(GlobalVars.additionalValidOrigins).not.toBe(previousOrigins);
+      expect(previousOrigins).toEqual(['https://first.example.com']);
     });
   });
 });
