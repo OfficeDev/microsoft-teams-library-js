@@ -67,7 +67,7 @@ And that's it! As easy as hitting 'enter' twice. Beachball will automatically co
 
 Beachball validates change files before it calculates or writes a bump. With the checked-in policy, a hand-authored `major` or `prerelease` change file is rejected; it is not silently converted to another type.
 
-Do not temporarily relax `disallowedChangeTypes` on `main`, point CI at a permissive alternate config, or rely on a follow-up policy-restoration PR. A supported major or prerelease route must first land as an executable, maintainer-reviewed procedure that operates on an isolated pinned candidate, keeps the contributor policy in place, considers the complete pending change set, and asserts the exact intended semantic version. Until that procedure exists, coordinate the release mechanism in a separate PR rather than changing the contributor guard during a release.
+Do not temporarily relax `disallowedChangeTypes` on `main`, point ordinary CI at a permissive alternate config, or rely on a follow-up policy-restoration PR. Maintainers use the [controlled preparation procedure](.github/skills/release-teamsjs/SKILL.md#controlled-majorprerelease-preparation): independently approve an exact source/version intent, preview the full pending set in an isolated candidate, and assert the exact semantic version. The preparation helper restores the original contributor policy before the candidate is reviewed or staged. Adding a `prerelease` file alone does not select a channel because other pending change types may outrank it. Successful preparation does not authorize publication; semantic prerelease publication still requires a separately approved destination adapter.
 
 ## Contributor License
 

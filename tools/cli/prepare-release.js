@@ -3,6 +3,7 @@
 const { randomUUID } = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const { spawnSync } = require('child_process');
 
 const VERSION_FILE = 'packages/teams-js/package.json';
@@ -24,12 +25,21 @@ const REQUIRED_PREPARED_PATHS = [
 ];
 const SEMVER_PATTERN =
   /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*)?$/;
+const CHANGE_TYPES = ['none', 'prerelease', 'prepatch', 'patch', 'preminor', 'minor', 'premajor', 'major'];
+const BUILD_ENV = Object.fromEntries(
+  Object.entries(process.env).filter(
+    ([name]) =>
+      !/^(NPM_TOKEN|NODE_AUTH_TOKEN|GITHUB_TOKEN|GH_TOKEN|GH_ENTERPRISE_TOKEN|GITHUB_ENTERPRISE_TOKEN|SYSTEM_ACCESSTOKEN)$/i.test(
+        name,
+      ),
+  ),
+);
 
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
     cwd: options.cwd,
     encoding: 'utf8',
-    env: options.env || process.env,
+    env: options.env || BUILD_ENV,
     maxBuffer: 10 * 1024 * 1024,
   });
   if (result.error) {
@@ -54,9 +64,9 @@ function repositoryRoot(cwd) {
 
 function parseArguments(argv) {
   const [command, ...rest] = argv;
-  if (!['preview', 'verify'].includes(command)) {
+  if (!['preview', 'prepare', 'verify', 'stage', 'check-staged'].includes(command)) {
     throw new Error(
-      'Usage: prepare-release.js <preview|verify> --source-commit <40-character SHA> [--expected-version <semver>]',
+      'Usage: prepare-release.js <preview|prepare|verify> --source-commit <SHA> [--expected-version <semver>] [--intent-file <approved.json>]',
     );
   }
 
@@ -64,7 +74,7 @@ function parseArguments(argv) {
   for (let index = 0; index < rest.length; index += 2) {
     const flag = rest[index];
     const value = rest[index + 1];
-    if (!['--source-commit', '--expected-version'].includes(flag) || !value) {
+    if (!['--source-commit', '--expected-version', '--intent-file'].includes(flag) || !value) {
       throw new Error(`Unsupported or incomplete argument: ${flag || '<missing>'}`);
     }
     if (values[flag]) {
@@ -81,10 +91,12 @@ function parseArguments(argv) {
   if (expectedVersion && !SEMVER_PATTERN.test(expectedVersion)) {
     throw new Error('--expected-version must be an exact semantic version');
   }
-  if (command === 'verify' && !expectedVersion) {
-    throw new Error('--expected-version is required for verify');
+  if (command !== 'preview' && !expectedVersion) {
+    throw new Error('--expected-version is required for prepare/verify');
   }
-  return { command, sourceCommit, expectedVersion };
+  if (['verify', 'stage', 'check-staged'].includes(command) && values['--intent-file'])
+    throw new Error('Verification does not consume an exception intent');
+  return { command, sourceCommit, expectedVersion, intentFile: values['--intent-file'] };
 }
 
 function status(repoRoot) {
@@ -139,16 +151,14 @@ function assertVersion(repoRoot, expectedVersion, relativePath = VERSION_FILE) {
 }
 
 function resolveBeachball(repoRoot) {
-  if (process.env.NODE_ENV === 'test' && process.env.PREPARE_RELEASE_TEST_BEACHBALL_BIN) {
-    const testBeachballBin = process.env.PREPARE_RELEASE_TEST_BEACHBALL_BIN;
-    if (!path.isAbsolute(testBeachballBin) || !fs.existsSync(testBeachballBin)) {
-      throw new Error('PREPARE_RELEASE_TEST_BEACHBALL_BIN must name an existing absolute path');
-    }
-    return testBeachballBin;
-  }
   try {
-    return require.resolve('beachball/bin/beachball.js', { paths: [repoRoot] });
-  } catch {
+    const binary = require.resolve('beachball/bin/beachball.js', { paths: [repoRoot] });
+    if (JSON.parse(fs.readFileSync(path.join(path.dirname(binary), '../package.json'))).version !== '2.62.0') {
+      throw new Error('Review release preparation against the new Beachball version before use.');
+    }
+    return binary;
+  } catch (error) {
+    if (error.code !== 'MODULE_NOT_FOUND') throw error;
     throw new Error('Beachball is not installed. Run the repository dependency installation first.');
   }
 }
@@ -174,13 +184,34 @@ function removePreviewWorktree(repoRoot, previewPath, worktreeAdded) {
   }
 }
 
-function previewVersion(repoRoot, sourceCommit, expectedVersion) {
+function readIntent(intentFile, sourceCommit, expectedVersion) {
+  if (!intentFile) return undefined;
+  const intent = JSON.parse(fs.readFileSync(intentFile, 'utf8'));
+  if (
+    !intent ||
+    Object.keys(intent).sort().join(',') !== 'changeType,expectedVersion,prereleasePrefix,sourceCommit' ||
+    intent.sourceCommit !== sourceCommit ||
+    intent.expectedVersion !== expectedVersion ||
+    !['major', 'premajor', 'preminor', 'prepatch', 'prerelease'].includes(intent.changeType) ||
+    (intent.changeType === 'major'
+      ? intent.prereleasePrefix !== null
+      : typeof intent.prereleasePrefix !== 'string' || !/^[a-z][a-z0-9-]*$/.test(intent.prereleasePrefix)) ||
+    (intent.changeType === 'major'
+      ? expectedVersion.includes('-')
+      : !expectedVersion.includes(`-${intent.prereleasePrefix}.`))
+  ) {
+    throw new Error('Exception intent must match the independently approved source, version and channel.');
+  }
+  return intent;
+}
+
+function previewVersion(repoRoot, sourceCommit, expectedVersion, intentFile, prepare = false) {
   assertCleanCheckout(repoRoot);
   assertSourceCommit(repoRoot, sourceCommit);
-  const commonGitDirectory = git(repoRoot, ['rev-parse', '--path-format=absolute', '--git-common-dir']).trim();
-  const previewParent = path.join(commonGitDirectory, 'release-version-previews');
-  fs.mkdirSync(previewParent, { recursive: true });
-  const previewPath = path.join(previewParent, `preview-${randomUUID()}`);
+  git(repoRoot, ['merge-base', '--is-ancestor', sourceCommit, 'refs/remotes/origin/main']);
+  const intent = readIntent(intentFile, sourceCommit, expectedVersion);
+  const previewParent = fs.mkdtempSync(path.join(os.tmpdir(), 'teamsjs-prepare-'));
+  const previewPath = path.join(previewParent, 'candidate');
   let worktreeAdded = false;
   let failure;
   let previewResult;
@@ -191,34 +222,84 @@ function previewVersion(repoRoot, sourceCommit, expectedVersion) {
     assertSourceCommit(previewPath, sourceCommit);
     run('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts'], { cwd: previewPath });
     const beachballBin = resolveBeachball(previewPath);
-    run(
-      process.execPath,
-      [
-        beachballBin,
-        'bump',
-        '--config',
-        path.join(previewPath, 'beachball.config.js'),
-        '--no-commit',
-        '--no-git-tags',
-        '--no-publish',
-        '--no-push',
-      ],
-      { cwd: previewPath },
-    );
+    const configPath = path.join(previewPath, 'beachball.config.js');
+    const originalConfig = fs.readFileSync(configPath);
+    try {
+      const pendingDirectory = path.join(previewPath, 'change');
+      const pendingFiles = fs.existsSync(pendingDirectory)
+        ? fs.readdirSync(pendingDirectory).filter((f) => f.endsWith('.json'))
+        : [];
+      for (const file of pendingFiles) {
+        const changeFile = JSON.parse(fs.readFileSync(path.join(pendingDirectory, file)));
+        const changes = Array.isArray(changeFile.changes) ? changeFile.changes : [changeFile];
+        for (const change of changes) {
+          if (!CHANGE_TYPES.includes(change.type)) throw new Error('Unsupported pending change type.');
+          if (!intent && !['none', 'patch', 'minor'].includes(change.type)) {
+            throw new Error('Exceptional pending changes require an independently approved intent.');
+          }
+          if (intent?.prereleasePrefix && CHANGE_TYPES.indexOf(change.type) > CHANGE_TYPES.indexOf(intent.changeType)) {
+            throw new Error(
+              'Pending change outranks the approved prerelease intent; approve a different version/type.',
+            );
+          }
+        }
+      }
+      if (intent) {
+        // This worktree is owned by this attempt; neither main nor the caller's config is changed.
+        fs.appendFileSync(
+          configPath,
+          `\nObject.assign(module.exports, ${JSON.stringify({
+            disallowedChangeTypes: [],
+            ...(intent.prereleasePrefix ? { prereleasePrefix: intent.prereleasePrefix } : {}),
+          })});\n`,
+        );
+        const changeDirectory = path.join(previewPath, 'change');
+        fs.mkdirSync(changeDirectory, { recursive: true });
+        fs.writeFileSync(
+          path.join(changeDirectory, `release-intent-${randomUUID()}.json`),
+          JSON.stringify({
+            type: intent.changeType,
+            comment: 'Prepare the approved release version.',
+            packageName: '@microsoft/teams-js',
+            email: 'maintainer@example.invalid',
+            dependentChangeType: 'none',
+          }),
+          { flag: 'wx' },
+        );
+      }
+      fs.appendFileSync(
+        configPath,
+        '\nObject.assign(module.exports, {commit: false, gitTags: false, publish: false, push: false});\n',
+      );
+      if (prepare) run(process.execPath, [path.join(previewPath, 'tools/cli/preRelease.js')], { cwd: previewPath });
+      else
+        run(
+          process.execPath,
+          [beachballBin, 'bump', '--config', configPath, '--no-commit', '--no-git-tags', '--no-publish', '--no-push'],
+          { cwd: previewPath },
+        );
+    } finally {
+      fs.writeFileSync(configPath, originalConfig);
+    }
     run('pnpm', ['install', '--lockfile-only', '--ignore-scripts'], { cwd: previewPath });
-    assertSourceCommit(previewPath, sourceCommit);
+    if (git(previewPath, ['rev-parse', 'HEAD']).trim() !== sourceCommit)
+      throw new Error('Preparation changed pinned HEAD.');
     assertPreparedPaths(statusPaths(status(previewPath)));
     const version = readVersion(previewPath);
     if (expectedVersion) {
       assertVersion(previewPath, expectedVersion);
     }
-    previewResult = { sourceCommit, version };
+    if (prepare) verifyPreparation(previewPath, sourceCommit, expectedVersion);
+    previewResult = { sourceCommit, version, ...(prepare ? { worktree: previewPath } : {}) };
   } catch (error) {
     failure = error;
   }
 
   try {
-    removePreviewWorktree(repoRoot, previewPath, worktreeAdded);
+    if (failure || !prepare) {
+      removePreviewWorktree(repoRoot, previewPath, worktreeAdded);
+      fs.rmdirSync(previewParent);
+    }
     assertCleanCheckout(repoRoot);
   } catch (cleanupError) {
     throw new Error(
@@ -240,7 +321,7 @@ function extractIntegrity(content, relativePath) {
   return matches[0];
 }
 
-function verifyPreparation(repoRoot, sourceCommit, expectedVersion) {
+function verifyPreparation(repoRoot, sourceCommit, expectedVersion, staged = false) {
   assertSourceCommit(repoRoot, sourceCommit);
   const headCommit = git(repoRoot, ['rev-parse', 'HEAD']).trim();
   if (headCommit !== sourceCommit) {
@@ -248,8 +329,16 @@ function verifyPreparation(repoRoot, sourceCommit, expectedVersion) {
   }
 
   const stagedPaths = git(repoRoot, ['diff', '--cached', '--name-only', '--no-renames']).trim();
-  if (stagedPaths) {
+  if (stagedPaths && !staged) {
     throw new Error('Review release preparation before staging it');
+  }
+  if (
+    staged &&
+    (!stagedPaths ||
+      git(repoRoot, ['diff', '--name-only']).trim() ||
+      git(repoRoot, ['ls-files', '--others', '--exclude-standard']).trim())
+  ) {
+    throw new Error('Staged preparation must be complete with no unstaged or untracked residue');
   }
 
   const changedPaths = statusPaths(status(repoRoot));
@@ -262,6 +351,13 @@ function verifyPreparation(repoRoot, sourceCommit, expectedVersion) {
 
   assertVersion(repoRoot, expectedVersion);
   assertVersion(repoRoot, expectedVersion, 'apps/teams-test-app/package.json');
+  if (
+    !fs
+      .readFileSync(path.join(repoRoot, 'packages/teams-js/CHANGELOG.md'), 'utf8')
+      .split('\n')
+      .some((line) => line.trim() === `## ${expectedVersion}`)
+  )
+    throw new Error('Expected changelog section missing.');
   const readmePath = 'packages/teams-js/README.md';
   const testAppPath = 'apps/teams-test-app/index_cdn.html';
   const readme = fs.readFileSync(path.join(repoRoot, readmePath), 'utf8');
@@ -274,8 +370,10 @@ function verifyPreparation(repoRoot, sourceCommit, expectedVersion) {
       throw new Error(`${relativePath} does not reference the exact expected CDN version`);
     }
   }
-  if (extractIntegrity(readme, readmePath) !== extractIntegrity(testApp, testAppPath)) {
-    throw new Error('README and test app integrity values do not match');
+  const bundle = fs.readFileSync(path.join(repoRoot, 'packages/teams-js/dist/umd/MicrosoftTeams.min.js'));
+  const integrity = `sha384-${require('crypto').createHash('sha384').update(bundle).digest('base64')}`;
+  if (extractIntegrity(readme, readmePath) !== integrity || extractIntegrity(testApp, testAppPath) !== integrity) {
+    throw new Error('README and test app integrity values do not match built bytes');
   }
 
   const changeDirectory = path.join(repoRoot, 'change');
@@ -292,12 +390,12 @@ function verifyPreparation(repoRoot, sourceCommit, expectedVersion) {
 }
 
 function main() {
-  const { command, sourceCommit, expectedVersion } = parseArguments(process.argv.slice(2));
+  const { command, sourceCommit, expectedVersion, intentFile } = parseArguments(process.argv.slice(2));
   const repoRoot = repositoryRoot(process.cwd());
-  const result =
-    command === 'preview'
-      ? previewVersion(repoRoot, sourceCommit, expectedVersion)
-      : verifyPreparation(repoRoot, sourceCommit, expectedVersion);
+  const result = ['verify', 'stage', 'check-staged'].includes(command)
+    ? verifyPreparation(repoRoot, sourceCommit, expectedVersion, command === 'check-staged')
+    : previewVersion(repoRoot, sourceCommit, expectedVersion, intentFile, command === 'prepare');
+  if (command === 'stage') git(repoRoot, ['add', '-A', '--', ...result.changedPaths]);
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }
 
