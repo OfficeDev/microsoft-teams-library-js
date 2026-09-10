@@ -7,6 +7,7 @@ import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, LegalAgeGroupClassification, SdkError } from '../public/interfaces';
 import * as pages from '../public/pages/pages';
 import { IBaseRuntime } from '../public/runtime';
+import { teamsDeepLinkHost, teamsDeepLinkProtocol } from './constants';
 
 /**
  * @internal
@@ -275,7 +276,7 @@ export function runWithTimeout<TResult, TError>(
  */
 export function createTeamsAppLink(params: pages.AppNavigationParameters): string {
   const url = new URL(
-    'https://teams.microsoft.com/l/entity/' +
+    `${teamsDeepLinkProtocol}://${teamsDeepLinkHost}/l/entity/` +
       encodeURIComponent(params.appId.toString()) +
       '/' +
       encodeURIComponent(params.pageId),

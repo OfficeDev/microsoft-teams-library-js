@@ -1,0 +1,6 @@
+{
+  "cloud": "ag08",
+  "validOriginsCdnEndpoint": null,
+  "teamsDeepLinkHost": "teams.eaglex.ic.gov",
+  "validOrigins": ["teams.eaglex.ic.gov"]
+}

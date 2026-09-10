@@ -20,6 +20,7 @@ import {
   normalizeAgeGroupValue,
   runWithTimeout,
 } from '../internal/utils';
+import { prefetchOriginsFromCDN, setValidOriginsOverride } from '../internal/validOrigins';
 import * as app from '../public/app/app';
 import { FrameContexts } from '../public/constants';
 import * as dialog from '../public/dialog/dialog';
@@ -53,10 +54,14 @@ export interface NotifySuccessResponse {
   hasFinishedSuccessfully: true | 'unknown';
 }
 
-export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
+export function appInitializeHelper(
+  apiVersionTag: string,
+  validMessageOrigins?: string[],
+  options?: app.AppInitializationOptions,
+): Promise<void> {
   if (!inServerSideRenderingEnvironment()) {
     return runWithTimeout(
-      () => initializeHelper(apiVersionTag, validMessageOrigins),
+      () => initializeHelper(apiVersionTag, validMessageOrigins, options),
       initializationTimeoutInMs,
       new Error('SDK initialization timed out.'),
     );
@@ -131,12 +136,50 @@ export async function callNotifySuccessInHost(apiVersionTag: string): Promise<No
 }
 
 const initializeHelperLogger = appLogger.extend('initializeHelper');
-function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
+
+/**
+ * Applies the app's valid-origins configuration before the host handshake begins.
+ *
+ * When the app supplies an override, the origins teamsjs was built with are discarded entirely, and
+ * the import-time prefetch for the bundled cloud is abandoned so its response cannot reinstate them.
+ *
+ * Otherwise the list is warmed — normally a no-op, because `validOrigins.ts` already started the
+ * fetch for this bundle's cloud when it was imported. This call remains as the trigger for any entry
+ * point that reaches initialization without that side effect having run.
+ *
+ * An invalid `validOriginsUrl` throws from the `URL` constructor, which fails initialization rather
+ * than silently falling back to origins the app asked not to trust.
+ */
+function applyValidOriginsConfiguration(options?: app.AppInitializationOptions): void {
+  const { validOriginsUrl, validOriginsList } = options ?? {};
+
+  if (validOriginsUrl !== undefined || validOriginsList !== undefined) {
+    setValidOriginsOverride({
+      list: validOriginsList,
+      url: validOriginsUrl === undefined ? undefined : new URL(validOriginsUrl),
+    });
+  } else {
+    // Deliberately fire-and-forget; validateOrigin awaits the same in-flight promise if a message
+    // arrives first.
+    void prefetchOriginsFromCDN();
+  }
+}
+
+function initializeHelper(
+  apiVersionTag: string,
+  validMessageOrigins?: string[],
+  options?: app.AppInitializationOptions,
+): Promise<void> {
   return new Promise<void>((resolve) => {
     // Independent components might not know whether the SDK is initialized so might call it to be safe.
     // Just no-op if that happens to make it easier to use.
     if (!GlobalVars.initializeCalled) {
       GlobalVars.initializeCalled = true;
+
+      // Origin configuration must be applied before the host handshake starts, because the host's
+      // response to the initialize message is itself origin-validated.
+      applyValidOriginsConfiguration(options);
+
       Handlers.initializeHandlers();
       GlobalVars.initializePromise = initializeCommunication(validMessageOrigins, apiVersionTag).then(
         ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {

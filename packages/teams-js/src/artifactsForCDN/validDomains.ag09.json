@@ -1,0 +1,6 @@
+{
+  "cloud": "ag09",
+  "validOriginsCdnEndpoint": null,
+  "teamsDeepLinkHost": "teams.microsoft.scloud",
+  "validOrigins": ["teams.microsoft.scloud"]
+}

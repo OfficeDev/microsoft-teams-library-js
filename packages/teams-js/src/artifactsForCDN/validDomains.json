@@ -1,4 +1,7 @@
 {
+  "cloud": "prod",
+  "validOriginsCdnEndpoint": "https://res.cdn.office.net/teams-js/validDomains/json/validDomains.json",
+  "teamsDeepLinkHost": "teams.microsoft.com",
   "validOrigins": [
     "teams.microsoft.com",
     "teams.microsoft.us",

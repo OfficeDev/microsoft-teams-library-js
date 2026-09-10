@@ -38,6 +38,36 @@ Install either using npm or pnpm.
 import { app } from '@microsoft/teams-js';
 ```
 
+### Sovereign clouds
+
+Apps deployed to a sovereign cloud should import the build for that cloud. Each build contains only
+the host origins for its own cloud, so no other cloud's domains are present in your bundle.
+
+```typescript
+import { app } from '@microsoft/teams-js/gcch';
+```
+
+| Cloud                        | Import path                     |
+| ---------------------------- | ------------------------------- |
+| Public (default)             | `@microsoft/teams-js`           |
+| GCC High                     | `@microsoft/teams-js/gcch`      |
+| DoD                          | `@microsoft/teams-js/dod`       |
+| Gallatin (China)             | `@microsoft/teams-js/gallatin`  |
+| AG08                         | `@microsoft/teams-js/ag08`      |
+| AG09                         | `@microsoft/teams-js/ag09`      |
+
+GCC uses the public cloud endpoints, so GCC apps should use the default `@microsoft/teams-js`.
+
+If a single build has to serve more than one cloud, you can instead override the trusted origins at
+initialization. Passing either option **replaces** the origins the library ships with rather than
+adding to them:
+
+```typescript
+await app.initialize(undefined, {
+  validOriginsUrl: 'https://res.cdn.office.net/teams-js/validDomains/json/validDomains.gcch.json',
+});
+```
+
 ### As a script tag
 
 Reference the library inside of your `.html` page using:
