@@ -19,6 +19,26 @@ describe('calendar contract', () => {
     }
   });
 
+  it('emits the fixture-defined composeMeeting wire message', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: false, supports: { calendar: {} } });
+    const fixtureCase = loadFixtureCase<calendar.ComposeMeetingParams>('calendar', 'composeMeeting API Call - Success');
+
+    expect(fixtureCase.expectedWirePayload).toBeDefined();
+
+    const composeMeetingPromise = calendar.composeMeeting(fixtureCase.inputValue);
+    const message = utils.findMessageByFunc('calendar.composeMeeting');
+
+    expect(message).not.toBeNull();
+    if (!message) {
+      throw new Error('calendar.composeMeeting message not found');
+    }
+    expect(message.args).toEqual([fixtureCase.expectedWirePayload]);
+
+    await utils.respondToMessage(message, true);
+    await expect(composeMeetingPromise).resolves.toBeUndefined();
+  });
+
   it('emits the fixture-defined openCalendarItem wire message', async () => {
     await utils.initializeWithContext(FrameContexts.content);
     utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
