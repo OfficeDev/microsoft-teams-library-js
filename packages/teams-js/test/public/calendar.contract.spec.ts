@@ -24,6 +24,8 @@ describe('calendar contract', () => {
     utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: false, supports: { calendar: {} } });
     const fixtureCase = loadFixtureCase<calendar.ComposeMeetingParams>('calendar', 'composeMeeting API Call - Success');
 
+    expect(fixtureCase.expectedWirePayload).toBeDefined();
+
     const composeMeetingPromise = calendar.composeMeeting(fixtureCase.inputValue);
     const message = utils.findMessageByFunc('calendar.composeMeeting');
 
@@ -31,7 +33,7 @@ describe('calendar contract', () => {
     if (!message) {
       throw new Error('calendar.composeMeeting message not found');
     }
-    expect(message.args).toEqual([fixtureCase.inputValue]);
+    expect(message.args).toEqual([fixtureCase.expectedWirePayload]);
 
     await utils.respondToMessage(message, true);
     await expect(composeMeetingPromise).resolves.toBeUndefined();
