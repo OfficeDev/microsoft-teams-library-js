@@ -134,7 +134,7 @@ export function selectFixtureCase(
   fixture: FixtureFileRecord,
   title: string,
   fixturePath: string,
-  options: SelectFixtureCaseOptions = {}
+  options: SelectFixtureCaseOptions = {},
 ): FixtureCaseRecord {
   let matches = getFixtureCases(fixture).filter((testCase) => testCase.title === title);
   if (options.version !== undefined) {
@@ -150,7 +150,7 @@ export function selectFixtureCase(
     const versions = matches.map((testCase) => testCase.version ?? '(no version)').join(', ');
     throw new Error(
       `Fixture case "${title}" is ambiguous in ${fixturePath}: ${matches.length} cases match ` +
-        `(versions: ${versions}). Pass options.version to disambiguate.`
+        `(versions: ${versions}). Pass options.version to disambiguate.`,
     );
   }
 

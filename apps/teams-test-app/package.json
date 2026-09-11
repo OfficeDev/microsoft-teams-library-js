@@ -11,7 +11,7 @@
     "build:local": "pnpm lint && webpack --config webpack.local.config.js && pnpm copy",
     "clean": "rimraf ./build",
     "copy": "shx cp ../../packages/teams-js/dist/umd/MicrosoftTeams.min.js ./build/ && shx cp ../../packages/teams-js/dist/umd/MicrosoftTeams.min.js.map ./build/",
-    "lint": "pnpm eslint ./src --max-warnings 0 --fix --ext .tsx",
+    "lint": "pnpm eslint ./src --max-warnings 0 --fix --ext .tsx && pnpm eslint ./fixture-contract --max-warnings 0 --fix --ext .ts",
     "start": "pnpm start:bundle",
     "start:bundle": "webpack serve",
     "start:CDN": "webpack serve --config webpack.cdn.config.js",
