@@ -15,8 +15,20 @@ const IsWebStorageClearedOnLogOut = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'isWebStorageClearedOnUserLogOut',
     title: 'Is Web Storage Cleared on Log Out',
-    onClick: async () =>
-      `webStorage ${(await webStorage.isWebStorageClearedOnUserLogOut()) ? 'is' : 'is not'} cleared on user log out`,
+    onClick: async () => {
+      const result = await webStorage.isWebStorageClearedOnUserLogOut();
+      try {
+        if (result === true) {
+          return `webStorage is cleared on user log out. Result from sdk: ${result}`;
+        } else if (result === false) {
+          return `webStorage is not cleared on user log out. Result from sdk: ${result}`;
+        } else {
+          throw new Error('Invalid result: must be true or false');
+        }
+      } catch (error) {
+        return `Error: ${error}. Result from sdk: ${result}`;
+      }
+    },
   });
 
 const WebStorageAPIs = (): ReactElement => (
