@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "\"Updated `chatuxmanager.svc.cloud.microsoft` to `mss.office.com` in valid domains list\"",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "patch"
+}
