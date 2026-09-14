@@ -66,7 +66,16 @@
                 "type": "array",
                 "items": { "type": "string" }
               },
-              "skipForCallbackBasedRuns": { "type": "boolean" }
+              "skipForCallbackBasedRuns": { "type": "boolean" },
+              "unitCovered": {
+                "type": "boolean",
+                "description": "Marks fixture cases selected by the Hub SDK provider contract suites for supported families. The flag selects provider tests; it does not prove that a teams-js producer test also covers the case or change browser E2E scheduling (see e2eScope)."
+              },
+              "e2eScope": {
+                "type": "string",
+                "enum": ["pr", "shadow"],
+                "description": "Which browser E2E runs execute this case. 'pr' (default when omitted) runs it in the PR pipeline; 'shadow' moves it off the PR critical path to the scheduled run, which is only appropriate once unitCovered replacements exist and evidence has been collected. A case is never deleted by this field."
+              }
             },
             "required": ["title"]
           },
