@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { Context } from '../public/app/app';
+import { BrandColorRamp, Context, themeHandler } from '../public/app/app';
 import { FrameContexts } from '../public/constants';
 import { HostToAppPerformanceMetrics, LoadContext, ResumeContext } from '../public/interfaces';
 import { runtime } from '../public/runtime';
@@ -22,7 +22,7 @@ class HandlersPrivate {
   public static handlers: {
     [func: string]: Function;
   } = {};
-  public static themeChangeHandler: null | ((theme: string) => void) = null;
+  public static themeChangeHandler: null | themeHandler = null;
   /**
    * @deprecated
    */
@@ -168,7 +168,7 @@ export function registerHandlerHelper(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerOnThemeChangeHandler(apiVersionTag: string, handler: (theme: string) => void): void {
+export function registerOnThemeChangeHandler(apiVersionTag: string, handler: themeHandler): void {
   HandlersPrivate.themeChangeHandler = handler;
   !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['themeChange']);
 }
@@ -185,13 +185,13 @@ export function registerOnContextChangeHandler(apiVersionTag: string, handler: (
  * @internal
  * Limited to Microsoft-internal use
  */
-export function handleThemeChange(theme: string): void {
+export function handleThemeChange(theme: string, brandVariants?: BrandColorRamp): void {
   if (HandlersPrivate.themeChangeHandler) {
-    HandlersPrivate.themeChangeHandler(theme);
+    HandlersPrivate.themeChangeHandler(theme, brandVariants);
   }
 
   if (shouldEventBeRelayedToChild()) {
-    sendMessageEventToChild('themeChange', [theme]);
+    sendMessageEventToChild('themeChange', brandVariants === undefined ? [theme] : [theme, brandVariants]);
   }
 }
 

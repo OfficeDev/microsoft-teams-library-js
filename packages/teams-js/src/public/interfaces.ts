@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
-import { HostFeatures } from './app/app';
+import { BrandColorRamp, HostFeatures } from './app/app';
 import {
   ChannelType,
   DialogDimension,
@@ -438,6 +438,14 @@ export interface Context {
    * The current UI theme.
    */
   theme?: string;
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.brandVariants | app.Context.app.brandVariants} instead
+   *
+   * The brand color ramp supplied by the host.
+   */
+  brandVariants?: BrandColorRamp;
 
   /**
    * @deprecated
