@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added M365 admin center origins to valid domains list.",
+  "packageName": "@microsoft/teams-js",
+  "email": "leahxia@microsoft.com",
+  "dependentChangeType": "patch"
+}
