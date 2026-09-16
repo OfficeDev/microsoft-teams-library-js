@@ -75,7 +75,10 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ### Q. I'm a Microsoft Employee, How Do I Gain Write Access?
 
-1. Use or create a corporate-linked github account (if you already have a github account associated with Microsoft, you can skip this step)
+> [!IMPORTANT]
+> You must use a standard (non-EMU) GitHub account. Microsoft-issued Enterprise Managed User (EMU) accounts cannot be granted access to this repository: managed user accounts can only contribute to private and internal repositories inside their own enterprise, and have read-only access to the rest of GitHub.com. That means an EMU account cannot fork this repository, push branches, or open issues and pull requests against it. See [Abilities and restrictions of managed user accounts](https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/understanding-iam-for-enterprises/abilities-and-restrictions-of-managed-user-accounts). If your only GitHub account is an EMU account, create a separate standard GitHub.com account and use that one for the steps below.
+
+1. Use or create a corporate-linked GitHub account (if you already have a GitHub account associated with Microsoft, you can skip this step). This must be a standard GitHub.com account, not an EMU account.
 
 2. With your github account ready, visit https://repos.opensource.microsoft.com/ and follow the instructions to link it to Microsoft and join the Microsoft organization.
 
