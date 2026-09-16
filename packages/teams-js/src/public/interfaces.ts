@@ -1161,6 +1161,7 @@ export enum ErrorCode {
 export enum DevicePermission {
   GeoLocation = 'geolocation',
   Media = 'media',
+  ClipboardRead = 'clipboard-read',
 }
 
 /** @hidden */
