@@ -1,3 +1,12 @@
+/**
+ * @beta
+ * @hidden
+ * Plugin messaging capabilities for Microsoft-internal apps.
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { callFunctionInHost } from '../internal/communication';
 import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
