@@ -135,6 +135,14 @@ export interface IExpectedFailureRequest {
 }
 
 /**
+ * A brand color ramp compatible with Fluent UI v9 BrandVariants.
+ */
+export type BrandColorRamp = Record<
+  10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100 | 110 | 120 | 130 | 140 | 150 | 160,
+  string
+>;
+
+/**
  * Represents application information.
  */
 export interface AppInfo {
@@ -148,6 +156,11 @@ export interface AppInfo {
    * The current UI theme of the host. Possible values: "default", "dark", "contrast" or "glass".
    */
   theme: string;
+
+  /**
+   * The brand color ramp supplied by the host.
+   */
+  brandVariants?: BrandColorRamp;
 
   /**
    * Unique ID for the current session for use in correlating telemetry data. A session corresponds to the lifecycle of an app. A new session begins upon the creation of a webview (on Teams mobile) or iframe (in Teams desktop) hosting the app, and ends when it is destroyed.
@@ -615,7 +628,7 @@ export interface Context {
 /**
  * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
  */
-export type themeHandler = (theme: string) => void;
+export type themeHandler = (theme: string, brandVariants?: BrandColorRamp) => void;
 
 /**
  * @hidden
@@ -938,6 +951,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       locale: legacyContext.locale,
       sessionId: legacyContext.appSessionId ? legacyContext.appSessionId : '',
       theme: legacyContext.theme ? legacyContext.theme : 'default',
+      brandVariants: legacyContext.brandVariants,
       iconPositionVertical: legacyContext.appIconPosition,
       osLocaleInfo: legacyContext.osLocaleInfo,
       messageId: legacyContext.messageId,

@@ -27,6 +27,7 @@ import {
 } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize, latestRuntimeApiVersion } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
+import { mockBrandColorRamp } from '../brandColorRamp';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -229,6 +230,16 @@ describe('MicrosoftTeams-publicAPIs', () => {
     await utils.sendMessage('themeChange', 'someTheme');
 
     expect(newTheme).toBe('someTheme');
+  });
+
+  it('should provide brand variants to a theme change handler', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    const handler = jest.fn();
+    registerOnThemeChangeHandler(handler);
+
+    await utils.sendMessage('themeChange', 'someTheme', mockBrandColorRamp);
+
+    expect(handler).toHaveBeenCalledWith('someTheme', mockBrandColorRamp);
   });
 
   it('should call navigateBack automatically when no back button handler is registered', async () => {

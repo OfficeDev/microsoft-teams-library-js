@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Add brand color ramps to app context and theme change handlers.",
+  "packageName": "@microsoft/teams-js",
+  "email": "harisenluby@microsoft.com",
+  "dependentChangeType": "patch"
+}

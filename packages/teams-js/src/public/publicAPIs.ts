@@ -11,6 +11,7 @@ import {
 } from '../internal/pagesHelpers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
+import { BrandColorRamp } from './app/app';
 import { FrameContexts } from './constants';
 import {
   Context,
@@ -42,7 +43,7 @@ export type registerBackButtonHandlerFunctionType = () => boolean;
 /** Register full screen handler function type */
 export type registerFullScreenHandlerFunctionType = (isFullScreen: boolean) => void;
 /** Register on theme change handler function type */
-export type registerOnThemeChangeHandlerFunctionType = (theme: string) => void;
+export type registerOnThemeChangeHandlerFunctionType = (theme: string, brandVariants?: BrandColorRamp) => void;
 /**
  * @deprecated
  * As of TeamsJS v2.0.0, please use {@link app.initialize app.initialize(validMessageOrigins?: string[]): Promise\<void\>} instead.

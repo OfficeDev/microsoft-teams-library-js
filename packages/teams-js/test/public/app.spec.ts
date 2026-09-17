@@ -32,6 +32,7 @@ import {
 } from '../../src/public/runtime';
 import { UUID } from '../../src/public/uuidObject';
 import { version } from '../../src/public/version';
+import { mockBrandColorRamp } from '../brandColorRamp';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -670,6 +671,7 @@ describe('Testing app capability', () => {
             upn: 'someUpn',
             tid: 'someTid',
             theme: 'someTheme',
+            brandVariants: mockBrandColorRamp,
             isFullScreen: true,
             teamType: TeamType.Staff,
             teamSiteUrl: 'someSiteUrl',
@@ -726,6 +728,7 @@ describe('Testing app capability', () => {
               parentMessageId: 'someParentMessageId',
               sessionId: 'appSessionId',
               theme: 'someTheme',
+              brandVariants: mockBrandColorRamp,
               userClickTime: 2222,
               userClickTimeV2: 3333,
               userFileOpenPreference: FileOpenPreference.Inline,
@@ -1085,6 +1088,16 @@ describe('Testing app capability', () => {
           await utils.sendMessage('themeChange', 'someTheme');
           expect(newTheme).toBe('someTheme');
         });
+      });
+
+      it('app.registerOnThemeChangeHandler should provide brand variants when supplied by the host', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const handler = jest.fn();
+        app.registerOnThemeChangeHandler(handler);
+
+        await utils.sendMessage('themeChange', 'someTheme', mockBrandColorRamp);
+
+        expect(handler).toHaveBeenCalledWith('someTheme', mockBrandColorRamp);
       });
     });
 
@@ -1781,6 +1794,7 @@ describe('Testing app capability', () => {
             upn: 'someUpn',
             tid: 'someTid',
             theme: 'someTheme',
+            brandVariants: mockBrandColorRamp,
             isFullScreen: true,
             teamType: TeamType.Staff,
             teamSiteUrl: 'someSiteUrl',
@@ -1828,6 +1842,7 @@ describe('Testing app capability', () => {
               locale: 'someLocale',
               sessionId: 'appSessionId',
               theme: 'someTheme',
+              brandVariants: mockBrandColorRamp,
               iconPositionVertical: 5,
               osLocaleInfo: undefined,
               parentMessageId: 'someParentMessageId',
@@ -2136,6 +2151,21 @@ describe('Testing app capability', () => {
           } as DOMMessageEvent);
           expect(newTheme).toBe('someTheme');
         });
+      });
+
+      it('app.registerOnThemeChangeHandler should provide brand variants in frameless contexts', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const handler = jest.fn();
+        app.registerOnThemeChangeHandler(handler);
+
+        await utils.respondToFramelessMessage({
+          data: {
+            func: 'themeChange',
+            args: ['someTheme', mockBrandColorRamp],
+          },
+        } as DOMMessageEvent);
+
+        expect(handler).toHaveBeenCalledWith('someTheme', mockBrandColorRamp);
       });
     });
 
