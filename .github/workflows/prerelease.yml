@@ -11,12 +11,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Setup Node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: '18.x'
 
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Install pnpm
         run: npm install -g pnpm@9.15.9
@@ -48,7 +48,7 @@ jobs:
           echo -e "::set-output name=changelog::$changelog"
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@18f7dc018cc2cd597073088f7c7591b9d1c02672 # v3.14.0
         with:
           commit-message: Releasing${{steps.extract_version.outputs.version}}
           title: 'Releasing v${{steps.extract_version.outputs.version}}'
