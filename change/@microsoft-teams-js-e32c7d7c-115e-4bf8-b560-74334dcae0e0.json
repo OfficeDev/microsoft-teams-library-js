@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added new Copilot commercial and gov cloud origins to valid domains list.",
-  "packageName": "@microsoft/teams-js",
-  "email": "vhuseinova@microsoft.com",
-  "dependentChangeType": "patch"
-}
