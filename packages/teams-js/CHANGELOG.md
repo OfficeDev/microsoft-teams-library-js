@@ -1,8 +1,21 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 02 Sep 2026 20:50:58 GMT and should not be manually modified. -->
+<!-- This log was last generated on Wed, 23 Sep 2026 18:43:57 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.57.0
+
+Wed, 23 Sep 2026 18:43:57 GMT
+
+### Minor changes
+
+- Added new Copilot commercial and gov cloud origins to valid domains list.
+- Added M365 admin center origins to valid domains list.
+
+### Patches
+
+- Fix `isActionExecuteResponse` so a `null` or non-object response from the host returns `false` instead of throwing a `TypeError`, allowing the intended `INTERNAL_ERROR` to surface.
 
 ## 2.56.0
 
