@@ -78,6 +78,7 @@ export {
 } from './appWindow';
 export * as menus from './menus';
 export * as media from './media';
+export * as intune from './intune';
 export * as secondaryBrowser from './secondaryBrowser';
 export * as location from './location';
 export * as meeting from './meeting/meeting';
