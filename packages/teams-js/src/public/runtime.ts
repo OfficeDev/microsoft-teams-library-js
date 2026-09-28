@@ -307,7 +307,9 @@ interface IRuntimeV4 extends IBaseRuntime {
     };
     readonly shortcutRelay?: {};
     readonly stageView?: {
-      readonly self?: {};
+      readonly self?: {
+        readonly closeResult?: {};
+      };
     };
     readonly store?: {};
     readonly teams?: {

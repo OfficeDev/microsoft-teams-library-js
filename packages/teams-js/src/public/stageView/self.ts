@@ -18,23 +18,35 @@ const stageViewTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Closes the current stage view. This function will be a no-op if called from outside of a stage view.
+ * @param result - Optional opaque serialized result for the host's original launch callback.
+ * An empty string is a result. Requires the host to advertise `stageView.self.closeResult` support;
+ * otherwise the request is rejected without closing. The SDK does not interpret the result.
  * @returns Promise that resolves or rejects with an error once the stage view is closed.
+ * The promise acknowledges closing; it does not return the result to the closing application.
  *
  * @beta
  * @throws Error if stageView.self.close is not supported in the current context or if `app.initialize()` has not resolved successfully.
  */
-export function close(): Promise<void> {
+export function close(result?: string): Promise<void> {
   return new Promise((resolve) => {
-    ensureInitialized(runtime, FrameContexts.content);
-
-    if (!isSupported()) {
+    if (!ensureInitialized(runtime, FrameContexts.content) || !isSupported()) {
       throw errorNotSupportedOnPlatform;
+    }
+
+    if (result !== undefined) {
+      if (typeof result !== 'string') {
+        throw new Error('[stageView.self.close] Result must be a string');
+      }
+      if (!runtime.supports.stageView?.self?.closeResult) {
+        throw errorNotSupportedOnPlatform;
+      }
     }
 
     resolve(
       sendAndHandleSdkError(
         getApiVersionTag(stageViewTelemetryVersionNumber, ApiName.StageView_Self_Close),
         'stageView.self.close',
+        ...(result === undefined ? [] : [result]),
       ),
     );
   });

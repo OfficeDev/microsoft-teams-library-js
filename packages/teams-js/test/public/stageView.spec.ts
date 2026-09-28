@@ -145,6 +145,11 @@ describe('stageView', () => {
   describe('self', () => {
     const allowedSelfContexts = [FrameContexts.content];
 
+    it('should reject close before initialization', async () => {
+      await expect(stageView.self.close('result')).rejects.toThrowError(errorLibraryNotInitialized);
+      expect(utils.findMessageByFunc('stageView.self.close')).toBeNull();
+    });
+
     Object.values(FrameContexts).forEach((frameContext) => {
       if (!allowedSelfContexts.some((allowedSelfContexts) => allowedSelfContexts === frameContext)) {
         it(`should not allow calls from ${frameContext} context`, async () => {
@@ -165,10 +170,73 @@ describe('stageView', () => {
 
       const closeStageViewMessage = utils.findMessageByFunc('stageView.self.close');
       expect(closeStageViewMessage).not.toBeNull();
+      expect(closeStageViewMessage.args).toEqual([]);
+      expect(utils.findMessageByFunc('stageView.self.close', 1)).toBeNull();
 
       utils.respondToMessage(closeStageViewMessage, null);
 
-      await expect(promise).resolves.not.toThrowError();
+      await expect(promise).resolves.toBeUndefined();
+    });
+
+    it('should omit an explicitly undefined result on the wire', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      makeRuntimeSupportStageViewCapability();
+
+      const promise = stageView.self.close(undefined);
+      const message = utils.findMessageByActionName('stageView.self.close');
+      expect(message.args).toEqual([]);
+      utils.respondToMessage(message, null);
+      await expect(promise).resolves.toBeUndefined();
+    });
+
+    it.each(['opaque result', '', '{"opaque":true}'])('should forward result %p unchanged once', async (result) => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 4, supports: { stageView: { self: { closeResult: {} } } } });
+
+      const promise = stageView.self.close(result);
+      const message = utils.findMessageByActionName('stageView.self.close');
+      expect(message.args).toEqual([result]);
+      expect(utils.findMessageByFunc('stageView.self.close', 1)).toBeNull();
+      utils.respondToMessage(message, null);
+      await expect(promise).resolves.toBeUndefined();
+    });
+
+    it.each(['opaque result', ''])('should reject result %p on an old host without sending close', async (result) => {
+      await utils.initializeWithContext(FrameContexts.content);
+      makeRuntimeSupportStageViewCapability();
+
+      expect(stageView.self.isSupported()).toBe(true);
+      await expect(stageView.self.close(result)).rejects.toEqual(errorNotSupportedOnPlatform);
+      expect(utils.findMessageByFunc('stageView.self.close')).toBeNull();
+    });
+
+    it('should require the self capability even when stageView is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 4, supports: { stageView: {} } });
+
+      await expect(stageView.self.close('result')).rejects.toEqual(errorNotSupportedOnPlatform);
+      expect(utils.findMessageByFunc('stageView.self.close')).toBeNull();
+    });
+
+    it.each<unknown>([null, 0, false, {}, []])('should reject invalid result %p without sending close', async (result) => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 4, supports: { stageView: { self: { closeResult: {} } } } });
+
+      // @ts-expect-error Exercise invalid JavaScript callers.
+      await expect(stageView.self.close(result)).rejects.toThrowError('[stageView.self.close] Result must be a string');
+      expect(utils.findMessageByFunc('stageView.self.close')).toBeNull();
+    });
+
+    it.each(['opaque result', ''])('should propagate host errors for result %p without retrying', async (result) => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 4, supports: { stageView: { self: { closeResult: {} } } } });
+
+      const promise = stageView.self.close(result);
+      const message = utils.findMessageByActionName('stageView.self.close');
+      const error = { errorCode: ErrorCode.INTERNAL_ERROR };
+      utils.respondToMessage(message, error);
+      await expect(promise).rejects.toEqual(error);
+      expect(utils.findMessageByFunc('stageView.self.close', 1)).toBeNull();
     });
 
     it('should properly handle errors', async () => {
