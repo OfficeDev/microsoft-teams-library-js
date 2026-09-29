@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { BrandColorRamp, Context, themeHandler } from '../public/app/app';
+import { BrandColorPalettes, Context, themeHandler } from '../public/app/app';
 import { FrameContexts } from '../public/constants';
 import { HostToAppPerformanceMetrics, LoadContext, ResumeContext } from '../public/interfaces';
 import { runtime } from '../public/runtime';
@@ -185,13 +185,13 @@ export function registerOnContextChangeHandler(apiVersionTag: string, handler: (
  * @internal
  * Limited to Microsoft-internal use
  */
-export function handleThemeChange(theme: string, brandVariants?: BrandColorRamp): void {
+export function handleThemeChange(theme: string, brandColorPalettes?: BrandColorPalettes): void {
   if (HandlersPrivate.themeChangeHandler) {
-    HandlersPrivate.themeChangeHandler(theme, brandVariants);
+    HandlersPrivate.themeChangeHandler(theme, brandColorPalettes);
   }
 
   if (shouldEventBeRelayedToChild()) {
-    sendMessageEventToChild('themeChange', brandVariants === undefined ? [theme] : [theme, brandVariants]);
+    sendMessageEventToChild('themeChange', brandColorPalettes === undefined ? [theme] : [theme, brandColorPalettes]);
   }
 }
 

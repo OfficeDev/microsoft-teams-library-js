@@ -14,7 +14,7 @@ import * as app from '../../src/public/app/app';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { resetBuildFeatureFlags } from '../../src/public/featureFlags';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { mockBrandColorRamp } from '../brandColorRamp';
+import { mockBrandColorPalettes } from '../brandColorPalettes';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -64,13 +64,13 @@ describe('AppSDK-privateAPIs', () => {
         data: {
           id: 0,
           func: 'themeChange',
-          args: ['testTheme', mockBrandColorRamp],
+          args: ['testTheme', mockBrandColorPalettes],
         } as MessageResponse,
       } as MessageEvent);
 
       // The frameless window should send a response back to the child window
       expect(utils.childMessages.length).toBe(1);
-      expect(utils.childMessages[0].args).toEqual(['testTheme', mockBrandColorRamp]);
+      expect(utils.childMessages[0].args).toEqual(['testTheme', mockBrandColorPalettes]);
     });
 
     it('should properly pass partial responses to nested child frames ', async () => {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
-import { BrandColorRamp, HostFeatures } from './app/app';
+import { BrandColorPalettes, HostFeatures } from './app/app';
 import {
   ChannelType,
   DialogDimension,
@@ -441,11 +441,12 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.brandVariants | app.Context.app.brandVariants} instead
+   * As of TeamsJS v2.0.0, please use
+   * {@link app.AppInfo.brandColorPalettes | app.Context.app.brandColorPalettes} instead
    *
-   * The brand color ramp supplied by the host.
+   * The brand color palettes supplied by the host.
    */
-  brandVariants?: BrandColorRamp;
+  brandColorPalettes?: BrandColorPalettes;
 
   /**
    * @deprecated

@@ -135,12 +135,24 @@ export interface IExpectedFailureRequest {
 }
 
 /**
+ * A shade in a Fluent UI v9 brand color ramp.
+ */
+export type FluentV9BrandShade = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100 | 110 | 120 | 130 | 140 | 150 | 160;
+
+/**
  * A brand color ramp compatible with Fluent UI v9 BrandVariants.
  */
-export type BrandColorRamp = Record<
-  10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100 | 110 | 120 | 130 | 140 | 150 | 160,
-  string
->;
+export type FluentV9BrandVariants = Record<FluentV9BrandShade, string>;
+
+/**
+ * Brand color palettes supplied by the host.
+ */
+export interface BrandColorPalettes {
+  /**
+   * A brand color ramp compatible with Fluent UI v9 BrandVariants.
+   */
+  fluentV9?: FluentV9BrandVariants;
+}
 
 /**
  * Represents application information.
@@ -158,9 +170,9 @@ export interface AppInfo {
   theme: string;
 
   /**
-   * The brand color ramp supplied by the host.
+   * The brand color palettes supplied by the host.
    */
-  brandVariants?: BrandColorRamp;
+  brandColorPalettes?: BrandColorPalettes;
 
   /**
    * Unique ID for the current session for use in correlating telemetry data. A session corresponds to the lifecycle of an app. A new session begins upon the creation of a webview (on Teams mobile) or iframe (in Teams desktop) hosting the app, and ends when it is destroyed.
@@ -628,7 +640,7 @@ export interface Context {
 /**
  * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
  */
-export type themeHandler = (theme: string, brandVariants?: BrandColorRamp) => void;
+export type themeHandler = (theme: string, brandColorPalettes?: BrandColorPalettes) => void;
 
 /**
  * @hidden
@@ -951,7 +963,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       locale: legacyContext.locale,
       sessionId: legacyContext.appSessionId ? legacyContext.appSessionId : '',
       theme: legacyContext.theme ? legacyContext.theme : 'default',
-      brandVariants: legacyContext.brandVariants,
+      brandColorPalettes: legacyContext.brandColorPalettes,
       iconPositionVertical: legacyContext.appIconPosition,
       osLocaleInfo: legacyContext.osLocaleInfo,
       messageId: legacyContext.messageId,
