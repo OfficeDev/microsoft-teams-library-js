@@ -135,23 +135,17 @@ export interface IExpectedFailureRequest {
 }
 
 /**
- * A shade in a Fluent UI v9 brand color ramp.
+ * A brand color ramp supplied by the host.
  */
-export type FluentV9BrandShade = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100 | 110 | 120 | 130 | 140 | 150 | 160;
-
-/**
- * A brand color ramp compatible with Fluent UI v9 BrandVariants.
- */
-export type FluentV9BrandVariants = Record<FluentV9BrandShade, string>;
+export interface BrandColorRamp {
+  readonly [shade: string]: string | undefined;
+}
 
 /**
  * Brand color palettes supplied by the host.
  */
 export interface BrandColorPalettes {
-  /**
-   * A brand color ramp compatible with Fluent UI v9 BrandVariants.
-   */
-  fluentV9BrandVariants?: FluentV9BrandVariants;
+  readonly [format: string]: BrandColorRamp | undefined;
 }
 
 /**

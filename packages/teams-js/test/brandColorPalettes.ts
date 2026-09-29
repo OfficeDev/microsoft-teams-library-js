@@ -1,6 +1,6 @@
-import { BrandColorPalettes, FluentV9BrandVariants } from '../src/public/app/app';
+import { BrandColorPalettes, BrandColorRamp } from '../src/public/app/app';
 
-export const mockFluentV9BrandVariants: FluentV9BrandVariants = {
+export const mockFluentV9BrandColorRamp: BrandColorRamp = {
   10: '#020305',
   20: '#111723',
   30: '#16233d',
@@ -20,5 +20,5 @@ export const mockFluentV9BrandVariants: FluentV9BrandVariants = {
 };
 
 export const mockBrandColorPalettes: BrandColorPalettes = {
-  fluentV9BrandVariants: mockFluentV9BrandVariants,
+  'fluentui/v9': mockFluentV9BrandColorRamp,
 };
