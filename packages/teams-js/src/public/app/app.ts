@@ -151,7 +151,7 @@ export interface BrandColorPalettes {
   /**
    * A brand color ramp compatible with Fluent UI v9 BrandVariants.
    */
-  fluentV9?: FluentV9BrandVariants;
+  fluentV9BrandVariants?: FluentV9BrandVariants;
 }
 
 /**

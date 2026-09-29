@@ -20,5 +20,5 @@ export const mockFluentV9BrandVariants: FluentV9BrandVariants = {
 };
 
 export const mockBrandColorPalettes: BrandColorPalettes = {
-  fluentV9: mockFluentV9BrandVariants,
+  fluentV9BrandVariants: mockFluentV9BrandVariants,
 };
