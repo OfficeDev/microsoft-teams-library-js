@@ -142,6 +142,46 @@ describe('stageView', () => {
     });
   });
 
+  describe('self isCloseResultSupported', () => {
+    it('should throw if called before initialization without sending messages', () => {
+      utils.uninitializeRuntimeConfig();
+
+      expect(() => stageView.self.isCloseResultSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      expect(utils.messages).toHaveLength(0);
+    });
+
+    it.each([{}, { stageView: {} }, { stageView: { self: {} } }])(
+      'should return false for runtime supports %p without sending messages',
+      async (supports) => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 4, supports });
+        const messageCount = utils.messages.length;
+
+        expect(stageView.self.isCloseResultSupported()).toBe(false);
+        expect(utils.messages).toHaveLength(messageCount);
+      },
+    );
+
+    it('should report basic self support without close-result support', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      makeRuntimeSupportStageViewCapability();
+      const messageCount = utils.messages.length;
+
+      expect(stageView.self.isSupported()).toBe(true);
+      expect(stageView.self.isCloseResultSupported()).toBe(false);
+      expect(utils.messages).toHaveLength(messageCount);
+    });
+
+    it('should return true when close results are supported without sending messages', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 4, supports: { stageView: { self: { closeResult: {} } } } });
+      const messageCount = utils.messages.length;
+
+      expect(stageView.self.isCloseResultSupported()).toBe(true);
+      expect(utils.messages).toHaveLength(messageCount);
+    });
+  });
+
   describe('self', () => {
     const allowedSelfContexts = [FrameContexts.content];
 
@@ -210,6 +250,19 @@ describe('stageView', () => {
       expect(utils.findMessageByFunc('stageView.self.close')).toBeNull();
     });
 
+    it.each<unknown>([null, 0, false, {}, []])(
+      'should reject unsupported hosts before validating result %p without sending close',
+      async (result) => {
+        await utils.initializeWithContext(FrameContexts.content);
+        makeRuntimeSupportStageViewCapability();
+
+        expect(stageView.self.isSupported()).toBe(true);
+        // @ts-expect-error Exercise invalid JavaScript callers.
+        await expect(stageView.self.close(result)).rejects.toEqual(errorNotSupportedOnPlatform);
+        expect(utils.findMessageByFunc('stageView.self.close')).toBeNull();
+      },
+    );
+
     it('should require the self capability even when stageView is supported', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 4, supports: { stageView: {} } });
@@ -218,14 +271,19 @@ describe('stageView', () => {
       expect(utils.findMessageByFunc('stageView.self.close')).toBeNull();
     });
 
-    it.each<unknown>([null, 0, false, {}, []])('should reject invalid result %p without sending close', async (result) => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig({ apiVersion: 4, supports: { stageView: { self: { closeResult: {} } } } });
+    it.each<unknown>([null, 0, false, {}, []])(
+      'should reject invalid result %p without sending close',
+      async (result) => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 4, supports: { stageView: { self: { closeResult: {} } } } });
 
-      // @ts-expect-error Exercise invalid JavaScript callers.
-      await expect(stageView.self.close(result)).rejects.toThrowError('[stageView.self.close] Result must be a string');
-      expect(utils.findMessageByFunc('stageView.self.close')).toBeNull();
-    });
+        // @ts-expect-error Exercise invalid JavaScript callers.
+        await expect(stageView.self.close(result)).rejects.toThrowError(
+          '[stageView.self.close] Result must be a string',
+        );
+        expect(utils.findMessageByFunc('stageView.self.close')).toBeNull();
+      },
+    );
 
     it.each(['opaque result', ''])('should propagate host errors for result %p without retrying', async (result) => {
       await utils.initializeWithContext(FrameContexts.content);

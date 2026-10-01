@@ -18,28 +18,26 @@ const stageViewTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Closes the current stage view. This function will be a no-op if called from outside of a stage view.
- * @param result - Optional opaque serialized result for the host's original launch callback.
+ * @param result - Optional opaque serialized result passed to the host when closing.
  * An empty string is a result. Requires the host to advertise `stageView.self.closeResult` support;
  * otherwise the request is rejected without closing. The SDK does not interpret the result.
  * @returns Promise that resolves or rejects with an error once the stage view is closed.
  * The promise acknowledges closing; it does not return the result to the closing application.
+ * This does not add a result callback to `stageView.open()`.
  *
  * @beta
  * @throws Error if stageView.self.close is not supported in the current context or if `app.initialize()` has not resolved successfully.
  */
 export function close(result?: string): Promise<void> {
   return new Promise((resolve) => {
-    if (!ensureInitialized(runtime, FrameContexts.content) || !isSupported()) {
+    ensureInitialized(runtime, FrameContexts.content);
+
+    if (!isSupported() || (result !== undefined && !isCloseResultSupported())) {
       throw errorNotSupportedOnPlatform;
     }
 
-    if (result !== undefined) {
-      if (typeof result !== 'string') {
-        throw new Error('[stageView.self.close] Result must be a string');
-      }
-      if (!runtime.supports.stageView?.self?.closeResult) {
-        throw errorNotSupportedOnPlatform;
-      }
+    if (result !== undefined && typeof result !== 'string') {
+      throw new Error('[stageView.self.close] Result must be a string');
     }
 
     resolve(
@@ -62,4 +60,15 @@ export function close(result?: string): Promise<void> {
  */
 export function isSupported(): boolean {
   return ensureInitialized(runtime) && runtime.supports.stageView?.self !== undefined;
+}
+
+/**
+ * Checks whether the host supports passing a result when closing a stage view.
+ *
+ * @beta
+ * @returns true if the host supports Stage close results; otherwise false.
+ * @throws Error if {@linkcode app.initialize} has not successfully completed.
+ */
+export function isCloseResultSupported(): boolean {
+  return ensureInitialized(runtime) && !!runtime.supports.stageView?.self?.closeResult;
 }
