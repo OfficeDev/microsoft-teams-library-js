@@ -42,7 +42,7 @@ export type getTabInstancesCallbackFunctionType = (tabInfo: TabInformation) => v
 export type registerBackButtonHandlerFunctionType = () => boolean;
 /** Register full screen handler function type */
 export type registerFullScreenHandlerFunctionType = (isFullScreen: boolean) => void;
-/** Register on theme change handler function type */
+/** Called when the host sends a theme or brand color palette update. */
 export type registerOnThemeChangeHandlerFunctionType = (theme: string, brandColorPalettes?: BrandColorPalettes) => void;
 /**
  * @deprecated
@@ -114,10 +114,11 @@ export function getContext(callback: getContextCallbackFunctionType): void {
  * @deprecated
  * As of TeamsJS v2.0.0, please use {@link app.registerOnThemeChangeHandler app.registerOnThemeChangeHandler(handler: registerOnThemeChangeHandlerFunctionType): void} instead.
  *
- * Registers a handler for theme changes.
+ * Registers a handler for host theme or brand color palette updates.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ * The theme, palettes, or both may change with each update.
  *
- * @param handler - The handler to invoke when the user changes their theme.
+ * @param handler - The handler to call when the host sends an update.
  */
 export function registerOnThemeChangeHandler(handler: registerOnThemeChangeHandlerFunctionType): void {
   registerOnThemeChangeHandlerHelper(

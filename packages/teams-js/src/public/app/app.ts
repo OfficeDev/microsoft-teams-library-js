@@ -164,7 +164,11 @@ export interface AppInfo {
   theme: string;
 
   /**
-   * The brand color palettes supplied by the host.
+   * Brand color palettes supplied by the host.
+   *
+   * Each key identifies a palette format (for example, `"fluentui/v9"`), which defines its required shades and color
+   * syntax. Each update replaces the whole map rather than merging with it. `undefined` means no palettes are available,
+   * such as after the host clears them.
    */
   brandColorPalettes?: BrandColorPalettes;
 
@@ -632,7 +636,9 @@ export interface Context {
 }
 
 /**
- * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
+ * Called when the host sends a theme or brand color palette update.
+ *
+ * The theme, palettes, or both may change with each update.
  */
 export type themeHandler = (theme: string, brandColorPalettes?: BrandColorPalettes) => void;
 
@@ -860,12 +866,13 @@ export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRe
 }
 
 /**
- * Registers a handler for theme changes.
+ * Registers a handler for host theme or brand color palette updates.
  *
  * @remarks
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ * The theme, palettes, or both may change with each update.
  *
- * @param handler - The handler to invoke when the user changes their theme.
+ * @param handler - The handler to call when the host sends an update.
  */
 export function registerOnThemeChangeHandler(handler: themeHandler): void {
   appHelpers.registerOnThemeChangeHandlerHelper(

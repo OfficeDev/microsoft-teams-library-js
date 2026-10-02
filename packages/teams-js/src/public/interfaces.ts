@@ -444,7 +444,11 @@ export interface Context {
    * As of TeamsJS v2.0.0, please use
    * {@link app.AppInfo.brandColorPalettes | app.Context.app.brandColorPalettes} instead
    *
-   * The brand color palettes supplied by the host.
+   * Brand color palettes supplied by the host.
+   *
+   * Each key identifies a palette format (for example, `"fluentui/v9"`), which defines its required shades and color
+   * syntax. Each update replaces the whole map rather than merging with it. `undefined` means no palettes are available,
+   * such as after the host clears them.
    */
   brandColorPalettes?: BrandColorPalettes;
 
