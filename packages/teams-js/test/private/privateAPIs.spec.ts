@@ -102,6 +102,25 @@ describe('AppSDK-privateAPIs', () => {
       expect(handler).toHaveBeenLastCalledWith('testTheme', undefined);
     });
 
+    it('should normalize null palettes when relaying an update', async () => {
+      utils.initializeAsFrameless(['https://www.example.com']);
+      const handler = jest.fn();
+      app.registerOnThemeChangeHandler(handler);
+
+      await utils.processMessage!({
+        origin: 'https://www.example.com',
+        source: utils.childWindow,
+        data: {
+          id: 0,
+          func: 'themeChange',
+          args: ['testTheme', null],
+        } as MessageResponse,
+      } as MessageEvent);
+
+      expect(utils.childMessages[0].args).toEqual(['testTheme']);
+      expect(handler).toHaveBeenCalledWith('testTheme', undefined);
+    });
+
     it('should properly pass partial responses to nested child frames ', async () => {
       expect.assertions(5);
       utils.initializeAsFrameless(['https://www.example.com']);

@@ -186,12 +186,14 @@ export function registerOnContextChangeHandler(apiVersionTag: string, handler: (
  * Limited to Microsoft-internal use
  */
 export function handleThemeChange(theme: string, brandColorPalettes?: BrandColorPalettes): void {
+  const hasBrandColorPalettes = !isNullOrUndefined(brandColorPalettes);
+
   if (HandlersPrivate.themeChangeHandler) {
-    HandlersPrivate.themeChangeHandler(theme, brandColorPalettes);
+    HandlersPrivate.themeChangeHandler(theme, hasBrandColorPalettes ? brandColorPalettes : undefined);
   }
 
   if (shouldEventBeRelayedToChild()) {
-    sendMessageEventToChild('themeChange', brandColorPalettes === undefined ? [theme] : [theme, brandColorPalettes]);
+    sendMessageEventToChild('themeChange', hasBrandColorPalettes ? [theme, brandColorPalettes] : [theme]);
   }
 }
 

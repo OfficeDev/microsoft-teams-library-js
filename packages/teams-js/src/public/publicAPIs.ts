@@ -11,7 +11,7 @@ import {
 } from '../internal/pagesHelpers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { BrandColorPalettes } from './app/app';
+import type { BrandColorPalettes } from './app/app';
 import { FrameContexts } from './constants';
 import {
   Context,

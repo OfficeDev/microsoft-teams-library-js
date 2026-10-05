@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
-import { BrandColorPalettes, HostFeatures } from './app/app';
+import type { BrandColorPalettes, HostFeatures } from './app/app';
 import {
   ChannelType,
   DialogDimension,
