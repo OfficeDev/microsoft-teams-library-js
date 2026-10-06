@@ -1,0 +1,6 @@
+{
+  "type": "patch",
+  "comment": "Added connector authentication origins to the valid-origins artifact.",
+  "packageName": "@microsoft/teams-js",
+  "dependentChangeType": "patch"
+}
