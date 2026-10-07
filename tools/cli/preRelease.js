@@ -58,7 +58,7 @@ const updateVersionAndIntegrity = async (absolutePath, version, integrityHash) =
   }
   const readme = fs.readFileSync(absolutePath, 'utf8');
   const result = readme
-    .replace(/integrity=\".*?\"/, `integrity="${integrityHash}"`)
+    .replace(/integrity=".*?"/g, `integrity="${integrityHash}"`)
     .replace(
       /res\.cdn\.office.net\/teams-js\/.*\/js\/MicrosoftTeams\.min\.js/g,
       `res.cdn.office.net/teams-js/${version}/js/MicrosoftTeams.min.js`,
