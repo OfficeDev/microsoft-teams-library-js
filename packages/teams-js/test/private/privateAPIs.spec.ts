@@ -14,6 +14,7 @@ import * as app from '../../src/public/app/app';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { resetBuildFeatureFlags } from '../../src/public/featureFlags';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
+import { mockBrandColorPalettes } from '../brandColorPalettes';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -63,12 +64,61 @@ describe('AppSDK-privateAPIs', () => {
         data: {
           id: 0,
           func: 'themeChange',
-          args: ['testTheme'],
+          args: ['testTheme', mockBrandColorPalettes],
         } as MessageResponse,
       } as MessageEvent);
 
       // The frameless window should send a response back to the child window
       expect(utils.childMessages.length).toBe(1);
+      expect(utils.childMessages[0].args).toEqual(['testTheme', mockBrandColorPalettes]);
+    });
+
+    it('should clear palettes when relaying a theme-only update', async () => {
+      utils.initializeAsFrameless(['https://www.example.com']);
+      const handler = jest.fn();
+      app.registerOnThemeChangeHandler(handler);
+
+      await utils.processMessage!({
+        origin: 'https://www.example.com',
+        source: utils.childWindow,
+        data: {
+          id: 0,
+          func: 'themeChange',
+          args: ['testTheme', mockBrandColorPalettes],
+        } as MessageResponse,
+      } as MessageEvent);
+
+      await utils.processMessage!({
+        origin: 'https://www.example.com',
+        source: utils.childWindow,
+        data: {
+          id: 0,
+          func: 'themeChange',
+          args: ['testTheme'],
+        } as MessageResponse,
+      } as MessageEvent);
+
+      expect(utils.childMessages[1].args).toEqual(['testTheme']);
+      expect(handler).toHaveBeenLastCalledWith('testTheme', undefined);
+    });
+
+    it('should normalize null palettes when relaying an update', async () => {
+      utils.initializeAsFrameless(['https://www.example.com']);
+      const handler = jest.fn();
+      app.registerOnThemeChangeHandler(handler);
+
+      await utils.processMessage!({
+        origin: 'https://www.example.com',
+        source: utils.childWindow,
+        data: {
+          id: 0,
+          func: 'themeChange',
+          args: ['testTheme', null],
+        } as MessageResponse,
+      } as MessageEvent);
+
+      expect(utils.childMessages[0].args).toEqual(['testTheme']);
+      expect(handler).toHaveBeenCalledWith('testTheme', undefined);
     });
 
     it('should properly pass partial responses to nested child frames ', async () => {

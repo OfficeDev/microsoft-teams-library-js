@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
-import { HostFeatures } from './app/app';
+import type { BrandColorPalettes, HostFeatures } from './app/app';
 import {
   ChannelType,
   DialogDimension,
@@ -438,6 +438,19 @@ export interface Context {
    * The current UI theme.
    */
   theme?: string;
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use
+   * {@link app.AppInfo.brandColorPalettes | app.Context.app.brandColorPalettes} instead
+   *
+   * Brand color palettes supplied by the host.
+   *
+   * Each key identifies a palette format (for example, `"fluentui/v9"`), which defines its required shades and color
+   * syntax. Each update replaces the whole map rather than merging with it. `undefined` means no palettes are available,
+   * such as after the host clears them.
+   */
+  brandColorPalettes?: BrandColorPalettes;
 
   /**
    * @deprecated
