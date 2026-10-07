@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `stageView.self.isCloseResultSupported` and optional opaque results to `stageView.self.close`, gated by host-advertised `stageView.self.closeResult` support.",
-  "packageName": "@microsoft/teams-js",
-  "email": "meepatel@microsoft.com",
-  "dependentChangeType": "patch"
-}
