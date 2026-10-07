@@ -1,8 +1,20 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 23 Sep 2026 18:43:57 GMT and should not be manually modified. -->
+<!-- This log was last generated on Wed, 07 Oct 2026 17:05:49 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.58.0
+
+Wed, 07 Oct 2026 17:05:49 GMT
+
+### Minor changes
+
+- Added `stageView.self.isCloseResultSupported` and optional opaque results to `stageView.self.close`, gated by host-advertised `stageView.self.closeResult` support.
+
+### Patches
+
+- Added connector authentication origins to the valid-origins artifact.
 
 ## 2.57.0
 
