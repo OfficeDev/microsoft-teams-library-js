@@ -1172,9 +1172,17 @@ export enum ErrorCode {
 
 /** @hidden */
 export enum DevicePermission {
+  /**
+   * Permission to read the contents of the system clipboard.
+   *
+   * @remarks
+   * The value is the app manifest's `devicePermissions` spelling (camelCase), not the
+   * `clipboard-read` Permissions-Policy directive name. Hosts match this against the manifest,
+   * so the two must not be conflated.
+   */
+  ClipboardRead = 'clipboardRead',
   GeoLocation = 'geolocation',
   Media = 'media',
-  ClipboardRead = 'clipboard-read',
 }
 
 /** @hidden */

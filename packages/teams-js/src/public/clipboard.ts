@@ -126,8 +126,10 @@ export async function read(): Promise<Blob> {
  * `clipboard-read` Permissions-Policy directive to the app's iframe). Use {@link hasPermission}
  * to check and {@link requestPermission} to request consent before calling this function.
  *
- * If the host does not support native clipboard-read permissions, falls back to the deprecated
- * host-proxy path ({@link read}).
+ * If the host does not support native clipboard-read permissions, this function throws
+ * {@link errorNotSupportedOnPlatform}. It does not fall back to {@link read}: that path returns a
+ * `Blob` rather than `ClipboardItem[]`, so the two are not interchangeable. Callers that need to
+ * support older hosts should branch on {@link isSupported} and call {@link read} themselves.
  *
  * @returns A promise that resolves to a `ClipboardItem[]` array from the native Clipboard API.
  * @throws Error if the platform does not support clipboard or if clipboard-read permission is denied.

@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Add native clipboard-read support: clipboard.readNative, clipboard.hasPermission, clipboard.requestPermission, and the ClipboardRead device permission.",
+  "packageName": "@microsoft/teams-js",
+  "email": "leahxia@microsoft.com",
+  "dependentChangeType": "patch"
+}

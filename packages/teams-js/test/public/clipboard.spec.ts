@@ -612,13 +612,16 @@ describe('clipboard', () => {
       }
     });
 
-    it('clipboard.hasPermission should send permissions.has message with clipboard-read', async () => {
+    it('clipboard.hasPermission should send permissions.has message with clipboardRead', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {}, permissions: {} } });
       const promise = clipboard.hasPermission();
       const message = utils.findMessageByFunc('permissions.has');
       expect(message).not.toBeNull();
-      expect(message!.args).toContain('clipboard-read');
+      // Must be the manifest spelling, not the 'clipboard-read' Permissions-Policy directive;
+      // hosts compare this against the app manifest's devicePermissions.
+      expect(message!.args).toContain('clipboardRead');
+      expect(message!.args).not.toContain('clipboard-read');
       await utils.respondToMessage(message!, undefined, true);
       const result = await promise;
       expect(result).toBe(true);
@@ -651,13 +654,16 @@ describe('clipboard', () => {
       }
     });
 
-    it('clipboard.requestPermission should send permissions.request message with clipboard-read', async () => {
+    it('clipboard.requestPermission should send permissions.request message with clipboardRead', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {}, permissions: {} } });
       const promise = clipboard.requestPermission();
       const message = utils.findMessageByFunc('permissions.request');
       expect(message).not.toBeNull();
-      expect(message!.args).toContain('clipboard-read');
+      // Must be the manifest spelling, not the 'clipboard-read' Permissions-Policy directive;
+      // hosts compare this against the app manifest's devicePermissions.
+      expect(message!.args).toContain('clipboardRead');
+      expect(message!.args).not.toContain('clipboard-read');
       await utils.respondToMessage(message!, undefined, true);
       const result = await promise;
       expect(result).toBe(true);
