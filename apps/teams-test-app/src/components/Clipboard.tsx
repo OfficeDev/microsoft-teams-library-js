@@ -92,11 +92,45 @@ const Paste = (): React.ReactElement =>
       }
     },
   });
+const PasteNative = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'pasteNative',
+    title: 'Paste Native',
+    onClick: async () => {
+      const items = await clipboard.readNative();
+      // ClipboardItem is not JSON-serializable, so report the MIME types it advertises.
+      return JSON.stringify(items.flatMap((item) => item.types));
+    },
+  });
+
+const HasClipboardReadPermission = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'hasClipboardReadPermission',
+    title: 'Has Clipboard Read Permission',
+    onClick: async () => {
+      const result = await clipboard.hasPermission();
+      return JSON.stringify(result);
+    },
+  });
+
+const RequestClipboardReadPermission = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'requestClipboardReadPermission',
+    title: 'Request Clipboard Read Permission',
+    onClick: async () => {
+      const result = await clipboard.requestPermission();
+      return JSON.stringify(result);
+    },
+  });
+
 const ClipboardAPIs: React.FC = () => (
   <ModuleWrapper title="Clipboard">
     <CopyText />
     <CopyImage />
     <Paste />
+    <PasteNative />
+    <HasClipboardReadPermission />
+    <RequestClipboardReadPermission />
     <CheckCallCapability />
   </ModuleWrapper>
 );

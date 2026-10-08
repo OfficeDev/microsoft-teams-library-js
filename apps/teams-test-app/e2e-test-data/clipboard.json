@@ -39,6 +39,38 @@
       "inputValue": "\"\"",
       "skipJsonStringifyOnInputValue": true,
       "expectedTestAppValue": "Error: mimeType can't be empty"
+    },
+    {
+      "title": "hasClipboardReadPermission API Call - Success",
+      "type": "callResponse",
+      "version": ">=2.59.0",
+      "hostSdkVersion": {
+        "web": ">=12.4.0"
+      },
+      "boxSelector": "#box_hasClipboardReadPermission",
+      "expectedTestAppValue": "false"
+    },
+    {
+      "title": "requestClipboardReadPermission API Call - Success",
+      "type": "callResponse",
+      "version": ">=2.59.0",
+      "hostSdkVersion": {
+        "web": ">=12.4.0"
+      },
+      "boxSelector": "#box_requestClipboardReadPermission",
+      "isRequestPermissionCall": { "repeatRequestPermissionCall": false },
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "repeat requestClipboardReadPermission API Call with no dialog - Success",
+      "type": "callResponse",
+      "version": ">=2.59.0",
+      "hostSdkVersion": {
+        "web": ">=12.4.0"
+      },
+      "boxSelector": "#box_requestClipboardReadPermission",
+      "isRequestPermissionCall": { "repeatRequestPermissionCall": true },
+      "expectedTestAppValue": "true"
     }
   ]
 }
