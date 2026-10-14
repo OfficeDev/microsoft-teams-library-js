@@ -1,8 +1,16 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 07 Oct 2026 17:05:49 GMT and should not be manually modified. -->
+<!-- This log was last generated on Wed, 14 Oct 2026 18:52:30 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.59.0
+
+Wed, 14 Oct 2026 18:52:30 GMT
+
+### Minor changes
+
+- Add extensible brand color palettes to app context and theme change handlers.
 
 ## 2.58.0
 
