@@ -1,0 +1,51 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.24/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.24",
+  "developer": {
+    "name": "GS Partner Connect",
+    "websiteUrl": "https://teamstest.work.gsqatest.com",
+    "privacyUrl": "https://teamstest.work.gsqatest.com/privacy",
+    "termsOfUseUrl": "https://teamstest.work.gsqatest.com/termsofuse"
+  },
+  "description": {
+    "short": "Partner Connect MAM test",
+    "full": "Partner Connect POC app for testing Teams webview MAM tagging with Conditional Access."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#FFFFFF",
+  "staticTabs": [
+    {
+      "entityId": "e8fd1d0e-8e86-49ec-9811-92d016d5d962",
+      "name": "Partner Connect POC",
+      "contentUrl": "https://teamstest.work.gsqatest.com",
+      "scopes": [
+        "personal"
+      ]
+    }
+  ],
+  "validDomains": [
+    "teamstest.work.gsqatest.com",
+    "login.microsoftonline.com",
+    "aadcdn.msftauth.net",
+    "aadcdn.msauth.net",
+    "*.microsoftonline.com",
+    "*.msauth.net",
+    "*.msftauth.net",
+    "*.office.com",
+    "*.microsoft.com",
+    "*.cloud.microsoft"
+  ],
+  "webApplicationInfo": {
+    "id": "21a88c14-7889-4916-b858-dd3a52686a46",
+    "resource": "api://teamstest.work.gsqatest.com/21a88c14-7889-4916-b858-dd3a52686a46"
+  },
+  "version": "1.0.6",
+  "id": "99f525bc-77ff-4b13-a8fb-4cc6b0f60c0d",
+  "name": {
+    "short": "PC MAM Control",
+    "full": "Partner Connect MAM No IntuneInfo"
+  }
+}
