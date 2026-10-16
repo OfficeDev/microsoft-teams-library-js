@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added Copilot Studio web origins to the valid-origins artifact.",
+  "packageName": "@microsoft/teams-js",
+  "email": "vatsa.jayaraman@microsoft.com",
+  "dependentChangeType": "patch"
+}
