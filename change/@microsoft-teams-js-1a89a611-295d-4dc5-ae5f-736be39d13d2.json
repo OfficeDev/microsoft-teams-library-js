@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `clipboard.hasPermission()` and `clipboard.requestPermission()` for clipboard-read permission.",
+  "packageName": "@microsoft/teams-js",
+  "email": "107075081+Leah-Xia-Microsoft@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
