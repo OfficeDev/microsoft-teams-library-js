@@ -121,7 +121,18 @@ const ReadClipboardWithBrowserApi = (): React.ReactElement =>
         throw new Error('navigator.clipboard.read() is not available in this app frame');
       }
       const items = await navigator.clipboard.read();
-      return JSON.stringify(items.map((item) => item.types));
+      const textItems = items.filter((item) => item.types.includes('text/plain'));
+      if (textItems.length > 0) {
+        const textPayloads = await Promise.all(
+          textItems.map(async (item) => (await item.getType('text/plain')).text()),
+        );
+        return textPayloads.join('\n');
+      }
+
+      const availableMimeTypes = [...new Set(items.flatMap((item) => item.types))];
+      return `No text/plain clipboard content was available. Available MIME types: ${
+        availableMimeTypes.join(', ') || 'none'
+      }.`;
     },
   });
 
