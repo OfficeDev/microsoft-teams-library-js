@@ -1,10 +1,11 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
 import { clipboard } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
-import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
+import { ClipboardSupportedMimeType, DevicePermission, ErrorCode } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -517,6 +518,101 @@ describe('clipboard', () => {
           });
         }
       });
+    });
+  });
+
+  describe.each([
+    {
+      apiName: 'hasPermission',
+      actionName: 'permissions.has',
+      telemetryName: ApiName.Clipboard_HasPermission,
+      call: () => clipboard.hasPermission(),
+    },
+    {
+      apiName: 'requestPermission',
+      actionName: 'permissions.request',
+      telemetryName: ApiName.Clipboard_RequestPermission,
+      call: () => clipboard.requestPermission(),
+    },
+  ])('Testing clipboard.$apiName function', ({ apiName, actionName, telemetryName, call }) => {
+    const permissionAllowedContexts = [FrameContexts.content, FrameContexts.task];
+    let utils: Utils;
+
+    beforeEach(() => {
+      utils = new Utils();
+      GlobalVars.isFramelessWindow = false;
+    });
+
+    afterEach(() => {
+      app._uninitialize();
+      GlobalVars.isFramelessWindow = false;
+    });
+
+    it(`clipboard.${apiName} should not allow calls before initialization`, () => {
+      expect(call).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    permissionAllowedContexts.forEach((context) => {
+      it(`clipboard.${apiName} should throw when permissions are unsupported in context ${context}`, async () => {
+        await utils.initializeWithContext(context);
+        utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
+
+        expect.assertions(1);
+        try {
+          call();
+        } catch (error) {
+          expect(error).toEqual(errorNotSupportedOnPlatform);
+        }
+      });
+    });
+
+    Object.values(FrameContexts).forEach((context) => {
+      if (!permissionAllowedContexts.includes(context)) {
+        it(`clipboard.${apiName} should not allow calls from context ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
+
+          expect(call).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              permissionAllowedContexts,
+            )}. Current context: ${JSON.stringify(context)}.`,
+          );
+        });
+      }
+    });
+
+    it.each([true, false])(
+      `clipboard.${apiName} should send ${actionName} with clipboardRead and resolve to %s`,
+      async (hostResponse) => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
+
+        const promise = call();
+        const message = utils.findMessageByFunc(actionName);
+
+        expect(message).not.toBeNull();
+        expect(message!.args).toEqual([DevicePermission.ClipboardRead]);
+        expect(message!.args).not.toContain('clipboard-read');
+        expect(message!.apiVersionTag).toBe(
+          getApiVersionTag(ApiVersionNumber.V_2, telemetryName),
+        );
+
+        await utils.respondToMessage(message!, undefined, hostResponse);
+        await expect(promise).resolves.toBe(hostResponse);
+      },
+    );
+
+    it(`clipboard.${apiName} should reject when the host returns an error`, async () => {
+      await utils.initializeWithContext(FrameContexts.task);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
+      const hostError = { errorCode: ErrorCode.INTERNAL_ERROR };
+
+      const promise = call();
+      const message = utils.findMessageByFunc(actionName);
+
+      expect(message).not.toBeNull();
+      await utils.respondToMessage(message!, hostError);
+      await expect(promise).rejects.toEqual(hostError);
     });
   });
 });
