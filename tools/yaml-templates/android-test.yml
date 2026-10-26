@@ -108,9 +108,8 @@ steps:
         
   - task: Bash@3
     displayName: 'Install Emulator'
-    # This task is flaky, but when it works it almost always completes in under 5 minutes.
-    # Setting the timeout to 20 minutes because it seems to take a little longer since we moved to MacOS 15 runner
-    timeoutInMinutes: 20
+    # Cold Linux agents can spend over 20 minutes downloading emulator dependencies.
+    timeoutInMinutes: 40
     inputs:
       targetType: inline
       script: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
