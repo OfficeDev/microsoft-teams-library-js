@@ -1181,6 +1181,14 @@ export enum DevicePermission {
    */
   ClipboardRead = 'clipboardRead',
   GeoLocation = 'geolocation',
+  /**
+   * Permission to access devices on the user's local network.
+   *
+   * @remarks
+   * This is the TeamsJS wire value. The browser Permissions-Policy directive uses the separate
+   * `local-network-access` spelling.
+   */
+  LocalNetworkAccess = 'localNetworkAccess',
   Media = 'media',
 }
 
