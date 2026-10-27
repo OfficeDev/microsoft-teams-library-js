@@ -105,8 +105,7 @@ jobs:
             inputs:
               testResultsFormat: 'JUnit'
               searchFolder: '$(AppHostingSdkProjectDirectory)/playwright-reports'
-              # The host runner appends its own shard suffix to --reportFileName.
-              testResultsFiles: 'e2e-playwright-report-shard-${{ shardIndex }}-shard-${{ shardIndex }}-of-${{ length(parameters.shards) }}.xml'
+              testResultsFiles: 'e2e-playwright-report-shard-${{ shardIndex }}-*.xml'
               failTaskOnMissingResultsFile: true
               testRunTitle: 'Playwright E2E - Web ${{ parameters.versionBranch }} - shard ${{ shardIndex }}/${{ length(parameters.shards) }}'
               mergeTestResults: true
