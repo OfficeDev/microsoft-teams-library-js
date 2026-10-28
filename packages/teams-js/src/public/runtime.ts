@@ -63,6 +63,7 @@ interface IRuntimeV1 extends IBaseRuntime {
     };
     readonly people?: {};
     readonly permissions?: {
+      readonly clipboardRead?: {};
       readonly localNetworkAccess?: {};
     };
     readonly profile?: {};
@@ -130,6 +131,7 @@ interface IRuntimeV2 extends IBaseRuntime {
     };
     readonly people?: {};
     readonly permissions?: {
+      readonly clipboardRead?: {};
       readonly localNetworkAccess?: {};
     };
     readonly profile?: {};
@@ -201,6 +203,7 @@ interface IRuntimeV3 extends IBaseRuntime {
     };
     readonly people?: {};
     readonly permissions?: {
+      readonly clipboardRead?: {};
       readonly localNetworkAccess?: {};
     };
     readonly profile?: {};
@@ -305,6 +308,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly people?: {};
     readonly plugins?: {};
     readonly permissions?: {
+      readonly clipboardRead?: {};
       readonly localNetworkAccess?: {};
     };
     readonly profile?: {};

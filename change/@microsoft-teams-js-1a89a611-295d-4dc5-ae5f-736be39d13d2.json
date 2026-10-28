@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added `DevicePermission.ClipboardRead`, `clipboard.hasPermission()`, and `clipboard.requestPermission()` for clipboard-read permission.",
+  "comment": "Added `DevicePermission.ClipboardRead`, `clipboard.hasPermission()`, and `clipboard.requestPermission()` for clipboard-read permission. These permission APIs require the host to advertise `permissions.clipboardRead` in its runtime configuration; unsupported hosts throw `NOT_SUPPORTED`, while supported hosts return `false` when permission is not granted.",
   "packageName": "@microsoft/teams-js",
   "email": "107075081+Leah-Xia-Microsoft@users.noreply.github.com",
   "dependentChangeType": "patch"

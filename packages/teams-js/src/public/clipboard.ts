@@ -5,6 +5,8 @@
  * The host-brokered {@link read}, {@link write}, and {@link isSupported} APIs are deprecated.
  * For browser-native clipboard reads, use {@link hasPermission} and {@link requestPermission}
  * before calling `navigator.clipboard.read()` from a user gesture.
+ * The host must advertise `permissions.clipboardRead` in its runtime configuration to support
+ * these permission APIs. The deprecated {@link isSupported} API checks only host-brokered clipboard support.
  *
  * @beta
  * @module
@@ -118,8 +120,8 @@ export async function read(): Promise<Blob> {
  * Checks whether the app has permission to read from the system clipboard.
  *
  * @returns A promise that resolves to `true` if clipboard-read permission has been granted,
- * or `false` otherwise.
- * @throws {@link errorNotSupportedOnPlatform} if the host does not support device permissions.
+ * or `false` if permission has not been granted.
+ * @throws {@link errorNotSupportedOnPlatform} if the host does not advertise `permissions.clipboardRead`.
  *
  * @beta
  */
@@ -145,8 +147,8 @@ export function hasPermission(): Promise<boolean> {
  * `navigator.clipboard.read()` is available to the existing frame.
  *
  * @returns A promise that resolves to `true` if clipboard-read permission was granted,
- * or `false` otherwise.
- * @throws {@link errorNotSupportedOnPlatform} if the host does not support device permissions.
+ * or `false` if permission was not granted.
+ * @throws {@link errorNotSupportedOnPlatform} if the host does not advertise `permissions.clipboardRead`.
  *
  * @beta
  */
@@ -190,5 +192,5 @@ export function isSupported(): boolean {
 }
 
 function isPermissionSupported(): boolean {
-  return ensureInitialized(runtime) && runtime.supports.permissions ? true : false;
+  return ensureInitialized(runtime) && !!runtime.supports.permissions?.clipboardRead;
 }

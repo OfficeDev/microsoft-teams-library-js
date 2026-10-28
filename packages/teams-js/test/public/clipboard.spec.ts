@@ -521,6 +521,36 @@ describe('clipboard', () => {
     });
   });
 
+  describe('Testing deprecated clipboard.isSupported function', () => {
+    let utils: Utils;
+
+    beforeEach(() => {
+      utils = new Utils();
+      GlobalVars.isFramelessWindow = false;
+    });
+
+    afterEach(() => {
+      app._uninitialize();
+    });
+
+    it.each([{}, { clipboardRead: {} }, { clipboardRead: false }])(
+      'should keep host-brokered clipboard support independent of permissions %j',
+      async (permissions) => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 4, supports: { clipboard: {}, permissions } });
+
+        expect(clipboard.isSupported()).toBe(true);
+      },
+    );
+
+    it('should not treat clipboard-read permission support as host-brokered clipboard support', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 4, supports: { permissions: { clipboardRead: {} } } });
+
+      expect(clipboard.isSupported()).toBe(false);
+    });
+  });
+
   describe.each([
     {
       apiName: 'hasPermission',
@@ -553,16 +583,47 @@ describe('clipboard', () => {
     });
 
     permissionAllowedContexts.forEach((context) => {
-      it(`clipboard.${apiName} should throw when permissions are unsupported in context ${context}`, async () => {
-        await utils.initializeWithContext(context);
-        utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
+      describe.each([1, 2, 3, 4])(`runtime v%s in context ${context}`, (apiVersion) => {
+        it.each([
+          { name: 'no permissions capability', supports: {} },
+          { name: 'only deprecated clipboard support', supports: { clipboard: {} } },
+          { name: 'only general permissions support', supports: { permissions: {} } },
+          { name: 'only another permission', supports: { permissions: { localNetworkAccess: {} } } },
+          { name: 'clipboard-read disabled', supports: { permissions: { clipboardRead: false } } },
+        ])(
+          `clipboard.${apiName} should throw NOT_SUPPORTED with $name without sending a message`,
+          async ({ supports }) => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion, supports });
 
-        expect.assertions(1);
-        try {
-          call();
-        } catch (error) {
-          expect(error).toEqual(errorNotSupportedOnPlatform);
-        }
+            expect.assertions(2);
+            try {
+              call();
+            } catch (error) {
+              expect(error).toEqual(errorNotSupportedOnPlatform);
+            }
+            expect(utils.findMessageByFunc(actionName)).toBeNull();
+          },
+        );
+
+        it.each([true, false])(
+          `clipboard.${apiName} should send ${actionName} with clipboardRead and resolve to %s`,
+          async (hostResponse) => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion, supports: { permissions: { clipboardRead: {} } } });
+
+            const promise = call();
+            const message = utils.findMessageByFunc(actionName);
+
+            expect(message).not.toBeNull();
+            expect(message!.args).toEqual([DevicePermission.ClipboardRead]);
+            expect(message!.args).not.toContain('clipboard-read');
+            expect(message!.apiVersionTag).toBe(getApiVersionTag(ApiVersionNumber.V_2, telemetryName));
+
+            await utils.respondToMessage(message!, undefined, hostResponse);
+            await expect(promise).resolves.toBe(hostResponse);
+          },
+        );
       });
     });
 
@@ -570,7 +631,7 @@ describe('clipboard', () => {
       if (!permissionAllowedContexts.includes(context)) {
         it(`clipboard.${apiName} should not allow calls from context ${context}`, async () => {
           await utils.initializeWithContext(context);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
+          utils.setRuntimeConfig({ apiVersion: 4, supports: { permissions: { clipboardRead: {} } } });
 
           expect(call).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
@@ -581,30 +642,27 @@ describe('clipboard', () => {
       }
     });
 
-    it.each([true, false])(
-      `clipboard.${apiName} should send ${actionName} with clipboardRead and resolve to %s`,
-      async (hostResponse) => {
-        await utils.initializeWithContext(FrameContexts.content);
-        utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
+    it(`clipboard.${apiName} should work without navigator.clipboard or deprecated clipboard support`, async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 4, supports: { permissions: { clipboardRead: {} } } });
+      const originalClipboard = navigator.clipboard;
+      Object.assign(navigator, { clipboard: undefined });
 
+      try {
         const promise = call();
         const message = utils.findMessageByFunc(actionName);
 
         expect(message).not.toBeNull();
-        expect(message!.args).toEqual([DevicePermission.ClipboardRead]);
-        expect(message!.args).not.toContain('clipboard-read');
-        expect(message!.apiVersionTag).toBe(
-          getApiVersionTag(ApiVersionNumber.V_2, telemetryName),
-        );
-
-        await utils.respondToMessage(message!, undefined, hostResponse);
-        await expect(promise).resolves.toBe(hostResponse);
-      },
-    );
+        await utils.respondToMessage(message!, undefined, true);
+        await expect(promise).resolves.toBe(true);
+      } finally {
+        Object.assign(navigator, { clipboard: originalClipboard });
+      }
+    });
 
     it(`clipboard.${apiName} should reject when the host returns an error`, async () => {
       await utils.initializeWithContext(FrameContexts.task);
-      utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
+      utils.setRuntimeConfig({ apiVersion: 4, supports: { permissions: { clipboardRead: {} } } });
       const hostError = { errorCode: ErrorCode.INTERNAL_ERROR };
 
       const promise = call();
