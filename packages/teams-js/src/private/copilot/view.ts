@@ -1,3 +1,12 @@
+/**
+ * @beta
+ * @hidden
+ * Copilot view capabilities for Microsoft-internal apps.
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { callFunctionInHostAndHandleResponse } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ResponseHandler } from '../../internal/responseHandler';
