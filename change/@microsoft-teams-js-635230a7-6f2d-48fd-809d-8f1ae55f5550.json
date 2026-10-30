@@ -1,7 +1,7 @@
 {
   "type": "none",
-  "comment": "Released 2.55.0",
+  "comment": "Released 2.58.0",
   "packageName": "@microsoft/teams-js",
-  "email": "liuella@microsoft.com",
+  "email": "cameroncuff@microsoft.com",
   "dependentChangeType": "none"
 }

@@ -1,7 +1,7 @@
 import { FrameContexts } from '../../src/public';
 import * as app from '../../src/public/app/app';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import * as calendar from '../../src/public/calendar';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { loadFixtureCase } from '../contract/loadFixtureCase';
 import { Utils } from '../utils';
 
@@ -17,6 +17,26 @@ describe('calendar contract', () => {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
+  });
+
+  it('emits the fixture-defined composeMeeting wire message', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: false, supports: { calendar: {} } });
+    const fixtureCase = loadFixtureCase<calendar.ComposeMeetingParams>('calendar', 'composeMeeting API Call - Success');
+
+    expect(fixtureCase.expectedWirePayload).toBeDefined();
+
+    const composeMeetingPromise = calendar.composeMeeting(fixtureCase.inputValue);
+    const message = utils.findMessageByFunc('calendar.composeMeeting');
+
+    expect(message).not.toBeNull();
+    if (!message) {
+      throw new Error('calendar.composeMeeting message not found');
+    }
+    expect(message.args).toEqual([fixtureCase.expectedWirePayload]);
+
+    await utils.respondToMessage(message, true);
+    await expect(composeMeetingPromise).resolves.toBeUndefined();
   });
 
   it('emits the fixture-defined openCalendarItem wire message', async () => {

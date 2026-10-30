@@ -1,6 +1,11 @@
 import { ORIGIN_LIST_FETCH_TIMEOUT_IN_MS } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { prefetchOriginsFromCDN, resetValidOriginsCache, validateOrigin } from '../../src/internal/validOrigins';
+import {
+  isValidOriginsJSONValid,
+  prefetchOriginsFromCDN,
+  resetValidOriginsCache,
+  validateOrigin,
+} from '../../src/internal/validOrigins';
 import * as app from '../../src/public/app/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -855,6 +860,58 @@ describe('validOrigins', () => {
 
       const fallbackOrigin = new URL('https://teams.microsoft.com');
       expect(await validateOrigin(fallbackOrigin)).toBe(true);
+    });
+  });
+
+  describe('testing isValidOriginsJSONValid', () => {
+    it.each([
+      ['a malformed JSON string', '{ "validOrigins": '],
+      ['an empty string', ''],
+      ['the literal string undefined', 'undefined'],
+      ['a JSON null literal', 'null'],
+    ])('returns false instead of throwing for %s', (_description, validOriginsJSON) => {
+      let result: boolean | undefined;
+      expect(() => {
+        result = isValidOriginsJSONValid(validOriginsJSON);
+      }).not.toThrow();
+      expect(result).toBe(false);
+    });
+
+    it('returns false when the parsed JSON has no validOrigins property', () => {
+      expect(isValidOriginsJSONValid(JSON.stringify({ badExample: 'badLink' }))).toBe(false);
+    });
+
+    it.each([
+      ['a string', 'example.com'],
+      ['a number', 5],
+      ['an object', { 'example.com': true }],
+      ['null', null],
+      ['a boolean', true],
+    ])(
+      'returns false instead of throwing when validOrigins is %s rather than an array',
+      (_description, validOrigins) => {
+        let result: boolean | undefined;
+        expect(() => {
+          result = isValidOriginsJSONValid(JSON.stringify({ validOrigins }));
+        }).not.toThrow();
+        expect(result).toBe(false);
+      },
+    );
+
+    it('returns false when the validOrigins array contains a non-string entry', () => {
+      expect(isValidOriginsJSONValid(JSON.stringify({ validOrigins: ['valid.example.com', 5] }))).toBe(false);
+    });
+
+    it('returns false when the validOrigins list contains an unparsable origin', () => {
+      expect(isValidOriginsJSONValid(JSON.stringify({ validOrigins: ['valid.example.com', 'not a host'] }))).toBe(
+        false,
+      );
+    });
+
+    it('returns true for a well formed valid origins list', () => {
+      expect(isValidOriginsJSONValid(JSON.stringify({ validOrigins: ['valid.example.com', '*.example.com'] }))).toBe(
+        true,
+      );
     });
   });
 });

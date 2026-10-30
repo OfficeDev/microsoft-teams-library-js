@@ -39,8 +39,8 @@ export class UUID implements ISerializable {
 
 /**
  * @hidden
- * Checks if the incoming id is an instance of ValidatedSafeString
- * @param id An object to check if it's an instance of ValidatedSafeString
+ * Checks if the incoming id is an instance of UUID
+ * @param id An object to check if it's an instance of UUID
  * @throws Error with a message describing the violation
  * @internal
  * Limited to Microsoft-internal use

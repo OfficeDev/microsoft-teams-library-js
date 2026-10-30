@@ -135,6 +135,20 @@ export interface IExpectedFailureRequest {
 }
 
 /**
+ * A brand color ramp supplied by the host.
+ */
+export interface BrandColorRamp {
+  readonly [shade: string]: string | undefined;
+}
+
+/**
+ * Brand color palettes supplied by the host.
+ */
+export interface BrandColorPalettes {
+  readonly [format: string]: BrandColorRamp | undefined;
+}
+
+/**
  * Represents application information.
  */
 export interface AppInfo {
@@ -148,6 +162,15 @@ export interface AppInfo {
    * The current UI theme of the host. Possible values: "default", "dark", "contrast" or "glass".
    */
   theme: string;
+
+  /**
+   * Brand color palettes supplied by the host.
+   *
+   * Each key identifies a palette format (for example, `"fluentui/v9"`), which defines its required shades and color
+   * syntax. Each update replaces the whole map rather than merging with it. `undefined` means no palettes are available,
+   * such as after the host clears them.
+   */
+  brandColorPalettes?: BrandColorPalettes;
 
   /**
    * Unique ID for the current session for use in correlating telemetry data. A session corresponds to the lifecycle of an app. A new session begins upon the creation of a webview (on Teams mobile) or iframe (in Teams desktop) hosting the app, and ends when it is destroyed.
@@ -613,9 +636,11 @@ export interface Context {
 }
 
 /**
- * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
+ * Called when the host sends a theme or brand color palette update.
+ *
+ * The theme, palettes, or both may change with each update.
  */
-export type themeHandler = (theme: string) => void;
+export type themeHandler = (theme: string, brandColorPalettes?: BrandColorPalettes) => void;
 
 /**
  * @hidden
@@ -841,12 +866,13 @@ export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRe
 }
 
 /**
- * Registers a handler for theme changes.
+ * Registers a handler for host theme or brand color palette updates.
  *
  * @remarks
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ * The theme, palettes, or both may change with each update.
  *
- * @param handler - The handler to invoke when the user changes their theme.
+ * @param handler - The handler to call when the host sends an update.
  */
 export function registerOnThemeChangeHandler(handler: themeHandler): void {
   appHelpers.registerOnThemeChangeHandlerHelper(
@@ -938,6 +964,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       locale: legacyContext.locale,
       sessionId: legacyContext.appSessionId ? legacyContext.appSessionId : '',
       theme: legacyContext.theme ? legacyContext.theme : 'default',
+      brandColorPalettes: legacyContext.brandColorPalettes,
       iconPositionVertical: legacyContext.appIconPosition,
       osLocaleInfo: legacyContext.osLocaleInfo,
       messageId: legacyContext.messageId,

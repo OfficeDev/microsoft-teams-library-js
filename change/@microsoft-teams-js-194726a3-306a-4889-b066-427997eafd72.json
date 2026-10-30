@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed a typo in the internal `processAdditionalValidOrigins` documentation comment.",
-  "packageName": "@microsoft/teams-js",
-  "email": "edwardlee@microsoft.com",
-  "dependentChangeType": "none"
-}

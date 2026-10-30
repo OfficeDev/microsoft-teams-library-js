@@ -104,7 +104,9 @@ jobs:
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'JUnit'
-              testResultsFiles: '**/e2e-playwright-report*.xml'
+              searchFolder: '$(AppHostingSdkProjectDirectory)/playwright-reports'
+              testResultsFiles: 'e2e-playwright-report-shard-${{ shardIndex }}-*.xml'
+              failTaskOnMissingResultsFile: true
               testRunTitle: 'Playwright E2E - Web ${{ parameters.versionBranch }} - shard ${{ shardIndex }}/${{ length(parameters.shards) }}'
               mergeTestResults: true
             condition: succeededOrFailed()

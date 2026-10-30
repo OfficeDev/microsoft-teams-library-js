@@ -1472,4 +1472,149 @@ describe('externalAppAuthentication', () => {
       return expect(externalAppAuthentication.isSupported()).toEqual(false);
     });
   });
+
+  describe('isActionExecuteResponse', () => {
+    const validResponse = {
+      responseType: externalAppAuthentication.InvokeResponseType.ActionExecuteInvokeResponse,
+      value: {},
+      statusCode: 200,
+      type: 'type',
+    };
+
+    it('should return true for a valid IActionExecuteResponse', () => {
+      expect(externalAppAuthentication.isActionExecuteResponse(validResponse)).toEqual(true);
+    });
+
+    it('should return false without throwing for null and undefined responses', () => {
+      expect(externalAppAuthentication.isActionExecuteResponse(null)).toEqual(false);
+      expect(externalAppAuthentication.isActionExecuteResponse(undefined)).toEqual(false);
+    });
+
+    it('should return false for non-object responses', () => {
+      expect(externalAppAuthentication.isActionExecuteResponse('response')).toEqual(false);
+      expect(externalAppAuthentication.isActionExecuteResponse(1)).toEqual(false);
+      expect(externalAppAuthentication.isActionExecuteResponse(true)).toEqual(false);
+    });
+
+    it('should return false when a required property is missing', () => {
+      expect(externalAppAuthentication.isActionExecuteResponse({ ...validResponse, responseType: undefined })).toEqual(
+        false,
+      );
+      expect(externalAppAuthentication.isActionExecuteResponse({ ...validResponse, value: undefined })).toEqual(false);
+      expect(externalAppAuthentication.isActionExecuteResponse({ ...validResponse, statusCode: undefined })).toEqual(
+        false,
+      );
+      expect(externalAppAuthentication.isActionExecuteResponse({ ...validResponse, type: undefined })).toEqual(false);
+    });
+  });
+
+  describe('isInvokeError', () => {
+    it('should return true for an error with a recognized errorCode and a string message', () => {
+      expect(
+        externalAppAuthentication.isInvokeError({
+          errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
+          message: 'test error message',
+        }),
+      ).toBe(true);
+    });
+
+    it('should return true when message is omitted', () => {
+      expect(
+        externalAppAuthentication.isInvokeError({
+          errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
+        }),
+      ).toBe(true);
+    });
+
+    it('should return true when message is explicitly undefined', () => {
+      expect(
+        externalAppAuthentication.isInvokeError({
+          errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
+          message: undefined,
+        }),
+      ).toBe(true);
+    });
+
+    it('should return true when message is an empty string', () => {
+      expect(
+        externalAppAuthentication.isInvokeError({
+          errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
+          message: '',
+        }),
+      ).toBe(true);
+    });
+
+    it('should ignore extra properties that are not part of InvokeError', () => {
+      expect(
+        externalAppAuthentication.isInvokeError({
+          errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
+          message: 'test error message',
+          responseType: undefined,
+          unexpected: 'extra',
+        }),
+      ).toBe(true);
+    });
+
+    it('should return false for null', () => {
+      expect(externalAppAuthentication.isInvokeError(null)).toBe(false);
+    });
+
+    it.each([
+      ['undefined', undefined],
+      ['a string', 'INTERNAL_ERROR'],
+      ['a number', 42],
+      ['a boolean', true],
+      ['a symbol', Symbol('INTERNAL_ERROR')],
+      ['a bigint', BigInt(1)],
+      ['a function', (): void => undefined],
+    ])('should return false for %s', (_label, value) => {
+      expect(externalAppAuthentication.isInvokeError(value)).toBe(false);
+    });
+
+    it('should return false for an object without an errorCode', () => {
+      expect(externalAppAuthentication.isInvokeError({ message: 'test error message' })).toBe(false);
+    });
+
+    it('should return false for an unrecognized errorCode', () => {
+      expect(
+        externalAppAuthentication.isInvokeError({ errorCode: 'NOT_A_REAL_ERROR_CODE', message: 'test error message' }),
+      ).toBe(false);
+    });
+
+    it('should return false when errorCode differs from a valid value only by casing', () => {
+      expect(externalAppAuthentication.isInvokeError({ errorCode: 'internal_error' })).toBe(false);
+    });
+
+    it.each([
+      ['a number', 500],
+      ['null', null],
+      ['an object', { text: 'test error message' }],
+      ['an array', ['test error message']],
+    ])('should return false when message is %s', (_label, message) => {
+      expect(
+        externalAppAuthentication.isInvokeError({
+          errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
+          message,
+        }),
+      ).toBe(false);
+    });
+
+    it('should return false for an empty object', () => {
+      expect(externalAppAuthentication.isInvokeError({})).toBe(false);
+    });
+
+    it('should return false for an array', () => {
+      expect(externalAppAuthentication.isInvokeError([])).toBe(false);
+    });
+
+    it('should return false for an Error instance', () => {
+      expect(externalAppAuthentication.isInvokeError(new Error('test error message'))).toBe(false);
+    });
+
+    it('should return true for a null-prototype object carrying a valid errorCode', () => {
+      const error = Object.create(null);
+      error.errorCode = externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR;
+      expect(externalAppAuthentication.isInvokeError(error)).toBe(true);
+    });
+  });
 });

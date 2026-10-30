@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { MessageRequest, MessageResponse } from '../../src/internal/messageObjects';
 import { UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
 import {
@@ -6,12 +7,14 @@ import {
   registerUserSettingsChangeHandler,
   sendCustomEvent,
   sendCustomMessage,
+  uploadCustomApp,
 } from '../../src/private/privateAPIs';
 import { activateChildProxyingCommunication } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { resetBuildFeatureFlags } from '../../src/public/featureFlags';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
+import { mockBrandColorPalettes } from '../brandColorPalettes';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -61,12 +64,61 @@ describe('AppSDK-privateAPIs', () => {
         data: {
           id: 0,
           func: 'themeChange',
-          args: ['testTheme'],
+          args: ['testTheme', mockBrandColorPalettes],
         } as MessageResponse,
       } as MessageEvent);
 
       // The frameless window should send a response back to the child window
       expect(utils.childMessages.length).toBe(1);
+      expect(utils.childMessages[0].args).toEqual(['testTheme', mockBrandColorPalettes]);
+    });
+
+    it('should clear palettes when relaying a theme-only update', async () => {
+      utils.initializeAsFrameless(['https://www.example.com']);
+      const handler = jest.fn();
+      app.registerOnThemeChangeHandler(handler);
+
+      await utils.processMessage!({
+        origin: 'https://www.example.com',
+        source: utils.childWindow,
+        data: {
+          id: 0,
+          func: 'themeChange',
+          args: ['testTheme', mockBrandColorPalettes],
+        } as MessageResponse,
+      } as MessageEvent);
+
+      await utils.processMessage!({
+        origin: 'https://www.example.com',
+        source: utils.childWindow,
+        data: {
+          id: 0,
+          func: 'themeChange',
+          args: ['testTheme'],
+        } as MessageResponse,
+      } as MessageEvent);
+
+      expect(utils.childMessages[1].args).toEqual(['testTheme']);
+      expect(handler).toHaveBeenLastCalledWith('testTheme', undefined);
+    });
+
+    it('should normalize null palettes when relaying an update', async () => {
+      utils.initializeAsFrameless(['https://www.example.com']);
+      const handler = jest.fn();
+      app.registerOnThemeChangeHandler(handler);
+
+      await utils.processMessage!({
+        origin: 'https://www.example.com',
+        source: utils.childWindow,
+        data: {
+          id: 0,
+          func: 'themeChange',
+          args: ['testTheme', null],
+        } as MessageResponse,
+      } as MessageEvent);
+
+      expect(utils.childMessages[0].args).toEqual(['testTheme']);
+      expect(handler).toHaveBeenCalledWith('testTheme', undefined);
     });
 
     it('should properly pass partial responses to nested child frames ', async () => {
@@ -664,6 +716,58 @@ describe('AppSDK-privateAPIs', () => {
 
       expect(callbackCalled).toBe(false);
       expect(callbackArgs).toBeNull();
+    });
+  });
+
+  describe('uploadCustomApp', () => {
+    const manifestBlob = new Blob(['{ "manifestVersion": "1.16" }'], { type: 'application/json' });
+
+    it('should not allow calls before initialization', () => {
+      expect(() => uploadCustomApp(manifestBlob)).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('should pass the manifest blob to the host', async () => {
+      expect.assertions(1);
+      await utils.initializeWithContext(FrameContexts.content);
+
+      uploadCustomApp(manifestBlob);
+
+      const message = utils.findMessageByActionName('uploadCustomApp');
+      expect(message.args).toEqual([manifestBlob]);
+    });
+
+    it('should invoke the supplied onComplete callback with the host response', async () => {
+      expect.assertions(2);
+      await utils.initializeWithContext(FrameContexts.content);
+
+      const onComplete = jest.fn();
+      uploadCustomApp(manifestBlob, onComplete);
+
+      const message = utils.findMessageByActionName('uploadCustomApp');
+      await utils.respondToMessage(message, false, 'someReason');
+
+      expect(onComplete).toHaveBeenCalledTimes(1);
+      expect(onComplete.mock.calls[0].slice(0, 2)).toEqual([false, 'someReason']);
+    });
+
+    it('should fall back to the generic onComplete handler and throw when the host reports failure', async () => {
+      expect.assertions(1);
+      await utils.initializeWithContext(FrameContexts.content);
+
+      uploadCustomApp(manifestBlob);
+
+      const message = utils.findMessageByActionName('uploadCustomApp');
+      await expect(utils.respondToMessage(message, false, 'someReason')).rejects.toThrowError('someReason');
+    });
+
+    it('should fall back to the generic onComplete handler and not throw when the host reports success', async () => {
+      expect.assertions(1);
+      await utils.initializeWithContext(FrameContexts.content);
+
+      uploadCustomApp(manifestBlob);
+
+      const message = utils.findMessageByActionName('uploadCustomApp');
+      await expect(utils.respondToMessage(message, true)).resolves.toBeUndefined();
     });
   });
 

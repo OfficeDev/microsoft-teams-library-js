@@ -1,8 +1,52 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 05 Aug 2026 18:17:09 GMT and should not be manually modified. -->
+<!-- This log was last generated on Wed, 07 Oct 2026 17:05:49 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.58.0
+
+Wed, 07 Oct 2026 17:05:49 GMT
+
+### Minor changes
+
+- Added `stageView.self.isCloseResultSupported` and optional opaque results to `stageView.self.close`, gated by host-advertised `stageView.self.closeResult` support.
+
+### Patches
+
+- Added connector authentication origins to the valid-origins artifact.
+
+## 2.57.0
+
+Wed, 23 Sep 2026 18:43:57 GMT
+
+### Minor changes
+
+- Added new Copilot commercial and gov cloud origins to valid domains list.
+- Added M365 admin center origins to valid domains list.
+
+### Patches
+
+- Fix `isActionExecuteResponse` so a `null` or non-object response from the host returns `false` instead of throwing a `TypeError`, allowing the intended `INTERNAL_ERROR` to surface.
+
+## 2.56.0
+
+Wed, 02 Sep 2026 20:50:58 GMT
+
+### Minor changes
+
+- Added `contextualSearch` capability APIs for opening, closing, and monitoring the Teams contextual search pane
+
+### Patches
+
+- Updated documentation for `thirdPartyCloudStorage` capability.
+- Updated documentation for `search` capability.
+- Point the `LegacyCallBacks` and `UserRequest` deprecation notices at their concrete Promise-based replacements.
+- Initialized the runtime feature flags with a copy of the defaults so that `getCurrentFeatureFlagsState()` no longer returns a reference to the shared defaults object.
+- Point the `location.LocationProps` and `location.Location` deprecation notices at their concrete `geoLocation` replacements.
+- Fixed a typo in the internal `processAdditionalValidOrigins` documentation comment.
+- Fix `isValidOriginsJSONValid` so a malformed valid-origins payload from the CDN returns `false` instead of throwing out of origin validation.
+- Correct the TSDoc on `validateUuidInstance`, which incorrectly described it as checking whether an id is an instance of `ValidatedSafeString` rather than `UUID`.
 
 ## 2.55.0
 

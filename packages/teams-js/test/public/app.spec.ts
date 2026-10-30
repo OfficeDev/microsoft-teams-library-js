@@ -32,6 +32,7 @@ import {
 } from '../../src/public/runtime';
 import { UUID } from '../../src/public/uuidObject';
 import { version } from '../../src/public/version';
+import { mockBrandColorPalettes } from '../brandColorPalettes';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -44,6 +45,30 @@ import { Utils } from '../utils';
 function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction {
   // eslint-disable-next-line no-prototype-builtins
   return actionItem && Object.prototype.hasOwnProperty.call(actionItem, 'secondaryId');
+}
+
+/**
+ * Builds a minimal valid Context to use as the payload of a contextChange event.
+ */
+function createChangedContext(frameContext: FrameContexts): app.Context {
+  return {
+    app: {
+      locale: 'someChangedLocale',
+      theme: 'someChangedTheme',
+      sessionId: 'changedAppSessionId',
+      host: {
+        name: HostName.orange,
+        clientType: HostClientType.web,
+        sessionId: 'changedHostSessionId',
+      },
+      appId: new AppId('mock.m365testapp.test'),
+    },
+    page: {
+      id: 'someChangedEntityId',
+      frameContext,
+    },
+    dialogParameters: {},
+  };
 }
 
 describe('Testing app capability', () => {
@@ -646,6 +671,7 @@ describe('Testing app capability', () => {
             upn: 'someUpn',
             tid: 'someTid',
             theme: 'someTheme',
+            brandColorPalettes: mockBrandColorPalettes,
             isFullScreen: true,
             teamType: TeamType.Staff,
             teamSiteUrl: 'someSiteUrl',
@@ -702,6 +728,7 @@ describe('Testing app capability', () => {
               parentMessageId: 'someParentMessageId',
               sessionId: 'appSessionId',
               theme: 'someTheme',
+              brandColorPalettes: mockBrandColorPalettes,
               userClickTime: 2222,
               userClickTimeV2: 3333,
               userFileOpenPreference: FileOpenPreference.Inline,
@@ -1061,6 +1088,86 @@ describe('Testing app capability', () => {
           await utils.sendMessage('themeChange', 'someTheme');
           expect(newTheme).toBe('someTheme');
         });
+      });
+
+      it('app.registerOnThemeChangeHandler should provide brand color palettes when supplied by the host', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const handler = jest.fn();
+        app.registerOnThemeChangeHandler(handler);
+
+        await utils.sendMessage('themeChange', 'someTheme', mockBrandColorPalettes);
+
+        expect(handler).toHaveBeenCalledWith('someTheme', mockBrandColorPalettes);
+      });
+    });
+
+    describe('Testing app.registerOnContextChangeHandler function', () => {
+      it('app.registerOnContextChangeHandler should not allow calls before initialization', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        expect(() => app.registerOnContextChangeHandler(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('app.registerOnContextChangeHandler should allow deregistration before initialization', () => {
+        expect(() => app.registerOnContextChangeHandler(null as unknown as app.contextHandler)).not.toThrowError();
+      });
+
+      it('app.registerOnContextChangeHandler should send a registerHandler message for the contextChange event', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        app.registerOnContextChangeHandler(() => {});
+
+        const registerHandlerMessages = utils.messages.filter((message) => message.func === 'registerHandler');
+        expect(registerHandlerMessages.length).toBe(1);
+        expect(registerHandlerMessages[0].args).toEqual(['contextChange']);
+      });
+
+      it('app.registerOnContextChangeHandler should not send a registerHandler message when deregistering', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        app.registerOnContextChangeHandler(null as unknown as app.contextHandler);
+
+        expect(utils.findMessageByFunc('registerHandler')).toBeNull();
+      });
+
+      Object.values(FrameContexts).forEach((context) => {
+        it(`app.registerOnContextChangeHandler should successfully register a context change handler from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const changedContext = createChangedContext(context);
+          let newContext: app.Context | undefined;
+          app.registerOnContextChangeHandler((updatedContext) => {
+            newContext = updatedContext;
+          });
+          await utils.sendMessage('contextChange', changedContext);
+          expect(newContext).toEqual(changedContext);
+        });
+      });
+
+      it('app.registerOnContextChangeHandler should replace a previously registered handler', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const changedContext = createChangedContext(FrameContexts.content);
+
+        const handlerOne = jest.fn();
+        app.registerOnContextChangeHandler(handlerOne);
+        const handlerTwo = jest.fn();
+        app.registerOnContextChangeHandler(handlerTwo);
+
+        await utils.sendMessage('contextChange', changedContext);
+
+        expect(handlerTwo).toHaveBeenCalledWith(changedContext);
+        expect(handlerOne).not.toHaveBeenCalled();
+      });
+
+      it('app.registerOnContextChangeHandler should not invoke a deregistered handler', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const handler = jest.fn();
+        app.registerOnContextChangeHandler(handler);
+        app.registerOnContextChangeHandler(null as unknown as app.contextHandler);
+
+        await utils.sendMessage('contextChange', createChangedContext(FrameContexts.content));
+
+        expect(handler).not.toHaveBeenCalled();
       });
     });
 
@@ -1687,6 +1794,7 @@ describe('Testing app capability', () => {
             upn: 'someUpn',
             tid: 'someTid',
             theme: 'someTheme',
+            brandColorPalettes: mockBrandColorPalettes,
             isFullScreen: true,
             teamType: TeamType.Staff,
             teamSiteUrl: 'someSiteUrl',
@@ -1734,6 +1842,7 @@ describe('Testing app capability', () => {
               locale: 'someLocale',
               sessionId: 'appSessionId',
               theme: 'someTheme',
+              brandColorPalettes: mockBrandColorPalettes,
               iconPositionVertical: 5,
               osLocaleInfo: undefined,
               parentMessageId: 'someParentMessageId',
@@ -2042,6 +2151,77 @@ describe('Testing app capability', () => {
           } as DOMMessageEvent);
           expect(newTheme).toBe('someTheme');
         });
+      });
+
+      it('app.registerOnThemeChangeHandler should provide brand color palettes in frameless contexts', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const handler = jest.fn();
+        app.registerOnThemeChangeHandler(handler);
+
+        await utils.respondToFramelessMessage({
+          data: {
+            func: 'themeChange',
+            args: ['someTheme', mockBrandColorPalettes],
+          },
+        } as DOMMessageEvent);
+
+        expect(handler).toHaveBeenCalledWith('someTheme', mockBrandColorPalettes);
+      });
+    });
+
+    describe('Testing app.registerOnContextChangeHandler function', () => {
+      it('app.registerOnContextChangeHandler should not allow calls before initialization', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        expect(() => app.registerOnContextChangeHandler(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('app.registerOnContextChangeHandler should send a registerHandler message for the contextChange event', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        app.registerOnContextChangeHandler(() => {});
+
+        const registerHandlerMessages = utils.messages.filter((message) => message.func === 'registerHandler');
+        expect(registerHandlerMessages.length).toBe(1);
+        expect(registerHandlerMessages[0].args).toEqual(['contextChange']);
+      });
+
+      Object.values(FrameContexts).forEach((context) => {
+        it(`app.registerOnContextChangeHandler should successfully register a context change handler from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          const changedContext = createChangedContext(context);
+          let newContext: app.Context | undefined;
+          app.registerOnContextChangeHandler((updatedContext) => {
+            newContext = updatedContext;
+          });
+          await utils.respondToFramelessMessage({
+            data: {
+              func: 'contextChange',
+              args: [changedContext],
+            },
+          } as DOMMessageEvent);
+          expect(newContext).toEqual(changedContext);
+        });
+      });
+
+      it('app.registerOnContextChangeHandler should replace a previously registered handler', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const changedContext = createChangedContext(FrameContexts.content);
+
+        const handlerOne = jest.fn();
+        app.registerOnContextChangeHandler(handlerOne);
+        const handlerTwo = jest.fn();
+        app.registerOnContextChangeHandler(handlerTwo);
+
+        await utils.respondToFramelessMessage({
+          data: {
+            func: 'contextChange',
+            args: [changedContext],
+          },
+        } as DOMMessageEvent);
+
+        expect(handlerTwo).toHaveBeenCalledWith(changedContext);
+        expect(handlerOne).not.toHaveBeenCalled();
       });
     });
 

@@ -37,6 +37,7 @@ interface IRuntimeV1 extends IBaseRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly contextualSearch?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly bot?: {};
@@ -61,7 +62,9 @@ interface IRuntimeV1 extends IBaseRuntime {
       readonly tabs?: {};
     };
     readonly people?: {};
-    readonly permissions?: {};
+    readonly permissions?: {
+      readonly localNetworkAccess?: {};
+    };
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly search?: {};
@@ -93,6 +96,7 @@ interface IRuntimeV2 extends IBaseRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly contextualSearch?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly card?: {
@@ -125,7 +129,9 @@ interface IRuntimeV2 extends IBaseRuntime {
       readonly tabs?: {};
     };
     readonly people?: {};
-    readonly permissions?: {};
+    readonly permissions?: {
+      readonly localNetworkAccess?: {};
+    };
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly search?: {};
@@ -158,6 +164,7 @@ interface IRuntimeV3 extends IBaseRuntime {
     readonly call?: {};
     readonly chat?: {};
     readonly clipboard?: {};
+    readonly contextualSearch?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly card?: {
@@ -193,7 +200,9 @@ interface IRuntimeV3 extends IBaseRuntime {
       readonly tabs?: {};
     };
     readonly people?: {};
-    readonly permissions?: {};
+    readonly permissions?: {
+      readonly localNetworkAccess?: {};
+    };
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly search?: {};
@@ -236,6 +245,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly call?: {};
     readonly chat?: {};
     readonly clipboard?: {};
+    readonly contextualSearch?: {};
     readonly conversations?: {};
     readonly copilot?: {
       readonly customTelemetry?: {};
@@ -294,7 +304,9 @@ interface IRuntimeV4 extends IBaseRuntime {
     };
     readonly people?: {};
     readonly plugins?: {};
-    readonly permissions?: {};
+    readonly permissions?: {
+      readonly localNetworkAccess?: {};
+    };
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly search?: {};
@@ -303,7 +315,9 @@ interface IRuntimeV4 extends IBaseRuntime {
     };
     readonly shortcutRelay?: {};
     readonly stageView?: {
-      readonly self?: {};
+      readonly self?: {
+        readonly closeResult?: {};
+      };
     };
     readonly store?: {};
     readonly teams?: {
