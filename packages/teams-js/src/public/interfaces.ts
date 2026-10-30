@@ -960,6 +960,10 @@ export interface DialogSize {
 export interface UrlDialogInfo extends BaseDialogInfo {
   /**
    * When true, requests a dialog without a header.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   * @protected
    */
   useHeaderlessDialog?: boolean;
 
@@ -996,6 +1000,10 @@ export interface BotUrlDialogInfo extends UrlDialogInfo {
 export interface DialogInfo {
   /**
    * When true, requests a dialog without a header.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   * @protected
    */
   useHeaderlessDialog?: boolean;
 
