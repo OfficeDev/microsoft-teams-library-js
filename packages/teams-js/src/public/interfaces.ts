@@ -959,12 +959,7 @@ export interface DialogSize {
  */
 export interface UrlDialogInfo extends BaseDialogInfo {
   /**
-   * @beta
-   * When true, requests a dialog header that only displays the close button.
-   *
-   * @remarks
-   * The host determines whether this request is supported and permitted.
-   * When omitted, the host's existing header behavior is preserved.
+   * When true, requests a dialog without a header.
    */
   useHeaderlessDialog?: boolean;
 
@@ -1000,9 +995,7 @@ export interface BotUrlDialogInfo extends UrlDialogInfo {
  */
 export interface DialogInfo {
   /**
-   * @beta
-   * Requests a close-only header for a URL-based dialog.
-   * See {@link UrlDialogInfo.useHeaderlessDialog} for details.
+   * When true, requests a dialog without a header.
    */
   useHeaderlessDialog?: boolean;
 

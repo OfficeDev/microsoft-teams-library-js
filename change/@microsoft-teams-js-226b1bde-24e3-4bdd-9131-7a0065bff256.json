@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added optional beta `useHeaderlessDialog` support for URL-based dialogs, preserving the request when opening dialogs with or without a bot and through `tasks.startTask`.",
+  "comment": "Added optional `useHeaderlessDialog` support to request URL-based dialogs without a header.",
   "packageName": "@microsoft/teams-js",
   "email": "dmitry.lesnoy@yandex.ru",
   "dependentChangeType": "patch"
