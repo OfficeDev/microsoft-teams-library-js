@@ -84,52 +84,82 @@ describe('tasks', () => {
           expect(startTaskMessage.args).toEqual([taskInfo]);
         });
 
-        it(`should pass along the taskInfo correctly when completionBotid is specified. context: ${context}`, async () => {
-          await utils.initializeWithContext(context);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+        it.each([
+          {},
+          { useHeaderlessDialog: true },
+          { useHeaderlessDialog: false },
+          { useHeaderlessDialog: undefined },
+        ])(
+          `should pass along the taskInfo correctly when completionBotid is specified with %j. context: ${context}`,
+          async (headerOption) => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
 
-          const taskInfo: TaskInfo = {
-            fallbackUrl: 'someFallbackUrl',
-            height: TaskModuleDimension.Large,
-            width: TaskModuleDimension.Large,
-            title: 'someTitle',
-            url: 'someUrl',
-            completionBotId: 'someCompletionBotId',
-          };
+            const taskInfo: TaskInfo = {
+              fallbackUrl: 'someFallbackUrl',
+              height: TaskModuleDimension.Large,
+              width: TaskModuleDimension.Large,
+              title: 'someTitle',
+              url: 'someUrl',
+              completionBotId: 'someCompletionBotId',
+              ...headerOption,
+            };
 
-          tasks.startTask(taskInfo, () => {
-            return;
-          });
+            tasks.startTask(taskInfo, () => {
+              return;
+            });
 
-          const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
-          expect(startTaskMessage).not.toBeNull();
-          expect(startTaskMessage.args).toEqual([taskInfo]);
-        });
+            const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+            expect(startTaskMessage).not.toBeNull();
+            const { useHeaderlessDialog, ...expectedTaskInfo } = taskInfo;
+            expect(startTaskMessage.args).toStrictEqual([
+              {
+                ...expectedTaskInfo,
+                ...(useHeaderlessDialog !== undefined ? { useHeaderlessDialog } : {}),
+              },
+            ]);
+          },
+        );
 
-        it(`should pass along the taskInfo correctly when URL is provided without Bot. context: ${context}`, async () => {
-          await utils.initializeWithContext(context);
-          utils.setRuntimeConfig({
-            apiVersion: 2,
-            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
-            supports: { dialog: { url: {}, card: {}, update: {} } },
-          });
+        it.each([
+          {},
+          { useHeaderlessDialog: true },
+          { useHeaderlessDialog: false },
+          { useHeaderlessDialog: undefined },
+        ])(
+          `should pass along the taskInfo correctly when URL is provided without Bot with %j. context: ${context}`,
+          async (headerOption) => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({
+              apiVersion: 2,
+              hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+              supports: { dialog: { url: {}, card: {}, update: {} } },
+            });
 
-          const taskInfo: TaskInfo = {
-            fallbackUrl: 'someFallbackUrl',
-            height: TaskModuleDimension.Large,
-            width: TaskModuleDimension.Large,
-            title: 'someTitle',
-            url: 'someUrl',
-          };
+            const taskInfo: TaskInfo = {
+              fallbackUrl: 'someFallbackUrl',
+              height: TaskModuleDimension.Large,
+              width: TaskModuleDimension.Large,
+              title: 'someTitle',
+              url: 'someUrl',
+              ...headerOption,
+            };
 
-          tasks.startTask(taskInfo, () => {
-            return;
-          });
+            tasks.startTask(taskInfo, () => {
+              return;
+            });
 
-          const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
-          expect(startTaskMessage).not.toBeNull();
-          expect(startTaskMessage.args).toEqual([taskInfo]);
-        });
+            const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
+            expect(startTaskMessage).not.toBeNull();
+            const { useHeaderlessDialog, ...expectedTaskInfo } = taskInfo;
+            expect(startTaskMessage.args).toStrictEqual([
+              {
+                ...expectedTaskInfo,
+                ...(useHeaderlessDialog !== undefined ? { useHeaderlessDialog } : {}),
+              },
+            ]);
+          },
+        );
 
         it(`should Provide default Size if taskInfo doesn't have length or width. ${context} context`, async () => {
           await utils.initializeWithContext(context);

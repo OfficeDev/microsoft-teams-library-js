@@ -63,21 +63,39 @@ describe('Dialog', () => {
             }
           });
 
-          it(`FRAMELESS: should pass along entire urlDialogInfo parameter in ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-            const urlDialogInfo: UrlDialogInfo = {
-              url: 'someUrl',
-              size: { height: DialogDimension.Large, width: DialogDimension.Large },
-              title: 'someTitle',
-              fallbackUrl: 'someFallbackUrl',
-            };
-            dialog.url.open(urlDialogInfo, () => {
-              return;
-            });
-            const openMessage = utils.findMessageByFunc('tasks.startTask');
-            expect(openMessage).not.toBeNull();
-            expect(openMessage.args).toEqual([dialog.url.getDialogInfoFromUrlDialogInfo(urlDialogInfo)]);
-          });
+          it.each([
+            {},
+            { useHeaderlessDialog: true },
+            { useHeaderlessDialog: false },
+            { useHeaderlessDialog: undefined },
+          ])(
+            `FRAMELESS: should pass along entire urlDialogInfo parameter with %j in ${context} context`,
+            async (headerOption) => {
+              await utils.initializeWithContext(context);
+              const urlDialogInfo: UrlDialogInfo = {
+                url: 'someUrl',
+                size: { height: DialogDimension.Large, width: DialogDimension.Large },
+                title: 'someTitle',
+                fallbackUrl: 'someFallbackUrl',
+                ...headerOption,
+              };
+              dialog.url.open(urlDialogInfo, () => {
+                return;
+              });
+              const openMessage = utils.findMessageByFunc('tasks.startTask');
+              expect(openMessage).not.toBeNull();
+              expect(openMessage.args).toStrictEqual([
+                {
+                  url: 'someUrl',
+                  height: DialogDimension.Large,
+                  width: DialogDimension.Large,
+                  title: 'someTitle',
+                  fallbackUrl: 'someFallbackUrl',
+                  ...(headerOption.useHeaderlessDialog !== undefined ? headerOption : {}),
+                },
+              ]);
+            },
+          );
 
           it(`FRAMELESS: Should initiate the registration for messageFromChildHandler if it is passed. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
@@ -395,23 +413,45 @@ describe('Dialog', () => {
             }
           });
 
-          it(`FRAMELESS: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { dialog: { url: { bot: {} } } } });
-            const botUrlDialogInfo: BotUrlDialogInfo = {
-              url: 'someUrl',
-              size: { height: DialogDimension.Large, width: DialogDimension.Large },
-              title: 'someTitle',
-              fallbackUrl: 'someFallbackUrl',
-              completionBotId: 'botId',
-            };
-            dialog.url.bot.open(botUrlDialogInfo, () => {
-              return;
-            });
-            const openMessage = utils.findMessageByFunc('tasks.startTask');
-            expect(openMessage).not.toBeNull();
-            expect(openMessage.args).toEqual([dialog.url.getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo)]);
-          });
+          it.each([
+            {},
+            { useHeaderlessDialog: true },
+            { useHeaderlessDialog: false },
+            { useHeaderlessDialog: undefined },
+          ])(
+            `FRAMELESS: should pass along entire botUrlDialogInfo parameter with %j in ${context} context`,
+            async (headerOption) => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({
+                apiVersion: latestRuntimeApiVersion,
+                supports: { dialog: { url: { bot: {} } } },
+              });
+              const botUrlDialogInfo: BotUrlDialogInfo = {
+                url: 'someUrl',
+                size: { height: DialogDimension.Large, width: DialogDimension.Large },
+                title: 'someTitle',
+                fallbackUrl: 'someFallbackUrl',
+                completionBotId: 'botId',
+                ...headerOption,
+              };
+              dialog.url.bot.open(botUrlDialogInfo, () => {
+                return;
+              });
+              const openMessage = utils.findMessageByFunc('tasks.startTask');
+              expect(openMessage).not.toBeNull();
+              expect(openMessage.args).toStrictEqual([
+                {
+                  url: 'someUrl',
+                  height: DialogDimension.Large,
+                  width: DialogDimension.Large,
+                  title: 'someTitle',
+                  fallbackUrl: 'someFallbackUrl',
+                  completionBotId: 'botId',
+                  ...(headerOption.useHeaderlessDialog !== undefined ? headerOption : {}),
+                },
+              ]);
+            },
+          );
 
           it(`FRAMELESS: Should initiate the registration for messageFromChildHandler if it is passed. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
@@ -1144,21 +1184,39 @@ describe('Dialog', () => {
             }
           });
 
-          it(`FRAMED: should pass along entire urlDialogInfo parameter in ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-            const urlDialogInfo: UrlDialogInfo = {
-              url: 'someUrl',
-              size: { height: DialogDimension.Large, width: DialogDimension.Large },
-              title: 'someTitle',
-              fallbackUrl: 'someFallbackUrl',
-            };
-            dialog.url.open(urlDialogInfo, () => {
-              return;
-            });
-            const openMessage = utils.findMessageByFunc('tasks.startTask');
-            expect(openMessage).not.toBeNull();
-            expect(openMessage.args).toEqual([dialog.url.getDialogInfoFromUrlDialogInfo(urlDialogInfo)]);
-          });
+          it.each([
+            {},
+            { useHeaderlessDialog: true },
+            { useHeaderlessDialog: false },
+            { useHeaderlessDialog: undefined },
+          ])(
+            `FRAMED: should pass along entire urlDialogInfo parameter with %j in ${context} context`,
+            async (headerOption) => {
+              await utils.initializeWithContext(context);
+              const urlDialogInfo: UrlDialogInfo = {
+                url: 'someUrl',
+                size: { height: DialogDimension.Large, width: DialogDimension.Large },
+                title: 'someTitle',
+                fallbackUrl: 'someFallbackUrl',
+                ...headerOption,
+              };
+              dialog.url.open(urlDialogInfo, () => {
+                return;
+              });
+              const openMessage = utils.findMessageByFunc('tasks.startTask');
+              expect(openMessage).not.toBeNull();
+              expect(openMessage.args).toStrictEqual([
+                {
+                  url: 'someUrl',
+                  height: DialogDimension.Large,
+                  width: DialogDimension.Large,
+                  title: 'someTitle',
+                  fallbackUrl: 'someFallbackUrl',
+                  ...(headerOption.useHeaderlessDialog !== undefined ? headerOption : {}),
+                },
+              ]);
+            },
+          );
 
           it(`FRAMED: Should initiate the registration for messageFromChildHandler if it is passed. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
@@ -1410,23 +1468,45 @@ describe('Dialog', () => {
             }
           });
 
-          it(`FRAMED: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: { dialog: { url: { bot: {} } } } });
-            const botUrlDialogInfo: BotUrlDialogInfo = {
-              url: 'someUrl',
-              size: { height: DialogDimension.Large, width: DialogDimension.Large },
-              title: 'someTitle',
-              fallbackUrl: 'someFallbackUrl',
-              completionBotId: 'botId',
-            };
-            dialog.url.bot.open(botUrlDialogInfo, () => {
-              return;
-            });
-            const openMessage = utils.findMessageByFunc('tasks.startTask');
-            expect(openMessage).not.toBeNull();
-            expect(openMessage.args).toEqual([dialog.url.getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo)]);
-          });
+          it.each([
+            {},
+            { useHeaderlessDialog: true },
+            { useHeaderlessDialog: false },
+            { useHeaderlessDialog: undefined },
+          ])(
+            `FRAMED: should pass along entire botUrlDialogInfo parameter with %j in ${context} context`,
+            async (headerOption) => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({
+                apiVersion: latestRuntimeApiVersion,
+                supports: { dialog: { url: { bot: {} } } },
+              });
+              const botUrlDialogInfo: BotUrlDialogInfo = {
+                url: 'someUrl',
+                size: { height: DialogDimension.Large, width: DialogDimension.Large },
+                title: 'someTitle',
+                fallbackUrl: 'someFallbackUrl',
+                completionBotId: 'botId',
+                ...headerOption,
+              };
+              dialog.url.bot.open(botUrlDialogInfo, () => {
+                return;
+              });
+              const openMessage = utils.findMessageByFunc('tasks.startTask');
+              expect(openMessage).not.toBeNull();
+              expect(openMessage.args).toStrictEqual([
+                {
+                  url: 'someUrl',
+                  height: DialogDimension.Large,
+                  width: DialogDimension.Large,
+                  title: 'someTitle',
+                  fallbackUrl: 'someFallbackUrl',
+                  completionBotId: 'botId',
+                  ...(headerOption.useHeaderlessDialog !== undefined ? headerOption : {}),
+                },
+              ]);
+            },
+          );
 
           it(`FRAMED: Should initiate the registration for messageFromChildHandler if it is passed. context: ${context}`, async () => {
             await utils.initializeWithContext(context);

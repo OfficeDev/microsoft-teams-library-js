@@ -118,6 +118,7 @@ function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
     },
     title: taskInfo.title,
     fallbackUrl: taskInfo.fallbackUrl,
+    ...(taskInfo.useHeaderlessDialog !== undefined ? { useHeaderlessDialog: taskInfo.useHeaderlessDialog } : {}),
   };
   return urldialogInfo;
 }
@@ -143,6 +144,7 @@ function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
     title: taskInfo.title,
     fallbackUrl: taskInfo.fallbackUrl,
     completionBotId: taskInfo.completionBotId,
+    ...(taskInfo.useHeaderlessDialog !== undefined ? { useHeaderlessDialog: taskInfo.useHeaderlessDialog } : {}),
   };
   return botUrldialogInfo;
 }

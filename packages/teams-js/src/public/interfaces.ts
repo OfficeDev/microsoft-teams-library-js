@@ -959,6 +959,16 @@ export interface DialogSize {
  */
 export interface UrlDialogInfo extends BaseDialogInfo {
   /**
+   * @beta
+   * When true, requests a dialog header that only displays the close button.
+   *
+   * @remarks
+   * The host determines whether this request is supported and permitted.
+   * When omitted, the host's existing header behavior is preserved.
+   */
+  useHeaderlessDialog?: boolean;
+
+  /**
    * The url to be rendered in the webview/iframe.
    *
    * @remarks
@@ -989,6 +999,13 @@ export interface BotUrlDialogInfo extends UrlDialogInfo {
  * Data structure to describe dialog information
  */
 export interface DialogInfo {
+  /**
+   * @beta
+   * Requests a close-only header for a URL-based dialog.
+   * See {@link UrlDialogInfo.useHeaderlessDialog} for details.
+   */
+  useHeaderlessDialog?: boolean;
+
   /**
    * The url to be rendered in the webview/iframe.
    *
