@@ -959,6 +959,15 @@ export interface DialogSize {
  */
 export interface UrlDialogInfo extends BaseDialogInfo {
   /**
+   * When true, requests a dialog without a header.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   * @protected
+   */
+  useHeaderlessDialog?: boolean;
+
+  /**
    * The url to be rendered in the webview/iframe.
    *
    * @remarks
@@ -989,6 +998,15 @@ export interface BotUrlDialogInfo extends UrlDialogInfo {
  * Data structure to describe dialog information
  */
 export interface DialogInfo {
+  /**
+   * When true, requests a dialog without a header.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   * @protected
+   */
+  useHeaderlessDialog?: boolean;
+
   /**
    * The url to be rendered in the webview/iframe.
    *
