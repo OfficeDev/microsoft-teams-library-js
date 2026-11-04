@@ -303,7 +303,8 @@ record.
   even when a local `beachball check` says none is needed.
   Merging `main` can bring back change files the release already consumed; delete any change file whose comment
   appears in the new CHANGELOG section, or the next release ships those entries twice. Before opening the PR,
-  `git diff --stat "origin/release/$version" HEAD` should show only the new `none` change file.
+  `git diff --stat "origin/release/$version" HEAD` should show only the new `none` change file, and
+  `check consumed-changes --version "$version"` passes.
   Never force-push `main`. A PR from release content can run an extra end-to-end check against the newly deployed
   CDN; leave the PR open until it completes. After it merges, `check merged-back --version "$version"` confirms
   `main` has the release's CHANGELOG section (the merge-back is squashed, so commit ancestry cannot show it).
@@ -404,6 +405,7 @@ check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 | `domains`              | the live valid-domains list equals the source                                                                                                                       |
 | `github-release`       | `--expect prerelease` or `latest`: the release is in that state, tag `v<v>` carries the bump and sits at the release branch head, and Latest is right for the stage |
 | `merged-back`          | `main`'s CHANGELOG has the version's section                                                                                                                        |
+| `consumed-changes`     | on the merge-back branch, no pending change file repeats an entry in the released CHANGELOG section                                                                 |
 | `pipeline-config`      | the checkout's release YAML: Prod publishes with `tag latest`, SDF with `tag beta`, artifact retention @6+                                                          |
 | `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version newer than npm's `latest`                                                                                                 |
 | `announcement`         | every npm, CDN and GitHub release link in a draft names the version, and npm and CDN links are present                                                              |

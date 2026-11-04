@@ -129,7 +129,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   copies.
 - **Fix:** delete them in the cleanup branch before opening the PR. Left in place, the next release lists those
   entries again. Afterwards `git diff --stat "origin/release/<x.y.z>" HEAD` should show only the new `none` change
-  file.
+  file, and `check consumed-changes --version <x.y.z>` passes.
 
 ### A fix must ship on an older release line (hotfix)
 
