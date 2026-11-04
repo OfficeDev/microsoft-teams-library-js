@@ -98,8 +98,8 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Symptom:** you are missing from the Lockbox request's recipients, or the approval tool says you are not eligible.
 - **Cause:** eligibility lapses after about 30 days without use (a warning arrives a few days before). Owning-team
   members also need to be in the release approver group the runbook names.
-- **Fix:** renew eligibility before release day, from a managed device if the internal runbook requires it. Ask an
-  eligible owning-team member to queue or approve meanwhile.
+- **Fix:** renew eligibility through the access portal the internal runbook names before release day, from a managed
+  device if the runbook requires it. Ask an eligible owning-team member to queue or approve meanwhile.
 
 ## Branches and versions
 
