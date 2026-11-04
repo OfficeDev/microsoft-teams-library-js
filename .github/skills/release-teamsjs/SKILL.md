@@ -301,6 +301,8 @@ version page in a browser.
   not moved since the branch was cut, a PR straight from the release branch merges cleanly. Otherwise cut
   `<alias>/cleanup_release_<x.y.z>` from `release/<x.y.z>`, merge `origin/main` into it and open the PR from that;
   if the change-file check then fails, add a `none` change file (`pnpm changefile`, comment `Released <x.y.z>`).
+  Merging `main` can bring back change files the release already consumed; delete any change file whose comment
+  appears in the new CHANGELOG section, or the next release ships those entries twice.
   Never force-push `main`. A PR from release content can run an extra end-to-end check against the newly deployed
   CDN; leave the PR open until it completes.
 - **Never push to `release/<x.y.z>` after Prod.** Internal downstream tests check that branch out by name.
