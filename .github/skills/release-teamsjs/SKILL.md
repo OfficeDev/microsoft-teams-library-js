@@ -333,7 +333,7 @@ failure modes); stop before queuing one.
   Merging `main` can bring back change files the release already consumed; delete any change file whose comment
   appears in the new CHANGELOG section, or the next release ships those entries twice. Before opening the PR,
   `git diff --stat "origin/release/$version" HEAD` should show only the new `none` change file, and
-  `check consumed-changes --version "$version"` passes.
+  `check consumed-changes --version "$version" --prep-commit <prep PR squash commit>` passes.
   Never force-push `main`. A PR from release content can run an extra end-to-end check against the newly deployed
   CDN; leave the PR open until it completes. After it merges, `check merged-back --version "$version"` confirms
   `main` has the release's CHANGELOG section (the merge-back is squashed, so commit ancestry cannot show it).
@@ -437,20 +437,27 @@ check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 
 | Command                | Passes when                                                                                                                                                         |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `check-version`        | the version is absent from npm, the Prod CDN and GitHub tags                                                                                                        |
+| `check-version`        | `registry.npmjs.org` lacks the version, no mirror lists it, and the Prod CDN and GitHub tag lack it                                                                 |
 | `carriers`             | both `package.json` files, the README and the test app name the version and share one SRI                                                                           |
-| `artifact`             | a downloaded CI bundle is under `CDNFeed/<v>/js` and hashes to that SRI                                                                                             |
-| `published`            | the CDN bytes match the SRI and npm has the version, and the dist-tag if given                                                                                      |
-| `domains`              | the live valid-domains list equals the source                                                                                                                       |
+| `artifact`             | a downloaded CI bundle is under `CDNFeed/<v>/js`, `<v>` is the only version folder (besides `_manifest`), and it hashes to that SRI                                 |
+| `published`            | the CDN bytes match the SRI and npm has the version, and the dist-tag if given, by the source rules below                                                           |
+| `domains`              | the live Prod valid-domains list equals the source                                                                                                                  |
 | `github-release`       | `--expect prerelease` or `latest`: the release is in that state, tag `v<v>` carries the bump and sits at the release branch head, and Latest is right for the stage |
 | `merged-back`          | `main`'s CHANGELOG has the version's section                                                                                                                        |
-| `consumed-changes`     | on the merge-back branch, no pending change file repeats an entry in the released CHANGELOG section                                                                 |
+| `consumed-changes`     | on the merge-back branch, no pending change file repeats an entry in the released CHANGELOG section, or was deleted by `--prep-commit <sha>` if given               |
 | `pipeline-config`      | the checkout's release YAML: Prod publishes with `tag latest`, SDF with `tag beta`, artifact retention @6+                                                          |
-| `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version newer than npm's `latest`                                                                                                 |
+| `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version that has not shipped: newer than npm's `latest`, and absent from the Prod CDN and as tag `v<x.y.z>`                       |
 | `announcement`         | every npm, CDN and GitHub release link in a draft names the version, and npm and CDN links are present                                                              |
 | `size`, `links`, `sri` | (informational) bundle bytes and change from `--previous`, announcement links, a file's SRI                                                                         |
+| `help`                 | lists every command and the flags it takes; any other flag is a usage error                                                                                         |
 
-GitHub API calls send `GITHUB_TOKEN` as a bearer token when it is set, which avoids anonymous rate limits.
+**npm source rules.** `registry.npmjs.org` is the only source that can show a version is absent or a dist-tag is
+current. A `--registry` proxy, jsDelivr and unpkg can lag, so they only add evidence that a version or tag value
+exists, and a proxy alone never makes a check pass. When the public registry cannot be reached and the mirrors do not
+confirm, the npm result is inconclusive (exit 3), never a failure.
+
+GitHub API calls send `GITHUB_TOKEN` as a bearer token when it is set, which avoids anonymous rate limits. Every
+request times out after 30 seconds.
 
 Exit codes: `0` passed, `1` a check failed, `2` usage error, `3` a source was unreachable or answered unexpectedly.
 Exit 3 is never success.
