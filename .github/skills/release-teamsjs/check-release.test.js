@@ -52,31 +52,62 @@ function response(status, body) {
     status,
     arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
     json: async () => JSON.parse(bytes.toString('utf8')),
+    text: async () => bytes.toString('utf8'),
   };
 }
 
 function fakeFetch(routes) {
   const requested = [];
-  const fetchImpl = async (url) => {
+  const options = [];
+  const fetchImpl = async (url, init) => {
     requested.push(url);
+    options.push(init);
     const route = routes[url];
     if (route instanceof Error) {
       throw route;
     }
     return route ?? response(404);
   };
-  return { fetchImpl, requested };
+  return { fetchImpl, requested, options };
+}
+
+const GITHUB_REPO_API = 'https://api.github.com/repos/OfficeDev/microsoft-teams-library-js';
+const MAIN_CHANGELOG =
+  'https://raw.githubusercontent.com/OfficeDev/microsoft-teams-library-js/main/packages/teams-js/CHANGELOG.md';
+
+function githubRoutes({ version = VERSION, prerelease, draft = false, tagVersion = version, latestTag }) {
+  const routes = {};
+  if (prerelease !== undefined) {
+    routes[`${GITHUB_REPO_API}/releases/tags/v${version}`] = response(200, {
+      tag_name: `v${version}`,
+      prerelease,
+      draft,
+    });
+  }
+  if (tagVersion) {
+    const packageJson = Buffer.from(JSON.stringify({ version: tagVersion })).toString('base64');
+    routes[`${GITHUB_REPO_API}/contents/packages/teams-js/package.json?ref=v${version}`] = response(200, {
+      encoding: 'base64',
+      content: packageJson,
+    });
+  }
+  if (latestTag) {
+    routes[`${GITHUB_REPO_API}/releases/latest`] = response(200, { tag_name: latestTag });
+  }
+  return routes;
 }
 
 describe('check-release', () => {
   let root;
   let lines;
+  let env;
   const log = (line) => lines.push(line);
-  const runWith = (argv, fetchImpl) => run(argv, { repoRoot: root, fetchImpl, log });
+  const runWith = (argv, fetchImpl) => run(argv, { repoRoot: root, fetchImpl, log, env });
 
   beforeEach(() => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'release-teamsjs-'));
     lines = [];
+    env = {};
   });
 
   afterEach(() => {
@@ -261,6 +292,94 @@ describe('check-release', () => {
       const { fetchImpl } = fakeFetch({ [validDomainsUrl('prod')]: response(200, live) });
       assert.equal(await runWith(['domains'], fetchImpl), ExitCode.failed);
       assert.match(lines[0], /missing live: \[\*\.teams\.microsoft\.com\], only live: \[old\.example\.com\]/);
+    });
+  });
+
+  describe('github-release', () => {
+    it('passes for a pre-release whose tag carries the bump', async () => {
+      const { fetchImpl } = fakeFetch(githubRoutes({ prerelease: true }));
+      const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('fails when the tag was cut before the bump landed', async () => {
+      const { fetchImpl } = fakeFetch(githubRoutes({ prerelease: true, tagVersion: '2.58.0' }));
+      const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.failed);
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('2.58.0')),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails when there is no release, or only a draft', async () => {
+      const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
+      assert.equal(await runWith(argv, fakeFetch({}).fetchImpl), ExitCode.failed);
+      const draft = fakeFetch(githubRoutes({ prerelease: true, draft: true }));
+      assert.equal(await runWith(argv, draft.fetchImpl), ExitCode.failed);
+    });
+
+    it('passes Latest only when promoted and marked latest', async () => {
+      const argv = ['github-release', '--version', VERSION, '--expect', 'latest'];
+      const promoted = fakeFetch(githubRoutes({ prerelease: false, latestTag: `v${VERSION}` }));
+      assert.equal(await runWith(argv, promoted.fetchImpl), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('fails Latest while still a pre-release', async () => {
+      const argv = ['github-release', '--version', VERSION, '--expect', 'latest'];
+      const { fetchImpl } = fakeFetch(githubRoutes({ prerelease: true, latestTag: 'v2.58.0' }));
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.failed);
+    });
+
+    it('fails Latest when another release is marked latest', async () => {
+      const argv = ['github-release', '--version', VERSION, '--expect', 'latest'];
+      const { fetchImpl } = fakeFetch(githubRoutes({ prerelease: false, latestTag: 'v2.58.0' }));
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.failed);
+    });
+
+    it('requires --expect prerelease or latest', async () => {
+      assert.equal(await runWith(['github-release', '--version', VERSION]), ExitCode.usage);
+      assert.ok(lines.at(-1).includes('--expect'), lines.join('\n'));
+      assert.equal(await runWith(['github-release', '--version', VERSION, '--expect', 'draft']), ExitCode.usage);
+      assert.ok(lines.at(-1).includes('--expect'), lines.join('\n'));
+    });
+
+    it('sends GITHUB_TOKEN as a bearer token when it is set', async () => {
+      env = { GITHUB_TOKEN: 'test-token' };
+      const { fetchImpl, options } = fakeFetch(githubRoutes({ prerelease: true }));
+      await runWith(['github-release', '--version', VERSION, '--expect', 'prerelease'], fetchImpl);
+      assert.ok(options.length > 0);
+      assert.ok(options.every((init) => init.headers.Authorization === 'Bearer test-token'));
+    });
+  });
+
+  describe('merged-back', () => {
+    it('passes when main has the version section in its CHANGELOG', async () => {
+      const changelog = `# Change Log\n\n## ${VERSION}\n\nWed\n\n## 2.58.0\n`;
+      const { fetchImpl } = fakeFetch({ [MAIN_CHANGELOG]: response(200, Buffer.from(changelog)) });
+      assert.equal(await runWith(['merged-back', '--version', VERSION], fetchImpl), ExitCode.passed);
+    });
+
+    it('fails when main lacks the section, even if a longer version starts the same', async () => {
+      const changelog = `# Change Log\n\n## ${VERSION}1\n\n## 2.58.0\n`;
+      const { fetchImpl } = fakeFetch({ [MAIN_CHANGELOG]: response(200, Buffer.from(changelog)) });
+      assert.equal(await runWith(['merged-back', '--version', VERSION], fetchImpl), ExitCode.failed);
+    });
+  });
+
+  describe('size', () => {
+    it('reports bytes and the change from the previous version', async () => {
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(200, Buffer.alloc(1100)),
+        [cdnScriptUrl('2.58.0', 'prod')]: response(200, Buffer.alloc(1000)),
+      });
+      assert.equal(await runWith(['size', '--version', VERSION, '--previous', '2.58.0'], fetchImpl), 0);
+      assert.deepEqual(lines, [`INFO ${VERSION} is 1100 bytes; 2.58.0 was 1000 bytes; change +100 bytes (+10.00%)`]);
+    });
+
+    it('fails when either version is missing from the CDN', async () => {
+      const { fetchImpl } = fakeFetch({ [cdnScriptUrl(VERSION, 'prod')]: response(200, Buffer.alloc(10)) });
+      assert.equal(await runWith(['size', '--version', VERSION, '--previous', '2.58.0'], fetchImpl), 1);
     });
   });
 

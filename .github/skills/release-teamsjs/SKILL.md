@@ -198,6 +198,11 @@ A tag or GitHub release created before the bump lands points at the wrong commit
 **⛔ Gate 5:** right after the prep PR merges, and before the CI run in step 7 matters, create the GitHub release: tag
 `v<x.y.z>` (a new tag), target `release/<x.y.z>` at the verified commit, title `v<x.y.z>`, body the CHANGELOG section,
 **pre-release** ticked, no binaries attached (publishing adds them). It stays a pre-release until step 9 passes.
+Then confirm it, including that the tag carries the bump:
+
+```bash
+check github-release --version "$version" --expect prerelease
+```
 
 When the GitHub pre-release automation in [#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143)
 lands, this step becomes "verify the pre-release the workflow created" rather than creating one.
@@ -252,12 +257,14 @@ success. Note the CDN byte count it prints for the size record.
 
 ### 10. Promote, merge back and update consumers
 
-- **⛔ Gate 5:** edit the GitHub release: untick pre-release and set it as the latest release. The repository page
-  should then show it under Releases.
+- **⛔ Gate 5:** edit the GitHub release: untick pre-release and set it as the latest release, then
+  `check github-release --version "$version" --expect latest`.
 - **⛔ Gates 2-3:** merge back with `<alias>/cleanup_release_<x.y.z>` cut from `release/<x.y.z>`, merge `origin/main`
   into it, add a `none` change file (`pnpm changefile`, comment `Released <x.y.z>`), and open a PR to `main` titled
   `Cleanup release v<x.y.z>`. Never force-push `main` or change the deployed release branch. A PR from release
   content can run an extra end-to-end check against the newly deployed CDN; leave the PR open until it completes.
+  After it merges, `check merged-back --version "$version"` confirms `main` has the release's CHANGELOG section (the
+  merge-back is squashed, so commit ancestry cannot show it).
 - **⛔ Gates 2-3:** update the internal hub end-to-end tests to cover the new version, per the internal runbook. On the
   web side that is a PR that bumps the pinned TeamsJS version and adds the version to the client SDK checkpoint lists
   in both test helpers; it needs a linked work item. The iOS pipelines follow the latest release automatically.
@@ -280,18 +287,20 @@ Each is a separate **⛔ Gate 6**. Record what was sent and where, so a retry ne
 
 ### 12. Close out
 
-Record the bundle size and the delta from the previous version in the size table the internal runbook keeps, close
-the release work item, then confirm the post-release checklist and run the retro (below).
+Record the bundle size and the delta from the previous version in the size table the internal runbook keeps
+(`check size --version "$version" --previous <previous version>` prints both), close the release work item, then
+confirm the post-release checklist and run the retro (below).
 
 ### Post-release checklist
 
-- [ ] npm has the version, and `latest` points at it (step 9)
-- [ ] The Prod CDN serves `MicrosoftTeams.min.js` for the version with the README SRI (step 9)
-- [ ] The GitHub release is published, not a pre-release, and marked Latest (step 10)
-- [ ] The release branch is merged back to `main` (step 10)
-- [ ] The web hub end-to-end tests cover the new version; iOS is automatic (step 10)
+- [ ] npm has the version, and `latest` points at it: `check published --version <v> --dist-tag latest`
+- [ ] The Prod CDN serves `MicrosoftTeams.min.js` for the version with the README SRI: the same command
+- [ ] The GitHub release is published, not a pre-release, and marked Latest:
+      `check github-release --version <v> --expect latest`
+- [ ] The release branch is merged back to `main`: `check merged-back --version <v>`
+- [ ] The web hub end-to-end tests cover the new version; iOS is automatic (step 10; internal, so not scripted)
 - [ ] The announcement is posted (step 11)
-- [ ] The size table has the new entry (step 12)
+- [ ] The size table has the new entry: `check size --version <v> --previous <p>` gives the numbers
 
 ## SDF beta
 
@@ -333,14 +342,18 @@ and public URLs, and never writes anything. Define a shorthand once per shell:
 check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 ```
 
-| Command         | Passes when                                                                               |
-| --------------- | ----------------------------------------------------------------------------------------- |
-| `check-version` | the version is absent from npm, the Prod CDN and GitHub tags                              |
-| `carriers`      | both `package.json` files, the README and the test app name the version and share one SRI |
-| `artifact`      | a downloaded CI bundle hashes to that SRI                                                 |
-| `published`     | the CDN bytes match the SRI and npm has the version, and the dist-tag if given            |
-| `domains`       | the live valid-domains list equals the source                                             |
-| `links`, `sri`  | (informational) the public announcement links, or a file's SRI                            |
+| Command                | Passes when                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------ |
+| `check-version`        | the version is absent from npm, the Prod CDN and GitHub tags                                           |
+| `carriers`             | both `package.json` files, the README and the test app name the version and share one SRI              |
+| `artifact`             | a downloaded CI bundle hashes to that SRI                                                              |
+| `published`            | the CDN bytes match the SRI and npm has the version, and the dist-tag if given                         |
+| `domains`              | the live valid-domains list equals the source                                                          |
+| `github-release`       | `--expect prerelease` or `latest`: the GitHub release is in that state and tag `v<v>` carries the bump |
+| `merged-back`          | `main`'s CHANGELOG has the version's section                                                           |
+| `size`, `links`, `sri` | (informational) bundle bytes and change from `--previous`, announcement links, a file's SRI            |
+
+GitHub API calls send `GITHUB_TOKEN` as a bearer token when it is set, which avoids anonymous rate limits.
 
 Exit codes: `0` passed, `1` a check failed, `2` usage error, `3` a source was unreachable or answered unexpectedly.
 Exit 3 is never success.
