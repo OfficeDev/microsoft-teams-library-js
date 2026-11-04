@@ -281,12 +281,19 @@ branch uses the same task version:
 git grep -n 'AssetRetention@' "origin/release/$version" -- tools   # every line @6 or later
 ```
 
+You can queue through the Azure DevOps pipelines REST API instead of the UI, with the repository ref set to
+`refs/heads/release/<x.y.z>` and the pipeline resource version set to the CI build number. Read the run back and
+confirm both before the Lockbox request goes out. The run is requested as you, so your Lockbox eligibility is the one
+used.
+
 Then:
 
 - Find the Lockbox request ID in the "Lockbox Approval Request" task log (it is also in the request email). Check
   the request targets the TeamsJS release service group the runbook names; a request routed to another team cannot
-  be approved by the release approvers. **⛔ Gate 6:** ask the owning team's approvers in the owning team's chat, with
-  the ID and run link. Someone other than the releaser approves it.
+  be approved by the release approvers. The email's To: line lists exactly who can approve right now. **⛔ Gate 6:**
+  ask the owning-team approvers on that line by name in the owning team's chat, with the ID and run link; a direct
+  ask was approved within a minute, while channel-only asks have waited hours. Someone other than the releaser
+  approves it.
 - Watch the job: artifact download, deployment preparation, artifact retention (ARROW), `npm pack`, the ESRP npm
   publish, the 1CDN upload, then "View Published Package URLs".
 - Judge the run by these tasks in the job, **not** the run status: artifact retention, "Publish to npm (tag latest) -
