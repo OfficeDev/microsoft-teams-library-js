@@ -39,7 +39,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Cause:** the pipeline artifact defaulted to an older CI run of the same branch. Every release branch has a run
   from the branch push and one from the prep PR merge, and a reused branch can carry a run with old content.
 - **Fix:** always set the artifact explicitly to the run from the prep PR merge, and check its `CDNFeed` folder name
-  equals the version before queuing (Prod step 7).
+  equals the version before queuing (Prod step 6).
 
 ### The Lockbox request cannot be approved by the release approvers
 
@@ -124,7 +124,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 - **Cause:** the release was created before the prep PR merged.
 - **Fix:** do not move a published tag. If nothing has been published, delete the draft or pre-release and recreate
-  it at the verified commit (Prod steps 5-6) with approval. If the version has been published, raise it with the
+  it at the verified commit (Prod steps 5 and 7) with approval. If the version has been published, raise it with the
   maintainers before changing anything.
 
 ### `beachball check` or the bump rejects a change type

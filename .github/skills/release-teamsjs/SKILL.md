@@ -70,8 +70,8 @@ approval on its current head.
 - **npm reachability:** some corporate devices cannot reach `registry.npmjs.org` at all, even with
   `--registry https://registry.npmjs.org`; the TLS handshake fails. There, use the default configured registry
   (`npm view @microsoft/teams-js dist-tags --json`), which can lag; the publish task's "npm notice version" log line;
-  and the npmjs.com version page in a browser. An unreachable registry is never evidence that a version is free or
-  published.
+  the npmjs.com version page in a browser; and a public mirror such as jsDelivr. An unreachable registry is never
+  evidence that a version is free or published.
 
 ## Step 0 - Summarize the plan
 
@@ -185,7 +185,7 @@ it is open. The reviewer confirms the PR has exactly:
 - `pnpm-lock.yaml` churn and nothing else
 
 A green prep PR proves nothing about the build: the ADO PR pipeline skips PRs into `release/*`, so the only check that
-runs is the CLA. The build gate is the CI run on `release/<x.y.z>` after the merge (step 7). The release PR
+runs is the CLA. The build gate is the CI run on `release/<x.y.z>` after the merge (step 6). The release PR
 validation in [#3141](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3141) is meant to close this gap.
 
 When the prep PR also carries commits already merged to `main` (for example when reusing a release branch), automated
@@ -204,24 +204,15 @@ carriers_check "$version"
 
 A tag or GitHub release created before the bump lands points at the wrong commit.
 
-### 6. Create the GitHub release as a pre-release
+### 6. Integrity gate on the CI build
 
-**⛔ Gate 5:** right after the prep PR merges, and before the CI run in step 7 matters, create the GitHub release: tag
-`v<x.y.z>` (a new tag), target `release/<x.y.z>` at the verified commit, title `v<x.y.z>`, body the CHANGELOG section,
-**pre-release** ticked, no binaries attached (publishing adds them). It stays a pre-release until step 9 passes.
-
-When the GitHub pre-release automation in [#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143)
-lands, this step becomes "verify the pre-release the workflow created" rather than creating one.
-
-### 7. Integrity gate on the CI build
-
-The merge triggers the CI build of `release/<x.y.z>`, named after the prep PR. Check that the whole run succeeded,
-including the Build Test Publish job, not just that it finished.
+The merge triggers the CI build of `release/<x.y.z>`, named after the prep PR. Wait for it, and check that the whole
+run succeeded, including the Build Test Publish job, not just that it finished.
 
 Every release branch gets at least two CI runs: one when the branch is pushed, one when the prep PR merges. A
 reused branch can also carry an old successful run with the previous release's content. Use the run **from the prep
 PR merge**, at the release branch's head commit, never an earlier one. Note its build number and download its
-`CDNFeed` artifact; its only version folder must be named `<x.y.z>`:
+`CDNFeed` pipeline artifact; its only version folder must be named `<x.y.z>`:
 
 ```bash
 ls "<download>/CDNFeed"                             # exactly one folder, named $version
@@ -232,10 +223,23 @@ readme_sri                                          # the two lines must be iden
 This proves the bundle the pipeline will ship is the one the README and test app SRI were computed from. A mismatch
 means the published SRI would break every page that uses it: stop.
 
+### 7. Create the GitHub release as a pre-release
+
+**⛔ Gate 5:** once the CI run in step 6 has passed, create the GitHub release: tag `v<x.y.z>` (a new tag), target
+`release/<x.y.z>` at the verified commit, title `v<x.y.z>`, body the CHANGELOG section, **pre-release** ticked, no
+binaries attached (publishing adds them). It stays a pre-release until step 9 passes. Read it back: the tag points at
+the release branch head, it is a pre-release, and the previous release is still Latest.
+
+The internal runbook creates it straight after the prep PR merges, before CI. Waiting for CI means a failed build
+never leaves a dangling tag; either order works as long as it happens before Prod is queued.
+
+When the GitHub pre-release automation in [#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143)
+lands, this step becomes "verify the pre-release the workflow created" rather than creating one.
+
 ### 8. Queue the Prod release pipeline
 
 **⛔ Gate 4:** in the internal ADO project, run the Prod release pipeline from branch `release/<x.y.z>` (not `main`)
-and **explicitly set the pipeline artifact** to the CI build from step 7; do not accept whatever is preselected.
+and **explicitly set the pipeline artifact** to the CI build from step 6; do not accept whatever is preselected.
 Before queuing, confirm the artifact retention task succeeded in the latest `main` CI run, and that the release
 branch uses the same task version:
 
@@ -412,7 +416,7 @@ This skill documents the process as it runs today and points at the automation t
 
 - [#3139](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3139)-[#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143)
   (release pipeline 1-4): a shared changelog extractor, release-integrity and SRI validation, a required check on PRs
-  into `release/*`, and GitHub pre-release creation on merge. When they land, steps 4-6 become checks of what the
+  into `release/*`, and GitHub pre-release creation on merge. When they land, steps 4-7 become checks of what the
   automation did, and their validation replaces the manual carrier check.
 - [#3032](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3032): agent instructions and the contributor
   skill, which own build, test and change-file guidance.
