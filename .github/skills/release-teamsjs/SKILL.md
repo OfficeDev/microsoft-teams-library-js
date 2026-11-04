@@ -58,7 +58,9 @@ approval on its current head.
   PRs into `release/*`.
 - **Internal ADO:** permission to queue the Prod, SDF and DDL release pipelines, and to authorize the CI pipeline
   resource on the first run. Sign in with `az login` if you use the CLI.
-- **Lockbox:** your eligibility is active. It lapses after about 30 days unused; renew it before release day, from a
+- **Lockbox:** two separate permissions, both described in the internal runbook. You need active Lockbox
+  eligibility to queue a pipeline that raises a request (Prod, SDF and DDL all do). The approver must be a member of
+  the release approver group. Eligibility lapses after about 30 days unused; renew it before release day, from a
   managed device if the internal runbook says so. A second eligible person must be available to approve.
 - **Tools:** Node 18 (what CI uses), pnpm 9.15.9, git, and `gh` for GitHub reads. On Windows, run the bash blocks in
   Git Bash.
@@ -132,7 +134,9 @@ check check-version --version "$version"
 `check-version` exits 0 only when npm, the Prod CDN folder and the `v<version>` tag are all absent. Exit 3 means a
 source was unreachable or answered unexpectedly: resolve it from another network, do not proceed on a guess.
 
-**⛔ Gate 1:** show the version, the diff summary, the new CHANGELOG section and the branch names.
+**⛔ Gate 1:** show the version, the diff summary, the new CHANGELOG section and the branch names. Cross-check the
+version against the latest beta (`npm view @microsoft/teams-js dist-tags.beta`): without its `-beta.N` suffix it is
+normally the same version. Explain any difference before asking.
 
 Do not use `.github/workflows/prerelease.yml`. It force-pushes `release/<version>` with an unreviewed bump.
 
@@ -159,8 +163,15 @@ node tools/cli/readChangelog.js "$version"                     # the PR body
 
 **⛔ Gate 3:** open the PR from the working branch into `release/<x.y.z>` (**not** `main`), titled
 `Pre release <x.y.z>`, with the CHANGELOG section as the body. PRs into `release/*` are squash-only and need a
-code-owner approval after the last push; a push dismisses earlier approvals. The reviewer checks the expected files
-and that the PR body matches the CHANGELOG. Wait for the merge; do not continue while it is open.
+code-owner approval after the last push; a push dismisses earlier approvals. Wait for the merge; do not continue while
+it is open. The reviewer confirms the PR has exactly:
+
+- every pending change file deleted
+- a new version section in `packages/teams-js/CHANGELOG.md` holding those entries, matching the PR body
+- the new version in `packages/teams-js/package.json` and `apps/teams-test-app/package.json`
+- the script `src` and `integrity` in `packages/teams-js/README.md` and `apps/teams-test-app/index_cdn.html` pointing
+  at the new version
+- `pnpm-lock.yaml` churn and nothing else
 
 A green prep PR proves nothing about the build: the ADO PR pipeline skips PRs into `release/*`, so the only check that
 runs is the CLA. The build gate is the CI run on `release/<x.y.z>` after the merge (step 7). The release PR
@@ -184,16 +195,23 @@ A tag or GitHub release created before the bump lands points at the wrong commit
 
 ### 6. Create the GitHub release as a pre-release
 
-**⛔ Gate 5:** tag `v<x.y.z>`, target `release/<x.y.z>` at the verified commit, title `v<x.y.z>`, body the CHANGELOG
-section, **pre-release** ticked, no binaries attached. It stays a pre-release until step 9 passes.
+**⛔ Gate 5:** right after the prep PR merges, and before the CI run in step 7 matters, create the GitHub release: tag
+`v<x.y.z>` (a new tag), target `release/<x.y.z>` at the verified commit, title `v<x.y.z>`, body the CHANGELOG section,
+**pre-release** ticked, no binaries attached (publishing adds them). It stays a pre-release until step 9 passes.
+Then confirm it, including that the tag carries the bump:
+
+```bash
+check github-release --version "$version" --expect prerelease
+```
 
 When the GitHub pre-release automation in [#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143)
 lands, this step becomes "verify the pre-release the workflow created" rather than creating one.
 
 ### 7. Integrity gate on the CI build
 
-The merge triggers the CI build of `release/<x.y.z>`. Check that the whole run succeeded, including the Build Test
-Publish job, not just that it finished. Then note its build number and download its `CDNFeed` artifact:
+The merge triggers the CI build of `release/<x.y.z>`, named after the prep PR. Check that the whole run succeeded,
+including the Build Test Publish job, not just that it finished. Then note its build number and download its
+`CDNFeed` artifact:
 
 ```bash
 check artifact --version "$version" --file "<download>/CDNFeed/$version/js/MicrosoftTeams.min.js"
@@ -239,11 +257,17 @@ success. Note the CDN byte count it prints for the size record.
 
 ### 10. Promote, merge back and update consumers
 
-- **⛔ Gate 5:** edit the GitHub release: untick pre-release and set it as the latest release.
+- **⛔ Gate 5:** edit the GitHub release: untick pre-release and set it as the latest release, then
+  `check github-release --version "$version" --expect latest`.
 - **⛔ Gates 2-3:** merge back with `<alias>/cleanup_release_<x.y.z>` cut from `release/<x.y.z>`, merge `origin/main`
   into it, add a `none` change file (`pnpm changefile`, comment `Released <x.y.z>`), and open a PR to `main` titled
-  `Cleanup release v<x.y.z>`. Never force-push `main` or change the deployed release branch.
-- **⛔ Gates 2-3:** bump the internal downstream test pipelines that pin a TeamsJS version, per the internal runbook.
+  `Cleanup release v<x.y.z>`. Never force-push `main` or change the deployed release branch. A PR from release
+  content can run an extra end-to-end check against the newly deployed CDN; leave the PR open until it completes.
+  After it merges, `check merged-back --version "$version"` confirms `main` has the release's CHANGELOG section (the
+  merge-back is squashed, so commit ancestry cannot show it).
+- **⛔ Gates 2-3:** update the internal hub end-to-end tests to cover the new version, per the internal runbook. On the
+  web side that is a PR that bumps the pinned TeamsJS version and adds the version to the client SDK checkpoint lists
+  in both test helpers; it needs a linked work item. The iOS pipelines follow the latest release automatically.
 - `postrelease.yml` notifies a downstream repository when the prep PR merges. It has failed on recent releases without
   affecting publication; report it, do not block on it.
 - If the release changed the valid-domains list, run the DDL release below.
@@ -253,21 +277,36 @@ success. Note the CDN byte count it prints for the size record.
 Prepare, do not send:
 
 - **Review request** for the prep and merge-back PRs, once CI is green, with titled links.
-- **Announcement**, only after step 9 passed: "teams-js v<x.y.z> has been released to npm and CDN", the npm version
-  page (`https://www.npmjs.com/package/@microsoft/teams-js/v/<x.y.z>`), the Prod CDN URL, the GitHub release, and the
-  Minor changes and Patches lists copied from the real CHANGELOG section, not from memory or the PR list.
+- **Announcement**, only after step 9 passed, in the team channel the internal runbook names: "teams-js v<x.y.z> has
+  been released to npm and CDN", the npm version page (`https://www.npmjs.com/package/@microsoft/teams-js/v/<x.y.z>`),
+  the Prod CDN URL, the GitHub release, and the Minor changes and Patches lists copied from the real CHANGELOG
+  section, not from memory or the PR list. Tag the current release contacts listed in the runbook; its older example
+  post tags people who are no longer the contacts.
 
 Each is a separate **⛔ Gate 6**. Record what was sent and where, so a retry never double-posts.
 
 ### 12. Close out
 
-Record the bundle size and the delta from the previous version where the internal runbook keeps it, close the
-release work item, and run the retro (below).
+Record the bundle size and the delta from the previous version in the size table the internal runbook keeps
+(`check size --version "$version" --previous <previous version>` prints both), close the release work item, then
+confirm the post-release checklist and run the retro (below).
+
+### Post-release checklist
+
+- [ ] npm has the version, and `latest` points at it: `check published --version <v> --dist-tag latest`
+- [ ] The Prod CDN serves `MicrosoftTeams.min.js` for the version with the README SRI: the same command
+- [ ] The GitHub release is published, not a pre-release, and marked Latest:
+      `check github-release --version <v> --expect latest`
+- [ ] The release branch is merged back to `main`: `check merged-back --version <v>`
+- [ ] The web hub end-to-end tests cover the new version; iOS is automatic (step 10; internal, so not scripted)
+- [ ] The announcement is posted (step 11)
+- [ ] The size table has the new entry: `check size --version <v> --previous <p>` gives the numbers
 
 ## SDF beta
 
 1. Pre-flight as in step 1. Apply the skip rule; in a Prod week there is no beta.
-2. Pick the latest successful non-PR CI build of `main`. Its `CDNFeed` folder name is the beta version.
+2. Pick the latest successful non-PR CI build of `main`; both of its stages must be green. Its `CDNFeed` folder name is
+   the beta version. Checking it before queuing is what stops an unexpected version from being published.
 3. `check sri --file "<download>/CDNFeed/<beta>/js/MicrosoftTeams.min.js"` and keep the result.
 4. **⛔ Gate 4:** queue the SDF release pipeline with that build as its resource. Lockbox and judging the run work as
    in Prod step 8.
@@ -276,6 +315,8 @@ release work item, and run the retro (below).
    ```bash
    check published --version "<beta>" --environment sdf --dist-tag beta --expected-sri "<sri from step 3>"
    ```
+
+   The npm publish task's log also shows the published version ("npm notice version"); it must match `<beta>`.
 
 No release branch, PR, GitHub release or announcement for a beta unless the internal runbook asks for one.
 
@@ -301,14 +342,18 @@ and public URLs, and never writes anything. Define a shorthand once per shell:
 check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 ```
 
-| Command         | Passes when                                                                               |
-| --------------- | ----------------------------------------------------------------------------------------- |
-| `check-version` | the version is absent from npm, the Prod CDN and GitHub tags                              |
-| `carriers`      | both `package.json` files, the README and the test app name the version and share one SRI |
-| `artifact`      | a downloaded CI bundle hashes to that SRI                                                 |
-| `published`     | the CDN bytes match the SRI and npm has the version, and the dist-tag if given            |
-| `domains`       | the live valid-domains list equals the source                                             |
-| `links`, `sri`  | (informational) the public announcement links, or a file's SRI                            |
+| Command                | Passes when                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------ |
+| `check-version`        | the version is absent from npm, the Prod CDN and GitHub tags                                           |
+| `carriers`             | both `package.json` files, the README and the test app name the version and share one SRI              |
+| `artifact`             | a downloaded CI bundle hashes to that SRI                                                              |
+| `published`            | the CDN bytes match the SRI and npm has the version, and the dist-tag if given                         |
+| `domains`              | the live valid-domains list equals the source                                                          |
+| `github-release`       | `--expect prerelease` or `latest`: the GitHub release is in that state and tag `v<v>` carries the bump |
+| `merged-back`          | `main`'s CHANGELOG has the version's section                                                           |
+| `size`, `links`, `sri` | (informational) bundle bytes and change from `--previous`, announcement links, a file's SRI            |
+
+GitHub API calls send `GITHUB_TOKEN` as a bearer token when it is set, which avoids anonymous rate limits.
 
 Exit codes: `0` passed, `1` a check failed, `2` usage error, `3` a source was unreachable or answered unexpectedly.
 Exit 3 is never success.

@@ -10,6 +10,12 @@
  *   domains       [--environment prod|sdf]         the live valid-domains list equals this checkout's source
  *   links         --version <v>                    public npm, CDN and GitHub release links for the announcement
  *   sri           --file <path>                    the sha384 SRI of a file, such as an SDF beta CI bundle
+ *   github-release --version <v> --expect prerelease|latest
+ *                                                  the GitHub release state, and that tag v<v> carries the bump
+ *   merged-back   --version <v>                    main's CHANGELOG has the <v> section
+ *   size          --version <v> --previous <p>     Prod CDN bundle bytes and the change from <p>
+ *
+ * GitHub API calls send GITHUB_TOKEN as a bearer token when it is set, to avoid anonymous rate limits.
  *
  * Exit codes: 0 every check passed, 1 a check failed, 2 usage error, 3 a source was unreachable (inconclusive).
  */
@@ -62,6 +68,33 @@ function npmDistTagsUrl(registry) {
 
 function githubTagUrl(version) {
   return `${GITHUB_API}/repos/${REPOSITORY}/git/ref/tags/v${version}`;
+}
+
+function githubReleaseUrl(version) {
+  return `${GITHUB_API}/repos/${REPOSITORY}/releases/tags/v${version}`;
+}
+
+function githubLatestReleaseUrl() {
+  return `${GITHUB_API}/repos/${REPOSITORY}/releases/latest`;
+}
+
+function githubPackageJsonAtTagUrl(version) {
+  return `${GITHUB_API}/repos/${REPOSITORY}/contents/packages/teams-js/package.json?ref=v${version}`;
+}
+
+function mainChangelogUrl() {
+  return `https://raw.githubusercontent.com/${REPOSITORY}/main/packages/teams-js/CHANGELOG.md`;
+}
+
+function withGithubAuth(url, init, env) {
+  if (!url.startsWith(`${GITHUB_API}/`)) {
+    return init;
+  }
+  const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'release-teamsjs-check', ...init.headers };
+  if (env.GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`;
+  }
+  return { ...init, headers };
 }
 
 function publicLinks(version) {
@@ -197,6 +230,128 @@ async function readJson(fetchImpl, url, label) {
   return { json: await response.json() };
 }
 
+async function readGithubJson(fetchImpl, url, label) {
+  const { response, unreachable } = await fetchOrUnreachable(fetchImpl, url, label);
+  if (unreachable) {
+    return { problem: unreachable };
+  }
+  if (response.status === 404) {
+    return { problem: result(Outcome.fail, `${label}: ${url} does not exist`) };
+  }
+  if (response.status !== 200) {
+    return {
+      problem: result(
+        Outcome.unreachable,
+        `${label}: ${url} returned HTTP ${response.status}. Set GITHUB_TOKEN if this is a rate limit.`,
+      ),
+    };
+  }
+  return { json: await response.json() };
+}
+
+async function checkGithubRelease({ version, expect, fetchImpl }) {
+  const tag = `v${version}`;
+  const results = [];
+  const release = await readGithubJson(fetchImpl, githubReleaseUrl(version), 'GitHub release');
+  if (release.problem) {
+    results.push(release.problem);
+  } else if (release.json.draft) {
+    results.push(result(Outcome.fail, `GitHub release ${tag} is still a draft`));
+  } else if (expect === 'prerelease') {
+    results.push(
+      result(
+        release.json.prerelease ? Outcome.pass : Outcome.fail,
+        release.json.prerelease
+          ? `GitHub release ${tag} is a pre-release`
+          : `GitHub release ${tag} is not a pre-release yet it should be until publication is verified`,
+      ),
+    );
+  } else {
+    results.push(
+      result(
+        release.json.prerelease ? Outcome.fail : Outcome.pass,
+        release.json.prerelease
+          ? `GitHub release ${tag} is still a pre-release`
+          : `GitHub release ${tag} is no longer a pre-release`,
+      ),
+    );
+    const latest = await readGithubJson(fetchImpl, githubLatestReleaseUrl(), 'GitHub latest release');
+    results.push(
+      latest.problem ||
+        result(
+          latest.json.tag_name === tag ? Outcome.pass : Outcome.fail,
+          `GitHub latest release is ${latest.json.tag_name}, expected ${tag}`,
+        ),
+    );
+  }
+
+  const packageJson = await readGithubJson(fetchImpl, githubPackageJsonAtTagUrl(version), `Tag ${tag}`);
+  if (packageJson.problem) {
+    results.push(packageJson.problem);
+  } else {
+    const tagVersion = JSON.parse(
+      Buffer.from(packageJson.json.content, packageJson.json.encoding).toString('utf8'),
+    ).version;
+    results.push(
+      result(
+        tagVersion === version ? Outcome.pass : Outcome.fail,
+        `packages/teams-js/package.json at ${tag} is ${tagVersion}, expected ${version}` +
+          (tagVersion === version ? '' : '; the tag was cut before the bump landed'),
+      ),
+    );
+  }
+  return results;
+}
+
+async function checkMergedBack({ version, fetchImpl }) {
+  const url = mainChangelogUrl();
+  const { response, unreachable } = await fetchOrUnreachable(fetchImpl, url, 'main CHANGELOG');
+  if (unreachable) {
+    return [unreachable];
+  }
+  if (response.status !== 200) {
+    return [result(Outcome.unreachable, `main CHANGELOG ${url} returned HTTP ${response.status}`)];
+  }
+  const heading = `## ${version}`;
+  const found = (await response.text()).split(/\r?\n/).some((line) => line.trim() === heading);
+  return [
+    found
+      ? result(Outcome.pass, `main's CHANGELOG has the "${heading}" section, so the release is merged back`)
+      : result(Outcome.fail, `main's CHANGELOG has no "${heading}" section, so the release is not merged back yet`),
+  ];
+}
+
+async function readCdnBytes(fetchImpl, version) {
+  const url = cdnScriptUrl(version, 'prod');
+  const { response, unreachable } = await fetchOrUnreachable(fetchImpl, url, 'CDN');
+  if (unreachable) {
+    return { problem: unreachable };
+  }
+  if (response.status !== 200) {
+    return { problem: result(Outcome.fail, `CDN ${url} returned HTTP ${response.status}`) };
+  }
+  return { bytes: Buffer.from(await response.arrayBuffer()).length };
+}
+
+async function reportSize({ version, previous, fetchImpl }) {
+  const current = await readCdnBytes(fetchImpl, version);
+  const before = await readCdnBytes(fetchImpl, previous);
+  const problems = [current.problem, before.problem].filter(Boolean);
+  if (problems.length > 0) {
+    return problems;
+  }
+  const change = current.bytes - before.bytes;
+  const sign = change >= 0 ? '+' : '-';
+  const percent = ((Math.abs(change) / before.bytes) * 100).toFixed(2);
+  return [
+    result(
+      Outcome.info,
+      `${version} is ${current.bytes} bytes; ${previous} was ${before.bytes} bytes; ` +
+        `change ${sign}${Math.abs(change)} bytes (${sign}${percent}%)`,
+    ),
+  ];
+}
+
 async function checkNpm({ version, distTag, registry, fetchImpl }) {
   const results = [];
   const versionUrl = npmVersionUrl(registry, version);
@@ -281,6 +436,13 @@ function requireRegistry(options) {
   return registry;
 }
 
+function requireExpect(options) {
+  if (options.expect !== 'prerelease' && options.expect !== 'latest') {
+    throw new UsageError('--expect must be prerelease or latest');
+  }
+  return options.expect;
+}
+
 const commands = {
   'check-version': async (options, { fetchImpl }) =>
     checkVersionIsFree({ version: requireVersion(options), registry: requireRegistry(options), fetchImpl }),
@@ -322,6 +484,19 @@ const commands = {
   domains: async (options, { repoRoot, readFile, fetchImpl }) =>
     checkValidDomains({ environment: requireEnvironment(options), repoRoot, fetchImpl, readFile }),
 
+  'github-release': async (options, { fetchImpl }) =>
+    checkGithubRelease({ version: requireVersion(options), expect: requireExpect(options), fetchImpl }),
+
+  'merged-back': async (options, { fetchImpl }) => checkMergedBack({ version: requireVersion(options), fetchImpl }),
+
+  size: async (options, { fetchImpl }) => {
+    const version = requireVersion(options);
+    if (!options.previous || !VERSION_PATTERN.test(options.previous)) {
+      throw new UsageError('size needs --previous <the version released before>');
+    }
+    return reportSize({ version, previous: options.previous, fetchImpl });
+  },
+
   links: async (options) =>
     Object.entries(publicLinks(requireVersion(options))).map(([name, url]) => result(Outcome.info, `${name} ${url}`)),
 
@@ -333,14 +508,18 @@ const commands = {
   },
 };
 
-async function run(argv, { repoRoot, fetchImpl = globalThis.fetch, readFile = fs.readFileSync, log = console.log }) {
+async function run(
+  argv,
+  { repoRoot, fetchImpl = globalThis.fetch, readFile = fs.readFileSync, log = console.log, env = process.env },
+) {
+  const authorizedFetch = (url, init) => fetchImpl(url, withGithubAuth(url, init, env));
   let results;
   try {
     const { command, options } = parseArgs(argv);
     if (!Object.prototype.hasOwnProperty.call(commands, command)) {
       throw new UsageError(`Command must be one of: ${Object.keys(commands).join(', ')}`);
     }
-    results = await commands[command](options, { repoRoot, fetchImpl, readFile });
+    results = await commands[command](options, { repoRoot, fetchImpl: authorizedFetch, readFile });
   } catch (error) {
     if (error instanceof UsageError) {
       log(`USAGE ${error.message}`);
