@@ -168,6 +168,11 @@ A green prep PR proves nothing about the build: the ADO PR pipeline skips PRs in
 runs is the CLA. The build gate is the CI run on `release/<x.y.z>` after the merge (step 7). The release PR
 validation in [#3141](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3141) is meant to close this gap.
 
+When the prep PR also carries commits already merged to `main` (for example when reusing a release branch), automated
+reviewers may comment on those files rather than the bump. Answer with evidence, such as that change's own green CI on
+`main`. A real problem gets fixed on `main` and reaches the release through the branch, never by a commit made only on
+`release/<x.y.z>`.
+
 ### 5. Verify the release branch carries the bump
 
 ```bash
