@@ -122,6 +122,38 @@ function writeArtifact(root, folderVersion, bytes) {
   return file;
 }
 
+function writeCleanup(root, { changelog, changeFiles }) {
+  fs.mkdirSync(path.join(root, 'packages', 'teams-js'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'packages', 'teams-js', 'CHANGELOG.md'), changelog);
+  fs.mkdirSync(path.join(root, 'change'), { recursive: true });
+  for (const [name, comment, type = 'minor'] of changeFiles) {
+    const changeFile = { type, comment, packageName: '@microsoft/teams-js', dependentChangeType: 'patch' };
+    fs.writeFileSync(path.join(root, 'change', name), JSON.stringify(changeFile, null, 2));
+  }
+}
+
+const RELEASED_CHANGELOG = [
+  '# Change Log - @microsoft/teams-js',
+  '',
+  `## ${VERSION}`,
+  '',
+  'Wed, 04 Nov 2026 21:21:53 GMT',
+  '',
+  '### Minor changes',
+  '',
+  '- Added `clipboard.read` permission APIs.',
+  '- Added `localNetworkAccess` permission APIs.',
+  '',
+  '### Patches',
+  '',
+  '- Added Copilot Studio origins to the valid-origins artifact.',
+  '',
+  '## 2.58.0',
+  '',
+  '- Added `stageView.self.isCloseResultSupported`.',
+  '',
+].join('\n');
+
 function writePipelineConfig(root, { prodTag = 'latest', prodState = 'Latest', retention = 6 } = {}) {
   const write = (relativePath, contents) => {
     fs.mkdirSync(path.dirname(path.join(root, relativePath)), { recursive: true });
@@ -513,6 +545,48 @@ describe('check-release', () => {
       const file = path.join(root, 'announcement.txt');
       fs.writeFileSync(file, `teams-js v${VERSION} has been released to npm and CDN`);
       assert.equal(await runWith(['announcement', '--version', VERSION, '--file', file]), ExitCode.failed);
+    });
+  });
+
+  describe('consumed-changes', () => {
+    it('passes when no pending change file repeats an entry the release shipped', async () => {
+      writeCleanup(root, {
+        changelog: RELEASED_CHANGELOG,
+        changeFiles: [
+          ['@microsoft-teams-js-new.json', 'Added `brandNew` capability.'],
+          ['@microsoft-teams-js-released.json', `Released ${VERSION}`, 'none'],
+        ],
+      });
+      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('fails for each change file the release already consumed, naming it', async () => {
+      writeCleanup(root, {
+        changelog: RELEASED_CHANGELOG,
+        changeFiles: [
+          ['@microsoft-teams-js-clipboard.json', 'Added `clipboard.read` permission APIs.'],
+          ['@microsoft-teams-js-lna.json', 'Added `localNetworkAccess` permission APIs.  '],
+          ['@microsoft-teams-js-origins.json', 'Added Copilot Studio origins to the valid-origins artifact.', 'patch'],
+          ['@microsoft-teams-js-new.json', 'Added `brandNew` capability.'],
+        ],
+      });
+      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.failed);
+      const failures = lines.filter((line) => line.startsWith('FAIL'));
+      assert.equal(failures.length, 3, lines.join('\n'));
+      assert.ok(failures.some((line) => line.includes('@microsoft-teams-js-clipboard.json')));
+    });
+
+    it('ignores entries from older releases', async () => {
+      writeCleanup(root, {
+        changelog: RELEASED_CHANGELOG,
+        changeFiles: [['@microsoft-teams-js-old.json', 'Added `stageView.self.isCloseResultSupported`.']],
+      });
+      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('fails when the CHANGELOG has no section for the version', async () => {
+      writeCleanup(root, { changelog: RELEASED_CHANGELOG, changeFiles: [] });
+      assert.equal(await runWith(['consumed-changes', '--version', '2.60.0']), ExitCode.failed);
     });
   });
 
