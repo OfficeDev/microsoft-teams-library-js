@@ -47,13 +47,42 @@ function writeRepo(root, { version = VERSION, integrity = BUNDLE_SRI, htmlIntegr
 }
 
 function response(status, body) {
-  const bytes = Buffer.isBuffer(body) ? body : Buffer.from(JSON.stringify(body ?? {}));
+  const bytes = Buffer.isBuffer(body)
+    ? body
+    : Buffer.from(typeof body === 'string' ? body : JSON.stringify(body ?? {}));
   return {
     status,
     arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
     json: async () => JSON.parse(bytes.toString('utf8')),
     text: async () => bytes.toString('utf8'),
   };
+}
+
+const throwingFetch = async (url) => {
+  throw new Error(`unexpected network request in a test: ${url}`);
+};
+
+const NPM = 'https://registry.npmjs.org';
+const PROXY = 'https://proxy.example/npm';
+const JSDELIVR = 'https://data.jsdelivr.com/v1/packages/npm/@microsoft/teams-js';
+const unpkg = (spec) => `https://unpkg.com/@microsoft/teams-js@${spec}/package.json`;
+const registryVersion = (registry, version) => `${registry}/@microsoft%2fteams-js/${version}`;
+const registryTags = (registry) => `${registry}/-/package/@microsoft%2fteams-js/dist-tags`;
+
+function registryRoutes(registry, { versions = [], tags = {} }) {
+  const routes = { [registryTags(registry)]: response(200, tags) };
+  for (const version of versions) {
+    routes[registryVersion(registry, version)] = response(200, { version });
+  }
+  return routes;
+}
+
+function jsdelivrRoutes({ versions = [], tags = {} }) {
+  return { [JSDELIVR]: response(200, { type: 'npm', tags, versions: versions.map((version) => ({ version })) }) };
+}
+
+function unreachable(...urls) {
+  return Object.fromEntries(urls.map((url) => [url, new Error('TLS alert 40')]));
 }
 
 function fakeFetch(routes) {
@@ -178,12 +207,15 @@ describe('check-release', () => {
   let lines;
   let env;
   const log = (line) => lines.push(line);
-  const runWith = (argv, fetchImpl) => run(argv, { repoRoot: root, fetchImpl, log, env });
+  let listDeletedChangeFiles;
+  const runWith = (argv, fetchImpl = throwingFetch) =>
+    run(argv, { repoRoot: root, fetchImpl, log, env, listDeletedChangeFiles });
 
   beforeEach(() => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'release-teamsjs-'));
     lines = [];
     env = {};
+    listDeletedChangeFiles = () => [];
   });
 
   afterEach(() => {
@@ -255,6 +287,24 @@ describe('check-release', () => {
       );
     });
 
+    it('ignores _manifest but fails when CDNFeed holds more than one version folder', async () => {
+      writeRepo(root);
+      const file = writeArtifact(root, VERSION, BUNDLE);
+      fs.mkdirSync(path.join(root, 'download', 'CDNFeed', '_manifest'));
+      assert.equal(
+        await runWith(['artifact', '--version', VERSION, '--file', file]),
+        ExitCode.passed,
+        lines.join('\n'),
+      );
+      writeArtifact(root, '2.58.0', BUNDLE);
+      lines = [];
+      assert.equal(await runWith(['artifact', '--version', VERSION, '--file', file]), ExitCode.failed);
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('2.58.0')),
+        lines.join('\n'),
+      );
+    });
+
     it('requires --file', async () => {
       writeRepo(root);
       assert.equal(await runWith(['artifact', '--version', VERSION]), ExitCode.usage);
@@ -265,11 +315,24 @@ describe('check-release', () => {
     it('passes only when npm, the Prod CDN and the GitHub tag are all absent', async () => {
       const { fetchImpl, requested } = fakeFetch({});
       assert.equal(await runWith(['check-version', '--version', VERSION], fetchImpl), ExitCode.passed);
-      assert.deepEqual(requested, [
-        `https://registry.npmjs.org/@microsoft%2fteams-js/${VERSION}`,
+      for (const url of [
+        registryVersion(NPM, VERSION),
         cdnScriptUrl(VERSION, 'prod'),
         `https://api.github.com/repos/OfficeDev/microsoft-teams-library-js/git/ref/tags/v${VERSION}`,
-      ]);
+      ]) {
+        assert.ok(requested.includes(url), url);
+      }
+    });
+
+    it('fails when a mirror already lists the version, even if the registry says 404', async () => {
+      const { fetchImpl } = fakeFetch(jsdelivrRoutes({ versions: [VERSION], tags: { latest: VERSION } }));
+      assert.equal(await runWith(['check-version', '--version', VERSION], fetchImpl), ExitCode.failed);
+    });
+
+    it('is inconclusive when only a proxy says the version is absent', async () => {
+      const { fetchImpl } = fakeFetch(unreachable(registryVersion(NPM, VERSION), registryTags(NPM)));
+      const argv = ['check-version', '--version', VERSION, '--registry', PROXY];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
     });
 
     it('fails when the version is already on the CDN', async () => {
@@ -292,10 +355,10 @@ describe('check-release', () => {
       assert.equal(await runWith(['check-version', '--version', VERSION], fetchImpl), ExitCode.unreachable);
     });
 
-    it('uses an alternative https registry without a trailing slash', async () => {
+    it('also asks an alternative https registry, without a trailing slash', async () => {
       const { fetchImpl, requested } = fakeFetch({});
       await runWith(['check-version', '--version', VERSION, '--registry', 'https://mirror.example/npm/'], fetchImpl);
-      assert.equal(requested[0], `https://mirror.example/npm/@microsoft%2fteams-js/${VERSION}`);
+      assert.ok(requested.includes(`https://mirror.example/npm/@microsoft%2fteams-js/${VERSION}`), requested.join());
     });
 
     it('rejects a non-https registry and a malformed version', async () => {
@@ -365,6 +428,75 @@ describe('check-release', () => {
     it('rejects an unknown environment', async () => {
       assert.equal(await runWith(['published', '--version', VERSION, '--environment', 'toString']), 2);
     });
+
+    it('fails when the CDN has the version but registry.npmjs.org does not (half published)', async () => {
+      writeRepo(root);
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE),
+        [registryTags(NPM)]: response(200, { latest: '2.58.0' }),
+      });
+      assert.equal(await runWith(['published', '--version', VERSION], fetchImpl), ExitCode.failed);
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL npm')),
+        lines.join('\n'),
+      );
+    });
+
+    it('is inconclusive, not failed, when only a lagging proxy answers', async () => {
+      writeRepo(root);
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE),
+        ...unreachable(registryVersion(NPM, VERSION), registryTags(NPM)),
+        ...registryRoutes(PROXY, { versions: [], tags: { latest: '2.58.0' } }),
+      });
+      const argv = ['published', '--version', VERSION, '--dist-tag', 'latest', '--registry', PROXY];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
+    });
+
+    it('never passes on a proxy-only read', async () => {
+      writeRepo(root);
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE),
+        ...unreachable(registryVersion(NPM, VERSION), registryTags(NPM)),
+        ...registryRoutes(PROXY, { versions: [VERSION], tags: { latest: VERSION } }),
+      });
+      const argv = ['published', '--version', VERSION, '--dist-tag', 'latest', '--registry', PROXY];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
+    });
+
+    it('passes from public mirrors when registry.npmjs.org is unreachable and a proxy lags', async () => {
+      writeRepo(root);
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE),
+        ...unreachable(registryVersion(NPM, VERSION), registryTags(NPM)),
+        ...registryRoutes(PROXY, { versions: [], tags: { latest: '2.58.0' } }),
+        ...jsdelivrRoutes({ versions: [VERSION], tags: { latest: VERSION } }),
+        [unpkg(VERSION)]: response(200, { version: VERSION }),
+        [unpkg('latest')]: response(200, { version: VERSION }),
+      });
+      const argv = ['published', '--version', VERSION, '--dist-tag', 'latest', '--registry', PROXY];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('treats a CDN server error as inconclusive, not as missing', async () => {
+      writeRepo(root);
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(503),
+        ...npmRoutes(VERSION, { latest: VERSION }),
+      });
+      assert.equal(await runWith(['published', '--version', VERSION], fetchImpl), ExitCode.unreachable);
+    });
+
+    it('treats a non-JSON registry answer as inconclusive instead of crashing', async () => {
+      writeRepo(root);
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE),
+        [registryVersion(NPM, VERSION)]: response(200, '<html>proxy login</html>'),
+        [registryTags(NPM)]: response(200, '<html>proxy login</html>'),
+      });
+      const code = await runWith(['published', '--version', VERSION, '--dist-tag', 'latest'], fetchImpl);
+      assert.equal(code, ExitCode.unreachable, lines.join('\n'));
+    });
   });
 
   describe('domains', () => {
@@ -380,6 +512,11 @@ describe('check-release', () => {
       const { fetchImpl } = fakeFetch({ [validDomainsUrl('prod')]: response(200, live) });
       assert.equal(await runWith(['domains'], fetchImpl), ExitCode.failed);
       assert.match(lines[0], /missing live: \[\*\.teams\.microsoft\.com\], only live: \[old\.example\.com\]/);
+    });
+
+    it('only checks the Prod list; the SDF list is never refreshed by a DDL run', async () => {
+      writeRepo(root);
+      assert.equal(await runWith(['domains', '--environment', 'sdf']), ExitCode.usage);
     });
   });
 
@@ -461,11 +598,17 @@ describe('check-release', () => {
       const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
       assert.equal(await runWith(argv, fetchImpl), ExitCode.failed);
     });
+
+    it('fails --expect prerelease when the release is not marked pre-release', async () => {
+      const { fetchImpl } = fakeFetch(githubRoutes({ prerelease: false }));
+      const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.failed);
+    });
   });
 
   describe('beta-version', () => {
-    const tagsUrl = 'https://registry.npmjs.org/-/package/@microsoft%2fteams-js/dist-tags';
-    const tags = (latest) => fakeFetch({ [tagsUrl]: response(200, { latest, beta: '2.59.0-beta.0' }) }).fetchImpl;
+    const tags = (latest, extraRoutes = {}) =>
+      fakeFetch({ [registryTags(NPM)]: response(200, { latest, beta: '2.59.0-beta.0' }), ...extraRoutes }).fetchImpl;
 
     it('passes a beta of the next version', async () => {
       assert.equal(await runWith(['beta-version', '--version', '2.60.0-beta.0'], tags('2.59.0')), ExitCode.passed);
@@ -485,9 +628,50 @@ describe('check-release', () => {
       assert.ok(lines.at(-1).includes('-beta.'), lines.join('\n'));
     });
 
-    it('is inconclusive when the registry is unreachable', async () => {
-      const { fetchImpl } = fakeFetch({ [tagsUrl]: new Error('TLS alert 40') });
+    it('fails when the Prod CDN already has the base version, even if a lagging proxy says otherwise', async () => {
+      const { fetchImpl } = fakeFetch({
+        ...unreachable(registryTags(NPM)),
+        ...registryRoutes(PROXY, { tags: { latest: '2.58.0' } }),
+        [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE),
+      });
+      const argv = ['beta-version', '--version', '2.59.0-beta.1', '--registry', PROXY];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('fails when tag v<base> already exists', async () => {
+      const tagUrl = `https://api.github.com/repos/OfficeDev/microsoft-teams-library-js/git/ref/tags/v${VERSION}`;
+      const { fetchImpl } = fakeFetch({
+        ...unreachable(registryTags(NPM)),
+        [tagUrl]: response(200, { object: { type: 'commit', sha: 'a'.repeat(40) } }),
+      });
+      assert.equal(await runWith(['beta-version', '--version', '2.59.0-beta.1'], fetchImpl), ExitCode.failed);
+    });
+
+    it('takes the highest latest across sources', async () => {
+      const { fetchImpl } = fakeFetch({
+        ...unreachable(registryTags(NPM)),
+        ...registryRoutes(PROXY, { tags: { latest: '2.58.0' } }),
+        ...jsdelivrRoutes({ versions: [VERSION], tags: { latest: VERSION } }),
+      });
+      const argv = ['beta-version', '--version', '2.59.0-beta.1', '--registry', PROXY];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('relies on the Prod CDN and the tag when npm is unreachable', async () => {
+      const { fetchImpl } = fakeFetch(unreachable(registryTags(NPM)));
+      assert.equal(await runWith(['beta-version', '--version', '2.60.0-beta.0'], fetchImpl), ExitCode.passed);
+    });
+
+    it('is inconclusive when the Prod CDN cannot be reached', async () => {
+      const { fetchImpl } = fakeFetch({
+        ...unreachable(registryTags(NPM), cdnScriptUrl('2.60.0', 'prod')),
+      });
       assert.equal(await runWith(['beta-version', '--version', '2.60.0-beta.0'], fetchImpl), ExitCode.unreachable);
+    });
+
+    it('does not crash when dist-tags has no latest', async () => {
+      const { fetchImpl } = fakeFetch({ [registryTags(NPM)]: response(200, { beta: '2.59.0-beta.0' }) });
+      assert.equal(await runWith(['beta-version', '--version', '2.60.0-beta.0'], fetchImpl), ExitCode.passed);
     });
   });
 
@@ -512,6 +696,17 @@ describe('check-release', () => {
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
       assert.ok(
         lines.some((line) => line.startsWith('FAIL') && line.includes('AssetRetention@3')),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails when the SDF publish task says tag latest', async () => {
+      writePipelineConfig(root);
+      const sdf = path.join(root, 'tools/releases/sdf-release.yml');
+      fs.writeFileSync(sdf, fs.readFileSync(sdf, 'utf8').replace('(tag beta)', '(tag latest)'));
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL tools/releases/sdf-release.yml')),
         lines.join('\n'),
       );
     });
@@ -588,6 +783,28 @@ describe('check-release', () => {
       writeCleanup(root, { changelog: RELEASED_CHANGELOG, changeFiles: [] });
       assert.equal(await runWith(['consumed-changes', '--version', '2.60.0']), ExitCode.failed);
     });
+
+    it('matches a comment whose whitespace or line breaks differ from the CHANGELOG entry', async () => {
+      const wrapped = RELEASED_CHANGELOG.replace(
+        '- Added `clipboard.read` permission APIs.',
+        '- Added `clipboard.read`\n  permission APIs.',
+      );
+      writeCleanup(root, {
+        changelog: wrapped,
+        changeFiles: [['@microsoft-teams-js-clipboard.json', 'Added  `clipboard.read`\npermission APIs.']],
+      });
+      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('with --prep-commit, also fails for a change file the prep PR deleted, even with an edited comment', async () => {
+      writeCleanup(root, {
+        changelog: RELEASED_CHANGELOG,
+        changeFiles: [['@microsoft-teams-js-clipboard.json', 'Added clipboard read APIs (edited).']],
+      });
+      listDeletedChangeFiles = (commit) => (commit === 'abc1234' ? ['@microsoft-teams-js-clipboard.json'] : []);
+      const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'];
+      assert.equal(await runWith(argv), ExitCode.failed, lines.join('\n'));
+    });
   });
 
   describe('merged-back', () => {
@@ -617,6 +834,52 @@ describe('check-release', () => {
     it('fails when either version is missing from the CDN', async () => {
       const { fetchImpl } = fakeFetch({ [cdnScriptUrl(VERSION, 'prod')]: response(200, Buffer.alloc(10)) });
       assert.equal(await runWith(['size', '--version', VERSION, '--previous', '2.58.0'], fetchImpl), 1);
+    });
+
+    it('reports a shrink with a minus sign', async () => {
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(200, Buffer.alloc(900)),
+        [cdnScriptUrl('2.58.0', 'prod')]: response(200, Buffer.alloc(1000)),
+      });
+      assert.equal(await runWith(['size', '--version', VERSION, '--previous', '2.58.0'], fetchImpl), 0);
+      assert.deepEqual(lines, [`INFO ${VERSION} is 900 bytes; 2.58.0 was 1000 bytes; change -100 bytes (-10.00%)`]);
+    });
+  });
+
+  describe('flags, timeouts and help', () => {
+    it('rejects unknown or misspelled flags instead of ignoring them', async () => {
+      writeRepo(root);
+      assert.equal(await runWith(['carriers', '--version', VERSION, '--bogus', 'x']), ExitCode.usage);
+      assert.ok(lines.at(-1).includes('--bogus'), lines.join('\n'));
+      assert.equal(
+        await runWith(['published', '--version', VERSION, '--dist_tag', 'latest']),
+        ExitCode.usage,
+        lines.join('\n'),
+      );
+    });
+
+    it('rejects a repeated flag', async () => {
+      assert.equal(await runWith(['links', '--version', VERSION, '--version', '2.58.0']), ExitCode.usage);
+    });
+
+    it('prints help listing every command', async () => {
+      assert.equal(await runWith(['help']), ExitCode.passed);
+      const text = lines.join('\n');
+      for (const command of ['check-version', 'published', 'beta-version', 'consumed-changes', 'pipeline-config']) {
+        assert.ok(text.includes(command), command);
+      }
+    });
+
+    it('gives every request a timeout and reports a timeout as inconclusive', async () => {
+      const seen = [];
+      const fetchImpl = async (url, init) => {
+        seen.push(init && init.signal);
+        const error = new Error('The operation was aborted due to timeout');
+        error.name = 'TimeoutError';
+        throw error;
+      };
+      assert.equal(await runWith(['merged-back', '--version', VERSION], fetchImpl), ExitCode.unreachable);
+      assert.ok(seen.length > 0 && seen.every((signal) => signal instanceof AbortSignal));
     });
   });
 

@@ -29,6 +29,7 @@
  */
 'use strict';
 
+const childProcess = require('child_process');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -48,6 +49,7 @@ const INTEGRITY_PATTERN = /integrity="([^"]*)"/g;
 const SRI_CARRIER_FILES = ['packages/teams-js/README.md', 'apps/teams-test-app/index_cdn.html'];
 const PACKAGE_JSON_FILES = ['packages/teams-js/package.json', 'apps/teams-test-app/package.json'];
 const VALID_DOMAINS_SOURCE = 'packages/teams-js/src/artifactsForCDN/validDomains.json';
+const FETCH_TIMEOUT_MS = 30000;
 
 const ExitCode = { passed: 0, failed: 1, usage: 2, unreachable: 3 };
 const Outcome = { pass: 'PASS', fail: 'FAIL', unreachable: 'UNREACHABLE', info: 'INFO' };
@@ -179,18 +181,20 @@ function checkBytes(bytes, expectedSri, label) {
 
 async function fetchOrUnreachable(fetchImpl, url, label) {
   try {
-    return { response: await fetchImpl(url, { redirect: 'follow' }) };
+    return { response: await fetchImpl(url, { redirect: 'follow', signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) }) };
   } catch (error) {
+    const reason =
+      error && error.name === 'TimeoutError' ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s` : error.message;
     return {
       unreachable: result(
         Outcome.unreachable,
-        `${label}: could not reach ${url} (${error.message}). This is not evidence either way.`,
+        `${label}: could not reach ${url} (${reason}). This is not evidence either way.`,
       ),
     };
   }
 }
 
-async function expectAbsent(fetchImpl, url, label) {
+async function expectAbsent(fetchImpl, url, label, takenMessage = 'so this version is taken') {
   const { response, unreachable } = await fetchOrUnreachable(fetchImpl, url, label);
   if (unreachable) {
     return unreachable;
@@ -199,7 +203,7 @@ async function expectAbsent(fetchImpl, url, label) {
     return result(Outcome.pass, `${label}: ${url} does not exist yet`);
   }
   if (response.status === 200) {
-    return result(Outcome.fail, `${label}: ${url} already exists, so this version is taken`);
+    return result(Outcome.fail, `${label}: ${url} already exists, ${takenMessage}`);
   }
   return result(
     Outcome.unreachable,
@@ -208,11 +212,16 @@ async function expectAbsent(fetchImpl, url, label) {
 }
 
 async function checkVersionIsFree({ version, registry, fetchImpl }) {
+  const sources = await observeNpm({ version, tagNames: [], registry, fetchImpl });
   return [
-    await expectAbsent(fetchImpl, npmVersionUrl(registry, version), 'npm'),
+    npmAbsenceResult(sources, version),
     await expectAbsent(fetchImpl, cdnScriptUrl(version, 'prod'), 'Prod CDN'),
     await expectAbsent(fetchImpl, githubTagUrl(version), 'GitHub tag'),
   ];
+}
+
+function inconclusiveStatus(label, url, status) {
+  return result(Outcome.unreachable, `${label}: ${url} returned HTTP ${status}. This is not evidence either way.`);
 }
 
 async function checkCdnScript({ version, environment, expectedSri, fetchImpl }) {
@@ -221,46 +230,250 @@ async function checkCdnScript({ version, environment, expectedSri, fetchImpl }) 
   if (unreachable) {
     return unreachable;
   }
+  if (response.status === 404) {
+    return result(Outcome.fail, `CDN ${url} returned HTTP 404`);
+  }
   if (response.status !== 200) {
-    return result(Outcome.fail, `CDN ${url} returned HTTP ${response.status}`);
+    return inconclusiveStatus('CDN', url, response.status);
   }
   return checkBytes(Buffer.from(await response.arrayBuffer()), expectedSri, `CDN ${url}`);
 }
 
-async function readJson(fetchImpl, url, label) {
+async function getJson(fetchImpl, url, label) {
   const { response, unreachable } = await fetchOrUnreachable(fetchImpl, url, label);
   if (unreachable) {
-    return { problem: unreachable };
-  }
-  if (response.status !== 200) {
-    return { problem: result(Outcome.fail, `${label} ${url} returned HTTP ${response.status}`) };
-  }
-  return { json: await response.json() };
-}
-
-async function readGithubJson(fetchImpl, url, label) {
-  const { response, unreachable } = await fetchOrUnreachable(fetchImpl, url, label);
-  if (unreachable) {
-    return { problem: unreachable };
+    return { status: 'unreachable', problem: unreachable };
   }
   if (response.status === 404) {
-    return { problem: result(Outcome.fail, `${label}: ${url} does not exist`) };
+    return { status: 'missing', problem: result(Outcome.fail, `${label}: ${url} does not exist`) };
   }
   if (response.status !== 200) {
+    return { status: 'unreachable', problem: inconclusiveStatus(label, url, response.status) };
+  }
+  try {
+    const json = await response.json();
+    if (!json || typeof json !== 'object') {
+      throw new Error('not a JSON object');
+    }
+    return { status: 'ok', json };
+  } catch {
     return {
-      problem: result(
-        Outcome.unreachable,
-        `${label}: ${url} returned HTTP ${response.status}. Set GITHUB_TOKEN if this is a rate limit.`,
-      ),
+      status: 'unreachable',
+      problem: result(Outcome.unreachable, `${label}: ${url} did not return JSON. This is not evidence either way.`),
     };
   }
-  return { json: await response.json() };
+}
+
+async function readJson(fetchImpl, url, label) {
+  const answer = await getJson(fetchImpl, url, label);
+  return answer.status === 'ok' ? { json: answer.json } : { problem: answer.problem };
+}
+
+async function readGithubJson(fetchImpl, url, label, missingMessage) {
+  const answer = await getJson(fetchImpl, url, label);
+  if (answer.status === 'ok') {
+    return { json: answer.json };
+  }
+  if (answer.status === 'missing') {
+    return { problem: result(Outcome.fail, missingMessage || `${label}: ${url} does not exist`) };
+  }
+  const problem = answer.problem;
+  return {
+    problem:
+      problem.message.includes('HTTP 403') || problem.message.includes('HTTP 429')
+        ? result(Outcome.unreachable, `${problem.message} Set GITHUB_TOKEN if this is a rate limit.`)
+        : problem,
+  };
+}
+
+const JSDELIVR_PACKAGE_URL = `https://data.jsdelivr.com/v1/packages/npm/${PACKAGE_NAME}`;
+
+function unpkgPackageJsonUrl(spec) {
+  return `https://unpkg.com/${PACKAGE_NAME}@${spec}/package.json`;
+}
+
+function pickTags(tags, tagNames) {
+  const picked = {};
+  if (tags && typeof tags === 'object') {
+    for (const tagName of tagNames) {
+      if (typeof tags[tagName] === 'string' && VERSION_PATTERN.test(tags[tagName])) {
+        picked[tagName] = tags[tagName];
+      }
+    }
+  }
+  return picked;
+}
+
+/**
+ * Asks registry.npmjs.org (authoritative), an optional proxy registry, jsDelivr and unpkg. Only the authoritative
+ * registry can show that a version is absent or a dist-tag is current; the others can lag, so they only add evidence
+ * that a version or tag value exists.
+ */
+async function observeNpm({ version, tagNames, registry, fetchImpl }) {
+  const sources = [];
+  const registries = [{ url: DEFAULT_REGISTRY, kind: 'authoritative', name: 'registry.npmjs.org' }];
+  if (registry !== DEFAULT_REGISTRY) {
+    registries.push({ url: registry, kind: 'proxy', name: registry });
+  }
+  for (const { url, kind, name } of registries) {
+    const source = { name, kind, hasVersion: undefined, tags: {}, problems: [] };
+    if (version) {
+      const answer = await getJson(fetchImpl, npmVersionUrl(url, version), name);
+      if (answer.status === 'ok') {
+        source.hasVersion = answer.json.version === version;
+      } else if (answer.status === 'missing') {
+        source.hasVersion = false;
+      } else {
+        source.problems.push(answer.problem.message);
+      }
+    }
+    if (tagNames.length > 0) {
+      const answer = await getJson(fetchImpl, npmDistTagsUrl(url), name);
+      if (answer.status === 'ok') {
+        source.tags = pickTags(answer.json, tagNames);
+      } else if (answer.status === 'unreachable') {
+        source.problems.push(answer.problem.message);
+      }
+    }
+    sources.push(source);
+  }
+
+  const jsdelivr = { name: 'jsDelivr', kind: 'mirror', hasVersion: undefined, tags: {}, problems: [] };
+  const listing = await getJson(fetchImpl, JSDELIVR_PACKAGE_URL, 'jsDelivr');
+  if (listing.status === 'ok') {
+    const versions = Array.isArray(listing.json.versions) ? listing.json.versions : [];
+    if (version && versions.some((entry) => entry && entry.version === version)) {
+      jsdelivr.hasVersion = true;
+    }
+    jsdelivr.tags = pickTags(listing.json.tags, tagNames);
+  }
+  sources.push(jsdelivr);
+
+  const unpkg = { name: 'unpkg', kind: 'mirror', hasVersion: undefined, tags: {}, problems: [] };
+  if (version) {
+    const answer = await getJson(fetchImpl, unpkgPackageJsonUrl(version), 'unpkg');
+    if (answer.status === 'ok' && answer.json.version === version) {
+      unpkg.hasVersion = true;
+    }
+  }
+  for (const tagName of tagNames) {
+    const answer = await getJson(fetchImpl, unpkgPackageJsonUrl(tagName), 'unpkg');
+    if (answer.status === 'ok') {
+      Object.assign(unpkg.tags, pickTags({ [tagName]: answer.json.version }, [tagName]));
+    }
+  }
+  sources.push(unpkg);
+  return sources;
+}
+
+function authoritativeSource(sources) {
+  return sources.find((source) => source.kind === 'authoritative');
+}
+
+function sourcesListing(sources, kinds) {
+  return sources
+    .filter((source) => source.hasVersion === true && kinds.includes(source.kind))
+    .map((source) => source.name);
+}
+
+function npmAbsenceResult(sources, version) {
+  const listedBy = sourcesListing(sources, ['authoritative', 'proxy', 'mirror']);
+  if (listedBy.length > 0) {
+    return result(
+      Outcome.fail,
+      `npm: ${version} is already published (${listedBy.join(', ')}), so this version is taken`,
+    );
+  }
+  const authoritative = authoritativeSource(sources);
+  if (authoritative.hasVersion === false) {
+    return result(Outcome.pass, `npm: registry.npmjs.org does not have ${version}`);
+  }
+  return result(
+    Outcome.unreachable,
+    `npm: registry.npmjs.org did not answer (${authoritative.problems.join('; ')}); a proxy or mirror that lacks a ` +
+      'version cannot prove it is free',
+  );
+}
+
+function npmPresenceResult(sources, version) {
+  const authoritative = authoritativeSource(sources);
+  const others = sourcesListing(sources, ['proxy', 'mirror']);
+  if (authoritative.hasVersion === true) {
+    return result(Outcome.pass, `npm: registry.npmjs.org has ${version}`);
+  }
+  if (authoritative.hasVersion === false) {
+    return others.length > 0
+      ? result(
+          Outcome.unreachable,
+          `npm: registry.npmjs.org lacks ${version} but ${others.join(', ')} list it; the sources disagree`,
+        )
+      : result(Outcome.fail, `npm: registry.npmjs.org does not have ${version}`);
+  }
+  const publicMirrors = sourcesListing(sources, ['mirror']);
+  if (publicMirrors.length > 0) {
+    return result(
+      Outcome.pass,
+      `npm: ${version} is published (${publicMirrors.join(', ')}; registry.npmjs.org did not answer)`,
+    );
+  }
+  return result(
+    Outcome.unreachable,
+    `npm: registry.npmjs.org did not answer and no public mirror lists ${version}` +
+      (others.length > 0 ? ` (only ${others.join(', ')} does, and a proxy alone is not proof)` : '') +
+      '; a lagging source is not evidence either way',
+  );
+}
+
+function npmTagResult(sources, version, tagName) {
+  const label = `npm dist-tag ${tagName}`;
+  const authoritativeValue = authoritativeSource(sources).tags[tagName];
+  const mirrorValues = sources
+    .filter((source) => source.kind === 'mirror')
+    .map((source) => source.tags[tagName])
+    .filter(Boolean);
+  if (authoritativeValue) {
+    if (authoritativeValue === version) {
+      return result(Outcome.pass, `${label} points at ${version} on registry.npmjs.org`);
+    }
+    if (compareVersions(authoritativeValue, version) > 0 || !mirrorValues.includes(version)) {
+      return result(
+        Outcome.fail,
+        `${label} points at ${authoritativeValue} on registry.npmjs.org, expected ${version}`,
+      );
+    }
+    return result(
+      Outcome.unreachable,
+      `${label}: registry.npmjs.org shows ${authoritativeValue} but a mirror shows ${version}; the sources disagree`,
+    );
+  }
+  const highest = highestVersion(mirrorValues);
+  if (highest === version) {
+    return result(Outcome.pass, `${label} points at ${version} (public mirrors; registry.npmjs.org did not answer)`);
+  }
+  if (highest && compareVersions(highest, version) > 0) {
+    return result(Outcome.fail, `${label} points at ${highest}, newer than ${version}`);
+  }
+  const proxyValues = sources
+    .filter((source) => source.kind === 'proxy')
+    .map((source) => source.tags[tagName])
+    .filter(Boolean);
+  return result(
+    Outcome.unreachable,
+    `${label}: registry.npmjs.org did not answer and public mirrors show ${highest || 'nothing'}` +
+      (proxyValues.length > 0 ? `, a proxy shows ${proxyValues.join(', ')}` : '') +
+      '; they may lag, so this is not evidence either way',
+  );
 }
 
 async function checkGithubRelease({ version, expect, fetchImpl }) {
   const tag = `v${version}`;
   const results = [];
-  const release = await readGithubJson(fetchImpl, githubReleaseUrl(version), 'GitHub release');
+  const release = await readGithubJson(
+    fetchImpl,
+    githubReleaseUrl(version),
+    'GitHub release',
+    `GitHub release ${tag} is missing or still a draft (drafts are not visible by tag)`,
+  );
   if (release.problem) {
     results.push(release.problem);
   } else if (release.json.draft) {
@@ -349,35 +562,74 @@ async function checkTagAtBranchHead({ version, fetchImpl }) {
       );
 }
 
-function parseStableVersion(version) {
-  return version.split('-')[0].split('.').map(Number);
+function parseVersion(version) {
+  const [core, prerelease] = version.split(/-(.*)/s);
+  return { core: core.split('.').map(Number), prerelease: prerelease ? prerelease.split('.') : [] };
 }
 
-function isNewer(candidate, baseline) {
-  const [a, b] = [parseStableVersion(candidate), parseStableVersion(baseline)];
+function compareVersions(a, b) {
+  const [left, right] = [parseVersion(a), parseVersion(b)];
   for (let index = 0; index < 3; index++) {
-    if (a[index] !== b[index]) {
-      return a[index] > b[index];
+    if (left.core[index] !== right.core[index]) {
+      return left.core[index] > right.core[index] ? 1 : -1;
     }
   }
-  return false;
+  if (left.prerelease.length === 0 || right.prerelease.length === 0) {
+    return right.prerelease.length - left.prerelease.length === 0 ? 0 : left.prerelease.length === 0 ? 1 : -1;
+  }
+  for (let index = 0; index < Math.max(left.prerelease.length, right.prerelease.length); index++) {
+    const [x, y] = [left.prerelease[index], right.prerelease[index]];
+    if (x === undefined || y === undefined) {
+      return x === undefined ? -1 : 1;
+    }
+    if (x !== y) {
+      const [xNumber, yNumber] = [Number(x), Number(y)];
+      if (Number.isInteger(xNumber) && Number.isInteger(yNumber)) {
+        return xNumber > yNumber ? 1 : -1;
+      }
+      return x > y ? 1 : -1;
+    }
+  }
+  return 0;
+}
+
+function highestVersion(versions) {
+  return versions.reduce(
+    (highest, version) => (!highest || compareVersions(version, highest) > 0 ? version : highest),
+    undefined,
+  );
 }
 
 async function checkBetaVersion({ version, registry, fetchImpl }) {
-  const tags = await readJson(fetchImpl, npmDistTagsUrl(registry), 'npm dist-tags');
-  if (tags.problem) {
-    return [tags.problem];
+  const base = version.split('-')[0];
+  const sources = await observeNpm({ version: undefined, tagNames: ['latest'], registry, fetchImpl });
+  const latests = sources
+    .filter((source) => source.tags.latest)
+    .map((source) => ({ name: source.name, value: source.tags.latest }));
+  const highest = highestVersion(latests.map(({ value }) => value));
+  const results = [];
+  if (highest) {
+    const reportedBy = latests
+      .filter(({ value }) => value === highest)
+      .map(({ name }) => name)
+      .join(', ');
+    results.push(
+      compareVersions(base, highest) > 0
+        ? result(Outcome.pass, `${version} is a beta of ${base}, newer than npm latest ${highest} (${reportedBy})`)
+        : result(
+            Outcome.fail,
+            `${version} is a beta of ${base}, which is not newer than npm latest ${highest} (${reportedBy}); ` +
+              'it would sort below the release',
+          ),
+    );
+  } else {
+    results.push(result(Outcome.info, 'npm latest: no source answered; relying on the Prod CDN and the GitHub tag'));
   }
-  const latest = tags.json.latest;
-  const newer = isNewer(version, latest);
-  return [
-    result(
-      newer ? Outcome.pass : Outcome.fail,
-      newer
-        ? `${version} is a beta of a version newer than latest ${latest}`
-        : `${version} is a beta of a version that is not newer than latest ${latest}; it would sort below the release`,
-    ),
-  ];
+  results.push(
+    await expectAbsent(fetchImpl, cdnScriptUrl(base, 'prod'), `Prod CDN for ${base}`, `so ${base} has already shipped`),
+    await expectAbsent(fetchImpl, githubTagUrl(base), `GitHub tag v${base}`, `so ${base} has already shipped`),
+  );
+  return results;
 }
 
 const PIPELINE_FILES = [
@@ -422,48 +674,78 @@ function checkPipelineConfig({ repoRoot, readFile }) {
 const CHANGELOG_PATH = 'packages/teams-js/CHANGELOG.md';
 const CHANGE_DIRECTORY = 'change';
 
+function normalizeText(text) {
+  return String(text || '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function releasedEntries(changelog, version) {
   const lines = changelog.split(/\r?\n/);
   const start = lines.findIndex((line) => line.trim() === `## ${version}`);
   if (start === -1) {
     return undefined;
   }
-  const entries = new Set();
+  const entries = [];
+  let current;
   for (const line of lines.slice(start + 1)) {
     if (line.startsWith('## ')) {
       break;
     }
     if (line.startsWith('- ')) {
-      entries.add(line.slice(2).trim());
+      current = [line.slice(2)];
+      entries.push(current);
+    } else if (current && line.trim() !== '' && !line.trim().startsWith('#')) {
+      current.push(line);
+    } else {
+      current = undefined;
     }
   }
-  return entries;
+  return new Set(entries.map((entry) => normalizeText(entry.join(' '))));
 }
 
-function checkConsumedChanges({ version, repoRoot, readFile, readDirectory }) {
+function defaultListDeletedChangeFiles(commit, repoRoot) {
+  const output = childProcess.execFileSync(
+    'git',
+    ['show', '--diff-filter=D', '--name-only', '--format=', commit, '--', `${CHANGE_DIRECTORY}/`],
+    { cwd: repoRoot, encoding: 'utf8' },
+  );
+  return output
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map((file) => path.basename(file));
+}
+
+function checkConsumedChanges({ version, prepCommit, repoRoot, readFile, readDirectory, listDeletedChangeFiles }) {
   const entries = releasedEntries(readFile(path.join(repoRoot, CHANGELOG_PATH), 'utf8'), version);
   if (!entries) {
     return [result(Outcome.fail, `${CHANGELOG_PATH} has no "## ${version}" section; run this on the cleanup branch`)];
   }
+  const deletedByPrep = new Set(prepCommit ? listDeletedChangeFiles(prepCommit, repoRoot) : []);
   const changeFiles = readDirectory(path.join(repoRoot, CHANGE_DIRECTORY)).filter((name) => name.endsWith('.json'));
-  const consumed = changeFiles.filter((name) => {
+  const consumed = [];
+  for (const name of changeFiles) {
     const changeFile = JSON.parse(readFile(path.join(repoRoot, CHANGE_DIRECTORY, name), 'utf8'));
-    return entries.has(String(changeFile.comment || '').trim());
-  });
+    if (entries.has(normalizeText(changeFile.comment))) {
+      consumed.push({ name, reason: `repeats an entry already released in ${version}` });
+    } else if (deletedByPrep.has(name)) {
+      consumed.push({
+        name,
+        reason: `was deleted by the prep commit ${prepCommit}, so ${version} already consumed it`,
+      });
+    }
+  }
   if (consumed.length === 0) {
     return [
       result(
         Outcome.pass,
-        `none of the ${changeFiles.length} pending change files repeats an entry released in ${version}`,
+        `none of the ${changeFiles.length} pending change files repeats an entry released in ${version}` +
+          (prepCommit ? ` or was consumed by ${prepCommit}` : ''),
       ),
     ];
   }
-  return consumed.map((name) =>
-    result(
-      Outcome.fail,
-      `${CHANGE_DIRECTORY}/${name} repeats an entry already released in ${version}; delete it or the next release ` +
-        'ships it again',
-    ),
+  return consumed.map(({ name, reason }) =>
+    result(Outcome.fail, `${CHANGE_DIRECTORY}/${name} ${reason}; delete it or the next release ships it again`),
   );
 }
 
@@ -524,8 +806,11 @@ async function readCdnBytes(fetchImpl, version) {
   if (unreachable) {
     return { problem: unreachable };
   }
+  if (response.status === 404) {
+    return { problem: result(Outcome.fail, `CDN ${url} returned HTTP 404`) };
+  }
   if (response.status !== 200) {
-    return { problem: result(Outcome.fail, `CDN ${url} returned HTTP ${response.status}`) };
+    return { problem: inconclusiveStatus('CDN', url, response.status) };
   }
   return { bytes: Buffer.from(await response.arrayBuffer()).length };
 }
@@ -550,31 +835,16 @@ async function reportSize({ version, previous, fetchImpl }) {
 }
 
 async function checkNpm({ version, distTag, registry, fetchImpl }) {
-  const results = [];
-  const versionUrl = npmVersionUrl(registry, version);
-  const manifest = await readJson(fetchImpl, versionUrl, 'npm');
-  results.push(
-    manifest.problem ||
-      result(
-        manifest.json.version === version ? Outcome.pass : Outcome.fail,
-        `npm ${versionUrl} reports version ${manifest.json.version}`,
-      ),
-  );
+  const sources = await observeNpm({ version, tagNames: distTag ? [distTag] : [], registry, fetchImpl });
+  const results = [npmPresenceResult(sources, version)];
   if (distTag) {
-    const tags = await readJson(fetchImpl, npmDistTagsUrl(registry), 'npm dist-tags');
-    results.push(
-      tags.problem ||
-        result(
-          tags.json[distTag] === version ? Outcome.pass : Outcome.fail,
-          `npm dist-tag ${distTag} points at ${tags.json[distTag]}, expected ${version}`,
-        ),
-    );
+    results.push(npmTagResult(sources, version, distTag));
   }
   return results;
 }
 
-async function checkValidDomains({ environment, repoRoot, fetchImpl, readFile }) {
-  const url = validDomainsUrl(environment);
+async function checkValidDomains({ repoRoot, fetchImpl, readFile }) {
+  const url = validDomainsUrl('prod');
   const live = await readJson(fetchImpl, url, 'valid domains');
   if (live.problem) {
     return [live.problem];
@@ -605,7 +875,11 @@ function parseArgs(argv) {
     if (!flag.startsWith('--') || value === undefined || value.startsWith('--')) {
       throw new UsageError(`Expected "--name value" pairs, got "${flag}"`);
     }
-    options[flag.slice(2)] = value;
+    const name = flag.slice(2);
+    if (Object.prototype.hasOwnProperty.call(options, name)) {
+      throw new UsageError(`${flag} is given more than once`);
+    }
+    options[name] = value;
   }
   return { command, options };
 }
@@ -640,99 +914,172 @@ function requireExpect(options) {
   return options.expect;
 }
 
+function requireFile(options, command, what) {
+  if (!options.file) {
+    throw new UsageError(`${command} needs --file <${what}>`);
+  }
+  return options.file;
+}
+
+function checkArtifact({ version, file, repoRoot, readFile, readDirectory }) {
+  const carriers = readCarriers(repoRoot, readFile);
+  const results = checkCarriers(carriers, version);
+  const expectedFolder = `/CDNFeed/${version}/js/MicrosoftTeams.min.js`;
+  const inVersionFolder = file.replace(/\\/g, '/').endsWith(expectedFolder);
+  results.push(
+    result(
+      inVersionFolder ? Outcome.pass : Outcome.fail,
+      inVersionFolder
+        ? `${file} is in the CDNFeed folder for ${version}`
+        : `${file} is not under CDNFeed/${version}/js; check the CI run is the one from the prep PR merge`,
+    ),
+  );
+  if (inVersionFolder) {
+    const cdnFeed = path.dirname(path.dirname(path.dirname(file)));
+    const versionFolders = readDirectory(cdnFeed).filter((name) => !name.startsWith('_'));
+    if (versionFolders.length !== 1) {
+      results.push(
+        result(
+          Outcome.fail,
+          `${cdnFeed} holds version folders ${versionFolders.join(', ')}; expected only ${version} (and _manifest)`,
+        ),
+      );
+    }
+  }
+  const expectedSri = carrierIntegrity(carriers);
+  if (expectedSri) {
+    results.push(checkBytes(readFile(file), expectedSri, file));
+  }
+  return results;
+}
+
 const commands = {
-  'check-version': async (options, { fetchImpl }) =>
-    checkVersionIsFree({ version: requireVersion(options), registry: requireRegistry(options), fetchImpl }),
-
-  carriers: async (options, { repoRoot, readFile }) =>
-    checkCarriers(readCarriers(repoRoot, readFile), requireVersion(options)),
-
-  artifact: async (options, { repoRoot, readFile }) => {
-    const version = requireVersion(options);
-    if (!options.file) {
-      throw new UsageError('artifact needs --file <path to the CI build CDNFeed/<version>/js/MicrosoftTeams.min.js>');
-    }
-    const carriers = readCarriers(repoRoot, readFile);
-    const results = checkCarriers(carriers, version);
-    const expectedFolder = `/CDNFeed/${version}/js/MicrosoftTeams.min.js`;
-    const inVersionFolder = options.file.replace(/\\/g, '/').endsWith(expectedFolder);
-    results.push(
-      result(
-        inVersionFolder ? Outcome.pass : Outcome.fail,
-        inVersionFolder
-          ? `${options.file} is in the CDNFeed folder for ${version}`
-          : `${options.file} is not under CDNFeed/${version}/js; check the CI run is the one from the prep PR merge`,
+  'check-version': {
+    flags: ['version', 'registry'],
+    summary: 'the version is free on registry.npmjs.org, mirrors, the Prod CDN and GitHub tags',
+    run: async (options, { fetchImpl }) =>
+      checkVersionIsFree({ version: requireVersion(options), registry: requireRegistry(options), fetchImpl }),
+  },
+  carriers: {
+    flags: ['version'],
+    summary: "the checkout's version carriers agree on the version and one SRI hash",
+    run: async (options, { repoRoot, readFile }) =>
+      checkCarriers(readCarriers(repoRoot, readFile), requireVersion(options)),
+  },
+  artifact: {
+    flags: ['version', 'file'],
+    summary: "a downloaded CI build's CDNFeed/<v>/js/MicrosoftTeams.min.js is the only version and matches that SRI",
+    run: async (options, deps) =>
+      checkArtifact({
+        version: requireVersion(options),
+        file: requireFile(options, 'artifact', 'path to the CI build CDNFeed/<version>/js/MicrosoftTeams.min.js'),
+        ...deps,
+      }),
+  },
+  published: {
+    flags: ['version', 'environment', 'dist-tag', 'expected-sri', 'registry'],
+    summary: 'the CDN bytes match the SRI, and npm has the version (and dist-tag) per the source rules',
+    run: async (options, { repoRoot, readFile, fetchImpl }) => {
+      const version = requireVersion(options);
+      const environment = requireEnvironment(options);
+      const registry = requireRegistry(options);
+      if (!options['expected-sri'] && environment === 'sdf') {
+        throw new UsageError('published --environment sdf needs --expected-sri; beta builds are not in the carriers');
+      }
+      const expectedSri = options['expected-sri'] || carrierIntegrity(readCarriers(repoRoot, readFile));
+      if (!expectedSri || !SRI_PATTERN.test(expectedSri)) {
+        throw new UsageError('No single sha384 SRI to compare against; pass --expected-sri');
+      }
+      return [
+        await checkCdnScript({ version, environment, expectedSri, fetchImpl }),
+        ...(await checkNpm({ version, distTag: options['dist-tag'], registry, fetchImpl })),
+      ];
+    },
+  },
+  domains: {
+    flags: [],
+    summary: "the live Prod valid-domains list equals this checkout's source",
+    run: async (options, { repoRoot, readFile, fetchImpl }) => checkValidDomains({ repoRoot, fetchImpl, readFile }),
+  },
+  'github-release': {
+    flags: ['version', 'expect'],
+    summary: 'the GitHub release state (prerelease|latest), and tag v<v> carries the bump at the release branch head',
+    run: async (options, { fetchImpl }) =>
+      checkGithubRelease({ version: requireVersion(options), expect: requireExpect(options), fetchImpl }),
+  },
+  'merged-back': {
+    flags: ['version'],
+    summary: "main's CHANGELOG has the version's section",
+    run: async (options, { fetchImpl }) => checkMergedBack({ version: requireVersion(options), fetchImpl }),
+  },
+  'beta-version': {
+    flags: ['version', 'registry'],
+    summary: 'a beta <x.y.z>-beta.<n> is of a version that has not shipped (npm latest, Prod CDN, GitHub tag)',
+    run: async (options, { fetchImpl }) => {
+      const version = requireVersion(options);
+      if (!/^\d+\.\d+\.\d+-beta\.\d+$/.test(version)) {
+        throw new UsageError('beta-version needs a version such as 2.60.0-beta.0 (<x.y.z>-beta.<n>)');
+      }
+      return checkBetaVersion({ version, registry: requireRegistry(options), fetchImpl });
+    },
+  },
+  'pipeline-config': {
+    flags: [],
+    summary: "the checkout's release YAML: Prod tag latest, SDF tag beta, AssetRetention@6 or later",
+    run: async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
+  },
+  'consumed-changes': {
+    flags: ['version', 'prep-commit'],
+    summary: 'on the merge-back branch, no pending change file was already consumed by the release',
+    run: async (options, deps) => {
+      const prepCommit = options['prep-commit'];
+      if (prepCommit !== undefined && !/^[0-9a-f]{7,40}$/i.test(prepCommit)) {
+        throw new UsageError('--prep-commit must be a commit SHA (7-40 hex characters)');
+      }
+      return checkConsumedChanges({ version: requireVersion(options), prepCommit, ...deps });
+    },
+  },
+  announcement: {
+    flags: ['version', 'file'],
+    summary: 'every npm, CDN and GitHub release link in a draft names the version',
+    run: async (options, { readFile }) => {
+      const version = requireVersion(options);
+      const file = requireFile(options, 'announcement', 'path to the draft text');
+      return checkAnnouncement({ version, text: readFile(file, 'utf8') });
+    },
+  },
+  size: {
+    flags: ['version', 'previous'],
+    summary: '(informational) Prod CDN bundle bytes and the change from --previous',
+    run: async (options, { fetchImpl }) => {
+      const version = requireVersion(options);
+      if (!options.previous || !VERSION_PATTERN.test(options.previous)) {
+        throw new UsageError('size needs --previous <the version released before>');
+      }
+      return reportSize({ version, previous: options.previous, fetchImpl });
+    },
+  },
+  links: {
+    flags: ['version'],
+    summary: '(informational) the public npm, CDN and GitHub release links for an announcement',
+    run: async (options) =>
+      Object.entries(publicLinks(requireVersion(options))).map(([name, url]) => result(Outcome.info, `${name} ${url}`)),
+  },
+  sri: {
+    flags: ['file'],
+    summary: "(informational) a file's sha384 SRI",
+    run: async (options, { readFile }) => {
+      const file = requireFile(options, 'sri', 'path');
+      return [result(Outcome.info, `${computeSri(readFile(file))} ${file}`)];
+    },
+  },
+  help: {
+    flags: [],
+    summary: 'this list',
+    run: async () =>
+      Object.entries(commands).map(([name, { flags, summary }]) =>
+        result(Outcome.info, `${name}${flags.map((flag) => ` [--${flag}]`).join('')}: ${summary}`),
       ),
-    );
-    const expectedSri = carrierIntegrity(carriers);
-    if (expectedSri) {
-      results.push(checkBytes(readFile(options.file), expectedSri, options.file));
-    }
-    return results;
-  },
-
-  published: async (options, { repoRoot, readFile, fetchImpl }) => {
-    const version = requireVersion(options);
-    const environment = requireEnvironment(options);
-    const registry = requireRegistry(options);
-    if (!options['expected-sri'] && environment === 'sdf') {
-      throw new UsageError('published --environment sdf needs --expected-sri; beta builds are not in the carriers');
-    }
-    const expectedSri = options['expected-sri'] || carrierIntegrity(readCarriers(repoRoot, readFile));
-    if (!expectedSri || !SRI_PATTERN.test(expectedSri)) {
-      throw new UsageError('No single sha384 SRI to compare against; pass --expected-sri');
-    }
-    return [
-      await checkCdnScript({ version, environment, expectedSri, fetchImpl }),
-      ...(await checkNpm({ version, distTag: options['dist-tag'], registry, fetchImpl })),
-    ];
-  },
-
-  domains: async (options, { repoRoot, readFile, fetchImpl }) =>
-    checkValidDomains({ environment: requireEnvironment(options), repoRoot, fetchImpl, readFile }),
-
-  'github-release': async (options, { fetchImpl }) =>
-    checkGithubRelease({ version: requireVersion(options), expect: requireExpect(options), fetchImpl }),
-
-  'merged-back': async (options, { fetchImpl }) => checkMergedBack({ version: requireVersion(options), fetchImpl }),
-
-  'beta-version': async (options, { fetchImpl }) => {
-    const version = requireVersion(options);
-    if (!/^\d+\.\d+\.\d+-beta\.\d+$/.test(version)) {
-      throw new UsageError('beta-version needs a version such as 2.60.0-beta.0 (<x.y.z>-beta.<n>)');
-    }
-    return checkBetaVersion({ version, registry: requireRegistry(options), fetchImpl });
-  },
-
-  'pipeline-config': async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
-
-  'consumed-changes': async (options, { repoRoot, readFile, readDirectory }) =>
-    checkConsumedChanges({ version: requireVersion(options), repoRoot, readFile, readDirectory }),
-
-  announcement: async (options, { readFile }) => {
-    const version = requireVersion(options);
-    if (!options.file) {
-      throw new UsageError('announcement needs --file <path to the draft text>');
-    }
-    return checkAnnouncement({ version, text: readFile(options.file, 'utf8') });
-  },
-
-  size: async (options, { fetchImpl }) => {
-    const version = requireVersion(options);
-    if (!options.previous || !VERSION_PATTERN.test(options.previous)) {
-      throw new UsageError('size needs --previous <the version released before>');
-    }
-    return reportSize({ version, previous: options.previous, fetchImpl });
-  },
-
-  links: async (options) =>
-    Object.entries(publicLinks(requireVersion(options))).map(([name, url]) => result(Outcome.info, `${name} ${url}`)),
-
-  sri: async (options, { readFile }) => {
-    if (!options.file) {
-      throw new UsageError('sri needs --file <path>');
-    }
-    return [result(Outcome.info, `${computeSri(readFile(options.file))} ${options.file}`)];
   },
 };
 
@@ -743,6 +1090,7 @@ async function run(
     fetchImpl = globalThis.fetch,
     readFile = fs.readFileSync,
     readDirectory = fs.readdirSync,
+    listDeletedChangeFiles = defaultListDeletedChangeFiles,
     log = console.log,
     env = process.env,
   },
@@ -752,9 +1100,24 @@ async function run(
   try {
     const { command, options } = parseArgs(argv);
     if (!Object.prototype.hasOwnProperty.call(commands, command)) {
-      throw new UsageError(`Command must be one of: ${Object.keys(commands).join(', ')}`);
+      throw new UsageError(`Command must be one of: ${Object.keys(commands).join(', ')} (try "help")`);
     }
-    results = await commands[command](options, { repoRoot, fetchImpl: authorizedFetch, readFile, readDirectory });
+    const { flags, run: runCommand } = commands[command];
+    const unknown = Object.keys(options).filter((name) => !flags.includes(name));
+    if (unknown.length > 0) {
+      throw new UsageError(
+        `${command} does not take --${unknown.join(', --')}; it takes ${
+          flags.length > 0 ? `--${flags.join(', --')}` : 'no options'
+        }`,
+      );
+    }
+    results = await runCommand(options, {
+      repoRoot,
+      fetchImpl: authorizedFetch,
+      readFile,
+      readDirectory,
+      listDeletedChangeFiles,
+    });
   } catch (error) {
     if (error instanceof UsageError) {
       log(`USAGE ${error.message}`);

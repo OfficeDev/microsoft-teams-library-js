@@ -108,8 +108,9 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Symptom:** `release/<x.y.z>` already exists from an abandoned attempt, for example a prep PR closed unmerged.
 - **Constraints:** downstream internal test pipelines look the branch up by its exact name, so you cannot use another
   name. The repository ruleset blocks deleting `release/*`; only an organization admin can.
-- **Fix, preferred:** ask an organization admin to delete it, then cut it fresh from the source commit. Older
-  instructions that toggle "Allow deletions" in branch protection no longer apply; a ruleset now protects the branch.
+- **Fix, preferred:** ask an organization admin to delete it, then cut it fresh from the source commit. Rulesets now
+  block deleting and force-pushing `release/*`; older instructions that toggle "Allow deletions" in branch protection
+  no longer apply, and repository admins cannot get around it, only organization admins.
 - **Fix, if an admin is not available in time:** reuse it. Bring it up to the source commit through a reviewed PR into
   `release/<x.y.z>`, then continue with the prep PR. Squash merging keeps the later merge-back clean. Agree this with
   the release owner first; never force-push the branch.
@@ -133,9 +134,12 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### A fix must ship on an older release line (hotfix)
 
-- **Approach:** branch the fix from `release/<x.y.z>`, release it as `x.y.(z+1)` through its own release branch, then
-  bring it to `main` through an intermediate branch, as above. The intermediate branch lets you keep `main`'s newer
-  version while taking the fix. Agree a hotfix with the maintainers first.
+- **Constraint:** the Prod pipeline always publishes with the npm `latest` tag (`productstate: 'Latest'`), and steps
+  9-10 then expect `latest` and GitHub Latest. Releasing an older line through it would move `latest` backwards, away
+  from the newest version. Past patch releases were each the newest version, so this has not happened yet.
+- **Fix:** an older-line hotfix is a maintainer decision outside this skill: it needs a publish path that does not
+  tag `latest`, and its GitHub release is not marked Latest. Stop before queuing and raise it with the maintainers.
+  Once it is published, bring the fix to `main` through an intermediate branch, as above.
 
 ### The 1CDN upload fails after npm succeeded
 
@@ -167,14 +171,17 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Fix:** a major or prerelease version is a maintainer decision with explicit, reviewed intent. It is out of scope
   for this skill. Do not relax the config inside a release.
 
-### The version looks free but publishing fails as a duplicate
+### The version looks free but publishing fails as a duplicate, or looks unpublished when it is live
 
-- **Cause:** a lookup that failed was read as "not found", or a corporate npm proxy answered instead of the public
-  registry.
-- **Fix:** treat any lookup error, timeout or unexpected status as inconclusive, never as "free"; `check-version`
-  exits 3 for these. Recheck from a
-  network that reaches the public registry or a public mirror. The CDN upload never overwrites, so an existing CDN
-  folder also blocks a version.
+- **Cause:** a lookup that failed was read as "not found", or a corporate npm proxy or public mirror answered instead
+  of the public registry. Proxies and mirrors can lag: on the 2.59.0 release day the corporate proxy still showed
+  `latest` 2.58.0 and no 2.59.0 more than 25 minutes after the publish, while jsDelivr and unpkg showed 2.59.0 within
+  about 10 minutes. npmjs.com web pages refuse automated requests, so check them in a browser.
+- **Fix:** a proxy or mirror can confirm that a version is present, never that it is absent or that a dist-tag is
+  current. Prove a version free only from `registry.npmjs.org`, from another network if needed, and treat any lookup
+  error, timeout or unexpected status as inconclusive; `check-version`, `published` and `beta-version` exit 3 for
+  these. Never re-queue a publish because a proxy lacks the version. The CDN upload never overwrites, so an existing
+  CDN folder also blocks a version.
 
 ## Build and tooling
 
