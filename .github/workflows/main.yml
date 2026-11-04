@@ -55,6 +55,8 @@ jobs:
         run: pnpm build
       - name: Run Unit Tests
         run: pnpm test
+      - name: Run release skill check tests
+        run: node --test .github/skills/release-teamsjs/check-release.test.js
       - name: Check for lint errors
         run: pnpm lint
 
