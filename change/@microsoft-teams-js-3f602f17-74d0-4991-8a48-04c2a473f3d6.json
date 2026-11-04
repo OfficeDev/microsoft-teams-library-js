@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Improved standalone `nestedAppAuthBridge` request correlation, serialized UUID transport, and listener lifecycle.",
+  "packageName": "@microsoft/teams-js",
+  "email": "santiagov+odspmdb@microsoft.com",
+  "dependentChangeType": "patch"
+}

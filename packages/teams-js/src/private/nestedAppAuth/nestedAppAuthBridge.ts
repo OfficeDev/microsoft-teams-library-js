@@ -19,7 +19,7 @@ import { v4 as generateUUID } from 'uuid';
  * @internal
  * Limited to Microsoft-internal use
  */
-export const version = '1.0.1';
+export const version = '1.0.2';
 
 /**
  * Interface representing a request structure.
@@ -28,7 +28,7 @@ export const version = '1.0.1';
  */
 interface NestedAppAuthRequest {
   id: string;
-  uuid: string;
+  uuidAsString: string;
   func: 'nestedAppAuth.execute';
   timestamp: number;
   monotonicTimestamp: number;
@@ -38,24 +38,11 @@ interface NestedAppAuthRequest {
 }
 
 /**
- * Interface representing a response structure.
- *
- * @see {@link https://github.com/OfficeDev/microsoft-teams-library-js/blob/main/packages/teams-js/src/internal/messageObjects.ts | SerializedMessageResponse}
+ * Correlation metadata for a live request. Inner auth payloads are not retained.
  */
-interface SerializedMessageResponse {
-  id: number;
-  uuidAsString?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  args?: any[];
-  monotonicTimestamp?: number;
-  isPartialResponse?: boolean;
-}
-
-/**
- * Interface defining the structure of parsed NAA auth messages.
- */
-interface ParsedNestedAppAuthMessageData {
-  messageType: NestedAppAuthMessageEventNames;
+interface PendingRequest {
+  uuidAsString: string;
+  requestId: string;
 }
 
 /**
@@ -77,13 +64,6 @@ interface NestedAuthExtendedWindow extends Window {
 }
 
 /**
- * Type defining the bridge handlers.
- */
-type NestedAppAuthBridgeHandlers = {
-  onMessage: (evt: MessageEvent, onMessageReceived: (response: string) => void) => void;
-};
-
-/**
  * Enum defining possible event names for NestedAppAuth messages.
  *
  * @see {@link https://github.com/OfficeDev/microsoft-teams-library-js/blob/main/packages/teams-js/src/internal/nestedAppAuthUtils.ts | NestedAppAuthMessageEventNames}
@@ -94,29 +74,24 @@ const enum NestedAppAuthMessageEventNames {
 }
 
 /**
- * Bridge handlers used for processing messages.
- */
-const bridgeHandlers: NestedAppAuthBridgeHandlers = {
-  onMessage: processAuthBridgeMessage,
-};
-
-let topOriginForNAA: string | null = null;
-let isNAALoggerEnabled = false;
-
-/**
  * @beta
  * @hidden
  * Initializes the Nested App Auth Bridge.
  * @param window The window object where the bridge will be attached.
  * @param topOrigin The origin of the top-level frame.
  * @param enableLogging - Optional flag to enable internal debug and error logging. Defaults to false.
+ * @remarks
+ * Configuration belongs to the installed bridge. Reinitialization does not retarget requests or
+ * replace an existing native bridge. Responses must echo the sent outer ID and serialized UUID,
+ * and contain the original inner request ID. Accepted inner responses are forwarded unchanged.
+ * Removing a listener is not cancellation; live requests have no authentication deadline.
+ * Outer SDK refusals are not converted into MSAL errors by this module.
+ * Incoming origin filtering retains the existing origin-only policy, without source-window validation.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
 export function initialize(window: Window | null, topOrigin: string, enableLogging = false): void {
-  isNAALoggerEnabled = enableLogging;
-
   if (!window) {
     throw new Error('Cannot polyfill nestedAppAuthBridge as the current window does not exist');
   }
@@ -125,6 +100,7 @@ export function initialize(window: Window | null, topOrigin: string, enableLoggi
     throw new Error('Top origin is required to initialize the Nested App Auth Bridge');
   }
 
+  let topOriginForNAA: string;
   try {
     const parsedOrigin = new URL(topOrigin);
     if (parsedOrigin.protocol !== 'https:') {
@@ -139,28 +115,86 @@ export function initialize(window: Window | null, topOrigin: string, enableLoggi
 
   // If the bridge is already present, return.
   if (extendedWindow.nestedAppAuthBridge) {
-    log('Nested App Auth Bridge is already present');
+    log(enableLogging, 'Nested App Auth Bridge is already present');
     return;
   }
 
   // Create and assign the bridge to the window.
-  const nestedAppAuthBridge = createNestedAppAuthBridge(extendedWindow);
-  if (nestedAppAuthBridge) {
-    extendedWindow.nestedAppAuthBridge = nestedAppAuthBridge;
-  }
+  extendedWindow.nestedAppAuthBridge = createNestedAppAuthBridge(extendedWindow, topOriginForNAA, enableLogging);
 }
 
 /**
  * Creates the Nested App Auth Bridge.
  * @param window The window object where the bridge is being injected.
+ * @param topOrigin The canonical HTTPS origin captured during initialization.
+ * @param enableLogging Whether to enable payload-free diagnostic logging.
  * @returns A NestedAppAuthBridge instance.
  */
-function createNestedAppAuthBridge(window: Window): NestedAppAuthBridge {
-  const messageHandlers = new WeakMap<(response: string) => void, EventListener>();
-  const { onMessage } = bridgeHandlers;
+function createNestedAppAuthBridge(window: Window, topOrigin: string, enableLogging: boolean): NestedAppAuthBridge {
+  const callbacks = new Set<(response: string) => void>();
+  const pendingRequests = new Map<string, PendingRequest>();
+  const activeInnerRequests = new Set<string>();
 
-  const nestedAppAuthBridgeHandler = (callback: (response: string) => void) => (evt: MessageEvent) =>
-    onMessage(evt, callback);
+  const onMessage = (evt: MessageEvent): void => {
+    const response: unknown = evt.data;
+    if (evt.origin !== topOrigin || !isRecord(response)) {
+      log(enableLogging, 'Message origin or format not allowed, ignoring.');
+      return;
+    }
+
+    const { id, uuidAsString, args, isPartialResponse } = response;
+    if (
+      typeof id !== 'string' ||
+      typeof uuidAsString !== 'string' ||
+      (isPartialResponse !== undefined && isPartialResponse !== false) ||
+      !Array.isArray(args) ||
+      args.length !== 2 ||
+      args[0] !== null ||
+      typeof args[1] !== 'string'
+    ) {
+      log(enableLogging, 'Unsupported response envelope, ignoring.');
+      return;
+    }
+
+    const pending = pendingRequests.get(id);
+    if (!pending || pending.uuidAsString !== uuidAsString) {
+      log(enableLogging, 'Response does not match a live request, ignoring.');
+      return;
+    }
+
+    const message = args[1];
+    const parsedData = parseMessage(message, enableLogging);
+    if (
+      !isRecord(parsedData) ||
+      parsedData.messageType !== NestedAppAuthMessageEventNames.Response ||
+      parsedData.requestId !== pending.requestId ||
+      typeof parsedData.success !== 'boolean'
+    ) {
+      log(enableLogging, 'Invalid inner response, ignoring.');
+      return;
+    }
+
+    pendingRequests.delete(id);
+    activeInnerRequests.delete(pending.requestId);
+
+    let callbackFailed = false;
+    let callbackError: unknown;
+    for (const callback of Array.from(callbacks)) {
+      if (callbacks.has(callback)) {
+        try {
+          callback(message);
+        } catch (error) {
+          if (!callbackFailed) {
+            callbackError = error;
+            callbackFailed = true;
+          }
+        }
+      }
+    }
+    if (callbackFailed) {
+      throw callbackError;
+    }
+  };
 
   return {
     /**
@@ -168,11 +202,12 @@ function createNestedAppAuthBridge(window: Window): NestedAppAuthBridge {
      */
     addEventListener: (eventName, callback): void => {
       if (eventName === 'message') {
-        const handler = nestedAppAuthBridgeHandler(callback);
-        messageHandlers.set(callback, handler);
-        window.addEventListener(eventName, handler);
+        if (callbacks.size === 0) {
+          window.addEventListener(eventName, onMessage);
+        }
+        callbacks.add(callback);
       } else {
-        log(`Event ${eventName} is not supported by nestedAppAuthBridge`);
+        log(enableLogging, `Event ${eventName} is not supported by nestedAppAuthBridge`);
       }
     },
 
@@ -180,29 +215,45 @@ function createNestedAppAuthBridge(window: Window): NestedAppAuthBridge {
      * Sends a message using postMessage.
      */
     postMessage: (message: string): void => {
-      if (window.top) {
-        try {
-          const parsedMessage = JSON.parse(message);
-
-          if (
-            typeof parsedMessage === 'object' &&
-            parsedMessage.messageType === NestedAppAuthMessageEventNames.Request
-          ) {
-            const request = createNestedAppAuthRequest(message);
-
-            if (window !== window.top && topOriginForNAA) {
-              window.top.postMessage(request, topOriginForNAA);
-            } else {
-              logError('Not in an embedded iframe; skipping postMessage.');
-              return;
-            }
-          }
-        } catch (error) {
-          logError('Failed to parse message:', error, 'Original message:', message);
-          return;
-        }
-      } else {
+      const top = window.top;
+      if (!top) {
         throw new Error('window.top is not available for posting messages');
+      }
+      if (window === top) {
+        logError(enableLogging, 'Not in an embedded iframe; skipping postMessage.');
+        return;
+      }
+
+      const parsedMessage = parseMessage(message, enableLogging);
+      if (
+        !isRecord(parsedMessage) ||
+        parsedMessage.messageType !== NestedAppAuthMessageEventNames.Request ||
+        typeof parsedMessage.requestId !== 'string' ||
+        parsedMessage.requestId.length === 0 ||
+        typeof parsedMessage.method !== 'string' ||
+        parsedMessage.method.length === 0
+      ) {
+        logError(enableLogging, 'Invalid auth request, ignoring.');
+        return;
+      }
+
+      const request = createNestedAppAuthRequest(message);
+      if (activeInnerRequests.has(parsedMessage.requestId) || pendingRequests.has(request.id)) {
+        logError(enableLogging, 'Auth request ID is already pending, ignoring.');
+        return;
+      }
+
+      pendingRequests.set(request.id, { uuidAsString: request.uuidAsString, requestId: parsedMessage.requestId });
+      activeInnerRequests.add(parsedMessage.requestId);
+      try {
+        top.postMessage(request, topOrigin);
+      } catch (error) {
+        if (pendingRequests.delete(request.id)) {
+          activeInnerRequests.delete(parsedMessage.requestId);
+          logError(enableLogging, 'Failed to post auth request.');
+        } else {
+          throw error;
+        }
       }
     },
 
@@ -210,78 +261,42 @@ function createNestedAppAuthBridge(window: Window): NestedAppAuthBridge {
      * Removes a previously attached event listener.
      */
     removeEventListener: (eventName: 'message', callback: (response: string) => void): void => {
-      const handler = messageHandlers.get(callback);
-      if (handler) {
-        window.removeEventListener(eventName, handler);
-        messageHandlers.delete(callback);
+      if (eventName === 'message' && callbacks.delete(callback) && callbacks.size === 0) {
+        window.removeEventListener(eventName, onMessage);
       }
     },
   };
 }
 
 /**
- * Processes messages received through the auth bridge.
- * @param evt The message event containing the response.
- * @param onMessageReceived Callback function to handle the received message.
+ * Checks an untrusted parsed message without accepting arrays or null.
  */
-function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (response: string) => void): void {
-  if (!evt || !evt.data || typeof evt.data !== 'object' || evt.data === null) {
-    log('Invalid message format, ignoring. Message: %o', evt);
-    return;
-  }
-
-  // Validate message source before processing
-  if (!shouldProcessIncomingMessage(evt.source as Window, evt.origin)) {
-    log('Message source/origin not allowed, ignoring.');
-    return;
-  }
-
-  const { args } = evt.data as SerializedMessageResponse;
-  const [, message] = args ?? [];
-
-  const parsedData: ParsedNestedAppAuthMessageData = (() => {
-    try {
-      return JSON.parse(message);
-    } catch (error) {
-      logError('Failed to parse response message:', error);
-      return null;
-    }
-  })();
-
-  if (!parsedData || parsedData.messageType !== NestedAppAuthMessageEventNames.Response) {
-    log('Invalid response format, ignoring. Message: %o', evt);
-    return;
-  }
-  onMessageReceived(message);
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function shouldProcessIncomingMessage(messageSource: Window, messageOrigin: string): boolean {
-  // Check if messageOrigin matches topOriginForNAA
-  if (messageOrigin === topOriginForNAA) {
-    try {
-      return new URL(messageOrigin).protocol === 'https:';
-    } catch (error) {
-      logError('Invalid message origin URL:', error);
-      return false;
-    }
+function parseMessage(message: string, enableLogging: boolean): unknown {
+  try {
+    return JSON.parse(message);
+  } catch (error) {
+    logError(enableLogging, 'Failed to parse auth message.');
+    return undefined;
   }
-
-  return false;
 }
 
 /**
  * Creates a NAA request with a unique ID and timestamp.
  * @param data The data to be included in the request.
- * @returns A stringified JSON request object.
+ * @returns An SDK request envelope with its serialized UUID and original inner data.
  */
 function createNestedAppAuthRequest(data: string): NestedAppAuthRequest {
   const timestamp = Date.now();
   return {
     id: generateUniqueId(),
-    uuid: generateUUID(),
+    uuidAsString: generateUUID(),
     func: 'nestedAppAuth.execute',
     timestamp: timestamp,
-    apiVersionTag: 'v2_nestedAppAuth.execute', // Hardcoded to avoid coupling with the `ApiName` enum from the TeamsJS core module.
+    apiVersionTag: 'v3_nestedAppAuth.execute', // Hardcoded to avoid coupling with the `ApiName` enum from the TeamsJS core module.
     monotonicTimestamp: timestamp,
     args: [],
     data,
@@ -304,8 +319,8 @@ function generateUniqueId(): string {
  *
  * @param args - The data to be logged.
  */
-function log(...args: unknown[]): void {
-  if (isNAALoggerEnabled) {
+function log(enableLogging: boolean, ...args: unknown[]): void {
+  if (enableLogging) {
     console.log(...args);
   }
 }
@@ -316,8 +331,8 @@ function log(...args: unknown[]): void {
  *
  * @param args - The error data to be logged.
  */
-function logError(...args: unknown[]): void {
-  if (isNAALoggerEnabled) {
+function logError(enableLogging: boolean, ...args: unknown[]): void {
+  if (enableLogging) {
     console.error(...args);
   }
 }
