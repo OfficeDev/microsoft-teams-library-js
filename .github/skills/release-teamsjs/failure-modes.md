@@ -13,19 +13,47 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ## Pipeline outcomes
 
-### The run is marked failed at "View Published Package URLs"
+### A successful Prod run ends "failed" at "View Published Package URLs"
 
-- **Symptom:** every Prod and SDF run ends failed on its last task, even though the npm publish and the CDN upload
-  succeeded.
+- **Symptom:** every recent Prod run ends failed (one was canceled at the same step), even though the npm publish and
+  the CDN upload succeeded. "View Published Package URLs" is the only red task, and the template's closing "Publish
+  to ARROW" step is skipped as a result.
 - **Cause:** the script that step runs reads a stale artifact path.
-- **Fix:** none needed for the release. Verify as in Prod step 9 and carry on. Fixed by
+- **Fix:** none needed for the release. Check that artifact retention, the ESRP npm publish and the 1CDN upload
+  succeeded, verify as in Prod step 9, and carry on. Any other red task is a real failure. Fixed by
   [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) once it lands and reaches the release
   branch. That step also prints an SDF CDN link on Prod runs; do not mistake it for the Prod URL.
+- **Not to confuse with:** a successful DDL run, which normally ends "partially succeeded".
 
-### A successful Prod run reports "partially succeeded"
+### Prod published with the wrong npm tag
 
-- **Cause:** the Lockbox approval stage reports this on an ordinary, successful run.
-- **Fix:** none. Judge by the ESRP publish and 1CDN upload task results, then verify.
+- **Symptom:** after a Prod run, `latest` still points at the previous version and the new version carries `beta`.
+- **Cause:** a typo in the release YAML once named the Prod publish task "tag beta" and published with that tag.
+- **Fix:** before queuing, the npm task in `tools/releases/prod-release.yml` must say `tag latest` with
+  `productstate: 'Latest'`. If it already happened, raise it with the maintainers; moving a dist-tag is a separate,
+  approved npm operation, never a republish.
+
+### The Prod run used the wrong CI build
+
+- **Symptom:** the pipeline published the previous release's content, or the CDN folder has an unexpected version.
+- **Cause:** the pipeline artifact defaulted to an older CI run of the same branch. Every release branch has a run
+  from the branch push and one from the prep PR merge, and a reused branch can carry a run with old content.
+- **Fix:** always set the artifact explicitly to the run from the prep PR merge, and check its `CDNFeed` folder name
+  equals the version before queuing (Prod step 7).
+
+### The Lockbox request cannot be approved by the release approvers
+
+- **Symptom:** approvers say the request is not theirs, or it never appears for them.
+- **Cause:** the request targets another service team.
+- **Fix:** check the target in the request before asking. Fix the pipeline configuration through a reviewed PR
+  rather than asking another team to approve.
+
+### Expected noise
+
+- `postrelease.yml`'s downstream notification fails with a credentials error on every release, so that repository is
+  not notified. Report it to the maintainers; it does not affect publication.
+- Every Prod run warns that the ESRP release task "will be blocked in future releases". It does not block today; track
+  it as a future risk.
 
 ### The artifact retention (ARROW) task fails on an end-of-life Node runtime
 
@@ -50,7 +78,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 ### The Lockbox request waits for hours
 
 - **Cause:** approval needs a second eligible person; the requester cannot approve their own request. Waits have
-  ranged from under an hour to more than a day.
+  ranged from 3 minutes to more than a day.
 - **Fix:** queue early in the day, raise the request ID and run link where the internal runbook says, and line up an
   approver beforehand. Once the first manual approval is given, later Lockbox requests in the same run are approved
   automatically.
@@ -137,11 +165,6 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Fix:** do not promote the GitHub release or announce. Finish the missing side through the pipeline with approval,
   then repeat the Prod step 9 checks.
 
-### `postrelease.yml` fails after the prep PR merges
-
-- **Cause:** the downstream notification has failed on recent releases.
-- **Fix:** report it to the maintainers; it does not affect publication.
-
 ## Valid domains
 
 ### The live valid-domains list does not change after a DDL run
@@ -152,4 +175,11 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Cause:** the file's path has no version and the CDN caches it for a year, so the edge keeps serving the previous
   copy after the upload.
 - **Fix:** request a CDN cache purge through the process in the internal runbook, then compare again. Do not
-  re-run the DDL to refresh the cache, and do not change the SDK's fallback list to work around it.
+  re-run the DDL to refresh the cache, and do not change the SDK's fallback list to work around it. A cache-busting
+  query string does not get past the edge cache, so it is not proof either way.
+
+### New origins merged and released, but hosts still reject them
+
+- **Cause:** once the SDK has fetched the live list from the CDN it validates against that list, not the list bundled
+  in the npm package. A Prod release alone does not make new origins valid; only a DDL run that reaches the edge does.
+- **Fix:** run the DDL (and purge if needed) for the merged `validDomains.json`, then check the live list.
