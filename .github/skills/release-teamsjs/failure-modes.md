@@ -96,7 +96,8 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 - **Cause:** a lookup that failed was read as "not found", or a corporate npm proxy answered instead of the public
   registry.
-- **Fix:** treat any lookup error, timeout or unexpected status as inconclusive, never as "free". Recheck from a
+- **Fix:** treat any lookup error, timeout or unexpected status as inconclusive, never as "free"; `check-version`
+  exits 3 for these. Recheck from a
   network that reaches the public registry or a public mirror. The CDN upload never overwrites, so an existing CDN
   folder also blocks a version.
 

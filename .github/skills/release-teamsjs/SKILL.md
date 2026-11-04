@@ -121,17 +121,15 @@ changed files: consumed change files deleted, `packages/teams-js/CHANGELOG.md`, 
 `packages/teams-js/README.md` and `apps/teams-test-app/index_cdn.html` (script `src` and `integrity`), and
 `pnpm-lock.yaml`. Anything else is a reason to stop and look.
 
-Check the carriers and that the version is free (see [Checks](#checks) for the helpers):
+Check the carriers and that the version is free (see [Checks](#checks)):
 
 ```bash
-carriers_check "$version"
-npm view "@microsoft/teams-js@$version" version     # must print nothing and exit 0
-http_status "$(cdn_url prod "$version")"           # must print 404
-git ls-remote --tags origin "v$version"            # must print nothing
+check carriers --version "$version"
+check check-version --version "$version"
 ```
 
-The version is free only when all three say so. An npm error, a timeout or any status other than 404 is
-inconclusive: resolve it from another network, do not proceed on a guess.
+`check-version` exits 0 only when npm, the Prod CDN folder and the `v<version>` tag are all absent. Exit 3 means a
+source was unreachable or answered unexpectedly: resolve it from another network, do not proceed on a guess.
 
 **⛔ Gate 1:** show the version, the diff summary, the new CHANGELOG section and the branch names.
 
@@ -169,7 +167,7 @@ and that the PR body matches the CHANGELOG. Wait for the merge; do not continue 
 set -euo pipefail
 git fetch origin "release/$version"
 git switch --detach "origin/release/$version"
-carriers_check "$version"
+check carriers --version "$version"
 ```
 
 A tag or GitHub release created before the bump lands points at the wrong commit.
@@ -188,8 +186,7 @@ The merge triggers the CI build of `release/<x.y.z>`. When it is green, note its
 `CDNFeed` artifact, then:
 
 ```bash
-sri "<download>/CDNFeed/$version/js/MicrosoftTeams.min.js"
-readme_sri                                          # the two lines must be identical
+check artifact --version "$version" --file "<download>/CDNFeed/$version/js/MicrosoftTeams.min.js"
 ```
 
 This proves the bundle the pipeline will ship is the one the README and test app SRI were computed from. A mismatch
@@ -214,18 +211,14 @@ overwrite, so a second attempt at a published version fails rather than repairin
 ### 9. Verify publication, fail closed
 
 ```bash
-curl -fsSL -o /tmp/teams-js.min.js "$(cdn_url prod "$version")"
-sri /tmp/teams-js.min.js; readme_sri                # identical
-wc -c < /tmp/teams-js.min.js                        # bytes, for the size record
-npm view "@microsoft/teams-js@$version" version     # prints the version
-npm view @microsoft/teams-js dist-tags.latest       # prints the version
+check published --version "$version" --dist-tag latest
 ```
 
 It passes only when the Prod CDN file hashes to the carrier SRI **and** npm reports the version with `latest` pointing
 at it. npm and the CDN together are the release; one without the other is half published. The npmjs.com package page
-can lag by about 40 minutes; trust the registry answer. A corporate npm proxy can answer differently from the public
-registry, so confirm from a machine that reaches `https://registry.npmjs.org` or a public mirror before declaring
-success.
+can lag by about 40 minutes; trust the registry answer. If the public registry is unreachable (exit 3), pass
+`--registry <https mirror>` or run it from a machine that reaches `https://registry.npmjs.org` before declaring
+success. Note the CDN byte count it prints for the size record.
 
 ### 10. Promote, merge back and update consumers
 
@@ -258,15 +251,13 @@ release work item, and run the retro (below).
 
 1. Pre-flight as in step 1. Apply the skip rule; in a Prod week there is no beta.
 2. Pick the latest successful non-PR CI build of `main`. Its `CDNFeed` folder name is the beta version.
-3. `sri "<download>/CDNFeed/<beta>/js/MicrosoftTeams.min.js"` and keep the result.
+3. `check sri --file "<download>/CDNFeed/<beta>/js/MicrosoftTeams.min.js"` and keep the result.
 4. **⛔ Gate 4:** queue the SDF release pipeline with that build as its resource. Lockbox and judging the run work as
    in Prod step 8.
 5. Verify:
 
    ```bash
-   curl -fsSL -o /tmp/teams-js-beta.min.js "$(cdn_url sdf "<beta>")"
-   sri /tmp/teams-js-beta.min.js                    # equals the result of step 3
-   npm view @microsoft/teams-js dist-tags.beta      # prints <beta>
+   check published --version "<beta>" --environment sdf --dist-tag beta --expected-sri "<sri from step 3>"
    ```
 
 No release branch, PR, GitHub release or announcement for a beta unless the internal runbook asks for one.
@@ -277,40 +268,33 @@ No release branch, PR, GitHub release or announcement for a beta unless the inte
    The DDL pipeline also runs the artifact retention task, so the ARROW failure mode applies to it too.
 2. **⛔ Gate 4:** queue the DDL release pipeline with that build. It overwrites the stored list and needs its own
    Lockbox approval.
-3. From a checkout of that build's commit, `domains_check` prints nothing when the live list equals the source.
+3. From a checkout of that build's commit, `check domains` passes when the live list equals the source.
 4. The list lives at a path with no version, and the CDN serves it with a one-year `Cache-Control: max-age`. A
-   successful upload therefore usually stays invisible until the CDN cache is purged. If `domains_check` still shows
-   a difference after the run, compare the CDN's `Last-Modified` header (`curl -sI <url>`) with the time of the run,
-   then **⛔ request the purge** through the process in the internal runbook and rerun `domains_check` afterwards.
-   Do not queue the DDL again just to refresh the cache.
+   successful upload therefore usually stays invisible until the CDN cache is purged. If `check domains` still fails
+   after the run, compare the CDN's `Last-Modified` header (`curl -sI <url>`) with the time of the run, then
+   **⛔ request the purge** through the process in the internal runbook and rerun `check domains` afterwards. Do not
+   queue the DDL again just to refresh the cache.
 
 ## Checks
 
-Paste these into the bash session before a release. They only read files and public URLs.
+The deterministic checks live in [`check-release.js`](./check-release.js). It uses only Node built-ins, reads files
+and public URLs, and never writes anything. Define a shorthand once per shell:
 
 ```bash
-cdn_url() { # cdn_url prod|sdf <version>
-  case "$1" in prod) host=res.cdn.office.net ;; sdf) host=res-sdf.cdn.office.net ;; *) return 2 ;; esac
-  echo "https://$host/teams-js/$2/js/MicrosoftTeams.min.js"
-}
-http_status() { curl -s -o /dev/null -w '%{http_code}\n' "$1"; }
-sri() { echo "sha384-$(openssl dgst -sha384 -binary "$1" | openssl base64 -A)"; }
-readme_sri() { grep -o 'integrity="[^"]*"' packages/teams-js/README.md | cut -d'"' -f2 | sort -u; }
-carriers_check() { # every carrier names $1, and the README and test app share one SRI
-  grep -h '"version"' packages/teams-js/package.json apps/teams-test-app/package.json
-  grep -ho 'teams-js[/@][0-9][^/]*/' packages/teams-js/README.md apps/teams-test-app/index_cdn.html | sort | uniq -c
-  grep -ho 'integrity="[^"]*"' packages/teams-js/README.md apps/teams-test-app/index_cdn.html | sort | uniq -c
-}
-domains_check() {
-  local live='https://res.cdn.office.net/teams-js/validDomains/json/validDomains.json'
-  local normalize='console.log(JSON.stringify(JSON.parse(require("fs").readFileSync(0,"utf8")),null,1))'
-  diff <(curl -fsSL "$live" | node -e "$normalize") \
-    <(node -e "$normalize" < packages/teams-js/src/artifactsForCDN/validDomains.json)
-}
+check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 ```
 
-`carriers_check` should show `$version` everywhere and exactly one distinct `integrity` value. Read its output; do
-not skim it.
+| Command         | Passes when                                                                               |
+| --------------- | ----------------------------------------------------------------------------------------- |
+| `check-version` | the version is absent from npm, the Prod CDN and GitHub tags                              |
+| `carriers`      | both `package.json` files, the README and the test app name the version and share one SRI |
+| `artifact`      | a downloaded CI bundle hashes to that SRI                                                 |
+| `published`     | the CDN bytes match the SRI and npm has the version, and the dist-tag if given            |
+| `domains`       | the live valid-domains list equals the source                                             |
+| `links`, `sri`  | (informational) the public announcement links, or a file's SRI                            |
+
+Exit codes: `0` passed, `1` a check failed, `2` usage error, `3` a source was unreachable or answered unexpectedly.
+Exit 3 is never success.
 
 ## Retro: feed back what the run taught
 
@@ -331,7 +315,7 @@ This skill documents the process as it runs today and points at the automation t
 - [#3139](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3139)-[#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143)
   (release pipeline 1-4): a shared changelog extractor, release-integrity and SRI validation, a required check on PRs
   into `release/*`, and GitHub pre-release creation on merge. When they land, steps 4-6 become checks of what the
-  automation did, and their validation replaces the manual carrier check.
+  automation did, and their validation overlaps `check carriers`; prefer theirs in CI.
 - [#3032](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3032): agent instructions and the contributor
   skill, which own build, test and change-file guidance.
 - [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) and
@@ -349,3 +333,4 @@ This skill documents the process as it runs today and points at the automation t
 | Prod, SDF and DDL release pipelines | `tools/releases/prod-release.yml`, `sdf-release.yml`, `ddl-release.yml`           |
 | Downstream notification             | `.github/workflows/postrelease.yml`                                               |
 | Valid-domains source                | `packages/teams-js/src/artifactsForCDN/validDomains.json`                         |
+| Read-only checks                    | `.github/skills/release-teamsjs/check-release.js`                                 |
