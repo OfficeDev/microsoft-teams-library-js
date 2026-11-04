@@ -18,9 +18,9 @@ Read [`failure-modes.md`](./failure-modes.md) before a first release and wheneve
 ## Ownership
 
 One owning team runs TeamsJS releases end to end. Its members release, approve each other's Lockbox requests,
-review the release PRs (as code owners) and receive the review requests and the announcement. Ask that team, in the
-team chat and channels the internal runbook lists, rather than other teams' channels. The current approvers and
-contacts live in the internal runbook, not here.
+review the release PRs (as code owners) and receive the review requests. Announcements go to both the owning team's
+chat and the platform SDK channel. Ask that team, in the team chat and channels the internal runbook lists, rather
+than other teams' channels. The current approvers and contacts live in the internal runbook, not here.
 
 ## Release types
 
@@ -70,7 +70,8 @@ approval on its current head.
 - **Lockbox:** two separate permissions, both described in the internal runbook. You need active Lockbox
   eligibility to queue a pipeline that raises a request (Prod, SDF and DDL all do). The approver must be a different
   member of the owning team who is in the release approver group, with active eligibility and the managed device and
-  hardware key the runbook requires. Eligibility lapses after about 30 days unused; renew it before release day. Line
+  hardware key the runbook requires. Request eligibility through the access portal the runbook names. Eligibility
+  lapses after about 30 days unused; renew it before release day. Line
   up the approver before
   you queue.
 - **Tools:** Node 18 (what CI uses), pnpm 9.15.9, git, and `gh` for GitHub reads. On Windows, run the bash blocks in
@@ -317,7 +318,8 @@ record.
 Prepare, do not send:
 
 - **Review request** for the prep and merge-back PRs, once CI is green, with titled links, to the owning team's chat.
-- **Announcement**, only after step 9 passed, in the owning team's channel the internal runbook names. Subject
+- **Announcement**, only after step 9 passed, in both the owning team's chat and the platform SDK channel the internal
+  runbook names. Subject
   `TeamsJS v<x.y.z> Release`; body "teams-js v<x.y.z> has been released to npm and CDN", the npm version page
   (`https://www.npmjs.com/package/@microsoft/teams-js/v/<x.y.z>`), the Prod CDN URL, the GitHub release, and the
   Minor changes and Patches lists copied from the real CHANGELOG section, not from memory or the PR list. Tag the
