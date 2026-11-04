@@ -162,6 +162,10 @@ node tools/cli/readChangelog.js "$version"                     # the PR body
 code-owner approval after the last push; a push dismisses earlier approvals. The reviewer checks the expected files
 and that the PR body matches the CHANGELOG. Wait for the merge; do not continue while it is open.
 
+A green prep PR proves nothing about the build: the ADO PR pipeline skips PRs into `release/*`, so the only check that
+runs is the CLA. The build gate is the CI run on `release/<x.y.z>` after the merge (step 7). The release PR
+validation in [#3141](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3141) is meant to close this gap.
+
 ### 5. Verify the release branch carries the bump
 
 ```bash
@@ -183,8 +187,8 @@ lands, this step becomes "verify the pre-release the workflow created" rather th
 
 ### 7. Integrity gate on the CI build
 
-The merge triggers the CI build of `release/<x.y.z>`. When it is green, note its build number and download its
-`CDNFeed` artifact, then:
+The merge triggers the CI build of `release/<x.y.z>`. Check that the whole run succeeded, including the Build Test
+Publish job, not just that it finished. Then note its build number and download its `CDNFeed` artifact:
 
 ```bash
 check artifact --version "$version" --file "<download>/CDNFeed/$version/js/MicrosoftTeams.min.js"
