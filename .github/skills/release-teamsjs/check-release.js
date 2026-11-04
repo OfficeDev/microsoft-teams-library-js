@@ -20,6 +20,8 @@
  *   pipeline-config                                the checkout's release YAML: Prod publishes with tag latest,
  *                                                  SDF with tag beta, and artifact retention is @6 or later
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
+ *   consumed-changes --version <v>                 no pending change file repeats an entry released in <v>
+ *                                                  (run on the merge-back branch after merging main)
  *
  * GitHub API calls send GITHUB_TOKEN as a bearer token when it is set, to avoid anonymous rate limits.
  *
@@ -417,6 +419,54 @@ function checkPipelineConfig({ repoRoot, readFile }) {
   return results;
 }
 
+const CHANGELOG_PATH = 'packages/teams-js/CHANGELOG.md';
+const CHANGE_DIRECTORY = 'change';
+
+function releasedEntries(changelog, version) {
+  const lines = changelog.split(/\r?\n/);
+  const start = lines.findIndex((line) => line.trim() === `## ${version}`);
+  if (start === -1) {
+    return undefined;
+  }
+  const entries = new Set();
+  for (const line of lines.slice(start + 1)) {
+    if (line.startsWith('## ')) {
+      break;
+    }
+    if (line.startsWith('- ')) {
+      entries.add(line.slice(2).trim());
+    }
+  }
+  return entries;
+}
+
+function checkConsumedChanges({ version, repoRoot, readFile, readDirectory }) {
+  const entries = releasedEntries(readFile(path.join(repoRoot, CHANGELOG_PATH), 'utf8'), version);
+  if (!entries) {
+    return [result(Outcome.fail, `${CHANGELOG_PATH} has no "## ${version}" section; run this on the cleanup branch`)];
+  }
+  const changeFiles = readDirectory(path.join(repoRoot, CHANGE_DIRECTORY)).filter((name) => name.endsWith('.json'));
+  const consumed = changeFiles.filter((name) => {
+    const changeFile = JSON.parse(readFile(path.join(repoRoot, CHANGE_DIRECTORY, name), 'utf8'));
+    return entries.has(String(changeFile.comment || '').trim());
+  });
+  if (consumed.length === 0) {
+    return [
+      result(
+        Outcome.pass,
+        `none of the ${changeFiles.length} pending change files repeats an entry released in ${version}`,
+      ),
+    ];
+  }
+  return consumed.map((name) =>
+    result(
+      Outcome.fail,
+      `${CHANGE_DIRECTORY}/${name} repeats an entry already released in ${version}; delete it or the next release ` +
+        'ships it again',
+    ),
+  );
+}
+
 const ANNOUNCEMENT_LINKS = [
   { name: 'npm', pattern: /npmjs\.com\/package\/@microsoft\/teams-js\/v\/([^/\s"'<>)]+)/, required: true },
   { name: 'CDN', pattern: /cdn\.office\.net\/teams-js\/([^/\s"'<>)]+)\/js\//, required: true },
@@ -656,6 +706,9 @@ const commands = {
 
   'pipeline-config': async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
 
+  'consumed-changes': async (options, { repoRoot, readFile, readDirectory }) =>
+    checkConsumedChanges({ version: requireVersion(options), repoRoot, readFile, readDirectory }),
+
   announcement: async (options, { readFile }) => {
     const version = requireVersion(options);
     if (!options.file) {
@@ -685,7 +738,14 @@ const commands = {
 
 async function run(
   argv,
-  { repoRoot, fetchImpl = globalThis.fetch, readFile = fs.readFileSync, log = console.log, env = process.env },
+  {
+    repoRoot,
+    fetchImpl = globalThis.fetch,
+    readFile = fs.readFileSync,
+    readDirectory = fs.readdirSync,
+    log = console.log,
+    env = process.env,
+  },
 ) {
   const authorizedFetch = (url, init) => fetchImpl(url, withGithubAuth(url, init, env));
   let results;
@@ -694,7 +754,7 @@ async function run(
     if (!Object.prototype.hasOwnProperty.call(commands, command)) {
       throw new UsageError(`Command must be one of: ${Object.keys(commands).join(', ')}`);
     }
-    results = await commands[command](options, { repoRoot, fetchImpl: authorizedFetch, readFile });
+    results = await commands[command](options, { repoRoot, fetchImpl: authorizedFetch, readFile, readDirectory });
   } catch (error) {
     if (error instanceof UsageError) {
       log(`USAGE ${error.message}`);
