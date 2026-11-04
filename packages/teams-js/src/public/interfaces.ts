@@ -1172,7 +1172,23 @@ export enum ErrorCode {
 
 /** @hidden */
 export enum DevicePermission {
+  /**
+   * Permission to read the contents of the system clipboard.
+   *
+   * @remarks
+   * This is the app manifest and TeamsJS wire value. The browser Permissions-Policy
+   * directive uses the separate `clipboard-read` spelling.
+   */
+  ClipboardRead = 'clipboardRead',
   GeoLocation = 'geolocation',
+  /**
+   * Permission to access devices on the user's local network.
+   *
+   * @remarks
+   * This is the TeamsJS wire value. The browser Permissions-Policy directive uses the separate
+   * `local-network-access` spelling.
+   */
+  LocalNetworkAccess = 'localNetworkAccess',
   Media = 'media',
 }
 
