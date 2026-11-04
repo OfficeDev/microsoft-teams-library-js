@@ -124,9 +124,12 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 - **Symptom:** after merging `main` into the cleanup branch, `change/` again holds files whose comments already appear
   in the new CHANGELOG section. It happened on the 2.59.0 merge-back.
-- **Cause:** the release deleted those change files, but `main` still had them; the merge keeps `main`'s copies.
+- **Cause:** with a reused release branch, `main` gained those change files after the release branch's base, and the
+  prep PR consumed them. Relative to the merge base the release side never touched them, so the merge keeps `main`'s
+  copies.
 - **Fix:** delete them in the cleanup branch before opening the PR. Left in place, the next release lists those
-  entries again.
+  entries again. Afterwards `git diff --stat "origin/release/<x.y.z>" HEAD` should show only the new `none` change
+  file.
 
 ### A fix must ship on an older release line (hotfix)
 
