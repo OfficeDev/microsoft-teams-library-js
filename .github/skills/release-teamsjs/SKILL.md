@@ -87,8 +87,10 @@ Before touching anything, state the release type, the version you expect, the or
 and where you will hand over to someone else (code-owner review, Lockbox approval). One short block.
 
 Typical timings to plan around: the release-branch CI run takes about 25 minutes (once, 2 hours); Lockbox approval
-from 3 minutes to more than a day; the publish job about 10 minutes after approval; the npmjs.com page up to 40
-minutes behind the registry; the merge-back PR 1 to 3 hours.
+usually under 10 minutes but up to more than a day; the publish job about 10 minutes after approval; the npmjs.com
+page up to 40 minutes behind the registry; the merge-back PR 1 to 3 hours. Queue Prod by early afternoon. Several
+past releases slipped by a day or more between the GitHub release and npm. Take times from pipeline and API
+timestamps rather than the local clock, which can be off.
 
 ## Step 1 - Pre-flight (read-only)
 
@@ -114,8 +116,8 @@ Check and report:
   or [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198)). The release pipelines read their YAML
   from the branch you queue, so a fix reaches a release only if the release branch contains it. A fix still needed on
   release day costs at least an hour and a half (see the failure modes), so check this the day before.
-- Lockbox eligibility and an approver from the owning team are lined up for today. Approval waits have ranged from 3
-  minutes to more than a day, so queue early.
+- Lockbox eligibility (yours, confirmed or re-requested at least one business day ahead; a lapsed requester is the
+  most common first-run failure) and an approver plus a backup from the owning team are lined up for today.
 
 Stop here if there is nothing to release.
 
