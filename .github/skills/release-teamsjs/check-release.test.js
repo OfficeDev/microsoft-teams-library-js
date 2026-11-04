@@ -335,6 +335,11 @@ describe('check-release', () => {
       assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
     });
 
+    it('treats a registry.npmjs.org server error as inconclusive, never as free', async () => {
+      const { fetchImpl } = fakeFetch({ [registryVersion(NPM, VERSION)]: response(503) });
+      assert.equal(await runWith(['check-version', '--version', VERSION], fetchImpl), ExitCode.unreachable);
+    });
+
     it('fails when the version is already on the CDN', async () => {
       const { fetchImpl } = fakeFetch({ [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE) });
       assert.equal(await runWith(['check-version', '--version', VERSION], fetchImpl), ExitCode.failed);
@@ -497,6 +502,101 @@ describe('check-release', () => {
       const code = await runWith(['published', '--version', VERSION, '--dist-tag', 'latest'], fetchImpl);
       assert.equal(code, ExitCode.unreachable, lines.join('\n'));
     });
+
+    describe('npm source rules', () => {
+      const publishedArgv = (...extra) => ['published', '--version', VERSION, ...extra];
+      const cdnOk = () => ({ [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE) });
+      const npmUnreachable = () => unreachable(registryVersion(NPM, VERSION), registryTags(NPM));
+
+      it('a proxy alone never confirms the version', async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({
+          ...cdnOk(),
+          ...npmUnreachable(),
+          ...registryRoutes(PROXY, { versions: [VERSION] }),
+        });
+        assert.equal(
+          await runWith(publishedArgv('--registry', PROXY), fetchImpl),
+          ExitCode.unreachable,
+          lines.join('\n'),
+        );
+      });
+
+      it('a proxy alone never confirms a dist-tag, even when mirrors confirm the version', async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({
+          ...cdnOk(),
+          ...npmUnreachable(),
+          ...registryRoutes(PROXY, { versions: [VERSION], tags: { latest: VERSION } }),
+          ...jsdelivrRoutes({ versions: [VERSION] }),
+        });
+        const argv = publishedArgv('--dist-tag', 'latest', '--registry', PROXY);
+        assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('UNREACHABLE npm dist-tag latest')),
+          lines.join('\n'),
+        );
+      });
+
+      it('a stale mirror latest is inconclusive, not a pass', async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({
+          ...cdnOk(),
+          ...npmUnreachable(),
+          ...jsdelivrRoutes({ versions: [VERSION], tags: { latest: '2.58.0' } }),
+          [unpkg('latest')]: response(200, { version: '2.58.0' }),
+        });
+        const code = await runWith(publishedArgv('--dist-tag', 'latest'), fetchImpl);
+        assert.equal(code, ExitCode.unreachable, lines.join('\n'));
+      });
+
+      it('a mirror latest newer than the version fails', async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({
+          ...cdnOk(),
+          ...npmUnreachable(),
+          ...jsdelivrRoutes({ versions: [VERSION], tags: { latest: '2.60.0' } }),
+        });
+        assert.equal(
+          await runWith(publishedArgv('--dist-tag', 'latest'), fetchImpl),
+          ExitCode.failed,
+          lines.join('\n'),
+        );
+      });
+
+      it('registry.npmjs.org 404 while a mirror lists the version is a disagreement, not a pass', async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({ ...cdnOk(), ...jsdelivrRoutes({ versions: [VERSION] }) });
+        assert.equal(await runWith(publishedArgv(), fetchImpl), ExitCode.unreachable, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.includes('disagree')),
+          lines.join('\n'),
+        );
+      });
+
+      it('registry.npmjs.org answering with a different version means it does not have this one', async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({
+          ...cdnOk(),
+          [registryVersion(NPM, VERSION)]: response(200, { version: '2.58.0' }),
+        });
+        assert.equal(await runWith(publishedArgv(), fetchImpl), ExitCode.failed, lines.join('\n'));
+      });
+
+      it('a JSON answer that is not an object is inconclusive', async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({
+          ...cdnOk(),
+          [registryVersion(NPM, VERSION)]: response(200, { version: VERSION }),
+          [registryTags(NPM)]: response(200, '"latest"'),
+        });
+        const code = await runWith(publishedArgv('--dist-tag', 'latest'), fetchImpl);
+        assert.equal(code, ExitCode.unreachable, lines.join('\n'));
+        lines = [];
+        const nullVersion = fakeFetch({ ...cdnOk(), [registryVersion(NPM, VERSION)]: response(200, 'null') });
+        assert.equal(await runWith(publishedArgv(), nullVersion.fetchImpl), ExitCode.unreachable, lines.join('\n'));
+      });
+    });
   });
 
   describe('domains', () => {
@@ -657,9 +757,13 @@ describe('check-release', () => {
       assert.equal(await runWith(argv, fetchImpl), ExitCode.failed, lines.join('\n'));
     });
 
-    it('relies on the Prod CDN and the tag when npm is unreachable', async () => {
+    it('relies on the Prod CDN and the tag when npm is unreachable, and says what that cannot catch', async () => {
       const { fetchImpl } = fakeFetch(unreachable(registryTags(NPM)));
       assert.equal(await runWith(['beta-version', '--version', '2.60.0-beta.0'], fetchImpl), ExitCode.passed);
+      assert.ok(
+        lines.some((line) => line.startsWith('INFO') && line.includes('older')),
+        lines.join('\n'),
+      );
     });
 
     it('is inconclusive when the Prod CDN cannot be reached', async () => {
@@ -862,12 +966,14 @@ describe('check-release', () => {
       assert.equal(await runWith(['links', '--version', VERSION, '--version', '2.58.0']), ExitCode.usage);
     });
 
-    it('prints help listing every command', async () => {
+    it('prints help listing every command, marking optional flags', async () => {
       assert.equal(await runWith(['help']), ExitCode.passed);
       const text = lines.join('\n');
       for (const command of ['check-version', 'published', 'beta-version', 'consumed-changes', 'pipeline-config']) {
         assert.ok(text.includes(command), command);
       }
+      assert.ok(text.includes('check-version --version [--registry]'), text);
+      assert.ok(text.includes('consumed-changes --version [--prep-commit]'), text);
     });
 
     it('gives every request a timeout and reports a timeout as inconclusive', async () => {
