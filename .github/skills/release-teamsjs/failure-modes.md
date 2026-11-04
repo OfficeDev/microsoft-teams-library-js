@@ -79,16 +79,17 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 - **Cause:** approval needs a second eligible person; the requester cannot approve their own request. Waits have
   ranged from 3 minutes to more than a day.
-- **Fix:** queue early in the day, raise the request ID and run link where the internal runbook says, and line up an
-  approver beforehand. Once the first manual approval is given, later Lockbox requests in the same run are approved
-  automatically.
+- **Fix:** queue early in the day, post the request ID and run link in the owning team's chat, and line up an
+  approver from the owning team beforehand. Once the first manual approval is given, later Lockbox requests in the
+  same run are approved automatically.
 
 ### You cannot request or approve Lockbox
 
 - **Symptom:** you are missing from the Lockbox request's recipients, or the approval tool says you are not eligible.
-- **Cause:** eligibility lapses after about 30 days without use (a warning arrives a few days before).
+- **Cause:** eligibility lapses after about 30 days without use (a warning arrives a few days before). Owning-team
+  members also need to be in the release approver group the runbook names.
 - **Fix:** renew eligibility before release day, from a managed device if the internal runbook requires it. Ask an
-  eligible teammate to queue or approve meanwhile.
+  eligible owning-team member to queue or approve meanwhile.
 
 ## Branches and versions
 
