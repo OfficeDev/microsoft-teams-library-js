@@ -15,9 +15,9 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### A successful Prod run ends "failed" at "View Published Package URLs"
 
-- **Symptom:** every recent Prod run ends failed (one was canceled at the same step), even though the npm publish and
-  the CDN upload succeeded. "View Published Package URLs" is the only red task, and the template's closing "Publish
-  to ARROW" step is skipped as a result.
+- **Symptom:** since March 2026 every Prod run ends failed (one was canceled at the same step), even though the npm
+  publish and the CDN upload succeeded; earlier runs ended succeeded or partially succeeded. "View Published Package
+  URLs" is the only red task, and the template's closing "Publish to ARROW" step is skipped as a result.
 - **Cause:** the script that step runs reads a stale artifact path.
 - **Fix:** none needed for the release. Check that artifact retention, the ESRP npm publish and the 1CDN upload
   succeeded, verify as in Prod step 9, and carry on. Any other red task is a real failure. Fixed by
@@ -77,11 +77,21 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### The Lockbox request waits for hours
 
-- **Cause:** approval needs a second eligible person; the requester cannot approve their own request. Waits have
-  ranged from 3 minutes to more than a day.
-- **Fix:** queue early in the day, post the request ID and run link in the owning team's chat, and line up an
-  approver from the owning team beforehand. Once the first manual approval is given, later Lockbox requests in the
-  same run are approved automatically.
+- **Cause:** approval needs a second eligible person; the requester cannot approve their own request. Most Prod waits
+  are under 10 minutes, but some have taken 6 to 8 hours and one more than a day, usually when the ask went to a
+  channel nobody was watching.
+- **Fix:** queue Prod by early afternoon, name an approver and a backup from the owning team beforehand, and post the
+  request ID and run link in the owning team's chat, pinging them directly. Once the first manual approval is given,
+  later Lockbox requests in the same run are approved automatically.
+
+### The run fails at "Lockbox Approval Request" because the requester is not eligible
+
+- **Symptom:** the first stage fails with `IneligibleDeploymentUserException` ("requestor is not eligible to deploy"),
+  followed by `FailureInWaitForLockboxTaskException` in deployment preparation. This is the most common first-run
+  failure in the release history, for Prod and DDL alike.
+- **Cause:** the person who queued the run has no active deploy eligibility; it lapses after about 30 days unused.
+- **Fix:** nothing was published, so it is safe to queue again once someone with active eligibility does it. Prevent
+  it by confirming, or re-requesting, eligibility at least one business day before the release.
 
 ### You cannot request or approve Lockbox
 
@@ -116,10 +126,20 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   bring it to `main` through an intermediate branch, as above. The intermediate branch lets you keep `main`'s newer
   version while taking the fix. Agree a hotfix with the maintainers first.
 
-### The 1CDN upload fails
+### The 1CDN upload fails after npm succeeded
 
-- **Fix:** do not retry blindly; check what reached the CDN first (Prod step 9). Contact the CDN team through the
-  channel in the internal runbook with the run and the failing task, described in your own words.
+- **Symptom:** the ESRP npm publish is green and the 1CDN task is red. It has happened on three releases.
+- **Why not re-run:** npm cannot publish an existing version again, so a plain re-run fails at the npm task before it
+  reaches the CDN, and the CDN upload never overwrites.
+- **Fix:** do not retry blindly; check what reached the CDN first (Prod step 9). Agree a CDN-only recovery with the
+  maintainers; one past release recovered with a reviewed run from a separate retry branch. Contact the CDN team
+  through the channel in the internal runbook with the run and the failing task, described in your own words.
+
+### The npm publish task fails with "return code 1"
+
+- **Cause:** often transient; on two releases a later run published.
+- **Fix:** before re-running, check whether the version already exists on npm (Prod step 9). If it does, the publish
+  went through and the next problem is the CDN; if not, re-run with approval.
 
 ### A tag or GitHub release points at a commit without the bump
 
