@@ -10,8 +10,9 @@ itself, and nothing in it bypasses a branch ruleset, a required review or a pipe
 
 **This repository is public.** Publishing runs in Microsoft's internal Azure DevOps and needs approvals from people
 other than the releaser. Pipeline IDs, internal URLs, approver group names, channel names and people's names live in
-the internal TeamsJS release runbook and must not be added here or pasted into PRs, issues or release notes. When this
-file says "the internal runbook", open it rather than guessing.
+the internal TeamsJS release runbook (the "TeamsJS v2.0 Release Process" page in the team's internal wiki) and must
+not be added here or pasted into PRs, issues or release notes. When this file says "the internal runbook", open that
+page rather than guessing.
 
 Read [`failure-modes.md`](./failure-modes.md) before a first release and whenever anything looks wrong.
 
@@ -22,6 +23,15 @@ review the release PRs (as code owners) and receive the review requests. The for
 SDK channel, with a short note in the owning team's chat. Ask that team, in the team chat and channels the internal
 runbook lists, rather than other teams' channels. The current approvers and contacts live in the internal runbook, not
 here.
+
+## At a glance
+
+- **The day before:** Lockbox eligibility confirmed, an approver and a backup named, pipeline fixes already on `main`,
+  the release work item created.
+- **Release morning:** content freeze, version gate, release branch, prep PR, code-owner review.
+- **After the prep PR merges:** the release CI run, the integrity gate, the GitHub pre-release, Prod with Lockbox.
+- **After Prod:** verify npm and the CDN, promote to Latest, merge back, hub test bump, announcements, size table.
+- **Any time something is red:** [`failure-modes.md`](./failure-modes.md) before re-running anything.
 
 ## Release types
 
@@ -36,10 +46,12 @@ here.
 - **Beta skip rule.** Skip a weekly beta only when nothing has merged to `main` since the build the last beta
   published. Confirm that from commit history, not memory, and record the skip with the reason.
 - The Prod pipeline publishes the npm package and the versioned CDN folder only. It does **not** push the
-  valid-domains list; that is the DDL pipeline's job. Once the SDK has fetched the live list from the CDN it validates
-  against that list instead of the one bundled in the package, so a Prod release alone does not reliably make new
-  origins valid. After every release, compare `packages/teams-js/src/artifactsForCDN/validDomains.json` with the live
-  list (see the DDL section) and plan a DDL run with the release owner if they differ.
+  valid-domains list; that is the DDL pipeline's job. Every TeamsJS version bundles a copy of the list, but uses it
+  only until the live list loads from the CDN, when that fetch fails, and in server-side rendering; once the live list
+  has loaded, it replaces the bundled copy. So new origins are reliably accepted, by the new version and by every
+  older one, only after a DDL run reaches the CDN edge. After every release, compare
+  `packages/teams-js/src/artifactsForCDN/validDomains.json` with the live list (see the DDL section) and plan a DDL run
+  with the release owner if they differ.
 
 ## ⛔ Confirmation gates
 
@@ -53,11 +65,12 @@ Every write is a gate:
    published to npm is burned forever.
 2. **Each push and each branch creation**, including the release branch.
 3. **Each PR** (prep, merge-back, downstream bumps): show title, base, head and body first.
-4. **Each pipeline queue**: show the pipeline by role, the branch, the CI build it consumes and the version inside it.
-5. **GitHub release create or edit**, including setting it as Latest.
-6. **Any message** (review request, announcement). Release approval never authorizes a message. Each message needs
-   its own approval of the exact text and destination, and a readback after it is sent. Test and dry runs are never
-   announced.
+4. **GitHub release create or edit**, including setting it as Latest.
+5. **Each pipeline queue**: show the pipeline by role, the branch, the CI build it consumes and the version inside it.
+6. **Any message** (Lockbox ask, review request, announcement). Release approval never authorizes a message. Each
+   message needs its own approval of the exact text and destination, and a readback after it is sent. Test and dry
+   runs are never announced.
+7. **Any wiki or work-item create or edit**, including the size table and the release work item.
 
 The releaser never approves their own Lockbox request or their own PR. Never merge a PR without a human code-owner
 approval on its current head.
@@ -72,16 +85,15 @@ approval on its current head.
   eligibility to queue a pipeline that raises a request (Prod, SDF and DDL all do). The approver must be a different
   member of the owning team who is in the release approver group, with active eligibility and the managed device and
   hardware key the runbook requires. Request eligibility through the access portal the runbook names. Eligibility
-  lapses after about 30 days unused; renew it before release day. Line
-  up the approver before
-  you queue.
+  lapses after about 30 days unused; renew it before release day. Line up the approver before you queue.
 - **Tools:** Node 18 (what CI uses), pnpm 9.15.9, git, and `gh` for GitHub reads. On Windows, run the bash blocks in
   Git Bash.
 - **npm reachability:** some corporate devices cannot reach `registry.npmjs.org` at all, even with
-  `--registry https://registry.npmjs.org`; the TLS handshake fails. There, use the default configured registry
-  (`npm view @microsoft/teams-js dist-tags --json`), which can lag; the publish task's "npm notice version" log line;
-  the npmjs.com version page in a browser; and a public mirror such as jsDelivr. An unreachable registry is never
-  evidence that a version is free or published.
+  `--registry https://registry.npmjs.org`; the TLS handshake fails. A corporate proxy registry and public mirrors such
+  as jsDelivr or unpkg can lag by hours: they can confirm that a version **is** published, never that it is absent or
+  that a dist-tag is current. Use them, the publish task's "npm notice version" log line and the npmjs.com version page
+  in a browser to confirm presence. Prove absence (a free version) only from `registry.npmjs.org`, from another
+  machine if needed. An unreachable or lagging registry is never evidence either way.
 
 ## Step 0 - Summarize the plan
 
@@ -90,9 +102,9 @@ and where you will hand over to someone else (code-owner review, Lockbox approva
 
 Typical timings to plan around: the release-branch CI run takes about 25 minutes (once, 2 hours); Lockbox approval
 usually under 10 minutes but up to more than a day; the publish job about 10 minutes after approval; the npmjs.com
-page up to 40 minutes behind the registry; the merge-back PR 1 to 3 hours. Queue Prod by early afternoon. Several
-past releases slipped by a day or more between the GitHub release and npm. Take times from pipeline and API
-timestamps rather than the local clock, which can be off.
+page up to 40 minutes behind the registry; the merge-back PR 1 to 3 hours. Queue Prod by early afternoon. On four
+past releases npm came 18 to 91 hours after the GitHub release. Take times from pipeline and API timestamps rather
+than the local clock, which can be off.
 
 ## Step 1 - Pre-flight (read-only)
 
@@ -120,6 +132,8 @@ Check and report:
   release day costs at least an hour and a half (see the failure modes), so check this the day before.
 - Lockbox eligibility (yours, confirmed or re-requested at least one business day ahead; a lapsed requester is the
   most common first-run failure) and an approver plus a backup from the owning team are lined up for today.
+- The release work item exists. Create it at the start of the release week under the parent the internal runbook
+  names (**⛔ Gate 7**); the downstream hub test PR links to it, and step 12 closes it.
 
 Stop here if there is nothing to release.
 
@@ -131,11 +145,12 @@ Stop here if there is nothing to release.
 set -euo pipefail
 git fetch origin main
 source_commit="$(git rev-parse origin/main)"
-git switch -c "<alias>/release_<x.y.z>-1" "$source_commit"
+git switch --detach "$source_commit"
 pnpm install                       # without it, preRelease.js fails with "beachball is not recognized"
 node tools/cli/preRelease.js       # capital R; the lowercase name fails on case-sensitive file systems
 version="$(node -p "require('./packages/teams-js/package.json').version")"
 echo "$version"
+git switch -c "<alias>/release_${version}-1"   # local only; carries the uncommitted bump
 git status --short
 ```
 
@@ -149,39 +164,45 @@ Check the carriers and that the version is free (see [Checks](#checks) for the h
 
 ```bash
 carriers_check "$version"
-npm view "@microsoft/teams-js@$version" version     # must print nothing and exit 0
+npm view "@microsoft/teams-js@$version" version --registry https://registry.npmjs.org   # nothing, exit 0
 http_status "$(cdn_url prod "$version")"           # must print 404
 git ls-remote --tags origin "v$version"            # must print nothing
 ```
 
-The version is free only when all three say so. An npm error, a timeout or any status other than 404 is
-inconclusive: resolve it from another network, do not proceed on a guess.
+The version is free only when all three say so. Only `registry.npmjs.org` can show that a version is absent; a proxy
+or mirror that lacks it may simply lag. An npm error, a timeout or any status other than 404 is inconclusive: resolve
+it from another network, do not proceed on a guess.
 
 **⛔ Gate 1:** show the version, the diff summary, the new CHANGELOG section and the branch names. Cross-check the
 version against the latest beta (`npm view @microsoft/teams-js dist-tags.beta`): without its `-beta.N` suffix it is
 normally the same version. Explain any difference before asking.
 
-Do not use `.github/workflows/prerelease.yml`. It force-pushes `release/<version>` with an unreviewed bump.
+Do not use `.github/workflows/prerelease.yml`. It has never been run: it lacks `contents: write`, it would force-push
+`release/<version>` from `main`'s head while the bump goes to a separate generated PR, and the ruleset blocks
+force-pushes to release branches. Follow the manual steps here.
 
 ### 3. Create the release branch
 
 The branch must be named exactly `release/<x.y.z>`: the CI build triggers on `release/*`, the Prod pipeline only runs
 from `main` or `release/*`, and downstream internal test pipelines resolve the branch by that exact name.
 
-Create it at the same commit the bump was prepared from:
+Create it at the same commit the bump was prepared from, only if it does not exist yet:
 
 ```bash
+if git ls-remote --exit-code --heads origin "release/$version" >/dev/null; then
+  echo "release/$version already exists; see 'Stale release branch' in the failure modes" >&2; exit 1
+fi
 git push origin "$source_commit:refs/heads/release/$version"   # ⛔ Gate 2
 ```
 
-If the branch already exists, stop and read "Stale release branch" in the failure modes. Never force-push it.
+Never force-push it. Rulesets block that for most people, but not for bypass actors.
 
 ### 4. Open the prep PR into the release branch
 
 ```bash
 git commit -am "Pre release $version"
-git push --set-upstream origin "<alias>/release_$version-1"   # ⛔ Gate 2
-node tools/cli/readChangelog.js "$version"                     # the PR body
+git push --set-upstream origin "<alias>/release_${version}-1"   # ⛔ Gate 2
+node tools/cli/readChangelog.js "$version"                       # the PR body
 ```
 
 **⛔ Gate 3:** open the PR from the working branch into `release/<x.y.z>` (**not** `main`), titled
@@ -198,7 +219,8 @@ it is open. The reviewer confirms the PR has exactly:
 
 A green prep PR proves nothing about the build: the ADO PR pipeline skips PRs into `release/*`, so the only check that
 runs is the CLA. The build gate is the CI run on `release/<x.y.z>` after the merge (step 6). The release PR
-validation in [#3141](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3141) is meant to close this gap.
+validation workflow in [#3140](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3140) is meant to close
+this gap.
 
 When the prep PR also carries commits already merged to `main` (for example when reusing a release branch), automated
 reviewers may comment on those files rather than the bump. Answer with evidence, such as that change's own green CI on
@@ -224,10 +246,10 @@ run succeeded, including the Build Test Publish job, not just that it finished.
 Every release branch gets at least two CI runs: one when the branch is pushed, one when the prep PR merges. A
 reused branch can also carry an old successful run with the previous release's content. Use the run **from the prep
 PR merge**, at the release branch's head commit, never an earlier one. Note its build number and download its
-`CDNFeed` pipeline artifact; its only version folder must be named `<x.y.z>`:
+`CDNFeed` pipeline artifact. Besides a `_manifest` folder, it must hold exactly one version folder, named `<x.y.z>`:
 
 ```bash
-ls "<download>/CDNFeed"                             # exactly one folder, named $version
+ls "<download>/CDNFeed"                             # _manifest plus one folder, named $version
 sri "<download>/CDNFeed/$version/js/MicrosoftTeams.min.js"
 readme_sri                                          # the two lines must be identical
 ```
@@ -237,7 +259,7 @@ means the published SRI would break every page that uses it: stop.
 
 ### 7. Create the GitHub release as a pre-release
 
-**⛔ Gate 5:** once the CI run in step 6 has passed, create the GitHub release: tag `v<x.y.z>` (a new tag), target
+**⛔ Gate 4:** once the CI run in step 6 has passed, create the GitHub release: tag `v<x.y.z>` (a new tag), target
 `release/<x.y.z>` at the verified commit, title `v<x.y.z>`, body the CHANGELOG section, **pre-release** ticked, no
 binaries attached (publishing adds them). It stays a pre-release until step 9 passes. Read it back: the tag points at
 the release branch head, it is a pre-release, and the previous release is still Latest.
@@ -250,7 +272,7 @@ lands, this step becomes "verify the pre-release the workflow created" rather th
 
 ### 8. Queue the Prod release pipeline
 
-**⛔ Gate 4:** in the internal ADO project, run the Prod release pipeline from branch `release/<x.y.z>` (not `main`)
+**⛔ Gate 5:** in the internal ADO project, run the Prod release pipeline from branch `release/<x.y.z>` (not `main`)
 and **explicitly set the pipeline artifact** to the CI build from step 6; do not accept whatever is preselected.
 Before queuing, confirm the artifact retention task succeeded in the latest `main` CI run, and that the release
 branch uses the same task version:
@@ -263,8 +285,8 @@ Then:
 
 - Find the Lockbox request ID in the "Lockbox Approval Request" task log (it is also in the request email). Check
   the request targets the TeamsJS release service group the runbook names; a request routed to another team cannot
-  be approved by the release approvers. Ask the owning team's approvers in the owning team's chat, with the ID and
-  run link. Someone other than the releaser approves it.
+  be approved by the release approvers. **⛔ Gate 6:** ask the owning team's approvers in the owning team's chat, with
+  the ID and run link. Someone other than the releaser approves it.
 - Watch the job: artifact download, deployment preparation, artifact retention (ARROW), `npm pack`, the ESRP npm
   publish, the 1CDN upload, then "View Published Package URLs".
 - Judge the run by these tasks in the job, **not** the run status: artifact retention, "Publish to npm (tag latest) -
@@ -290,13 +312,18 @@ npm view @microsoft/teams-js dist-tags.latest       # prints the version
 
 It passes only when the Prod CDN file hashes to the carrier SRI **and** npm reports the version with `latest` pointing
 at it. npm and the CDN together are the release; one without the other is half published. The npmjs.com package page
-can lag by about 40 minutes; trust the registry answer. If this device cannot reach the public registry, use the
-fallbacks in Prerequisites: the default registry, the publish task's "npm notice version" line and the npmjs.com
-version page in a browser.
+can lag by about 40 minutes; trust the registry answer. If this device cannot reach the public registry, the fallbacks
+in Prerequisites (a proxy or mirror, the publish task's "npm notice version" line, the npmjs.com version page) can
+confirm the version is there, but a proxy that lacks it or still shows the old `latest` may only be lagging: never
+treat that as "not published" or re-queue because of it.
+
+The Prod pipeline always publishes with the `latest` tag. That is right for a release of the newest version only. A
+hotfix on an older line would move `latest` backwards, so it is a maintainer decision outside this skill (see the
+failure modes); stop before queuing one.
 
 ### 10. Promote, merge back and update consumers
 
-- **⛔ Gate 5:** edit the GitHub release: untick pre-release and set it as the latest release. The repository page
+- **⛔ Gate 4:** edit the GitHub release: untick pre-release and set it as the latest release. The repository page
   should then show it under Releases.
 - **⛔ Gates 2-3:** merge `release/<x.y.z>` back to `main` with a PR titled `Cleanup release v<x.y.z>`. If `main` has
   not moved since the branch was cut, a PR straight from the release branch merges cleanly. Otherwise cut
@@ -341,8 +368,8 @@ Each is a separate **⛔ Gate 6**. Record what was sent and where, so a retry ne
 
 ### 12. Close out
 
-Record the bundle size and the delta from the previous version in the size table the internal runbook keeps, close
-the release work item, then confirm the post-release checklist and run the retro (below).
+**⛔ Gate 7:** record the bundle size and the delta from the previous version in the size table the internal runbook
+keeps, and close the release work item. Then confirm the post-release checklist and run the retro (below).
 
 ### Post-release checklist
 
@@ -365,7 +392,7 @@ the release work item, then confirm the post-release checklist and run the retro
    - Note any feature that will reach Prod without a beta soak (merged after the last beta) and tell the release
      owner.
 3. `sri "<download>/CDNFeed/<beta>/js/MicrosoftTeams.min.js"` and keep the result.
-4. **⛔ Gate 4:** queue the SDF release pipeline with that build as its resource. Lockbox and judging the run work as
+4. **⛔ Gate 5:** queue the SDF release pipeline with that build as its resource. Lockbox and judging the run work as
    in Prod step 8.
 5. Verify:
 
@@ -383,14 +410,15 @@ No release branch, PR, GitHub release or announcement for a beta unless the inte
 
 1. Confirm with the release owner that the valid-domains change must go live now, and which CI build contains it.
    The DDL pipeline also runs the artifact retention task, so the ARROW failure mode applies to it too.
-2. **⛔ Gate 4:** queue the DDL release pipeline with that build. It overwrites the stored list and needs its own
+2. **⛔ Gate 5:** queue the DDL release pipeline with that build. It overwrites the stored list and needs its own
    Lockbox approval. A successful DDL run normally ends "partially succeeded".
 3. From a checkout of that build's commit, `domains_check` prints nothing when the live list equals the source.
 4. The list lives at a path with no version, and the CDN serves it with a one-year `Cache-Control: max-age`. A
    successful upload therefore usually stays invisible until the CDN cache is purged. If `domains_check` still shows
    a difference after the run, compare the CDN's `Last-Modified` header (`curl -sI <url>`) with the time of the run,
    then **⛔ request the purge** through the process in the internal runbook and rerun `domains_check` afterwards.
-   Do not queue the DDL again just to refresh the cache.
+   Do not queue the DDL again just to refresh the cache. The runbook says to wait 24 hours before purging; this skill
+   checks sooner on purpose, because the one-year cache lifetime means waiting rarely helps.
 5. Once the live list is verified, **⛔ Gate 6:** draft a short reply in the matching release announcement's thread
    saying which origins are now live, and a note to the partner who asked for them. A DDL push gets no announcement of
    its own.
@@ -439,10 +467,13 @@ approve their own release. Write invariants, not incident stories, and keep inte
 
 This skill documents the process as it runs today and points at the automation that will replace manual steps:
 
-- [#3139](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3139)-[#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143)
-  (release pipeline 1-4): a shared changelog extractor, release-integrity and SRI validation, a required check on PRs
-  into `release/*`, and GitHub pre-release creation on merge. When they land, steps 4-7 become checks of what the
-  automation did, and their validation replaces the manual carrier check.
+- The release pipeline stack: [#3090](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3090) (1/4, a
+  shared changelog extractor), [#3139](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3139) (2/4,
+  release-integrity and SRI validation), [#3140](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3140)
+  (3/4, a required check on PRs into `release/*`) and
+  [#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143) (4/4, GitHub pre-release creation on
+  merge, replacing the closed #3141). When they land, steps 4-7 become checks of what the automation did, and their
+  validation replaces the manual carrier check.
 - [#3032](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3032): agent instructions and the contributor
   skill, which own build, test and change-file guidance.
 - [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) and
