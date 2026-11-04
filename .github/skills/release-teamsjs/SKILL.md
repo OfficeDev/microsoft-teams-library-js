@@ -18,9 +18,10 @@ Read [`failure-modes.md`](./failure-modes.md) before a first release and wheneve
 ## Ownership
 
 One owning team runs TeamsJS releases end to end. Its members release, approve each other's Lockbox requests,
-review the release PRs (as code owners) and receive the review requests. Announcements go to both the owning team's
-chat and the platform SDK channel. Ask that team, in the team chat and channels the internal runbook lists, rather
-than other teams' channels. The current approvers and contacts live in the internal runbook, not here.
+review the release PRs (as code owners) and receive the review requests. The formal announcement goes to the platform
+SDK channel, with a short note in the owning team's chat. Ask that team, in the team chat and channels the internal
+runbook lists, rather than other teams' channels. The current approvers and contacts live in the internal runbook, not
+here.
 
 ## Release types
 
@@ -323,8 +324,8 @@ record.
 Prepare, do not send:
 
 - **Review request** for the prep and merge-back PRs, once CI is green, with titled links, to the owning team's chat.
-- **Announcement**, only after step 9 passed, in both the owning team's chat and the platform SDK channel the internal
-  runbook names. Subject
+- **Announcement**, only after step 9 passed: the formal post in the platform SDK channel the internal runbook names,
+  plus a short note linking to it in the owning team's chat. Subject
   `TeamsJS v<x.y.z> Release`; body "teams-js v<x.y.z> has been released to npm and CDN", the npm version page
   (`https://www.npmjs.com/package/@microsoft/teams-js/v/<x.y.z>`), the Prod CDN URL, the GitHub release, and the
   Minor changes and Patches lists copied from the real CHANGELOG section, not from memory or the PR list. Tag the
@@ -334,9 +335,9 @@ Prepare, do not send:
   mention the partner who asked for a feature in the release.
   - Post within about three hours of verified publication; past announcements slipped by most of a day, and one
     release was never announced. Read the destination's newest messages first, so a retry never double-posts.
-  - Announce Prod releases only. Never announce SDF betas, test builds or dry runs, and do not cross-post TeamsJS
-    releases to the hub SDK release channels, which are for hub SDK releases. Some channels pick up releases
-    automatically; they need no post.
+  - Announce Prod releases only. Never announce SDF betas, test builds or dry runs. Beyond the platform SDK channel
+    and the owning team's chat, do not cross-post TeamsJS releases; in particular not to the hub SDK release
+    channels, which are for hub SDK releases. Some channels pick up releases automatically; they need no post.
 
 Each is a separate **⛔ Gate 6**. Record what was sent and where, so a retry never double-posts.
 
