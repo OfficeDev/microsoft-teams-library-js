@@ -329,7 +329,12 @@ Prepare, do not send:
   Minor changes and Patches lists copied from the real CHANGELOG section, not from memory or the PR list. Tag the
   current contacts listed in the runbook; older example posts tag people who are no longer the contacts.
   Two recent announcements linked the previous version: check every link contains `<x.y.z>` and open it fresh before
-  sending.
+  sending. You may also mention the partner who asked for a feature in the release.
+  - Post within about three hours of verified publication; past announcements slipped by most of a day, and one
+    release was never announced. Read the destination's newest messages first, so a retry never double-posts.
+  - Announce Prod releases only. Never announce SDF betas, test builds or dry runs, and do not cross-post TeamsJS
+    releases to the hub SDK release channels, which are for hub SDK releases. Some channels pick up releases
+    automatically; they need no post.
 
 Each is a separate **⛔ Gate 6**. Record what was sent and where, so a retry never double-posts.
 
@@ -385,6 +390,9 @@ No release branch, PR, GitHub release or announcement for a beta unless the inte
    a difference after the run, compare the CDN's `Last-Modified` header (`curl -sI <url>`) with the time of the run,
    then **⛔ request the purge** through the process in the internal runbook and rerun `domains_check` afterwards.
    Do not queue the DDL again just to refresh the cache.
+5. Once the live list is verified, **⛔ Gate 6:** draft a short reply in the matching release announcement's thread
+   saying which origins are now live, and a note to the partner who asked for them. A DDL push gets no announcement of
+   its own.
 
 ## Checks
 
