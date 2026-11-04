@@ -69,7 +69,8 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Symptom:** `release/<x.y.z>` already exists from an abandoned attempt, for example a prep PR closed unmerged.
 - **Constraints:** downstream internal test pipelines look the branch up by its exact name, so you cannot use another
   name. The repository ruleset blocks deleting `release/*`; only an organization admin can.
-- **Fix, preferred:** ask an organization admin to delete it, then cut it fresh from the source commit.
+- **Fix, preferred:** ask an organization admin to delete it, then cut it fresh from the source commit. Older
+  instructions that toggle "Allow deletions" in branch protection no longer apply; a ruleset now protects the branch.
 - **Fix, if an admin is not available in time:** reuse it. Bring it up to the source commit through a reviewed PR into
   `release/<x.y.z>`, then continue with the prep PR. Squash merging keeps the later merge-back clean. Agree this with
   the release owner first; never force-push the branch.
@@ -79,6 +80,17 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Cause:** expected when PRs merge mid-release.
 - **Fix:** merge back through `<alias>/cleanup_release_<x.y.z>` cut from the release branch, with `main` merged into
   it (Prod step 10). Never force-push `main` or change the deployed release branch.
+
+### A fix must ship on an older release line (hotfix)
+
+- **Approach:** branch the fix from `release/<x.y.z>`, release it as `x.y.(z+1)` through its own release branch, then
+  bring it to `main` through an intermediate branch, as above. The intermediate branch lets you keep `main`'s newer
+  version while taking the fix. Agree a hotfix with the maintainers first.
+
+### The 1CDN upload fails
+
+- **Fix:** do not retry blindly; check what reached the CDN first (Prod step 9). Contact the CDN team through the
+  channel in the internal runbook with the run and the failing task, described in your own words.
 
 ### A tag or GitHub release points at a commit without the bump
 
