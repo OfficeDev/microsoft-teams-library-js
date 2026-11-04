@@ -29,9 +29,9 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 - **Symptom:** after a Prod run, `latest` still points at the previous version and the new version carries `beta`.
 - **Cause:** a typo in the release YAML once named the Prod publish task "tag beta" and published with that tag.
-- **Fix:** before queuing, the npm task in `tools/releases/prod-release.yml` must say `tag latest` with
-  `productstate: 'Latest'`. If it already happened, raise it with the maintainers; moving a dist-tag is a separate,
-  approved npm operation, never a republish.
+- **Fix:** before queuing, `check pipeline-config` on the release branch confirms the npm task in
+  `tools/releases/prod-release.yml` says `tag latest` with `productstate: 'Latest'`. If it already happened, raise it
+  with the maintainers; moving a dist-tag is a separate, approved npm operation, never a republish.
 
 ### The Prod run used the wrong CI build
 
@@ -39,7 +39,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Cause:** the pipeline artifact defaulted to an older CI run of the same branch. Every release branch has a run
   from the branch push and one from the prep PR merge, and a reused branch can carry a run with old content.
 - **Fix:** always set the artifact explicitly to the run from the prep PR merge, and check its `CDNFeed` folder name
-  equals the version before queuing (Prod step 6).
+  equals the version before queuing (Prod step 6; `check artifact` fails on any other folder).
 
 ### The Lockbox request cannot be approved by the release approvers
 

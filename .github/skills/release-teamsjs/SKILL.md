@@ -241,11 +241,12 @@ lands, this step becomes "verify the pre-release the workflow created" rather th
 
 **⛔ Gate 4:** in the internal ADO project, run the Prod release pipeline from branch `release/<x.y.z>` (not `main`)
 and **explicitly set the pipeline artifact** to the CI build from step 6; do not accept whatever is preselected.
-Before queuing, confirm the artifact retention task succeeded in the latest `main` CI run, and that the release
-branch uses the same task version:
+Before queuing, confirm the artifact retention task succeeded in the latest `main` CI run, and check the release
+branch's pipeline YAML (Prod publishes with `tag latest`, artifact retention is @6 or later) from a checkout of it:
 
 ```bash
-git grep -n 'AssetRetention@' "origin/release/$version" -- tools   # every line @6 or later
+git switch --detach "origin/release/$version"
+check pipeline-config
 ```
 
 Then:
@@ -311,8 +312,8 @@ Prepare, do not send:
   (`https://www.npmjs.com/package/@microsoft/teams-js/v/<x.y.z>`), the Prod CDN URL, the GitHub release, and the
   Minor changes and Patches lists copied from the real CHANGELOG section, not from memory or the PR list. Tag the
   current release contacts listed in the runbook; its older example post tags people who are no longer the contacts.
-  Two recent announcements linked the previous version: check every link contains `<x.y.z>` and open it fresh before
-  sending.
+  Two recent announcements linked the previous version: save the draft to a file, run
+  `check announcement --version "$version" --file <draft>`, and open every link fresh before sending.
 
 Each is a separate **⛔ Gate 6**. Record what was sent and where, so a retry never double-posts.
 
@@ -378,16 +379,19 @@ and public URLs, and never writes anything. Define a shorthand once per shell:
 check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 ```
 
-| Command                | Passes when                                                                                            |
-| ---------------------- | ------------------------------------------------------------------------------------------------------ |
-| `check-version`        | the version is absent from npm, the Prod CDN and GitHub tags                                           |
-| `carriers`             | both `package.json` files, the README and the test app name the version and share one SRI              |
-| `artifact`             | a downloaded CI bundle hashes to that SRI                                                              |
-| `published`            | the CDN bytes match the SRI and npm has the version, and the dist-tag if given                         |
-| `domains`              | the live valid-domains list equals the source                                                          |
-| `github-release`       | `--expect prerelease` or `latest`: the GitHub release is in that state and tag `v<v>` carries the bump |
-| `merged-back`          | `main`'s CHANGELOG has the version's section                                                           |
-| `size`, `links`, `sri` | (informational) bundle bytes and change from `--previous`, announcement links, a file's SRI            |
+| Command                | Passes when                                                                                                                                                         |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `check-version`        | the version is absent from npm, the Prod CDN and GitHub tags                                                                                                        |
+| `carriers`             | both `package.json` files, the README and the test app name the version and share one SRI                                                                           |
+| `artifact`             | a downloaded CI bundle is under `CDNFeed/<v>/js` and hashes to that SRI                                                                                             |
+| `published`            | the CDN bytes match the SRI and npm has the version, and the dist-tag if given                                                                                      |
+| `domains`              | the live valid-domains list equals the source                                                                                                                       |
+| `github-release`       | `--expect prerelease` or `latest`: the release is in that state, tag `v<v>` carries the bump and sits at the release branch head, and Latest is right for the stage |
+| `merged-back`          | `main`'s CHANGELOG has the version's section                                                                                                                        |
+| `pipeline-config`      | the checkout's release YAML: Prod publishes with `tag latest`, SDF with `tag beta`, artifact retention @6+                                                          |
+| `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version newer than npm's `latest`                                                                                                 |
+| `announcement`         | every npm, CDN and GitHub release link in a draft names the version, and npm and CDN links are present                                                              |
+| `size`, `links`, `sri` | (informational) bundle bytes and change from `--previous`, announcement links, a file's SRI                                                                         |
 
 GitHub API calls send `GITHUB_TOKEN` as a bearer token when it is set, which avoids anonymous rate limits.
 
