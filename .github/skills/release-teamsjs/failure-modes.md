@@ -29,14 +29,14 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### The artifact retention (ARROW) task fails on an end-of-life Node runtime
 
-- **Symptom:** `AssetRetention@3` fails before publishing because the agent refuses end-of-life Node 16 task
-  runtimes.
-- **Cause:** versions 3-5 of the task run on Node 16. Queue-time variable overrides are not allowed on these
+- **Symptom:** the artifact retention task fails before publishing because the agent refuses end-of-life Node 16
+  task runtimes.
+- **Cause:** `AssetRetention` versions 3-5 run on Node 16. Queue-time variable overrides are not allowed on these
   pipelines, so the agent setting cannot be switched off for one run.
-- **Fix:** move to `AssetRetention@6` in `tools/yaml-templates/security.yml` and the three release YAMLs
-  ([#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198)). PR builds skip this task, so only the
-  first `main` CI run after the merge proves the change; the release pipelines pick it up only from a release branch
-  that contains it.
+- **Fix:** `main` uses `AssetRetention@6` in `tools/yaml-templates/security.yml` and the three release YAMLs since
+  [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198); it runs on Node 20. If you see this
+  failure, the queued branch predates that change: carry it into the release branch through a reviewed PR. PR builds
+  skip this task, so only a `main` or release CI run proves a change to it.
 
 ### A pipeline fix merged to `main` is not in effect for the release
 

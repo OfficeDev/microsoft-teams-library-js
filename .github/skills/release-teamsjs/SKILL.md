@@ -199,7 +199,14 @@ means the published SRI would break every page that uses it: stop.
 ### 8. Queue the Prod release pipeline
 
 **⛔ Gate 4:** in the internal ADO project, run the Prod release pipeline from branch `release/<x.y.z>` with the
-pipeline resource set to the CI build from step 7. Then:
+pipeline resource set to the CI build from step 7. Before queuing, confirm the artifact retention task succeeded in
+the latest `main` CI run, and that the release branch uses the same task version:
+
+```bash
+git grep -n 'AssetRetention@' "origin/release/$version" -- tools   # every line @6 or later
+```
+
+Then:
 
 - Find the Lockbox request ID in the "Lockbox Approval Request" task log and raise it with the run link where the
   internal runbook says. Someone else approves it.
