@@ -15,6 +15,13 @@ file says "the internal runbook", open it rather than guessing.
 
 Read [`failure-modes.md`](./failure-modes.md) before a first release and whenever anything looks wrong.
 
+## Ownership
+
+One owning team runs TeamsJS releases end to end. Its members release, approve each other's Lockbox requests,
+review the release PRs (as code owners) and receive the review requests and the announcement. Ask that team, in the
+team chat and channels the internal runbook lists, rather than other teams' channels. The current approvers and
+contacts live in the internal runbook, not here.
+
 ## Release types
 
 | Type     | When                                                       | Publishes                                                                   | Built from                                             |
@@ -62,8 +69,9 @@ approval on its current head.
   resource on the first run. Sign in with `az login` if you use the CLI.
 - **Lockbox:** two separate permissions, both described in the internal runbook. You need active Lockbox
   eligibility to queue a pipeline that raises a request (Prod, SDF and DDL all do). The approver must be a different
-  person in the release approver group, with active eligibility and the managed device and hardware key the runbook
-  requires. Eligibility lapses after about 30 days unused; renew it before release day. Line up the approver before
+  member of the owning team who is in the release approver group, with active eligibility and the managed device and
+  hardware key the runbook requires. Eligibility lapses after about 30 days unused; renew it before release day. Line
+  up the approver before
   you queue.
 - **Tools:** Node 18 (what CI uses), pnpm 9.15.9, git, and `gh` for GitHub reads. On Windows, run the bash blocks in
   Git Bash.
@@ -106,8 +114,8 @@ Check and report:
   or [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198)). The release pipelines read their YAML
   from the branch you queue, so a fix reaches a release only if the release branch contains it. A fix still needed on
   release day costs at least an hour and a half (see the failure modes), so check this the day before.
-- Lockbox eligibility and an approver are lined up for today. Approval waits have ranged from under an hour to more
-  than a day, so queue early.
+- Lockbox eligibility and an approver from the owning team are lined up for today. Approval waits have ranged from 3
+  minutes to more than a day, so queue early.
 
 Stop here if there is nothing to release.
 
@@ -253,8 +261,8 @@ Then:
 
 - Find the Lockbox request ID in the "Lockbox Approval Request" task log (it is also in the request email). Check
   the request targets the TeamsJS release service group the runbook names; a request routed to another team cannot
-  be approved by the release approvers. Ask for approval with the ID and run link in the Lockbox requests channel the
-  runbook names. Someone else approves it.
+  be approved by the release approvers. Ask the owning team's approvers in the owning team's chat, with the ID and
+  run link. Someone other than the releaser approves it.
 - Watch the job: artifact download, deployment preparation, artifact retention (ARROW), `npm pack`, the ESRP npm
   publish, the 1CDN upload, then "View Published Package URLs".
 - Judge the run by these tasks in the job, **not** the run status: artifact retention, "Publish to npm (tag latest) -
@@ -306,12 +314,12 @@ record.
 
 Prepare, do not send:
 
-- **Review request** for the prep and merge-back PRs, once CI is green, with titled links.
-- **Announcement**, only after step 9 passed, in the team channel the internal runbook names. Subject
+- **Review request** for the prep and merge-back PRs, once CI is green, with titled links, to the owning team's chat.
+- **Announcement**, only after step 9 passed, in the owning team's channel the internal runbook names. Subject
   `TeamsJS v<x.y.z> Release`; body "teams-js v<x.y.z> has been released to npm and CDN", the npm version page
   (`https://www.npmjs.com/package/@microsoft/teams-js/v/<x.y.z>`), the Prod CDN URL, the GitHub release, and the
   Minor changes and Patches lists copied from the real CHANGELOG section, not from memory or the PR list. Tag the
-  current release contacts listed in the runbook; its older example post tags people who are no longer the contacts.
+  current contacts listed in the runbook; older example posts tag people who are no longer the contacts.
   Two recent announcements linked the previous version: save the draft to a file, run
   `check announcement --version "$version" --file <draft>`, and open every link fresh before sending.
 
