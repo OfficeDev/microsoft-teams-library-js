@@ -174,8 +174,9 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 ### The version looks free but publishing fails as a duplicate, or looks unpublished when it is live
 
 - **Cause:** a lookup that failed was read as "not found", or a corporate npm proxy or public mirror answered instead
-  of the public registry. Proxies and mirrors can lag by hours: on the 2.59.0 release day the corporate proxy still
-  showed `latest` 2.58.0 and no 2.59.0 after npm had both.
+  of the public registry. Proxies and mirrors can lag: on the 2.59.0 release day the corporate proxy still showed
+  `latest` 2.58.0 and no 2.59.0 more than 25 minutes after the publish, while jsDelivr and unpkg showed 2.59.0 within
+  about 10 minutes. npmjs.com web pages refuse automated requests, so check them in a browser.
 - **Fix:** a proxy or mirror can confirm that a version is present, never that it is absent or that a dist-tag is
   current. Prove a version free only from `registry.npmjs.org`, from another network if needed, and treat any lookup
   error, timeout or unexpected status as inconclusive; `check-version`, `published` and `beta-version` exit 3 for
