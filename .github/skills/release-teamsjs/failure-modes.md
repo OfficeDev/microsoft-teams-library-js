@@ -43,6 +43,9 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Cause:** the release pipelines read their YAML from the branch you queue, `release/<x.y.z>`.
 - **Fix:** cut the release branch after the fix merges, or bring the fix into the release branch through a reviewed
   PR. Do not edit a release branch that has already deployed.
+- **Timing:** even a YAML-only PR takes about an hour to go green, because the PR pipeline's web Playwright shards and
+  Android end-to-end plans are the long poles. Merging to `main` and then carrying the fix into the release branch
+  pushes Prod back by at least an hour and a half, so land pipeline fixes before release day.
 
 ### The Lockbox request waits for hours
 

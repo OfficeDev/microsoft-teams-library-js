@@ -93,7 +93,8 @@ Check and report:
 - Whether `release/<x.y.z>` already exists (see the failure modes for a stale branch).
 - Any release pipeline fix merged since the last release (for example [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187)
   or [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198)). The release pipelines read their YAML
-  from the branch you queue, so a fix reaches a release only if the release branch contains it.
+  from the branch you queue, so a fix reaches a release only if the release branch contains it. A fix still needed on
+  release day costs at least an hour and a half (see the failure modes), so check this the day before.
 - Lockbox eligibility and an approver are lined up for today. Approval waits have ranged from under an hour to more
   than a day, so queue early.
 
