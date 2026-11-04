@@ -299,10 +299,12 @@ version page in a browser.
   should then show it under Releases.
 - **⛔ Gates 2-3:** merge `release/<x.y.z>` back to `main` with a PR titled `Cleanup release v<x.y.z>`. If `main` has
   not moved since the branch was cut, a PR straight from the release branch merges cleanly. Otherwise cut
-  `<alias>/cleanup_release_<x.y.z>` from `release/<x.y.z>`, merge `origin/main` into it and open the PR from that;
-  if the change-file check then fails, add a `none` change file (`pnpm changefile`, comment `Released <x.y.z>`).
+  `<alias>/cleanup_release_<x.y.z>` from `release/<x.y.z>`, merge `origin/main` into it and open the PR from that,
+  with a `none` change file (`pnpm changefile`, comment `Released <x.y.z>`); PR CI's change-file check requires it
+  even when a local `beachball check` says none is needed.
   Merging `main` can bring back change files the release already consumed; delete any change file whose comment
-  appears in the new CHANGELOG section, or the next release ships those entries twice.
+  appears in the new CHANGELOG section, or the next release ships those entries twice. Before opening the PR,
+  `git diff --stat "origin/release/$version" HEAD` should show only the new `none` change file.
   Never force-push `main`. A PR from release content can run an extra end-to-end check against the newly deployed
   CDN; leave the PR open until it completes.
 - **Never push to `release/<x.y.z>` after Prod.** Internal downstream tests check that branch out by name.
