@@ -75,7 +75,16 @@ const GITHUB_REPO_API = 'https://api.github.com/repos/OfficeDev/microsoft-teams-
 const MAIN_CHANGELOG =
   'https://raw.githubusercontent.com/OfficeDev/microsoft-teams-library-js/main/packages/teams-js/CHANGELOG.md';
 
-function githubRoutes({ version = VERSION, prerelease, draft = false, tagVersion = version, latestTag }) {
+function githubRoutes({
+  version = VERSION,
+  prerelease,
+  draft = false,
+  tagVersion = version,
+  latestTag = 'v2.58.0',
+  tagSha = 'a'.repeat(40),
+  branchSha = tagSha,
+  annotatedTarget,
+}) {
   const routes = {};
   if (prerelease !== undefined) {
     routes[`${GITHUB_REPO_API}/releases/tags/v${version}`] = response(200, {
@@ -94,7 +103,42 @@ function githubRoutes({ version = VERSION, prerelease, draft = false, tagVersion
   if (latestTag) {
     routes[`${GITHUB_REPO_API}/releases/latest`] = response(200, { tag_name: latestTag });
   }
+  routes[`${GITHUB_REPO_API}/git/ref/tags/v${version}`] = response(200, {
+    object: { type: annotatedTarget ? 'tag' : 'commit', sha: tagSha },
+  });
+  if (annotatedTarget) {
+    routes[`${GITHUB_REPO_API}/git/tags/${tagSha}`] = response(200, {
+      object: { type: 'commit', sha: annotatedTarget },
+    });
+  }
+  routes[`${GITHUB_REPO_API}/git/ref/heads/release/${version}`] = response(200, { object: { sha: branchSha } });
   return routes;
+}
+
+function writeArtifact(root, folderVersion, bytes) {
+  const file = path.join(root, 'download', 'CDNFeed', folderVersion, 'js', 'MicrosoftTeams.min.js');
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, bytes);
+  return file;
+}
+
+function writePipelineConfig(root, { prodTag = 'latest', prodState = 'Latest', retention = 6 } = {}) {
+  const write = (relativePath, contents) => {
+    fs.mkdirSync(path.dirname(path.join(root, relativePath)), { recursive: true });
+    fs.writeFileSync(path.join(root, relativePath), contents);
+  };
+  const publish = (tag, state) =>
+    [
+      `              - task: AssetRetention@${retention}`,
+      `              - task: EsrpRelease@10`,
+      `                displayName: Publish to npm (tag ${tag}) - ESRP release`,
+      `                inputs:`,
+      `                  productstate: '${state}'`,
+    ].join('\n');
+  write('tools/releases/prod-release.yml', publish(prodTag, prodState));
+  write('tools/releases/sdf-release.yml', publish('beta', 'Beta'));
+  write('tools/releases/ddl-release.yml', `              - task: AssetRetention@${retention}`);
+  write('tools/yaml-templates/security.yml', `  - task: AssetRetention@${retention}`);
 }
 
 describe('check-release', () => {
@@ -155,16 +199,28 @@ describe('check-release', () => {
   describe('artifact', () => {
     it('passes when the CI bundle hashes to the carrier SRI', async () => {
       writeRepo(root);
-      const file = path.join(root, 'MicrosoftTeams.min.js');
-      fs.writeFileSync(file, BUNDLE);
-      assert.equal(await runWith(['artifact', '--version', VERSION, '--file', file]), ExitCode.passed);
+      const file = writeArtifact(root, VERSION, BUNDLE);
+      assert.equal(
+        await runWith(['artifact', '--version', VERSION, '--file', file]),
+        ExitCode.passed,
+        lines.join('\n'),
+      );
     });
 
     it('fails when the CI bundle differs from the bundle the carriers were built from', async () => {
       writeRepo(root);
-      const file = path.join(root, 'MicrosoftTeams.min.js');
-      fs.writeFileSync(file, Buffer.from('a different build'));
+      const file = writeArtifact(root, VERSION, Buffer.from('a different build'));
       assert.equal(await runWith(['artifact', '--version', VERSION, '--file', file]), ExitCode.failed);
+    });
+
+    it('fails when the bundle is not in a CDNFeed folder named for the version (a stale CI run)', async () => {
+      writeRepo(root);
+      const file = writeArtifact(root, '2.58.0', BUNDLE);
+      assert.equal(await runWith(['artifact', '--version', VERSION, '--file', file]), ExitCode.failed);
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('CDNFeed')),
+        lines.join('\n'),
+      );
     });
 
     it('requires --file', async () => {
@@ -350,6 +406,113 @@ describe('check-release', () => {
       await runWith(['github-release', '--version', VERSION, '--expect', 'prerelease'], fetchImpl);
       assert.ok(options.length > 0);
       assert.ok(options.every((init) => init.headers.Authorization === 'Bearer test-token'));
+    });
+    it('fails a pre-release whose tag is not at the release branch head', async () => {
+      const { fetchImpl } = fakeFetch(githubRoutes({ prerelease: true, branchSha: 'b'.repeat(40) }));
+      const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.failed);
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('release/')),
+        lines.join('\n'),
+      );
+    });
+
+    it('follows an annotated tag to its commit', async () => {
+      const head = 'c'.repeat(40);
+      const routes = githubRoutes({ prerelease: true, tagSha: 'd'.repeat(40), branchSha: head, annotatedTarget: head });
+      const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
+      assert.equal(await runWith(argv, fakeFetch(routes).fetchImpl), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('fails a pre-release that was also marked Latest', async () => {
+      const { fetchImpl } = fakeFetch(githubRoutes({ prerelease: true, latestTag: `v${VERSION}` }));
+      const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.failed);
+    });
+  });
+
+  describe('beta-version', () => {
+    const tagsUrl = 'https://registry.npmjs.org/-/package/@microsoft%2fteams-js/dist-tags';
+    const tags = (latest) => fakeFetch({ [tagsUrl]: response(200, { latest, beta: '2.59.0-beta.0' }) }).fetchImpl;
+
+    it('passes a beta of the next version', async () => {
+      assert.equal(await runWith(['beta-version', '--version', '2.60.0-beta.0'], tags('2.59.0')), ExitCode.passed);
+    });
+
+    it('fails a beta of a version that already shipped', async () => {
+      assert.equal(await runWith(['beta-version', '--version', '2.59.0-beta.1'], tags('2.59.0')), ExitCode.failed);
+      assert.equal(await runWith(['beta-version', '--version', '2.58.0-beta.3'], tags('2.59.0')), ExitCode.failed);
+    });
+
+    it('compares numerically, not as text', async () => {
+      assert.equal(await runWith(['beta-version', '--version', '2.100.0-beta.0'], tags('2.99.0')), ExitCode.passed);
+    });
+
+    it('rejects a version that is not a beta', async () => {
+      assert.equal(await runWith(['beta-version', '--version', '2.60.0'], tags('2.59.0')), ExitCode.usage);
+      assert.ok(lines.at(-1).includes('-beta.'), lines.join('\n'));
+    });
+
+    it('is inconclusive when the registry is unreachable', async () => {
+      const { fetchImpl } = fakeFetch({ [tagsUrl]: new Error('TLS alert 40') });
+      assert.equal(await runWith(['beta-version', '--version', '2.60.0-beta.0'], fetchImpl), ExitCode.unreachable);
+    });
+  });
+
+  describe('pipeline-config', () => {
+    it('passes when Prod publishes with tag latest and artifact retention is v6 or later', async () => {
+      writePipelineConfig(root);
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('fails when the Prod publish task says tag beta', async () => {
+      writePipelineConfig(root, { prodTag: 'beta' });
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
+    });
+
+    it('fails when Prod publishes with the Beta product state', async () => {
+      writePipelineConfig(root, { prodState: 'Beta' });
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
+    });
+
+    it('fails when artifact retention is on a Node 16 version', async () => {
+      writePipelineConfig(root, { retention: 3 });
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('AssetRetention@3')),
+        lines.join('\n'),
+      );
+    });
+  });
+
+  describe('announcement', () => {
+    const draft = (version) =>
+      [
+        `teams-js v${VERSION} has been released to npm and CDN`,
+        `https://www.npmjs.com/package/@microsoft/teams-js/v/${version}`,
+        `https://res.cdn.office.net/teams-js/${VERSION}/js/MicrosoftTeams.min.js`,
+      ].join('\n');
+
+    it('passes when every link names the version', async () => {
+      const file = path.join(root, 'announcement.txt');
+      fs.writeFileSync(file, draft(VERSION));
+      assert.equal(await runWith(['announcement', '--version', VERSION, '--file', file]), ExitCode.passed);
+    });
+
+    it('fails when a link names the previous version', async () => {
+      const file = path.join(root, 'announcement.txt');
+      fs.writeFileSync(file, draft('2.58.0'));
+      assert.equal(await runWith(['announcement', '--version', VERSION, '--file', file]), ExitCode.failed);
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('2.58.0')),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails when the npm or CDN link is missing', async () => {
+      const file = path.join(root, 'announcement.txt');
+      fs.writeFileSync(file, `teams-js v${VERSION} has been released to npm and CDN`);
+      assert.equal(await runWith(['announcement', '--version', VERSION, '--file', file]), ExitCode.failed);
     });
   });
 

@@ -11,9 +11,15 @@
  *   links         --version <v>                    public npm, CDN and GitHub release links for the announcement
  *   sri           --file <path>                    the sha384 SRI of a file, such as an SDF beta CI bundle
  *   github-release --version <v> --expect prerelease|latest
- *                                                  the GitHub release state, and that tag v<v> carries the bump
+ *                                                  the GitHub release state, that tag v<v> carries the bump and
+ *                                                  points at the release branch head, and which release is Latest
  *   merged-back   --version <v>                    main's CHANGELOG has the <v> section
  *   size          --version <v> --previous <p>     Prod CDN bundle bytes and the change from <p>
+ *   beta-version  --version <x.y.z>-beta.<n> [--registry <url>]
+ *                                                  the beta is of a version newer than npm's latest
+ *   pipeline-config                                the checkout's release YAML: Prod publishes with tag latest,
+ *                                                  SDF with tag beta, and artifact retention is @6 or later
+ *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
  *
  * GitHub API calls send GITHUB_TOKEN as a bearer token when it is set, to avoid anonymous rate limits.
  *
@@ -266,6 +272,14 @@ async function checkGithubRelease({ version, expect, fetchImpl }) {
           : `GitHub release ${tag} is not a pre-release yet it should be until publication is verified`,
       ),
     );
+    const latest = await readGithubJson(fetchImpl, githubLatestReleaseUrl(), 'GitHub latest release');
+    results.push(
+      latest.problem ||
+        result(
+          latest.json.tag_name === tag ? Outcome.fail : Outcome.pass,
+          `GitHub latest release is ${latest.json.tag_name}; ${tag} must not be Latest before publication is verified`,
+        ),
+    );
   } else {
     results.push(
       result(
@@ -297,6 +311,139 @@ async function checkGithubRelease({ version, expect, fetchImpl }) {
         tagVersion === version ? Outcome.pass : Outcome.fail,
         `packages/teams-js/package.json at ${tag} is ${tagVersion}, expected ${version}` +
           (tagVersion === version ? '' : '; the tag was cut before the bump landed'),
+      ),
+    );
+  }
+  results.push(await checkTagAtBranchHead({ version, fetchImpl }));
+  return results;
+}
+
+async function checkTagAtBranchHead({ version, fetchImpl }) {
+  const tag = `v${version}`;
+  const tagRef = await readGithubJson(fetchImpl, githubTagUrl(version), `Tag ${tag}`);
+  if (tagRef.problem) {
+    return tagRef.problem;
+  }
+  let tagCommit = tagRef.json.object.sha;
+  if (tagRef.json.object.type === 'tag') {
+    const annotated = await readGithubJson(fetchImpl, `${GITHUB_API}/repos/${REPOSITORY}/git/tags/${tagCommit}`, 'Tag');
+    if (annotated.problem) {
+      return annotated.problem;
+    }
+    tagCommit = annotated.json.object.sha;
+  }
+  const branch = `release/${version}`;
+  const head = await readGithubJson(fetchImpl, `${GITHUB_API}/repos/${REPOSITORY}/git/ref/heads/${branch}`, branch);
+  if (head.problem) {
+    return head.problem;
+  }
+  const headCommit = head.json.object.sha;
+  return headCommit === tagCommit
+    ? result(Outcome.pass, `${tag} points at the ${branch} head ${headCommit.slice(0, 8)}`)
+    : result(
+        Outcome.fail,
+        `${tag} points at ${tagCommit.slice(0, 8)} but ${branch} is at ${headCommit.slice(0, 8)}; ` +
+          'never push to the release branch after tagging',
+      );
+}
+
+function parseStableVersion(version) {
+  return version.split('-')[0].split('.').map(Number);
+}
+
+function isNewer(candidate, baseline) {
+  const [a, b] = [parseStableVersion(candidate), parseStableVersion(baseline)];
+  for (let index = 0; index < 3; index++) {
+    if (a[index] !== b[index]) {
+      return a[index] > b[index];
+    }
+  }
+  return false;
+}
+
+async function checkBetaVersion({ version, registry, fetchImpl }) {
+  const tags = await readJson(fetchImpl, npmDistTagsUrl(registry), 'npm dist-tags');
+  if (tags.problem) {
+    return [tags.problem];
+  }
+  const latest = tags.json.latest;
+  const newer = isNewer(version, latest);
+  return [
+    result(
+      newer ? Outcome.pass : Outcome.fail,
+      newer
+        ? `${version} is a beta of a version newer than latest ${latest}`
+        : `${version} is a beta of a version that is not newer than latest ${latest}; it would sort below the release`,
+    ),
+  ];
+}
+
+const PIPELINE_FILES = [
+  { file: 'tools/releases/prod-release.yml', npmTag: 'latest', productState: 'Latest' },
+  { file: 'tools/releases/sdf-release.yml', npmTag: 'beta', productState: 'Beta' },
+  { file: 'tools/releases/ddl-release.yml' },
+  { file: 'tools/yaml-templates/security.yml' },
+];
+const MINIMUM_ASSET_RETENTION_VERSION = 6;
+
+function checkPipelineConfig({ repoRoot, readFile }) {
+  const results = [];
+  for (const { file, npmTag, productState } of PIPELINE_FILES) {
+    const text = readFile(path.join(repoRoot, file), 'utf8');
+    const retention = matchAll(text, /AssetRetention@(\d+)/g).map(Number);
+    const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
+    results.push(
+      result(
+        old.length === 0 ? Outcome.pass : Outcome.fail,
+        old.length === 0
+          ? `${file} uses AssetRetention@${retention.join(', @') || '(none)'}`
+          : `${file} uses AssetRetention@${old.join(', @')}, which runs on end-of-life Node 16; use @6 or later`,
+      ),
+    );
+    if (npmTag) {
+      const tags = matchAll(text, /Publish to npm \(tag (\w+)\)/g);
+      const states = matchAll(text, /productstate:\s*'(\w+)'/g);
+      const tagOk = tags.length > 0 && tags.every((found) => found === npmTag);
+      const stateOk = states.length > 0 && states.every((found) => found === productState);
+      results.push(
+        result(tagOk ? Outcome.pass : Outcome.fail, `${file} npm publish says tag ${tags.join(', ') || '(none)'}`),
+        result(
+          stateOk ? Outcome.pass : Outcome.fail,
+          `${file} productstate is ${states.join(', ') || '(none)'}, expected ${productState}`,
+        ),
+      );
+    }
+  }
+  return results;
+}
+
+const ANNOUNCEMENT_LINKS = [
+  { name: 'npm', pattern: /npmjs\.com\/package\/@microsoft\/teams-js\/v\/([^/\s"'<>)]+)/, required: true },
+  { name: 'CDN', pattern: /cdn\.office\.net\/teams-js\/([^/\s"'<>)]+)\/js\//, required: true },
+  { name: 'GitHub release', pattern: /microsoft-teams-library-js\/releases\/tag\/v([^/\s"'<>)]+)/, required: false },
+];
+
+function checkAnnouncement({ version, text }) {
+  const urls = text.match(/https?:\/\/[^\s"'<>)\]]+/g) || [];
+  const results = [];
+  for (const { name, pattern, required } of ANNOUNCEMENT_LINKS) {
+    const versions = urls
+      .map((url) => url.match(pattern))
+      .filter(Boolean)
+      .map((match) => match[1]);
+    if (versions.length === 0) {
+      if (required) {
+        results.push(result(Outcome.fail, `the announcement has no ${name} link`));
+      }
+      continue;
+    }
+    const wrong = versions.filter((found) => found !== version);
+    results.push(
+      result(
+        wrong.length === 0 ? Outcome.pass : Outcome.fail,
+        wrong.length === 0
+          ? `every ${name} link names ${version}`
+          : `${name} link names ${wrong.join(', ')}, expected ${version}`,
       ),
     );
   }
@@ -457,6 +604,16 @@ const commands = {
     }
     const carriers = readCarriers(repoRoot, readFile);
     const results = checkCarriers(carriers, version);
+    const expectedFolder = `/CDNFeed/${version}/js/MicrosoftTeams.min.js`;
+    const inVersionFolder = options.file.replace(/\\/g, '/').endsWith(expectedFolder);
+    results.push(
+      result(
+        inVersionFolder ? Outcome.pass : Outcome.fail,
+        inVersionFolder
+          ? `${options.file} is in the CDNFeed folder for ${version}`
+          : `${options.file} is not under CDNFeed/${version}/js; check the CI run is the one from the prep PR merge`,
+      ),
+    );
     const expectedSri = carrierIntegrity(carriers);
     if (expectedSri) {
       results.push(checkBytes(readFile(options.file), expectedSri, options.file));
@@ -488,6 +645,24 @@ const commands = {
     checkGithubRelease({ version: requireVersion(options), expect: requireExpect(options), fetchImpl }),
 
   'merged-back': async (options, { fetchImpl }) => checkMergedBack({ version: requireVersion(options), fetchImpl }),
+
+  'beta-version': async (options, { fetchImpl }) => {
+    const version = requireVersion(options);
+    if (!/^\d+\.\d+\.\d+-beta\.\d+$/.test(version)) {
+      throw new UsageError('beta-version needs a version such as 2.60.0-beta.0 (<x.y.z>-beta.<n>)');
+    }
+    return checkBetaVersion({ version, registry: requireRegistry(options), fetchImpl });
+  },
+
+  'pipeline-config': async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
+
+  announcement: async (options, { readFile }) => {
+    const version = requireVersion(options);
+    if (!options.file) {
+      throw new UsageError('announcement needs --file <path to the draft text>');
+    }
+    return checkAnnouncement({ version, text: readFile(options.file, 'utf8') });
+  },
 
   size: async (options, { fetchImpl }) => {
     const version = requireVersion(options);
