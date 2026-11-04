@@ -120,6 +120,14 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Fix:** merge back through `<alias>/cleanup_release_<x.y.z>` cut from the release branch, with `main` merged into
   it (Prod step 10). Never force-push `main` or change the deployed release branch.
 
+### The merge-back re-adds change files the release consumed
+
+- **Symptom:** after merging `main` into the cleanup branch, `change/` again holds files whose comments already appear
+  in the new CHANGELOG section. It happened on the 2.59.0 merge-back.
+- **Cause:** the release deleted those change files, but `main` still had them; the merge keeps `main`'s copies.
+- **Fix:** delete them in the cleanup branch before opening the PR. Left in place, the next release lists those
+  entries again.
+
 ### A fix must ship on an older release line (hotfix)
 
 - **Approach:** branch the fix from `release/<x.y.z>`, release it as `x.y.(z+1)` through its own release branch, then
