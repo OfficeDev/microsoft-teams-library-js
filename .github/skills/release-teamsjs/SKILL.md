@@ -452,7 +452,7 @@ cdn_url() { # cdn_url prod|sdf <version>
   echo "https://$host/teams-js/$2/js/MicrosoftTeams.min.js"
 }
 http_status() { curl -s -o /dev/null -w '%{http_code}\n' "$1"; }
-sri() { echo "sha384-$(openssl dgst -sha384 -binary "$1" | openssl base64 -A)"; }
+sri() { local digest; digest="$(openssl dgst -sha384 -binary "$1" | openssl base64 -A)" || return; [ -n "$digest" ] || return 1; echo "sha384-$digest"; }
 readme_sri() { grep -o 'integrity="[^"]*"' packages/teams-js/README.md | cut -d'"' -f2 | sort -u; }
 carriers_check() { # every carrier names $1, and the README and test app share one SRI
   grep -h '"version"' packages/teams-js/package.json apps/teams-test-app/package.json
