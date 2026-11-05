@@ -129,8 +129,8 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   prep PR consumed them. Relative to the merge base the release side never touched them, so the merge keeps `main`'s
   copies.
 - **Fix:** delete them in the cleanup branch before opening the PR. Left in place, the next release lists those
-  entries again. Afterwards `git diff --stat "origin/release/<x.y.z>" HEAD` should show only the new `none` change
-  file, and `check consumed-changes --version <x.y.z>` passes.
+  entries again. Afterwards `check consumed-changes --version <x.y.z>` must pass: no file under `change/` repeats an
+  entry from the new CHANGELOG section. Other changes `main` gained after the cut are expected.
 
 ### A fix must ship on an older release line (hotfix)
 
@@ -159,9 +159,11 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 ### A tag or GitHub release points at a commit without the bump
 
 - **Cause:** the release was created before the prep PR merged.
-- **Fix:** do not move a published tag. If nothing has been published, delete the draft or pre-release and recreate
-  it at the verified commit (Prod steps 5 and 7) with approval. If the version has been published, raise it with the
-  maintainers before changing anything.
+- **Fix:** do not move a published tag. Deleting a GitHub release leaves tag `v<x.y.z>` in place, and a release
+  recreated with that tag reuses its old commit. If nothing has been published, stop for a maintainer decision that
+  covers both the pre-release and the unshipped tag; removing them is a **⛔ Gate 4** write, and the release is
+  recreated at the verified commit (Prod steps 5 and 7) only after the tag is gone. If the version has been
+  published, raise it with the maintainers before changing anything.
 
 ### `beachball check` or the bump rejects a change type
 

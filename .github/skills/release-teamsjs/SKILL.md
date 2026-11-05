@@ -143,6 +143,7 @@ Stop here if there is nothing to release.
 
 ```bash
 set -euo pipefail
+test -z "$(git status --porcelain)" || { echo "working tree not clean; commit, stash or use a clean worktree" >&2; exit 1; }
 git fetch origin main
 source_commit="$(git rev-parse origin/main)"
 git switch --detach "$source_commit"
@@ -188,9 +189,13 @@ from `main` or `release/*`, and downstream internal test pipelines resolve the b
 Create it at the same commit the bump was prepared from, only if it does not exist yet:
 
 ```bash
-if git ls-remote --exit-code --heads origin "release/$version" >/dev/null; then
-  echo "release/$version already exists; see 'Stale release branch' in the failure modes" >&2; exit 1
-fi
+status=0
+git ls-remote --exit-code --heads origin "release/$version" >/dev/null || status=$?
+case "$status" in
+  2) ;;                                            # no such branch: the only case that may continue
+  0) echo "release/$version already exists; see 'Stale release branch' in the failure modes" >&2; exit 1 ;;
+  *) echo "could not check origin for release/$version (git exit $status); stop" >&2; exit 1 ;;
+esac
 git push origin "$source_commit:refs/heads/release/$version"   # ⛔ Gate 2
 ```
 
@@ -339,8 +344,9 @@ failure modes); stop before queuing one.
   even when a local `beachball check` says none is needed.
   Merging `main` can bring back change files the release already consumed; delete any change file whose comment
   appears in the new CHANGELOG section, or the next release ships those entries twice. Before opening the PR,
-  `git diff --stat "origin/release/$version" HEAD` should show only the new `none` change file, and
-  `check consumed-changes --version "$version" --prep-commit <prep PR squash commit>` passes.
+  `check consumed-changes --version "$version" --prep-commit <prep PR squash commit>` must pass: no file under
+  `change/` repeats an entry from the new CHANGELOG section. Other changes `main` gained after the cut are expected in
+  the diff.
   Never force-push `main`. A PR from release content can run an extra end-to-end check against the newly deployed
   CDN; leave the PR open until it completes. After it merges, `check merged-back --version "$version"` confirms
   `main` has the release's CHANGELOG section (the merge-back is squashed, so commit ancestry cannot show it).
