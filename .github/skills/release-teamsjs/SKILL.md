@@ -143,6 +143,7 @@ Stop here if there is nothing to release.
 
 ```bash
 set -euo pipefail
+test -z "$(git status --porcelain)" || { echo "working tree not clean; commit, stash or use a clean worktree" >&2; exit 1; }
 git fetch origin main
 source_commit="$(git rev-parse origin/main)"
 git switch --detach "$source_commit"
@@ -164,14 +165,18 @@ Check the carriers and that the version is free (see [Checks](#checks) for the h
 
 ```bash
 carriers_check "$version"
-npm view "@microsoft/teams-js@$version" version --registry https://registry.npmjs.org   # nothing, exit 0
+versions="$(npm view @microsoft/teams-js versions --json --registry https://registry.npmjs.org)"   # an npm error stops here: inconclusive
+printf '%s' "$versions" \
+  | node -e 'process.exit(JSON.parse(require("fs").readFileSync(0, "utf8")).includes(process.argv[1]) ? 1 : 0)' "$version" \
+  || { echo "$version is already on npm" >&2; exit 1; }
 http_status "$(cdn_url prod "$version")"           # must print 404
 git ls-remote --tags origin "v$version"            # must print nothing
 ```
 
 The version is free only when all three say so. Only `registry.npmjs.org` can show that a version is absent; a proxy
-or mirror that lacks it may simply lag. An npm error, a timeout or any status other than 404 is inconclusive: resolve
-it from another network, do not proceed on a guess.
+or mirror that lacks it may simply lag. Do not query the exact version (`npm view <package>@<version>`): when it is
+missing, npm exits 1 with E404, which looks the same as a lookup failure. An npm error, a timeout or any status other
+than 404 is inconclusive: resolve it from another network, do not proceed on a guess.
 
 **⛔ Gate 1:** show the version, the diff summary, the new CHANGELOG section and the branch names. Cross-check the
 version against the latest beta (`npm view @microsoft/teams-js dist-tags.beta`): without its `-beta.N` suffix it is
@@ -189,9 +194,13 @@ from `main` or `release/*`, and downstream internal test pipelines resolve the b
 Create it at the same commit the bump was prepared from, only if it does not exist yet:
 
 ```bash
-if git ls-remote --exit-code --heads origin "release/$version" >/dev/null; then
-  echo "release/$version already exists; see 'Stale release branch' in the failure modes" >&2; exit 1
-fi
+status=0
+git ls-remote --exit-code --heads origin "release/$version" >/dev/null || status=$?
+case "$status" in
+  2) ;;                                            # no such branch: the only case that may continue
+  0) echo "release/$version already exists; see 'Stale release branch' in the failure modes" >&2; exit 1 ;;
+  *) echo "could not check origin for release/$version (git exit $status); stop" >&2; exit 1 ;;
+esac
 git push origin "$source_commit:refs/heads/release/$version"   # ⛔ Gate 2
 ```
 
@@ -313,16 +322,16 @@ overwrite, so a second attempt at a published version fails rather than repairin
 curl -fsSL -o /tmp/teams-js.min.js "$(cdn_url prod "$version")"
 sri /tmp/teams-js.min.js; readme_sri                # identical
 wc -c < /tmp/teams-js.min.js                        # bytes, for the size record
-npm view "@microsoft/teams-js@$version" version     # prints the version
-npm view @microsoft/teams-js dist-tags.latest       # prints the version
+npm view "@microsoft/teams-js@$version" version --registry https://registry.npmjs.org   # prints the version
+npm view @microsoft/teams-js dist-tags.latest --registry https://registry.npmjs.org    # prints the version
 ```
 
 It passes only when the Prod CDN file hashes to the carrier SRI **and** npm reports the version with `latest` pointing
 at it. npm and the CDN together are the release; one without the other is half published. The npmjs.com package page
-can lag by about 40 minutes; trust the registry answer. If this device cannot reach the public registry, the fallbacks
-in Prerequisites (a proxy or mirror, the publish task's "npm notice version" line, the npmjs.com version page) can
-confirm the version is there, but a proxy that lacks it or still shows the old `latest` may only be lagging: never
-treat that as "not published" or re-queue because of it.
+can lag by about 40 minutes; trust the registry answer. If this device cannot reach the public registry, the result
+is inconclusive. The fallbacks in Prerequisites (a proxy or mirror, the publish task's "npm notice version" line, the
+npmjs.com version page) can confirm the version is there, but not that `latest` points at it; a proxy that lacks it
+or still shows the old `latest` may only be lagging: never treat that as "not published" or re-queue because of it.
 
 The Prod pipeline always publishes with the `latest` tag. That is right for a release of the newest version only. A
 hotfix on an older line would move `latest` backwards, so it is a maintainer decision outside this skill (see the
@@ -338,8 +347,9 @@ failure modes); stop before queuing one.
   with a `none` change file (`pnpm changefile`, comment `Released <x.y.z>`); PR CI's change-file check requires it
   even when a local `beachball check` says none is needed.
   Merging `main` can bring back change files the release already consumed; delete any change file whose comment
-  appears in the new CHANGELOG section, or the next release ships those entries twice. Before opening the PR,
-  `git diff --stat "origin/release/$version" HEAD` should show only the new `none` change file.
+  appears in the new CHANGELOG section, or the next release ships those entries twice. Before opening the PR, every
+  file under `change/` that is not on `origin/release/$version` must be the new `none` file or a change file whose
+  comment is not in the new CHANGELOG section. Other changes `main` gained after the cut are expected in the diff.
   Never force-push `main`. A PR from release content can run an extra end-to-end check against the newly deployed
   CDN; leave the PR open until it completes.
 - **Never push to `release/<x.y.z>` after Prod.** Internal downstream tests check that branch out by name.
@@ -393,9 +403,11 @@ keeps, and close the release work item. Then confirm the post-release checklist 
 1. Pre-flight as in step 1. Apply the skip rule; in a Prod week there is no beta.
 2. Pick the latest successful non-PR CI build of `main`; both of its stages must be green. Its `CDNFeed` folder name is
    the beta version. Checking it before queuing is what stops an unexpected version from being published.
-   - The beta must be newer than the current `latest`: `<x.y.z>` in `<x.y.z>-beta.N` must be greater than
-     `npm view @microsoft/teams-js dist-tags.latest`. Two past betas were published for versions that had already
-     shipped, which sorts them below the release.
+   - The beta must be of a version that has not shipped: `<x.y.z>` in `<x.y.z>-beta.N` must be greater than
+     `npm view @microsoft/teams-js dist-tags.latest --registry https://registry.npmjs.org`, and the Prod CDN folder
+     for `<x.y.z>` and tag `v<x.y.z>` must not exist. A proxy's `latest` can lag, so it never decides this; if the
+     public registry cannot be reached, the check is inconclusive. Two past betas were published for versions that
+     had already shipped, which sorts them below the release.
    - Note any feature that will reach Prod without a beta soak (merged after the last beta) and tell the release
      owner.
 3. `sri "<download>/CDNFeed/<beta>/js/MicrosoftTeams.min.js"` and keep the result.
