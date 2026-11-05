@@ -7,7 +7,7 @@
  *   artifact      --version <v> --file <path>      a downloaded CI build's MicrosoftTeams.min.js matches that SRI
  *   published     --version <v> [--environment prod|sdf] [--dist-tag <tag>] [--expected-sri <sri>] [--registry <url>]
  *                                                  the CDN bytes and the npm registry show the release
- *   domains       [--environment prod|sdf]         the live valid-domains list equals this checkout's source
+ *   domains                                        the live Prod valid-domains list equals this checkout's source
  *   links         --version <v>                    public npm, CDN and GitHub release links for the announcement
  *   sri           --file <path>                    the sha384 SRI of a file, such as an SDF beta CI bundle
  *   github-release --version <v> --expect prerelease|latest
@@ -927,6 +927,28 @@ function requireFile(options, command, what) {
   return options.file;
 }
 
+function requireCheckout(repoRoot, command, alternative = '') {
+  if (!repoRoot) {
+    throw new UsageError(
+      `${command} reads the checkout; run it inside a microsoft-teams-library-js checkout (no git repository here)` +
+        alternative,
+    );
+  }
+}
+
+function resolveRepoRoot(cwd, runGit = (args, options) => childProcess.execFileSync('git', args, options)) {
+  try {
+    const root = runGit(['rev-parse', '--show-toplevel'], {
+      cwd,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    return root || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function checkArtifact({ version, file, repoRoot, readFile, readDirectory }) {
   const carriers = readCarriers(repoRoot, readFile);
   const results = checkCarriers(carriers, version);
@@ -969,12 +991,14 @@ const commands = {
   },
   carriers: {
     flags: ['version'],
+    checkout: true,
     summary: "the checkout's version carriers agree on the version and one SRI hash",
     run: async (options, { repoRoot, readFile }) =>
       checkCarriers(readCarriers(repoRoot, readFile), requireVersion(options)),
   },
   artifact: {
     flags: ['version', 'file'],
+    checkout: true,
     summary: "a downloaded CI build's CDNFeed/<v>/js/MicrosoftTeams.min.js is the only version and matches that SRI",
     run: async (options, deps) =>
       checkArtifact({
@@ -994,18 +1018,23 @@ const commands = {
       if (!options['expected-sri'] && environment === 'sdf') {
         throw new UsageError('published --environment sdf needs --expected-sri; beta builds are not in the carriers');
       }
-      const expectedSri = options['expected-sri'] || carrierIntegrity(readCarriers(repoRoot, readFile));
-      if (!expectedSri || !SRI_PATTERN.test(expectedSri)) {
+      const expectedSri = options['expected-sri'];
+      if (!expectedSri) {
+        requireCheckout(repoRoot, 'published', ', or pass --expected-sri');
+      }
+      const sri = expectedSri || carrierIntegrity(readCarriers(repoRoot, readFile));
+      if (!sri || !SRI_PATTERN.test(sri)) {
         throw new UsageError('No single sha384 SRI to compare against; pass --expected-sri');
       }
       return [
-        await checkCdnScript({ version, environment, expectedSri, fetchImpl }),
+        await checkCdnScript({ version, environment, expectedSri: sri, fetchImpl }),
         ...(await checkNpm({ version, distTag: options['dist-tag'], registry, fetchImpl })),
       ];
     },
   },
   domains: {
     flags: [],
+    checkout: true,
     summary: "the live Prod valid-domains list equals this checkout's source",
     run: async (options, { repoRoot, readFile, fetchImpl }) => checkValidDomains({ repoRoot, fetchImpl, readFile }),
   },
@@ -1034,12 +1063,14 @@ const commands = {
   },
   'pipeline-config': {
     flags: [],
+    checkout: true,
     summary: "the checkout's release YAML: Prod tag latest, SDF tag beta, AssetRetention@6 or later",
     run: async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
   },
   'consumed-changes': {
     flags: ['version', 'prep-commit'],
     optional: ['prep-commit'],
+    checkout: true,
     summary: 'on the merge-back branch, no pending change file was already consumed by the release',
     run: async (options, deps) => {
       const prepCommit = options['prep-commit'];
@@ -1115,7 +1146,7 @@ async function run(
     if (!Object.prototype.hasOwnProperty.call(commands, command)) {
       throw new UsageError(`Command must be one of: ${Object.keys(commands).join(', ')} (try "help")`);
     }
-    const { flags, run: runCommand } = commands[command];
+    const { flags, checkout, run: runCommand } = commands[command];
     const unknown = Object.keys(options).filter((name) => !flags.includes(name));
     if (unknown.length > 0) {
       throw new UsageError(
@@ -1123,6 +1154,9 @@ async function run(
           flags.length > 0 ? `--${flags.join(', --')}` : 'no options'
         }`,
       );
+    }
+    if (checkout) {
+      requireCheckout(repoRoot, command);
     }
     results = await runCommand(options, {
       repoRoot,
@@ -1134,6 +1168,13 @@ async function run(
   } catch (error) {
     if (error instanceof UsageError) {
       log(`USAGE ${error.message}`);
+      return ExitCode.usage;
+    }
+    if (error && error.code === 'ENOENT' && error.path) {
+      log(
+        `USAGE cannot read ${error.path}; run inside a microsoft-teams-library-js checkout, ` +
+          'and check any --file path',
+      );
       return ExitCode.usage;
     }
     throw error;
@@ -1157,12 +1198,13 @@ module.exports = {
   computeSri,
   publicLinks,
   readCarriers,
+  resolveRepoRoot,
   run,
   validDomainsUrl,
 };
 
 if (require.main === module) {
-  run(process.argv.slice(2), { repoRoot: path.resolve(__dirname, '..', '..', '..') }).then(
+  run(process.argv.slice(2), { repoRoot: resolveRepoRoot(process.cwd()) }).then(
     (code) => {
       process.exitCode = code;
     },

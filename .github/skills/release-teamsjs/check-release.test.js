@@ -2,6 +2,7 @@
 
 // Run with: node --test .github/skills/release-teamsjs/check-release.test.js
 const assert = require('node:assert/strict');
+const childProcess = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -14,6 +15,7 @@ const {
   computeSri,
   publicLinks,
   readCarriers,
+  resolveRepoRoot,
   run,
   validDomainsUrl,
 } = require('./check-release');
@@ -1011,6 +1013,87 @@ describe('check-release', () => {
       assert.equal(await runWith(['publish', '--version', VERSION]), ExitCode.usage);
       assert.equal(await runWith(['carriers', '--version']), ExitCode.usage);
       assert.equal(await runWith(['constructor']), ExitCode.usage);
+    });
+  });
+
+  describe('which checkout', () => {
+    const runOutside = (argv, fetchImpl = throwingFetch) =>
+      run(argv, { repoRoot: undefined, fetchImpl, log, env, listDeletedChangeFiles });
+
+    it('gives a usage error for a checkout command run outside a checkout', async () => {
+      for (const argv of [
+        ['carriers', '--version', VERSION],
+        ['domains'],
+        ['pipeline-config'],
+        ['consumed-changes', '--version', VERSION],
+        ['published', '--version', VERSION],
+      ]) {
+        lines = [];
+        assert.equal(await runOutside(argv), ExitCode.usage, argv.join(' '));
+        assert.match(lines.join('\n'), /^USAGE \S+ reads the checkout; run it inside a microsoft-teams-library-js/);
+      }
+    });
+
+    it('still checks a release with an explicit SRI outside a checkout', async () => {
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE),
+        [`https://registry.npmjs.org/@microsoft%2fteams-js/${VERSION}`]: response(200, { version: VERSION }),
+      });
+      const argv = ['published', '--version', VERSION, '--expected-sri', BUNDLE_SRI];
+      assert.equal(await runOutside(argv, fetchImpl), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('gives a usage error, not a crash, when a checkout file is missing', async () => {
+      assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.usage);
+      assert.match(lines.join('\n'), /^USAGE cannot read .*package\.json; run inside a microsoft-teams-library-js/);
+    });
+
+    it('gives a usage error, not a crash, when --file does not exist', async () => {
+      const file = path.join(root, 'missing.txt');
+      assert.equal(await runWith(['announcement', '--version', VERSION, '--file', file]), ExitCode.usage);
+      assert.match(lines.join('\n'), /^USAGE cannot read .*missing\.txt/);
+    });
+
+    it('resolves the checkout from the working directory with git', () => {
+      const calls = [];
+      const runGit = (args, options) => {
+        calls.push({ args, cwd: options.cwd });
+        return '/work/microsoft-teams-library-js\n';
+      };
+      assert.equal(
+        resolveRepoRoot('/work/microsoft-teams-library-js/packages', runGit),
+        '/work/microsoft-teams-library-js',
+      );
+      assert.deepEqual(calls, [
+        { args: ['rev-parse', '--show-toplevel'], cwd: '/work/microsoft-teams-library-js/packages' },
+      ]);
+      const notARepository = () => {
+        throw new Error('fatal: not a git repository');
+      };
+      assert.equal(resolveRepoRoot('/tmp', notARepository), undefined);
+    });
+
+    it('checks the checkout it runs in, even from a copy of the script elsewhere', () => {
+      const script = path.join(root, 'elsewhere', 'check-release.js');
+      fs.mkdirSync(path.dirname(script), { recursive: true });
+      fs.copyFileSync(path.join(__dirname, 'check-release.js'), script);
+      const checkout = path.join(root, 'checkout');
+      writeRepo(checkout);
+      childProcess.execFileSync('git', ['init', '-q'], { cwd: checkout });
+      const spawn = (cwd) =>
+        childProcess.spawnSync(process.execPath, [script, 'carriers', '--version', VERSION], {
+          cwd,
+          encoding: 'utf8',
+          env: { ...process.env, GIT_CEILING_DIRECTORIES: root },
+        });
+
+      const inside = spawn(path.join(checkout, 'packages'));
+      assert.equal(inside.status, ExitCode.passed, inside.stdout + inside.stderr);
+
+      const outside = spawn(path.join(root, 'elsewhere'));
+      assert.equal(outside.status, ExitCode.usage, outside.stdout + outside.stderr);
+      assert.match(outside.stdout, /^USAGE carriers reads the checkout/);
+      assert.equal(outside.stderr, '');
     });
   });
 });

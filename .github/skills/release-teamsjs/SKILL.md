@@ -469,6 +469,11 @@ request times out after 30 seconds.
 Exit codes: `0` passed, `1` a check failed, `2` usage error, `3` a source was unreachable or answered unexpectedly.
 Exit 3 is never success.
 
+Commands that read files (`carriers`, `artifact`, `domains`, `pipeline-config`, `consumed-changes`, and `published`
+without `--expected-sri`) check the git checkout you run them in (`git rev-parse --show-toplevel`), not the one the
+script lives in, so run them from the checkout you mean, such as the cleanup branch. Outside a checkout, or when a file
+is missing, they stop with exit 2.
+
 ## Retro: feed back what the run taught
 
 Close every run by asking: **would knowing this at the start have changed what I did?** Most runs teach nothing; then
