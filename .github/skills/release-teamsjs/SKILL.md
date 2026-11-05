@@ -324,9 +324,9 @@ check published --version "$version" --dist-tag latest
 It passes only when the Prod CDN file hashes to the carrier SRI **and** npm reports the version with `latest` pointing
 at it. npm and the CDN together are the release; one without the other is half published. The npmjs.com package page
 can lag by about 40 minutes; trust the registry answer. Where the public registry is unreachable, the check also asks
-jsDelivr and unpkg: they can confirm the version and `latest`, but a source that lacks the version or shows an older
-`latest` may only be lagging, so the result is inconclusive (exit 3), never a failure. Confirm from another network
-or with the publish task's "npm notice version" line, and never re-queue because of it. Note the CDN byte count it
+jsDelivr and unpkg: they can confirm the version is there, but not that `latest` still points at it, so the `latest`
+result is inconclusive (exit 3) unless a mirror shows a newer `latest`, which fails. Confirm `latest` from another
+network or on the npmjs.com package page in a browser, and never re-queue because of it. Note the CDN byte count it
 prints for the size record.
 
 The Prod pipeline always publishes with the `latest` tag. That is right for a release of the newest version only. A
@@ -405,8 +405,9 @@ keeps, and close the release work item. Then confirm the post-release checklist 
 2. Pick the latest successful non-PR CI build of `main`; both of its stages must be green. Its `CDNFeed` folder name is
    the beta version. Checking it before queuing is what stops an unexpected version from being published.
    - The beta must be newer than the current `latest`: `check beta-version --version "<beta>"` passes only when
-     `<x.y.z>` in `<x.y.z>-beta.N` is greater than npm's `latest`. Two past betas were published for versions that
-     had already shipped, which sorts them below the release.
+     `<x.y.z>` in `<x.y.z>-beta.N` is greater than the highest `latest` from npm and the GitHub Latest release, and
+     inconclusive when neither answers. Two past betas were published for versions that had already shipped, which
+     sorts them below the release.
    - Note any feature that will reach Prod without a beta soak (merged after the last beta) and tell the release
      owner.
 3. `check sri --file "<download>/CDNFeed/<beta>/js/MicrosoftTeams.min.js"` and keep the result.
@@ -459,15 +460,16 @@ check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 | `merged-back`          | `main`'s CHANGELOG has the version's section                                                                                                                        |
 | `consumed-changes`     | on the merge-back branch, no pending change file repeats an entry in the released CHANGELOG section, or was deleted by `--prep-commit <sha>` if given               |
 | `pipeline-config`      | the checkout's release YAML: Prod publishes with `tag latest`, SDF with `tag beta`, artifact retention @6+                                                          |
-| `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version that has not shipped: newer than npm's `latest`, and absent from the Prod CDN and as tag `v<x.y.z>`                       |
+| `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version that has not shipped: newer than `latest` on npm and GitHub, and absent from the Prod CDN and as tag `v<x.y.z>`           |
 | `announcement`         | every npm, CDN and GitHub release link in a draft names the version, and npm and CDN links are present                                                              |
 | `size`, `links`, `sri` | (informational) bundle bytes and change from `--previous`, announcement links, a file's SRI                                                                         |
 | `help`                 | lists every command and the flags it takes; any other flag is a usage error                                                                                         |
 
 **npm source rules.** `registry.npmjs.org` is the only source that can show a version is absent or a dist-tag is
-current. A `--registry` proxy, jsDelivr and unpkg can lag, so they only add evidence that a version or tag value
-exists, and a proxy alone never makes a check pass. When the public registry cannot be reached and the mirrors do not
-confirm, the npm result is inconclusive (exit 3), never a failure.
+current. A `--registry` proxy, jsDelivr and unpkg can lag, so they only add evidence that a version exists, and a
+proxy alone never makes a check pass. A mirror's dist-tag can only fail a check, by showing a newer value; it never
+confirms a tag is current. When the public registry cannot be reached and the mirrors do not settle it, the npm
+result is inconclusive (exit 3), never a failure.
 
 GitHub API calls send `GITHUB_TOKEN` as a bearer token when it is set, which avoids anonymous rate limits. Every
 request times out after 30 seconds.

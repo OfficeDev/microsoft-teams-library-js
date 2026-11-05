@@ -16,7 +16,7 @@
  *   merged-back   --version <v>                    main's CHANGELOG has the <v> section
  *   size          --version <v> --previous <p>     Prod CDN bundle bytes and the change from <p>
  *   beta-version  --version <x.y.z>-beta.<n> [--registry <url>]
- *                                                  the beta is of a version newer than npm's latest
+ *                                                  the beta is of a version newer than latest on npm and GitHub
  *   pipeline-config                                the checkout's release YAML: Prod publishes with tag latest,
  *                                                  SDF with tag beta, and artifact retention is @6 or later
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
@@ -447,9 +447,6 @@ function npmTagResult(sources, version, tagName) {
     );
   }
   const highest = highestVersion(mirrorValues);
-  if (highest === version) {
-    return result(Outcome.pass, `${label} points at ${version} (public mirrors; registry.npmjs.org did not answer)`);
-  }
   if (highest && compareVersions(highest, version) > 0) {
     return result(Outcome.fail, `${label} points at ${highest}, newer than ${version}`);
   }
@@ -461,7 +458,7 @@ function npmTagResult(sources, version, tagName) {
     Outcome.unreachable,
     `${label}: registry.npmjs.org did not answer and public mirrors show ${highest || 'nothing'}` +
       (proxyValues.length > 0 ? `, a proxy shows ${proxyValues.join(', ')}` : '') +
-      '; they may lag, so this is not evidence either way',
+      '; a mirror can show a tag was set, not that it is still current, so this is not evidence either way',
   );
 }
 
@@ -606,6 +603,11 @@ async function checkBetaVersion({ version, registry, fetchImpl }) {
   const latests = sources
     .filter((source) => source.tags.latest)
     .map((source) => ({ name: source.name, value: source.tags.latest }));
+  const githubLatest = await getJson(fetchImpl, githubLatestReleaseUrl(), 'GitHub Latest release');
+  const githubTag = githubLatest.status === 'ok' ? String(githubLatest.json.tag_name || '') : '';
+  if (VERSION_PATTERN.test(githubTag.replace(/^v/, ''))) {
+    latests.push({ name: 'GitHub Latest release', value: githubTag.replace(/^v/, '') });
+  }
   const highest = highestVersion(latests.map(({ value }) => value));
   const results = [];
   if (highest) {
@@ -615,19 +617,19 @@ async function checkBetaVersion({ version, registry, fetchImpl }) {
       .join(', ');
     results.push(
       compareVersions(base, highest) > 0
-        ? result(Outcome.pass, `${version} is a beta of ${base}, newer than npm latest ${highest} (${reportedBy})`)
+        ? result(Outcome.pass, `${version} is a beta of ${base}, newer than latest ${highest} (${reportedBy})`)
         : result(
             Outcome.fail,
-            `${version} is a beta of ${base}, which is not newer than npm latest ${highest} (${reportedBy}); ` +
+            `${version} is a beta of ${base}, which is not newer than latest ${highest} (${reportedBy}); ` +
               'it would sort below the release',
           ),
     );
   } else {
     results.push(
       result(
-        Outcome.info,
-        'npm latest: no source answered; relying on the Prod CDN and the GitHub tag, which cannot catch a beta of an ' +
-          'older, unshipped patch line (for example 2.58.1-beta.0 after 2.59.0)',
+        Outcome.unreachable,
+        'latest: neither npm nor the GitHub Latest release answered, so a beta of an older, unshipped patch line ' +
+          '(for example 2.58.1-beta.0 after 2.59.0) cannot be ruled out',
       ),
     );
   }
@@ -1052,7 +1054,8 @@ const commands = {
   'beta-version': {
     flags: ['version', 'registry'],
     optional: ['registry'],
-    summary: 'a beta <x.y.z>-beta.<n> is of a version that has not shipped (npm latest, Prod CDN, GitHub tag)',
+    summary:
+      'a beta <x.y.z>-beta.<n> is of a version that has not shipped (npm and GitHub latest, Prod CDN, GitHub tag)',
     run: async (options, { fetchImpl }) => {
       const version = requireVersion(options);
       if (!/^\d+\.\d+\.\d+-beta\.\d+$/.test(version)) {

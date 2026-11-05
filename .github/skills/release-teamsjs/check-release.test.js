@@ -471,7 +471,7 @@ describe('check-release', () => {
       assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
     });
 
-    it('passes from public mirrors when registry.npmjs.org is unreachable and a proxy lags', async () => {
+    it('confirms the version from public mirrors when registry.npmjs.org is unreachable, but not the dist-tag', async () => {
       writeRepo(root);
       const { fetchImpl } = fakeFetch({
         [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE),
@@ -481,8 +481,11 @@ describe('check-release', () => {
         [unpkg(VERSION)]: response(200, { version: VERSION }),
         [unpkg('latest')]: response(200, { version: VERSION }),
       });
-      const argv = ['published', '--version', VERSION, '--dist-tag', 'latest', '--registry', PROXY];
-      assert.equal(await runWith(argv, fetchImpl), ExitCode.passed, lines.join('\n'));
+      const withoutTag = ['published', '--version', VERSION, '--registry', PROXY];
+      assert.equal(await runWith(withoutTag, fetchImpl), ExitCode.passed, lines.join('\n'));
+      lines = [];
+      const argv = [...withoutTag, '--dist-tag', 'latest'];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
     });
 
     it('treats a CDN server error as inconclusive, not as missing', async () => {
@@ -550,6 +553,39 @@ describe('check-release', () => {
         });
         const code = await runWith(publishedArgv('--dist-tag', 'latest'), fetchImpl);
         assert.equal(code, ExitCode.unreachable, lines.join('\n'));
+      });
+
+      it('a mirror latest equal to the version is inconclusive, because npm latest may have moved on since', async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({
+          ...cdnOk(),
+          ...npmUnreachable(),
+          ...jsdelivrRoutes({ versions: [VERSION], tags: { latest: VERSION } }),
+          [unpkg(VERSION)]: response(200, { version: VERSION }),
+          [unpkg('latest')]: response(200, { version: VERSION }),
+        });
+        const code = await runWith(publishedArgv('--dist-tag', 'latest'), fetchImpl);
+        assert.equal(code, ExitCode.unreachable, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('PASS npm: 2.59.0 is published')),
+          lines.join('\n'),
+        );
+        assert.ok(
+          lines.some((line) => line.startsWith('UNREACHABLE npm dist-tag latest')),
+          lines.join('\n'),
+        );
+      });
+
+      it('a proxy latest alone never decides a dist-tag, even when it is newer', async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({
+          ...cdnOk(),
+          ...npmUnreachable(),
+          ...registryRoutes(PROXY, { versions: [VERSION], tags: { latest: '2.60.0' } }),
+          ...jsdelivrRoutes({ versions: [VERSION] }),
+        });
+        const argv = publishedArgv('--dist-tag', 'latest', '--registry', PROXY);
+        assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
       });
 
       it('a mirror latest newer than the version fails', async () => {
@@ -759,11 +795,39 @@ describe('check-release', () => {
       assert.equal(await runWith(argv, fetchImpl), ExitCode.failed, lines.join('\n'));
     });
 
-    it('relies on the Prod CDN and the tag when npm is unreachable, and says what that cannot catch', async () => {
-      const { fetchImpl } = fakeFetch(unreachable(registryTags(NPM)));
-      assert.equal(await runWith(['beta-version', '--version', '2.60.0-beta.0'], fetchImpl), ExitCode.passed);
+    it('uses the GitHub Latest release when npm is unreachable', async () => {
+      const { fetchImpl } = fakeFetch({
+        ...unreachable(registryTags(NPM)),
+        [`${GITHUB_REPO_API}/releases/latest`]: response(200, { tag_name: 'v2.59.0' }),
+      });
+      assert.equal(
+        await runWith(['beta-version', '--version', '2.60.0-beta.0'], fetchImpl),
+        ExitCode.passed,
+        lines.join('\n'),
+      );
       assert.ok(
-        lines.some((line) => line.startsWith('INFO') && line.includes('older')),
+        lines.some((line) => line.startsWith('PASS') && line.includes('GitHub Latest release')),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails a beta of an older patch line when npm is unreachable but GitHub Latest is newer', async () => {
+      const { fetchImpl } = fakeFetch({
+        ...unreachable(registryTags(NPM)),
+        [`${GITHUB_REPO_API}/releases/latest`]: response(200, { tag_name: 'v2.59.0' }),
+      });
+      assert.equal(
+        await runWith(['beta-version', '--version', '2.58.1-beta.0'], fetchImpl),
+        ExitCode.failed,
+        lines.join('\n'),
+      );
+    });
+
+    it('is inconclusive when neither npm nor GitHub can say what latest is', async () => {
+      const { fetchImpl } = fakeFetch(unreachable(registryTags(NPM), `${GITHUB_REPO_API}/releases/latest`));
+      assert.equal(
+        await runWith(['beta-version', '--version', '2.58.1-beta.0'], fetchImpl),
+        ExitCode.unreachable,
         lines.join('\n'),
       );
     });
@@ -776,7 +840,10 @@ describe('check-release', () => {
     });
 
     it('does not crash when dist-tags has no latest', async () => {
-      const { fetchImpl } = fakeFetch({ [registryTags(NPM)]: response(200, { beta: '2.59.0-beta.0' }) });
+      const { fetchImpl } = fakeFetch({
+        [registryTags(NPM)]: response(200, { beta: '2.59.0-beta.0' }),
+        [`${GITHUB_REPO_API}/releases/latest`]: response(200, { tag_name: 'v2.59.0' }),
+      });
       assert.equal(await runWith(['beta-version', '--version', '2.60.0-beta.0'], fetchImpl), ExitCode.passed);
     });
   });
