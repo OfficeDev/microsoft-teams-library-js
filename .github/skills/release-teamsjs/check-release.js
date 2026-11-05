@@ -623,7 +623,13 @@ async function checkBetaVersion({ version, registry, fetchImpl }) {
           ),
     );
   } else {
-    results.push(result(Outcome.info, 'npm latest: no source answered; relying on the Prod CDN and the GitHub tag'));
+    results.push(
+      result(
+        Outcome.info,
+        'npm latest: no source answered; relying on the Prod CDN and the GitHub tag, which cannot catch a beta of an ' +
+          'older, unshipped patch line (for example 2.58.1-beta.0 after 2.59.0)',
+      ),
+    );
   }
   results.push(
     await expectAbsent(fetchImpl, cdnScriptUrl(base, 'prod'), `Prod CDN for ${base}`, `so ${base} has already shipped`),
@@ -956,6 +962,7 @@ function checkArtifact({ version, file, repoRoot, readFile, readDirectory }) {
 const commands = {
   'check-version': {
     flags: ['version', 'registry'],
+    optional: ['registry'],
     summary: 'the version is free on registry.npmjs.org, mirrors, the Prod CDN and GitHub tags',
     run: async (options, { fetchImpl }) =>
       checkVersionIsFree({ version: requireVersion(options), registry: requireRegistry(options), fetchImpl }),
@@ -978,6 +985,7 @@ const commands = {
   },
   published: {
     flags: ['version', 'environment', 'dist-tag', 'expected-sri', 'registry'],
+    optional: ['environment', 'dist-tag', 'expected-sri', 'registry'],
     summary: 'the CDN bytes match the SRI, and npm has the version (and dist-tag) per the source rules',
     run: async (options, { repoRoot, readFile, fetchImpl }) => {
       const version = requireVersion(options);
@@ -1014,6 +1022,7 @@ const commands = {
   },
   'beta-version': {
     flags: ['version', 'registry'],
+    optional: ['registry'],
     summary: 'a beta <x.y.z>-beta.<n> is of a version that has not shipped (npm latest, Prod CDN, GitHub tag)',
     run: async (options, { fetchImpl }) => {
       const version = requireVersion(options);
@@ -1030,6 +1039,7 @@ const commands = {
   },
   'consumed-changes': {
     flags: ['version', 'prep-commit'],
+    optional: ['prep-commit'],
     summary: 'on the merge-back branch, no pending change file was already consumed by the release',
     run: async (options, deps) => {
       const prepCommit = options['prep-commit'];
@@ -1077,8 +1087,11 @@ const commands = {
     flags: [],
     summary: 'this list',
     run: async () =>
-      Object.entries(commands).map(([name, { flags, summary }]) =>
-        result(Outcome.info, `${name}${flags.map((flag) => ` [--${flag}]`).join('')}: ${summary}`),
+      Object.entries(commands).map(([name, { flags, optional = [], summary }]) =>
+        result(
+          Outcome.info,
+          `${name}${flags.map((flag) => (optional.includes(flag) ? ` [--${flag}]` : ` --${flag}`)).join('')}: ${summary}`,
+        ),
       ),
   },
 };
