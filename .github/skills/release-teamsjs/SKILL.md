@@ -286,8 +286,8 @@ check pipeline-config
 
 You can queue through the Azure DevOps pipelines REST API instead of the UI, with the repository ref set to
 `refs/heads/release/<x.y.z>` and the pipeline resource version set to the CI build number. Read the run back and
-confirm both before the Lockbox request goes out. The run is requested as you, so your Lockbox eligibility is the one
-used.
+confirm both before asking the approvers; the Lockbox request itself starts as soon as the run is queued. The run is
+requested as you, so your Lockbox eligibility is the one used.
 
 Then:
 
