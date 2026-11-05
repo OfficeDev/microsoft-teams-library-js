@@ -481,6 +481,10 @@ a release branch. Changes outside the published package need no change file.
 A retro may tighten this skill, never loosen it: it may not remove a gate, relax verification, or let the releaser
 approve their own release. Write invariants, not incident stories, and keep internal details out.
 
+Before stating how the SDK behaves at runtime, in this skill or in any message, read the whole module, including
+top-level calls and the package's `sideEffects` list, and confirm the claim with a test that mocks the network. A
+partial read of the valid-origins code produced two wrong claims, and one wrong announcement, during a single release.
+
 ## Related work
 
 This skill documents the process as it runs today and points at the automation that will replace manual steps:
