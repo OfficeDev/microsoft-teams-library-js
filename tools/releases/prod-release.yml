@@ -104,4 +104,4 @@ extends:
                 inputs:
                   targetType: 'filePath'
                   filePath: 'microsoft-teams-library-js-pipeline/scripts/view-published-packages-urls.ps1'
-                  arguments: -PIPELINE_WORKSPACE $(System.DefaultWorkingDirectory)
+                  arguments: -PIPELINE_WORKSPACE $(System.DefaultWorkingDirectory) -CDN_HOST res.cdn.office.net
