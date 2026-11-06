@@ -292,11 +292,17 @@ git grep -n 'AssetRetention@' "origin/release/$version" -- tools   # every line 
 
 You can queue through the Azure DevOps pipelines REST API instead of the UI, with the repository ref set to
 `refs/heads/release/<x.y.z>` and the pipeline resource version set to the CI build number. Read the run back and
-confirm both before asking the approvers; the Lockbox request itself starts as soon as the run is queued. The run is
-requested as you, so your Lockbox eligibility is the one used.
+confirm both before asking the approvers; the Lockbox request starts as soon as the run's earlier stages pass. The
+run is requested as you, so your Lockbox eligibility is the one used.
 
 Then:
 
+- The first stage, "Validate the pinned CI build", runs before any Lockbox request. It repeats the step 6 integrity
+  gate in the pipeline: the pinned build's `CDNFeed` holds one version folder, equal to the branch's
+  `packages/teams-js/package.json` version, the branch's carriers agree, and the bundle hashes to their SRI. If it
+  fails, nothing was requested or published; see "The Prod validation stage fails" in
+  [failure-modes.md](./failure-modes.md). It applies from release branches that include it, and does not replace
+  step 6.
 - Find the Lockbox request ID in the "Lockbox Approval Request" task log (it is also in the request email). Check
   the request targets the TeamsJS release service group the runbook names; a request routed to another team cannot
   be approved by the release approvers. The email's To: line lists exactly who can approve right now. **⛔ Gate 6:**

@@ -17,12 +17,55 @@ extends:
       image: windows-latest
       os: windows
     serviceTreeId: $(serviceTreeId)
+    # The validation job checks out the source, so the template scans it; configure ESLint as build-release.yml does.
+    sdl:
+      eslint:
+        configuration: 'required'
+        parser: '@typescript-eslint/parser'
+        parserOptions: 'ecmaFeatures:{jsx:true}\necmaVersion:12\nsourceType:module\nproject:$(Build.SourcesDirectory)/tsconfig.common.json'
+        enableExclusions: true
+        exclusionPatterns": "*.d.ts\n*.spec.js\n*.spec.jsx\n*.spec.ts\n*.spec.tsx\n*.test.ts\n*.test.tsx"
+        customEnvironments: true
+        environmentsBrowser: true
+        environmentsNode: true
+        environmentsCommonJs: true
+        environmentsSharedNodeBrowser: false
+        environmentsEs6: false
+        environmentsEs2017: false
+        environmentsEs2020: true
+        environmentsJest: false
     customBuildTags:
       - ES365AIMigrationTooling-Release-MOBR
     stages:
+      # Runs before the Lockbox request: fails fast if the pinned CI build is not the one for this branch.
+      - stage: Prod_Validation
+        displayName: Validate the pinned CI build
+        dependsOn: []
+        jobs:
+          - job: Validate_CI_build
+            displayName: Check the CI build against the release branch
+            templateContext:
+              inputs:
+                - input: pipelineArtifact
+                  pipeline: microsoft-teams-library-js-pipeline
+                  artifactName: CDNFeed
+                  targetPath: $(Pipeline.Workspace)/microsoft-teams-library-js-pipeline/CDNFeed
+            steps:
+              - checkout: self
+              - task: NodeTool@0
+                displayName: Use Node 18.x
+                inputs:
+                  versionSpec: 18.x
+              - task: PowerShell@2
+                displayName: Check the pinned CI build
+                inputs:
+                  targetType: 'filePath'
+                  filePath: 'tools/releases/powershell-commands/validate-prod-build.ps1'
+                  arguments: -CDNFeed $(Pipeline.Workspace)/microsoft-teams-library-js-pipeline/CDNFeed
       - stage: Prod_Lockbox_Approval_Deployment
         displayName: Lockbox Approval/Deployment
-        dependsOn: []
+        dependsOn:
+          - Prod_Validation
         templateContext:
           cloud: Public
           isProduction: true

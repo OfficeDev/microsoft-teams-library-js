@@ -41,6 +41,21 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Fix:** always set the artifact explicitly to the run from the prep PR merge, and check its `CDNFeed` folder name
   equals the version before queuing (Prod step 6).
 
+### The Prod validation stage fails
+
+- **Symptom:** the Prod run fails in its first stage, "Validate the pinned CI build", and no Lockbox request is
+  raised. The stage log's error line says which check failed.
+- **Cause:** one of these:
+  - The wrong CI build is pinned: its `CDNFeed` version folder differs from the branch's
+    `packages/teams-js/package.json`, it holds more than one version folder, or its bundle does not hash to the
+    branch's SRI.
+  - The branch's version carriers disagree on the version or the SRI.
+  - The release YAML on the branch failed its checks, or the branch predates `check-release.js`.
+- **Fix:** nothing was published and no approval was asked for. For a wrong build, queue again with the artifact set
+  explicitly to the CI run from the prep PR merge (Prod step 6). For disagreeing carriers, fix the release branch
+  through a PR into it, wait for its CI run, and queue again with that run. For a missing script or failing YAML,
+  update the release branch from `main`, with any fix merged there first. Do not skip the stage to get past it.
+
 ### The Lockbox request cannot be approved by the release approvers
 
 - **Symptom:** approvers say the request is not theirs, or it never appears for them.
