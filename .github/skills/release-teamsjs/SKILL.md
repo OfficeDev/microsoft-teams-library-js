@@ -407,7 +407,8 @@ keeps, and close the release work item. Then confirm the post-release checklist 
    the beta version. Checking it before queuing is what stops an unexpected version from being published.
    - The beta must be newer than the current `latest`: `check beta-version --version "<beta>"` passes only when
      `<x.y.z>` in `<x.y.z>-beta.N` is greater than the highest `latest` from npm and the GitHub Latest release, and
-     inconclusive when neither answers. Two past betas were published for versions that had already shipped, which
+     inconclusive when neither `registry.npmjs.org` nor the GitHub Latest release answers (a proxy or mirror `latest`
+     can only fail it). Two past betas were published for versions that had already shipped, which
      sorts them below the release.
    - Note any feature that will reach Prod without a beta soak (merged after the last beta) and tell the release
      owner.

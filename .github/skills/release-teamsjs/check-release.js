@@ -687,11 +687,15 @@ async function checkBetaVersion({ version, registry, fetchImpl }) {
   const sources = await observeNpm({ version: undefined, tagNames: ['latest'], registry, fetchImpl });
   const latests = sources
     .filter((source) => source.tags.latest)
-    .map((source) => ({ name: source.name, value: source.tags.latest }));
+    .map((source) => ({
+      name: source.name,
+      value: source.tags.latest,
+      authoritative: source.kind === 'authoritative',
+    }));
   const githubLatest = await getJson(fetchImpl, githubLatestReleaseUrl(), 'GitHub Latest release');
   const githubTag = githubLatest.status === 'ok' ? String(githubLatest.json.tag_name || '') : '';
   if (VERSION_PATTERN.test(githubTag.replace(/^v/, ''))) {
-    latests.push({ name: 'GitHub Latest release', value: githubTag.replace(/^v/, '') });
+    latests.push({ name: 'GitHub Latest release', value: githubTag.replace(/^v/, ''), authoritative: true });
   }
   const highest = highestVersion(latests.map(({ value }) => value));
   const results = [];
@@ -700,15 +704,27 @@ async function checkBetaVersion({ version, registry, fetchImpl }) {
       .filter(({ value }) => value === highest)
       .map(({ name }) => name)
       .join(', ');
-    results.push(
-      compareVersions(base, highest) > 0
-        ? result(Outcome.pass, `${version} is a beta of ${base}, newer than latest ${highest} (${reportedBy})`)
-        : result(
-            Outcome.fail,
-            `${version} is a beta of ${base}, which is not newer than latest ${highest} (${reportedBy}); ` +
-              'it would sort below the release',
-          ),
-    );
+    if (compareVersions(base, highest) <= 0) {
+      results.push(
+        result(
+          Outcome.fail,
+          `${version} is a beta of ${base}, which is not newer than latest ${highest} (${reportedBy}); ` +
+            'it would sort below the release',
+        ),
+      );
+    } else if (latests.some(({ authoritative }) => authoritative)) {
+      results.push(
+        result(Outcome.pass, `${version} is a beta of ${base}, newer than latest ${highest} (${reportedBy})`),
+      );
+    } else {
+      results.push(
+        result(
+          Outcome.unreachable,
+          `latest: only ${reportedBy} answered, with ${highest}; a proxy or mirror can lag, so a newer release ` +
+            'cannot be ruled out without registry.npmjs.org or the GitHub Latest release',
+        ),
+      );
+    }
   } else {
     results.push(
       result(

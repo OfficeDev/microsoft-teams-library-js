@@ -929,6 +929,29 @@ describe('check-release', () => {
       );
     });
 
+    it('never passes on a lagging proxy or mirror latest alone, since 2.59.0 may have shipped since', async () => {
+      for (const lagging of [
+        registryRoutes(PROXY, { tags: { latest: '2.58.0' } }),
+        jsdelivrRoutes({ versions: ['2.58.0'], tags: { latest: '2.58.0' } }),
+      ]) {
+        const { fetchImpl } = fakeFetch({
+          ...unreachable(registryTags(NPM), `${GITHUB_REPO_API}/releases/latest`),
+          ...lagging,
+        });
+        const argv = ['beta-version', '--version', '2.58.1-beta.0', '--registry', PROXY];
+        assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
+      }
+    });
+
+    it('fails on a proxy latest alone when it already rules the beta out', async () => {
+      const { fetchImpl } = fakeFetch({
+        ...unreachable(registryTags(NPM), `${GITHUB_REPO_API}/releases/latest`),
+        ...registryRoutes(PROXY, { tags: { latest: '2.59.0' } }),
+      });
+      const argv = ['beta-version', '--version', '2.58.1-beta.0', '--registry', PROXY];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.failed, lines.join('\n'));
+    });
+
     it('is inconclusive when the Prod CDN cannot be reached', async () => {
       const { fetchImpl } = fakeFetch({
         ...unreachable(registryTags(NPM), cdnScriptUrl('2.60.0', 'prod')),
