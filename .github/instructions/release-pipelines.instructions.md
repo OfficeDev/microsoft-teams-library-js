@@ -1,5 +1,5 @@
 ---
-applyTo: 'tools/releases/**,tools/cli/preRelease.js,tools/cli/readChangelog.js,packages/teams-js/prepBetaRelease.cjs,packages/teams-js/scripts/**,.github/workflows/prerelease.yml,.github/workflows/postrelease.yml,.github/skills/release-teamsjs/**'
+applyTo: 'tools/releases/**,tools/yaml-templates/build-test-publish.yml,tools/yaml-templates/security.yml,tools/cli/preRelease.js,tools/cli/readChangelog.js,packages/teams-js/prepBetaRelease.cjs,packages/teams-js/scripts/**,.github/workflows/prerelease.yml,.github/workflows/postrelease.yml,.github/skills/release-teamsjs/**'
 ---
 
 # Release pipelines and tooling
