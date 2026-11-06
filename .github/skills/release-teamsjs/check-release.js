@@ -339,7 +339,14 @@ async function observeNpm({ version, tagNames, registry, fetchImpl }) {
     if (version) {
       const answer = await getJson(fetchImpl, npmVersionUrl(url, version), name);
       if (answer.status === 'ok') {
-        source.hasVersion = answer.json.version === version;
+        if (answer.json.version === version) {
+          source.hasVersion = true;
+        } else {
+          source.problems.push(
+            `${name}: ${npmVersionUrl(url, version)} returned HTTP 200 without version ${version}. ` +
+              'This is not evidence either way.',
+          );
+        }
       } else if (answer.status === 'missing') {
         source.hasVersion = false;
       } else {

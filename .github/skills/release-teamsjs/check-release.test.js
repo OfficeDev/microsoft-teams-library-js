@@ -368,6 +368,20 @@ describe('check-release', () => {
       assert.equal(await runWith(['check-version', '--version', VERSION], fetchImpl), ExitCode.unreachable);
     });
 
+    for (const [name, body] of [
+      ['an empty object', {}],
+      ['another version', { version: '2.58.0' }],
+    ]) {
+      it(`treats a registry 200 with ${name} as inconclusive, never as free`, async () => {
+        const { fetchImpl } = fakeFetch({ [registryVersion(NPM, VERSION)]: response(200, body) });
+        assert.equal(await runWith(['check-version', '--version', VERSION], fetchImpl), ExitCode.unreachable);
+        assert.ok(
+          lines.some((line) => line.startsWith('UNREACHABLE npm')),
+          lines.join('\n'),
+        );
+      });
+    }
+
     it('fails when the version is already on the CDN', async () => {
       const { fetchImpl } = fakeFetch({ [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE) });
       assert.equal(await runWith(['check-version', '--version', VERSION], fetchImpl), ExitCode.failed);
@@ -432,6 +446,19 @@ describe('check-release', () => {
         ...npmRoutes(VERSION, { latest: VERSION }),
       });
       assert.equal(await runWith(['published', '--version', VERSION], fetchImpl), ExitCode.failed);
+    });
+
+    it('is inconclusive, not failed, when the registry answers 200 without the version', async () => {
+      writeRepo(root);
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE),
+        [`https://registry.npmjs.org/@microsoft%2fteams-js/${VERSION}`]: response(200, {}),
+      });
+      assert.equal(await runWith(['published', '--version', VERSION], fetchImpl), ExitCode.unreachable);
+      assert.ok(
+        lines.some((line) => line.startsWith('UNREACHABLE npm')),
+        lines.join('\n'),
+      );
     });
 
     it('fails when latest still points at the previous version', async () => {
@@ -638,13 +665,13 @@ describe('check-release', () => {
         );
       });
 
-      it('registry.npmjs.org answering with a different version means it does not have this one', async () => {
+      it('registry.npmjs.org answering 200 with a different version is inconclusive, not absence', async () => {
         writeRepo(root);
         const { fetchImpl } = fakeFetch({
           ...cdnOk(),
           [registryVersion(NPM, VERSION)]: response(200, { version: '2.58.0' }),
         });
-        assert.equal(await runWith(publishedArgv(), fetchImpl), ExitCode.failed, lines.join('\n'));
+        assert.equal(await runWith(publishedArgv(), fetchImpl), ExitCode.unreachable, lines.join('\n'));
       });
 
       it('a JSON answer that is not an object is inconclusive', async () => {
