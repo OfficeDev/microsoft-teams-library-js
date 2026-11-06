@@ -991,7 +991,12 @@ describe('check-release', () => {
           ['@microsoft-teams-js-new.json', 'Added `brandNew` capability.'],
         ],
       });
-      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.failed);
+      listDeletedChangeFiles = (commit) =>
+        commit === 'abc1234'
+          ? ['@microsoft-teams-js-clipboard.json', '@microsoft-teams-js-lna.json', '@microsoft-teams-js-origins.json']
+          : [];
+      const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'];
+      assert.equal(await runWith(argv), ExitCode.failed);
       const failures = lines.filter((line) => line.startsWith('FAIL'));
       assert.equal(failures.length, 3, lines.join('\n'));
       assert.ok(failures.some((line) => line.includes('@microsoft-teams-js-clipboard.json')));
@@ -1019,7 +1024,11 @@ describe('check-release', () => {
         changelog: wrapped,
         changeFiles: [['@microsoft-teams-js-clipboard.json', 'Added  `clipboard.read`\npermission APIs.']],
       });
-      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.unreachable, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('UNREACHABLE change/@microsoft-teams-js-clipboard.json')),
+        lines.join('\n'),
+      );
     });
 
     it('with --prep-commit, also fails for a change file the prep PR deleted, even with an edited comment', async () => {
@@ -1030,6 +1039,36 @@ describe('check-release', () => {
       listDeletedChangeFiles = (commit) => (commit === 'abc1234' ? ['@microsoft-teams-js-clipboard.json'] : []);
       const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'];
       assert.equal(await runWith(argv), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('never tells you to delete a new change whose comment only matches a released entry', async () => {
+      writeCleanup(root, {
+        changelog: RELEASED_CHANGELOG,
+        changeFiles: [['@microsoft-teams-js-new-same-text.json', 'Added `clipboard.read` permission APIs.']],
+      });
+      listDeletedChangeFiles = (commit) => (commit === 'abc1234' ? ['@microsoft-teams-js-clipboard.json'] : []);
+      const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'];
+      assert.equal(await runWith(argv), ExitCode.unreachable, lines.join('\n'));
+      assert.ok(
+        lines.every((line) => !line.startsWith('FAIL')),
+        lines.join('\n'),
+      );
+      assert.ok(
+        lines.some((line) => line.includes('@microsoft-teams-js-new-same-text.json') && line.includes('keep it')),
+        lines.join('\n'),
+      );
+    });
+
+    it('without --prep-commit, a comment match is inconclusive, not a delete instruction', async () => {
+      writeCleanup(root, {
+        changelog: RELEASED_CHANGELOG,
+        changeFiles: [['@microsoft-teams-js-clipboard.json', 'Added `clipboard.read` permission APIs.']],
+      });
+      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.unreachable, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.includes('@microsoft-teams-js-clipboard.json') && line.includes('--prep-commit')),
+        lines.join('\n'),
+      );
     });
   });
 

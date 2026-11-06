@@ -20,7 +20,9 @@
  *   pipeline-config                                the checkout's release YAML: Prod publishes with tag latest,
  *                                                  SDF with tag beta, and artifact retention is @6 or later
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
- *   consumed-changes --version <v>                 no pending change file repeats an entry released in <v>
+ *   consumed-changes --version <v> [--prep-commit <sha>]
+ *                                                  no pending change file was deleted by the prep commit; one that
+ *                                                  only repeats an entry released in <v> is inconclusive
  *                                                  (run on the merge-back branch after merging main)
  *
  * GitHub API calls send GITHUB_TOKEN as a bearer token when it is set, to avoid anonymous rate limits.
@@ -758,19 +760,30 @@ function checkConsumedChanges({ version, prepCommit, repoRoot, readFile, readDir
   }
   const deletedByPrep = new Set(prepCommit ? listDeletedChangeFiles(prepCommit, repoRoot) : []);
   const changeFiles = readDirectory(path.join(repoRoot, CHANGE_DIRECTORY)).filter((name) => name.endsWith('.json'));
-  const consumed = [];
+  const results = [];
   for (const name of changeFiles) {
     const changeFile = JSON.parse(readFile(path.join(repoRoot, CHANGE_DIRECTORY, name), 'utf8'));
-    if (entries.has(normalizeText(changeFile.comment))) {
-      consumed.push({ name, reason: `repeats an entry already released in ${version}` });
-    } else if (deletedByPrep.has(name)) {
-      consumed.push({
-        name,
-        reason: `was deleted by the prep commit ${prepCommit}, so ${version} already consumed it`,
-      });
+    if (deletedByPrep.has(name)) {
+      results.push(
+        result(
+          Outcome.fail,
+          `${CHANGE_DIRECTORY}/${name} was deleted by the prep commit ${prepCommit}, so ${version} already consumed ` +
+            'it; delete it or the next release ships it again',
+        ),
+      );
+    } else if (entries.has(normalizeText(changeFile.comment))) {
+      // Matching text alone cannot tell a re-added change file from a new change with the same comment.
+      results.push(
+        result(
+          Outcome.unreachable,
+          `${CHANGE_DIRECTORY}/${name} has the same comment as an entry released in ${version}, but ` +
+            (prepCommit ? `the prep commit ${prepCommit} did not delete it` : 'no --prep-commit was given') +
+            '; keep it if it is a new change, delete it if it is the released change re-added under another name',
+        ),
+      );
     }
   }
-  if (consumed.length === 0) {
+  if (results.length === 0) {
     return [
       result(
         Outcome.pass,
@@ -779,9 +792,7 @@ function checkConsumedChanges({ version, prepCommit, repoRoot, readFile, readDir
       ),
     ];
   }
-  return consumed.map(({ name, reason }) =>
-    result(Outcome.fail, `${CHANGE_DIRECTORY}/${name} ${reason}; delete it or the next release ships it again`),
-  );
+  return results;
 }
 
 const ANNOUNCEMENT_LINKS = [

@@ -130,8 +130,10 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   prep PR consumed them. Relative to the merge base the release side never touched them, so the merge keeps `main`'s
   copies.
 - **Fix:** delete them in the cleanup branch before opening the PR. Left in place, the next release lists those
-  entries again. Afterwards `check consumed-changes --version <x.y.z>` must pass: no file under `change/` repeats an
-  entry from the new CHANGELOG section. Other changes `main` gained after the cut are expected.
+  entries again. Afterwards `check consumed-changes --version <x.y.z> --prep-commit <prep PR squash commit>` must
+  pass: no file under `change/` was deleted by the prep commit. A change file whose comment only repeats a released
+  entry is inconclusive (exit 3): keep it if it is a new change, delete it if it is the released change re-added under
+  another name. Other changes `main` gained after the cut are expected.
 
 ### A fix must ship on an older release line (hotfix)
 

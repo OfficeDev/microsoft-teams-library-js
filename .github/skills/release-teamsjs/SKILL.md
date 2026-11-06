@@ -342,11 +342,12 @@ failure modes); stop before queuing one.
   `<alias>/cleanup_release_<x.y.z>` from `release/<x.y.z>`, merge `origin/main` into it and open the PR from that,
   with a `none` change file (`pnpm changefile`, comment `Released <x.y.z>`); PR CI's change-file check requires it
   even when a local `beachball check` says none is needed.
-  Merging `main` can bring back change files the release already consumed; delete any change file whose comment
-  appears in the new CHANGELOG section, or the next release ships those entries twice. Before opening the PR,
+  Merging `main` can bring back change files the release already consumed; delete any change file the prep commit
+  deleted, or the next release ships those entries twice. Before opening the PR,
   `check consumed-changes --version "$version" --prep-commit <prep PR squash commit>` must pass: no file under
-  `change/` repeats an entry from the new CHANGELOG section. Other changes `main` gained after the cut are expected in
-  the diff.
+  `change/` was deleted by the prep commit. Exit 3 names a change file with the same comment as a released entry that
+  the prep commit did not delete: keep it if it is a new change, delete it if it is the released change re-added under
+  another name. Other changes `main` gained after the cut are expected in the diff.
   Never force-push `main`. A PR from release content can run an extra end-to-end check against the newly deployed
   CDN; leave the PR open until it completes. After it merges, `check merged-back --version "$version"` confirms
   `main` has the release's CHANGELOG section (the merge-back is squashed, so commit ancestry cannot show it).
@@ -469,7 +470,7 @@ check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 | `domains`              | the live Prod valid-domains list equals the source                                                                                                                  |
 | `github-release`       | `--expect prerelease` or `latest`: the release is in that state, tag `v<v>` carries the bump and sits at the release branch head, and Latest is right for the stage |
 | `merged-back`          | `main`'s CHANGELOG has the version's section                                                                                                                        |
-| `consumed-changes`     | on the merge-back branch, no pending change file repeats an entry in the released CHANGELOG section, or was deleted by `--prep-commit <sha>` if given               |
+| `consumed-changes`     | on the merge-back branch, no pending change file was deleted by `--prep-commit <sha>`; one that only repeats a released entry's text is inconclusive                |
 | `pipeline-config`      | the checkout's release YAML: Prod publishes with `tag latest`, SDF with `tag beta`, artifact retention @6+                                                          |
 | `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version that has not shipped: newer than `latest` on npm and GitHub, and absent from the Prod CDN and as tag `v<x.y.z>`           |
 | `announcement`         | every npm, CDN and GitHub release link in a draft names the version, and npm and CDN links are present                                                              |
