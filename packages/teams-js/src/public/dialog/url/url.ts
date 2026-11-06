@@ -74,6 +74,9 @@ export function getDialogInfoFromUrlDialogInfo(urlDialogInfo: UrlDialogInfo): Di
     width: urlDialogInfo.size ? urlDialogInfo.size.width : DialogDimension.Small,
     title: urlDialogInfo.title,
     fallbackUrl: urlDialogInfo.fallbackUrl,
+    ...(urlDialogInfo.useHeaderlessDialog !== undefined
+      ? { useHeaderlessDialog: urlDialogInfo.useHeaderlessDialog }
+      : {}),
   };
   return dialogInfo;
 }

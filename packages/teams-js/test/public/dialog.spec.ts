@@ -21,6 +21,29 @@ import { Utils } from '../utils';
    large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('Dialog', () => {
+  it.each([true, false, undefined])(
+    'preserves useHeaderlessDialog=%s in URL dialog payloads',
+    (useHeaderlessDialog) => {
+      const urlDialogInfo: UrlDialogInfo = {
+        url: 'someUrl',
+        size: { height: DialogDimension.Large, width: DialogDimension.Large },
+        useHeaderlessDialog,
+      };
+      const expected: DialogInfo = {
+        url: 'someUrl',
+        height: DialogDimension.Large,
+        width: DialogDimension.Large,
+        title: undefined,
+        fallbackUrl: undefined,
+        ...(useHeaderlessDialog !== undefined ? { useHeaderlessDialog } : {}),
+      };
+      expect(dialog.url.getDialogInfoFromUrlDialogInfo(urlDialogInfo)).toStrictEqual(expected);
+      expect(
+        dialog.url.getDialogInfoFromBotUrlDialogInfo({ ...urlDialogInfo, completionBotId: 'botId' }),
+      ).toStrictEqual({ ...expected, completionBotId: 'botId' });
+    },
+  );
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const emptyCallback = (): void => {};
   describe('frameless', () => {
