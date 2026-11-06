@@ -38,13 +38,15 @@ here.
 | Type     | When                                                       | Publishes                                                                   | Built from                                             |
 | -------- | ---------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------ |
 | Prod     | First Wednesday of the month                               | npm `latest` and the Prod CDN (`res.cdn.office.net`)                        | CI build of `release/<x.y.z>` after the prep PR merges |
-| SDF beta | Weekly, except the week of a Prod release                  | npm `beta` and the SDF CDN (`res-sdf.cdn.office.net`)                       | Latest successful non-PR CI build of `main`            |
+| SDF beta | Weekly on a schedule, except the week of a Prod release    | npm `beta` and the SDF CDN (`res-sdf.cdn.office.net`)                       | Latest successful non-PR CI build of `main`            |
 | DDL      | When a `validDomains.json` change must reach the live list | `teams-js/validDomains/json/validDomains.json` on the Prod CDN, overwriting | A CI build containing the change                       |
 
 - The beta version comes from `packages/teams-js/prepBetaRelease.cjs`, which `main` CI runs: the next beachball
   version plus `-beta.N`. Nobody edits a beta version by hand.
-- **Beta skip rule.** Skip a weekly beta only when nothing has merged to `main` since the build the last beta
-  published. Confirm that from commit history, not memory, and record the skip with the reason.
+- **Beta skip rule.** Skip a weekly beta in a Prod week (the Monday-Sunday week, in UTC, that contains the first
+  Wednesday of the month), and when nothing has merged to `main` since the build the last beta published. Scheduled
+  runs apply it themselves (see SDF beta); for a manual run, confirm it from commit history, not memory, and record the
+  skip with the reason.
 - The Prod pipeline publishes the npm package and the versioned CDN folder only. It does **not** push the
   valid-domains list; that is the DDL pipeline's job. Every TeamsJS version bundles a copy of the list, but uses it
   only until the live list loads from the CDN, when that fetch fails, and in server-side rendering; once the live list
@@ -399,6 +401,13 @@ keeps, and close the release work item. Then confirm the post-release checklist 
 - [ ] The size table has the new entry (step 12)
 
 ## SDF beta
+
+The SDF release pipeline queues itself every Wednesday at 18:00 UTC with the latest successful CI build of `main`.
+Its first stage applies the skip rule with `tools/releases/sdf-beta-schedule.js` and also skips a build that is a beta
+of a version already released; a skipped run ends without a Lockbox request and with a warning naming the reason. A
+run that goes ahead still needs the Lockbox approval (Prod step 8), so watch for the request on Wednesdays, then do
+steps 2, 3 and 5 for it. To publish another build or outside the schedule, queue the pipeline manually as below;
+manual runs are never skipped.
 
 1. Pre-flight as in step 1. Apply the skip rule; in a Prod week there is no beta.
 2. Pick the latest successful non-PR CI build of `main`; both of its stages must be green. Its `CDNFeed` folder name is

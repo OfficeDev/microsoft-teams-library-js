@@ -87,7 +87,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### The run fails at "Lockbox Approval Request" because the requester is not eligible
 
-- **Symptom:** the first stage fails with `IneligibleDeploymentUserException` ("requestor is not eligible to deploy"),
+- **Symptom:** the Lockbox stage fails with `IneligibleDeploymentUserException` ("requestor is not eligible to deploy"),
   followed by `FailureInWaitForLockboxTaskException` in deployment preparation. This is the most common first-run
   failure in the release history, for Prod and DDL alike.
 - **Cause:** the person who queued the run has no active deploy eligibility; it lapses after about 30 days unused.
@@ -101,6 +101,24 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   members also need to be in the release approver group the runbook names.
 - **Fix:** renew eligibility through the access portal the internal runbook names before release day, from a managed
   device if the runbook requires it. Ask an eligible owning-team member to queue or approve meanwhile.
+
+### The scheduled SDF beta was skipped, failed its check, or ran when you expected a skip
+
+- **Symptom:** a Wednesday run of the SDF pipeline ended without a Lockbox request and with a "Skipping the weekly
+  beta" warning, or its first stage failed, or it raised a Lockbox request in a week you expected a skip.
+- **Cause:** scheduled runs decide in their first stage with `tools/releases/sdf-beta-schedule.js`, taken from the CI
+  build's `scripts` artifact. They skip in a Prod week (the Monday-Sunday UTC week with the first Wednesday of the
+  month), for a build that is a beta of a released version (its README links a Prod CDN version at least as new, which
+  is normal after a Prod release until a change file bumps the version), for the same or an older CI build than the
+  one behind the last published beta, and while another run of the pipeline is in progress. The warning names the
+  reason. The stage fails rather than guess when the build is not from `main`, has no beta version or predates the
+  script, or when Azure DevOps does not answer or shows no published beta in the last 50 runs. The Prod-week rule
+  follows the calendar, not the actual release date.
+- **Fix:** a correct skip needs nothing more; re-running it gives the same answer. If a beta is needed anyway, or the
+  check failed, queue the pipeline manually with the intended build (SKILL.md, SDF beta); manual runs are never
+  skipped. If a run reached Lockbox in a week that should have been skipped, reject the request; nothing publishes
+  before approval. A scheduled run's Lockbox request is raised for the identity Azure DevOps resolves as its
+  requester, not a person who queued it; if that fails as not eligible, see the entry above.
 
 ## Branches and versions
 
