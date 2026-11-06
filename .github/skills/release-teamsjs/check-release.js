@@ -291,10 +291,17 @@ async function readJson(fetchImpl, url, label) {
   return answer.status === 'ok' ? { json: answer.json } : { problem: answer.problem };
 }
 
-async function readGithubJson(fetchImpl, url, label, missingMessage) {
+async function readGithubJson(fetchImpl, url, label, { missingMessage, valid = () => true, fields } = {}) {
   const answer = await getJson(fetchImpl, url, label);
   if (answer.status === 'ok') {
-    return { json: answer.json };
+    return valid(answer.json)
+      ? { json: answer.json }
+      : {
+          problem: result(
+            Outcome.unreachable,
+            `${label}: ${url} returned HTTP 200 without ${fields}. This is not evidence either way.`,
+          ),
+        };
   }
   if (answer.status === 'missing') {
     return { problem: result(Outcome.fail, missingMessage || `${label}: ${url} does not exist`) };
@@ -491,15 +498,43 @@ function npmTagResult(sources, version, tagName) {
   );
 }
 
+const COMMIT_SHA_PATTERN = /^[0-9a-f]{40}$/i;
+const hasCommitSha = (json) => Boolean(json.object) && COMMIT_SHA_PATTERN.test(json.object.sha);
+const GITHUB_SHAPES = {
+  release: {
+    valid: (json) => typeof json.draft === 'boolean' && typeof json.prerelease === 'boolean',
+    fields: 'boolean draft and prerelease fields',
+  },
+  latest: { valid: (json) => typeof json.tag_name === 'string' && json.tag_name !== '', fields: 'a tag_name' },
+  contents: {
+    valid: (json) => json.encoding === 'base64' && typeof json.content === 'string',
+    fields: 'base64 content',
+  },
+  tagRef: {
+    valid: (json) => hasCommitSha(json) && ['commit', 'tag'].includes(json.object.type),
+    fields: 'an object with a commit or tag type and a sha',
+  },
+  commitRef: { valid: hasCommitSha, fields: 'an object with a sha' },
+};
+
+function packageVersionFromContents(json) {
+  try {
+    const version = JSON.parse(Buffer.from(json.content, 'base64').toString('utf8')).version;
+    return typeof version === 'string' ? version : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 async function checkGithubRelease({ version, expect, fetchImpl }) {
   const tag = `v${version}`;
   const results = [];
-  const release = await readGithubJson(
-    fetchImpl,
-    githubReleaseUrl(version),
-    'GitHub release',
-    `GitHub release ${tag} is missing or still a draft (drafts are not visible by tag)`,
-  );
+  const release = await readGithubJson(fetchImpl, githubReleaseUrl(version), 'GitHub release', {
+    missingMessage: `GitHub release ${tag} is missing or still a draft (drafts are not visible by tag)`,
+    ...GITHUB_SHAPES.release,
+  });
+  const readLatest = () =>
+    readGithubJson(fetchImpl, githubLatestReleaseUrl(), 'GitHub latest release', GITHUB_SHAPES.latest);
   if (release.problem) {
     results.push(release.problem);
   } else if (release.json.draft) {
@@ -513,7 +548,7 @@ async function checkGithubRelease({ version, expect, fetchImpl }) {
           : `GitHub release ${tag} is not a pre-release yet it should be until publication is verified`,
       ),
     );
-    const latest = await readGithubJson(fetchImpl, githubLatestReleaseUrl(), 'GitHub latest release');
+    const latest = await readLatest();
     results.push(
       latest.problem ||
         result(
@@ -530,7 +565,7 @@ async function checkGithubRelease({ version, expect, fetchImpl }) {
           : `GitHub release ${tag} is no longer a pre-release`,
       ),
     );
-    const latest = await readGithubJson(fetchImpl, githubLatestReleaseUrl(), 'GitHub latest release');
+    const latest = await readLatest();
     results.push(
       latest.problem ||
         result(
@@ -540,13 +575,24 @@ async function checkGithubRelease({ version, expect, fetchImpl }) {
     );
   }
 
-  const packageJson = await readGithubJson(fetchImpl, githubPackageJsonAtTagUrl(version), `Tag ${tag}`);
+  const packageJson = await readGithubJson(
+    fetchImpl,
+    githubPackageJsonAtTagUrl(version),
+    `Tag ${tag}`,
+    GITHUB_SHAPES.contents,
+  );
+  const tagVersion = packageJson.json && packageVersionFromContents(packageJson.json);
   if (packageJson.problem) {
     results.push(packageJson.problem);
+  } else if (!tagVersion) {
+    results.push(
+      result(
+        Outcome.unreachable,
+        `Tag ${tag}: ${githubPackageJsonAtTagUrl(version)} is not a package.json with a version. ` +
+          'This is not evidence either way.',
+      ),
+    );
   } else {
-    const tagVersion = JSON.parse(
-      Buffer.from(packageJson.json.content, packageJson.json.encoding).toString('utf8'),
-    ).version;
     results.push(
       result(
         tagVersion === version ? Outcome.pass : Outcome.fail,
@@ -561,20 +607,30 @@ async function checkGithubRelease({ version, expect, fetchImpl }) {
 
 async function checkTagAtBranchHead({ version, fetchImpl }) {
   const tag = `v${version}`;
-  const tagRef = await readGithubJson(fetchImpl, githubTagUrl(version), `Tag ${tag}`);
+  const tagRef = await readGithubJson(fetchImpl, githubTagUrl(version), `Tag ${tag}`, GITHUB_SHAPES.tagRef);
   if (tagRef.problem) {
     return tagRef.problem;
   }
   let tagCommit = tagRef.json.object.sha;
   if (tagRef.json.object.type === 'tag') {
-    const annotated = await readGithubJson(fetchImpl, `${GITHUB_API}/repos/${REPOSITORY}/git/tags/${tagCommit}`, 'Tag');
+    const annotated = await readGithubJson(
+      fetchImpl,
+      `${GITHUB_API}/repos/${REPOSITORY}/git/tags/${tagCommit}`,
+      'Tag',
+      GITHUB_SHAPES.commitRef,
+    );
     if (annotated.problem) {
       return annotated.problem;
     }
     tagCommit = annotated.json.object.sha;
   }
   const branch = `release/${version}`;
-  const head = await readGithubJson(fetchImpl, `${GITHUB_API}/repos/${REPOSITORY}/git/ref/heads/${branch}`, branch);
+  const head = await readGithubJson(
+    fetchImpl,
+    `${GITHUB_API}/repos/${REPOSITORY}/git/ref/heads/${branch}`,
+    branch,
+    GITHUB_SHAPES.commitRef,
+  );
   if (head.problem) {
     return head.problem;
   }

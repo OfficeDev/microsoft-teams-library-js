@@ -795,6 +795,50 @@ describe('check-release', () => {
       const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
       assert.equal(await runWith(argv, fetchImpl), ExitCode.failed);
     });
+
+    const contentsUrl = `${GITHUB_REPO_API}/contents/packages/teams-js/package.json?ref=v${VERSION}`;
+    for (const [name, url, body, options = {}] of [
+      ['a release without draft or prerelease', `${GITHUB_REPO_API}/releases/tags/v${VERSION}`, {}],
+      [
+        'a release whose prerelease is not a boolean',
+        `${GITHUB_REPO_API}/releases/tags/v${VERSION}`,
+        { tag_name: `v${VERSION}`, prerelease: 'false', draft: false },
+      ],
+      ['a Latest release without tag_name', `${GITHUB_REPO_API}/releases/latest`, {}],
+      ['package.json contents without content', contentsUrl, {}],
+      [
+        'package.json contents that are not JSON',
+        contentsUrl,
+        { encoding: 'base64', content: Buffer.from('not json').toString('base64') },
+      ],
+      ['package.json contents too large to inline', contentsUrl, { encoding: 'none', content: '' }],
+      [
+        'package.json contents whose version is not a string',
+        contentsUrl,
+        { encoding: 'base64', content: Buffer.from(JSON.stringify({ version: 259 })).toString('base64') },
+      ],
+      ['a tag ref without object', `${GITHUB_REPO_API}/git/ref/tags/v${VERSION}`, {}],
+      [
+        'an annotated tag without object',
+        `${GITHUB_REPO_API}/git/tags/${'d'.repeat(40)}`,
+        {},
+        { tagSha: 'd'.repeat(40), annotatedTarget: 'a'.repeat(40), branchSha: 'a'.repeat(40) },
+      ],
+      ['a release branch ref without a sha', `${GITHUB_REPO_API}/git/ref/heads/release/${VERSION}`, { object: {} }],
+    ]) {
+      it(`treats ${name} as inconclusive, never as a pass or a crash`, async () => {
+        for (const expect of ['prerelease', 'latest']) {
+          const routes = githubRoutes({
+            prerelease: expect === 'prerelease',
+            latestTag: expect === 'latest' ? `v${VERSION}` : 'v2.58.0',
+            ...options,
+          });
+          routes[url] = response(200, body);
+          const argv = ['github-release', '--version', VERSION, '--expect', expect];
+          assert.equal(await runWith(argv, fakeFetch(routes).fetchImpl), ExitCode.unreachable, lines.join('\n'));
+        }
+      });
+    }
   });
 
   describe('beta-version', () => {
