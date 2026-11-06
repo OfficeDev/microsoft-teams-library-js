@@ -18,7 +18,7 @@
  *   beta-version  --version <x.y.z>-beta.<n> [--registry <url>]
  *                                                  the beta is of a version newer than latest on npm and GitHub
  *   pipeline-config                                the checkout's release YAML: Prod publishes with tag latest,
- *                                                  SDF with tag beta, and artifact retention is @6 or later
+ *                                                  SDF with tag beta, and each has artifact retention @6 or later
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
  *   consumed-changes --version <v> [--prep-commit <sha>]
  *                                                  no pending change file was deleted by the prep commit; one that
@@ -753,16 +753,20 @@ function checkPipelineConfig({ repoRoot, readFile }) {
   const results = [];
   for (const { file, npmTag, productState } of PIPELINE_FILES) {
     const text = readFile(path.join(repoRoot, file), 'utf8');
-    const retention = matchAll(text, /AssetRetention@(\d+)/g).map(Number);
+    const retention = matchAll(text, /^[ \t]*-[ \t]*task:[ \t]*AssetRetention@(\d+)/gm).map(Number);
     const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
-    results.push(
-      result(
-        old.length === 0 ? Outcome.pass : Outcome.fail,
-        old.length === 0
-          ? `${file} uses AssetRetention@${retention.join(', @') || '(none)'}`
-          : `${file} uses AssetRetention@${old.join(', @')}, which runs on end-of-life Node 16; use @6 or later`,
-      ),
-    );
+    if (retention.length === 0) {
+      results.push(result(Outcome.fail, `${file} has no AssetRetention task, so artifact retention is not configured`));
+    } else {
+      results.push(
+        result(
+          old.length === 0 ? Outcome.pass : Outcome.fail,
+          old.length === 0
+            ? `${file} uses AssetRetention@${retention.join(', @')}`
+            : `${file} uses AssetRetention@${old.join(', @')}, which runs on end-of-life Node 16; use @6 or later`,
+        ),
+      );
+    }
     if (npmTag) {
       const tags = matchAll(text, /Publish to npm \(tag (\w+)\)/g);
       const states = matchAll(text, /productstate:\s*'(\w+)'/g);

@@ -993,6 +993,34 @@ describe('check-release', () => {
       );
     });
 
+    for (const file of [
+      'tools/releases/prod-release.yml',
+      'tools/releases/sdf-release.yml',
+      'tools/releases/ddl-release.yml',
+      'tools/yaml-templates/security.yml',
+    ]) {
+      it(`fails when ${file} has no artifact retention task`, async () => {
+        writePipelineConfig(root);
+        const yaml = path.join(root, file);
+        fs.writeFileSync(yaml, fs.readFileSync(yaml, 'utf8').replace(/^.*AssetRetention@6.*$/m, ''));
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith(`FAIL ${file}`) && line.includes('AssetRetention')),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    it('does not count a commented-out artifact retention task', async () => {
+      writePipelineConfig(root);
+      const yaml = path.join(root, 'tools/releases/prod-release.yml');
+      fs.writeFileSync(
+        yaml,
+        fs.readFileSync(yaml, 'utf8').replace('- task: AssetRetention@6', '# - task: AssetRetention@6'),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
+
     it('fails when the SDF publish task says tag latest', async () => {
       writePipelineConfig(root);
       const sdf = path.join(root, 'tools/releases/sdf-release.yml');
