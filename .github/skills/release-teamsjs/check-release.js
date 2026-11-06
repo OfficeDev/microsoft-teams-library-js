@@ -35,6 +35,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PACKAGE_NAME = '@microsoft/teams-js';
+const ENCODED_PACKAGE_NAME = PACKAGE_NAME.replaceAll('/', '%2f');
 const REPOSITORY = 'OfficeDev/microsoft-teams-library-js';
 const CDN_HOSTS = { prod: 'res.cdn.office.net', sdf: 'res-sdf.cdn.office.net' };
 const DEFAULT_REGISTRY = 'https://registry.npmjs.org';
@@ -69,11 +70,11 @@ function validDomainsUrl(environment = 'prod') {
 }
 
 function npmVersionUrl(registry, version) {
-  return `${registry}/${PACKAGE_NAME.replace('/', '%2f')}/${version}`;
+  return `${registry}/${ENCODED_PACKAGE_NAME}/${version}`;
 }
 
 function npmDistTagsUrl(registry) {
-  return `${registry}/-/package/${PACKAGE_NAME.replace('/', '%2f')}/dist-tags`;
+  return `${registry}/-/package/${ENCODED_PACKAGE_NAME}/dist-tags`;
 }
 
 function githubTagUrl(version) {
