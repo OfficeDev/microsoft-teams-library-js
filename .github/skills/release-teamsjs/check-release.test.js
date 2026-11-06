@@ -146,6 +146,15 @@ function githubRoutes({
   return routes;
 }
 
+function stalledBody(status = 200) {
+  const stall = async () => {
+    const error = new Error('The operation was aborted due to timeout');
+    error.name = 'TimeoutError';
+    throw error;
+  };
+  return { status, arrayBuffer: stall, json: stall, text: stall };
+}
+
 function writeArtifact(root, folderVersion, bytes) {
   const file = path.join(root, 'download', 'CDNFeed', folderVersion, 'js', 'MicrosoftTeams.min.js');
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -271,6 +280,23 @@ describe('check-release', () => {
         ExitCode.passed,
         lines.join('\n'),
       );
+    });
+
+    it('passes for a relative CDNFeed path given from the download folder', async () => {
+      writeRepo(root);
+      writeArtifact(root, VERSION, BUNDLE);
+      const previous = process.cwd();
+      process.chdir(path.join(root, 'download'));
+      try {
+        const relative = `CDNFeed/${VERSION}/js/MicrosoftTeams.min.js`;
+        assert.equal(
+          await runWith(['artifact', '--version', VERSION, '--file', relative]),
+          ExitCode.passed,
+          lines.join('\n'),
+        );
+      } finally {
+        process.chdir(previous);
+      }
     });
 
     it('fails when the CI bundle differs from the bundle the carriers were built from', async () => {
@@ -1020,6 +1046,32 @@ describe('check-release', () => {
   });
 
   describe('flags, timeouts and help', () => {
+    it('is inconclusive, not failed, when a 200 response body stalls', async () => {
+      writeRepo(root);
+      const published = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: stalledBody(),
+        [registryVersion(NPM, VERSION)]: response(200, { version: VERSION }),
+      });
+      assert.equal(
+        await runWith(['published', '--version', VERSION], published.fetchImpl),
+        ExitCode.unreachable,
+        lines.join('\n'),
+      );
+      assert.ok(
+        lines.some((line) => line.startsWith('UNREACHABLE CDN')),
+        lines.join('\n'),
+      );
+      lines = [];
+      const mergedBack = fakeFetch({ [MAIN_CHANGELOG]: stalledBody() });
+      assert.equal(await runWith(['merged-back', '--version', VERSION], mergedBack.fetchImpl), ExitCode.unreachable);
+      lines = [];
+      const size = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: stalledBody(),
+        [cdnScriptUrl('2.58.0', 'prod')]: response(200, BUNDLE),
+      });
+      const argv = ['size', '--version', VERSION, '--previous', '2.58.0'];
+      assert.equal(await runWith(argv, size.fetchImpl), ExitCode.unreachable, lines.join('\n'));
+    });
     it('rejects unknown or misspelled flags instead of ignoring them', async () => {
       writeRepo(root);
       assert.equal(await runWith(['carriers', '--version', VERSION, '--bogus', 'x']), ExitCode.usage);

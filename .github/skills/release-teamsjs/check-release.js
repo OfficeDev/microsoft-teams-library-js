@@ -194,6 +194,21 @@ async function fetchOrUnreachable(fetchImpl, url, label) {
   }
 }
 
+async function readBody(response, read, label, url) {
+  try {
+    return { value: await read(response) };
+  } catch (error) {
+    const reason =
+      error && error.name === 'TimeoutError' ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s` : error.message;
+    return {
+      unreachable: result(
+        Outcome.unreachable,
+        `${label}: reading ${url} failed (${reason}). This is not evidence either way.`,
+      ),
+    };
+  }
+}
+
 async function expectAbsent(fetchImpl, url, label, takenMessage = 'so this version is taken') {
   const { response, unreachable } = await fetchOrUnreachable(fetchImpl, url, label);
   if (unreachable) {
@@ -236,7 +251,11 @@ async function checkCdnScript({ version, environment, expectedSri, fetchImpl }) 
   if (response.status !== 200) {
     return inconclusiveStatus('CDN', url, response.status);
   }
-  return checkBytes(Buffer.from(await response.arrayBuffer()), expectedSri, `CDN ${url}`);
+  const body = await readBody(response, (r) => r.arrayBuffer(), 'CDN', url);
+  if (body.unreachable) {
+    return body.unreachable;
+  }
+  return checkBytes(Buffer.from(body.value), expectedSri, `CDN ${url}`);
 }
 
 async function getJson(fetchImpl, url, label) {
@@ -800,7 +819,11 @@ async function checkMergedBack({ version, fetchImpl }) {
     return [result(Outcome.unreachable, `main CHANGELOG ${url} returned HTTP ${response.status}`)];
   }
   const heading = `## ${version}`;
-  const found = (await response.text()).split(/\r?\n/).some((line) => line.trim() === heading);
+  const body = await readBody(response, (r) => r.text(), 'main CHANGELOG', url);
+  if (body.unreachable) {
+    return [body.unreachable];
+  }
+  const found = body.value.split(/\r?\n/).some((line) => line.trim() === heading);
   return [
     found
       ? result(Outcome.pass, `main's CHANGELOG has the "${heading}" section, so the release is merged back`)
@@ -820,7 +843,11 @@ async function readCdnBytes(fetchImpl, version) {
   if (response.status !== 200) {
     return { problem: inconclusiveStatus('CDN', url, response.status) };
   }
-  return { bytes: Buffer.from(await response.arrayBuffer()).length };
+  const body = await readBody(response, (r) => r.arrayBuffer(), 'CDN', url);
+  if (body.unreachable) {
+    return { problem: body.unreachable };
+  }
+  return { bytes: Buffer.from(body.value).length };
 }
 
 async function reportSize({ version, previous, fetchImpl }) {
@@ -955,7 +982,8 @@ function checkArtifact({ version, file, repoRoot, readFile, readDirectory }) {
   const carriers = readCarriers(repoRoot, readFile);
   const results = checkCarriers(carriers, version);
   const expectedFolder = `/CDNFeed/${version}/js/MicrosoftTeams.min.js`;
-  const inVersionFolder = file.replace(/\\/g, '/').endsWith(expectedFolder);
+  const absoluteFile = path.resolve(file);
+  const inVersionFolder = absoluteFile.replace(/\\/g, '/').endsWith(expectedFolder);
   results.push(
     result(
       inVersionFolder ? Outcome.pass : Outcome.fail,
@@ -965,7 +993,7 @@ function checkArtifact({ version, file, repoRoot, readFile, readDirectory }) {
     ),
   );
   if (inVersionFolder) {
-    const cdnFeed = path.dirname(path.dirname(path.dirname(file)));
+    const cdnFeed = path.dirname(path.dirname(path.dirname(absoluteFile)));
     const versionFolders = readDirectory(cdnFeed).filter((name) => !name.startsWith('_'));
     if (versionFolders.length !== 1) {
       results.push(
