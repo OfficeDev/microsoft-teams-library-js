@@ -22,6 +22,7 @@ import DialogUrlParentCommunicationAPIs from '../components/DialogUrlParentCommu
 import GeoLocationAPIs from '../components/GeoLocationAPIs';
 import HostEntityTabAPIs from '../components/HostEntityTabAPIs';
 import Links from '../components/Links';
+import LocalNetworkAccessAPIs from '../components/LocalNetworkAccessAPIs';
 import LocationAPIs from '../components/LocationAPIs';
 import LogAPIs from '../components/LogsAPIs';
 import MailAPIs from '../components/MailAPIs';
@@ -140,6 +141,7 @@ export const TestApp: React.FC = () => {
       { name: 'HostEntityTabAPIs', component: <HostEntityTabAPIs /> },
       { name: 'Links', component: <Links /> },
       { name: 'LocationAPIs', component: <LocationAPIs /> },
+      { name: 'LocalNetworkAccessAPIs', component: <LocalNetworkAccessAPIs /> },
       { name: 'LogAPIs', component: <LogAPIs /> },
       { name: 'MailAPIs', component: <MailAPIs /> },
       { name: 'MarketplaceAPIs', component: <MarketplaceAPIs /> },

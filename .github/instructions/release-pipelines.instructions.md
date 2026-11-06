@@ -1,0 +1,18 @@
+---
+applyTo: 'tools/releases/**,tools/cli/preRelease.js,tools/cli/readChangelog.js,packages/teams-js/prepBetaRelease.cjs,packages/teams-js/scripts/**,.github/workflows/prerelease.yml,.github/workflows/postrelease.yml,.github/skills/release-teamsjs/**'
+---
+
+# Release pipelines and tooling
+
+These files drive how `@microsoft/teams-js` is versioned and published. Before changing them:
+
+- Read `.github/skills/release-teamsjs/SKILL.md` and `failure-modes.md`. A change here can change what a release
+  publishes or how its run is judged.
+- The release pipelines read their YAML from the branch that is queued, usually `release/<x.y.z>`. A fix on `main`
+  takes effect only from release branches cut or updated after it merges; say so in the PR.
+- Tasks that only run on `main` or release builds (for example artifact retention) are not exercised by PR builds.
+  State how the change will be proven.
+- Keep the skill in step: if a change adds, removes or renames a pipeline step, a version carrier or a script the
+  skill names, update `SKILL.md` and `failure-modes.md` in the same PR.
+- This repository is public. Do not add internal pipeline IDs, URLs, approver groups or people's names.
+- Do not add steps that bypass a review, a branch ruleset or a pipeline approval, or that force-push a release branch.

@@ -80,6 +80,7 @@ export * as menus from './menus';
 export * as media from './media';
 export * as secondaryBrowser from './secondaryBrowser';
 export * as location from './location';
+export * as localNetworkAccess from './localNetworkAccess';
 export * as meeting from './meeting/meeting';
 export * as monetization from './monetization';
 export * as calendar from './calendar';
