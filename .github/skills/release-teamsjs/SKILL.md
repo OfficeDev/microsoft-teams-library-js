@@ -434,7 +434,9 @@ No release branch, PR, GitHub release or announcement for a beta unless the inte
    ask the approvers the same way as Prod step 8. A successful DDL run normally ends "partially succeeded".
 3. The upload only updates the origin copy. The list lives at a path with no version, and the CDN serves it with a
    one-year `Cache-Control: max-age`; on the last two DDL runs the edge did not refresh on its own. So right after every
-   successful DDL run, **⛔ request the purge** through the process in the internal runbook:
+   DDL run whose upload task ("Push valid domains to M365 1CDN") succeeded, **⛔ request the purge** through the
+   process in the internal runbook. That includes a run that fails later: the upload runs before artifact retention, so
+   a run can end red with the new list already at the origin. In the request:
    - The content path is relative to the storage container: `teams-js/validDomains/json/validDomains.json`. Separate
      several paths with `;` and no spaces.
    - Keep the reason to one short, title-like line, under about 80 characters (the exact limit isn't documented). It

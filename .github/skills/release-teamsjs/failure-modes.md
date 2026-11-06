@@ -57,8 +57,9 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### The artifact retention (ARROW) task fails on an end-of-life Node runtime
 
-- **Symptom:** the artifact retention task fails before publishing because the agent refuses end-of-life Node 16
-  task runtimes.
+- **Symptom:** the artifact retention task fails because the agent refuses end-of-life Node 16 task runtimes. In the Prod
+  and SDF pipelines it runs before publishing, so nothing is published. In the DDL pipeline it runs after the upload, so
+  the new list may already be at the origin: purge and verify anyway (DDL steps 3-4).
 - **Cause:** `AssetRetention` versions 3-5 run on Node 16. Queue-time variable overrides are not allowed on these
   pipelines, so the agent setting cannot be switched off for one run.
 - **Fix:** `main` uses `AssetRetention@6` in `tools/yaml-templates/security.yml` and the three release YAMLs since
