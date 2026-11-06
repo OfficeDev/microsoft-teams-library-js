@@ -430,14 +430,23 @@ No release branch, PR, GitHub release or announcement for a beta unless the inte
 1. Confirm with the release owner that the valid-domains change must go live now, and which CI build contains it.
    The DDL pipeline also runs the artifact retention task, so the ARROW failure mode applies to it too.
 2. **⛔ Gate 5:** queue the DDL release pipeline with that build. It overwrites the stored list and needs its own
-   Lockbox approval. A successful DDL run normally ends "partially succeeded".
-3. From a checkout of that build's commit, `domains_check` prints nothing when the live list equals the source.
-4. The list lives at a path with no version, and the CDN serves it with a one-year `Cache-Control: max-age`. A
-   successful upload therefore usually stays invisible until the CDN cache is purged. If `domains_check` still shows
-   a difference after the run, compare the CDN's `Last-Modified` header (`curl -sI <url>`) with the time of the run,
-   then **⛔ request the purge** through the process in the internal runbook and rerun `domains_check` afterwards.
-   Do not queue the DDL again just to refresh the cache. The runbook says to wait 24 hours before purging; this skill
-   checks sooner on purpose, because the one-year cache lifetime means waiting rarely helps.
+   Lockbox approval. Its Lockbox jobs are named `LockBoxApprovalReq` and `WaitForLockBoxApproval`, not Prod's names;
+   ask the approvers the same way as Prod step 8. A successful DDL run normally ends "partially succeeded".
+3. The upload only updates the origin copy. The list lives at a path with no version, and the CDN serves it with a
+   one-year `Cache-Control: max-age`; on the last two DDL runs the edge did not refresh on its own. So right after every
+   successful DDL run, **⛔ request the purge** through the process in the internal runbook:
+   - The content path is relative to the storage container: `teams-js/validDomains/json/validDomains.json`. Separate
+     several paths with `;` and no spaces.
+   - Keep the reason to one short, title-like line, under about 80 characters (the exact limit isn't documented). It
+     becomes the title of a work item on the CDN side, and a longer reason once made a purge fail without any error.
+   - A "submitted" confirmation does not mean the purge ran; no email or receipt arrives either way.
+4. Verify on `res.cdn.office.net` only, from a checkout of that build's commit: `domains_check` prints nothing when the
+   live list equals the source, and the `Last-Modified` header (`curl -sI <url>`) is at or after the run. Other CDN
+   hostnames can refresh earlier or inconsistently, and the edge ignores cache-busting query strings, so neither proves
+   anything. Budget hours, not minutes: if the list is still stale about 45 minutes after the request, ask the CDN team
+   through the support contact in the internal runbook whether the request was picked up. Do not queue the DDL again to
+   refresh the cache. The runbook's "wait 24 hours before purging" doesn't apply, because the edge does not refresh on
+   its own.
 5. Once the live list is verified, **⛔ Gate 6:** draft a short reply in the matching release announcement's thread
    saying which origins are now live, and a note to the partner who asked for them. A DDL push gets no announcement of
    its own.

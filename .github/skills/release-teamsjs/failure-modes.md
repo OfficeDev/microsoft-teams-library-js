@@ -215,13 +215,16 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   `https://res.cdn.office.net/teams-js/validDomains/json/validDomains.json` still serves the old list, and its
   `Last-Modified` header predates the run.
 - **Cause:** the file's path has no version and the CDN caches it for a year, so the edge keeps serving the previous
-  copy after the upload.
-- **Fix:** request a CDN cache purge through the process in the internal runbook, then compare again. Do not
-  re-run the DDL to refresh the cache, and do not change the SDK's fallback list to work around it. A cache-busting
-  query string does not get past the edge cache, so it is not proof either way.
+  copy after the upload. This is expected after every DDL run, not an exception.
+- **Fix:** request a CDN cache purge right after the run (DDL steps 3-4), then compare again on `res.cdn.office.net`.
+  A "submitted" purge request may still not have run: one with a long reason failed without any error or email. If
+  the list is still stale about 45 minutes later, ask the CDN team through the support contact in the internal runbook
+  whether the request was picked up. Do not re-run the DDL to refresh the cache, and do not change the SDK's fallback
+  list to work around it. A cache-busting query string does not get past the edge cache, so it is not proof either
+  way.
 
 ### New origins merged and released, but hosts still reject them
 
 - **Cause:** once the SDK has fetched the live list from the CDN it validates against that list, not the list bundled
   in the npm package. A Prod release alone does not make new origins valid; only a DDL run that reaches the edge does.
-- **Fix:** run the DDL (and purge if needed) for the merged `validDomains.json`, then check the live list.
+- **Fix:** run the DDL and purge the CDN cache for the merged `validDomains.json`, then check the live list.
