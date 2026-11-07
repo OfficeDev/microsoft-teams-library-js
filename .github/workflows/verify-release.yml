@@ -28,7 +28,9 @@ permissions:
 
 concurrency:
   # A release published straight as a full release fires both `published` and `released`; keep only the last run.
-  group: verify-release-${{ github.event.release.tag_name || inputs.version }}
+  # The event name keeps a run started from the Actions tab apart, so marking the release Latest never cancels it,
+  # however its version was typed.
+  group: verify-release-${{ github.event_name }}-${{ github.event.release.tag_name || inputs.version }}
   cancel-in-progress: true
 
 defaults:

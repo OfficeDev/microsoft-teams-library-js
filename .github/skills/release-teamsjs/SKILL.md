@@ -339,7 +339,10 @@ failure modes); stop before queuing one.
 
 The **Verify Release** GitHub Actions workflow (`.github/workflows/verify-release.yml`) runs these checks with
 `check-release.js`. It runs by itself when the pre-release is published, checking the carriers at the tag and that
-the release is still a pre-release; npm and the CDN are not checked then, because Prod has not run yet. After Prod, run
+the release is still a pre-release; npm and the CDN are not checked then, because Prod has not run yet. The automatic
+run needs the workflow on the release branch, so for a branch cut before it landed, run it from the Actions tab on
+`main` instead. A release created by another workflow with its `GITHUB_TOKEN` does not start it either; run it by
+hand then too. After Prod, run
 it from the Actions tab (`workflow_dispatch`, the version, expect `prerelease`): it also checks npm and the CDN,
 retrying while they are inconclusive, and its job summary has the results and the public links. It runs again when
 the release is marked Latest. It never edits the release, never marks it Latest and never writes anywhere; promoting
