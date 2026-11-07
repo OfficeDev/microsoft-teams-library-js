@@ -75,6 +75,9 @@ function decide({ reason, now, beta, releasedVersion, sourceBranch, current, las
   if (!match) {
     throw new Error(`The CI build's version ${beta || '(none)'} is not a beta version such as 2.60.0-beta.0`);
   }
+  if (!releasedVersion) {
+    throw new Error(`The check could not find a released version in the build's README`);
+  }
   const reasons = [];
   const week = prodWeek(now);
   if (week.isProdWeek) {

@@ -120,7 +120,10 @@ test('a scheduled run skips a beta of a version that has already shipped', () =>
   }
   assert.equal(decide({ ...scheduled, beta: '2.59.1-beta.0' }).publish, true);
   assert.equal(decide({ ...scheduled, beta: '2.60.0-beta.12', releasedVersion: '2.59.10' }).publish, true);
-  assert.equal(decide({ ...scheduled, releasedVersion: null }).publish, true, 'no README link to compare with');
+  assert.throws(
+    () => decide({ ...scheduled, releasedVersion: null }),
+    /could not find a released version in the build's README/,
+  );
 });
 
 test('a scheduled run skips while another run of the pipeline is in progress', () => {
