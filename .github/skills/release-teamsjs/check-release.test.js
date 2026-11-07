@@ -1390,6 +1390,43 @@ describe('check-release', () => {
       fs.writeFileSync(file, `teams-js v${VERSION} has been released to npm and CDN`);
       assert.equal(await runWith(['announcement', '--version', VERSION, '--file', file]), ExitCode.failed);
     });
+
+    it('reads the version from a link with a query or fragment', async () => {
+      const file = path.join(root, 'announcement.txt');
+      fs.writeFileSync(
+        file,
+        [
+          `https://www.npmjs.com/package/@microsoft/teams-js/v/${VERSION}?activeTab=versions`,
+          `https://res.cdn.office.net/teams-js/${VERSION}/js/MicrosoftTeams.min.js#sri`,
+          `https://github.com/OfficeDev/microsoft-teams-library-js/releases/tag/v${VERSION}?x=1`,
+        ].join('\n'),
+      );
+      const argv = ['announcement', '--version', VERSION, '--file', file];
+      assert.equal(await runWith(argv), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('does not count an SDF CDN link as the Prod CDN link', async () => {
+      const file = path.join(root, 'announcement.txt');
+      fs.writeFileSync(
+        file,
+        [
+          `https://www.npmjs.com/package/@microsoft/teams-js/v/${VERSION}`,
+          `https://res-sdf.cdn.office.net/teams-js/${VERSION}/js/MicrosoftTeams.min.js`,
+        ].join('\n'),
+      );
+      const argv = ['announcement', '--version', VERSION, '--file', file];
+      assert.equal(await runWith(argv), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('ignores a link on another host whose path looks like a release link', async () => {
+      const file = path.join(root, 'announcement.txt');
+      fs.writeFileSync(
+        file,
+        [draft(VERSION), 'https://example.com/res.cdn.office.net/teams-js/2.58.0/js/MicrosoftTeams.min.js'].join('\n'),
+      );
+      const argv = ['announcement', '--version', VERSION, '--file', file];
+      assert.equal(await runWith(argv), ExitCode.passed, lines.join('\n'));
+    });
   });
 
   describe('consumed-changes', () => {
@@ -1495,6 +1532,32 @@ describe('check-release', () => {
         lines.some((line) => line.includes('@microsoft-teams-js-new-same-text.json') && line.includes('keep it')),
         lines.join('\n'),
       );
+    });
+
+    it('reads a released entry that continues after a blank line', async () => {
+      const changelog = RELEASED_CHANGELOG.replace(
+        '- Added `localNetworkAccess` permission APIs.',
+        '- Added `localNetworkAccess` permission APIs.\n\n  The host must advertise `permissions.lna`.',
+      );
+      const comment = 'Added `localNetworkAccess` permission APIs.\n\nThe host must advertise `permissions.lna`.';
+      writeCleanup(root, { changelog, changeFiles: [['@microsoft-teams-js-lna-2.json', comment]] });
+      const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'];
+      assert.equal(await runWith(argv), ExitCode.unreachable, lines.join('\n'));
+    });
+
+    it('ends a released entry at the next unindented line', async () => {
+      const changelog = RELEASED_CHANGELOG.replace(
+        '- Added `localNetworkAccess` permission APIs.\n',
+        '- Added `localNetworkAccess` permission APIs.\n\nSome note under the list.\n',
+      );
+      writeCleanup(root, {
+        changelog,
+        changeFiles: [
+          ['@microsoft-teams-js-new.json', 'Added `localNetworkAccess` permission APIs. Some note under the list.'],
+        ],
+      });
+      const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'];
+      assert.equal(await runWith(argv), ExitCode.passed, lines.join('\n'));
     });
 
     it('requires --prep-commit, since without it a re-added change file passes', async () => {
@@ -1619,6 +1682,33 @@ describe('check-release', () => {
       };
       assert.equal(await runWith(['merged-back', '--version', VERSION], fetchImpl), ExitCode.unreachable);
       assert.ok(seen.length > 0 && seen.every((signal) => signal instanceof AbortSignal));
+    });
+  });
+
+  describe('versions follow SemVer', () => {
+    for (const version of ['02.59.0', '2.059.0', '2.59.0-beta..1', '2.59.0-beta.01', '2.59.0-', '2.59.0-beta.1.']) {
+      it(`rejects --version ${version}`, async () => {
+        assert.equal(await runWith(['links', '--version', version]), ExitCode.usage);
+      });
+    }
+
+    it('accepts canonical versions', async () => {
+      for (const version of ['2.59.0', '2.60.0-beta.0', '2.60.0-beta.10', '10.0.0-rc.1-x']) {
+        lines = [];
+        assert.equal(await runWith(['links', '--version', version]), ExitCode.passed, version);
+      }
+    });
+
+    it('orders a numeric prerelease identifier below an alphanumeric one', async () => {
+      writeRepo(root);
+      const version = '2.60.0-2';
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(version, 'prod')]: response(200, BUNDLE),
+        ...unreachable(registryVersion(NPM, version), registryTags(NPM)),
+        ...jsdelivrRoutes({ versions: [version], tags: { beta: '2.60.0-1alpha' } }),
+      });
+      const argv = ['published', '--version', version, '--dist-tag', 'beta'];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.failed, lines.join('\n'));
     });
   });
 

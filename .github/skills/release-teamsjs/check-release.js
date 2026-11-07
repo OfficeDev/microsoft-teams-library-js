@@ -43,7 +43,13 @@ const REPOSITORY = 'OfficeDev/microsoft-teams-library-js';
 const CDN_HOSTS = { prod: 'res.cdn.office.net', sdf: 'res-sdf.cdn.office.net' };
 const DEFAULT_REGISTRY = 'https://registry.npmjs.org';
 const GITHUB_API = 'https://api.github.com';
-const VERSION_PATTERN = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
+// Canonical SemVer without build metadata: no leading zeros in numbers, no empty prerelease identifiers.
+const NUMERIC_IDENTIFIER = '(?:0|[1-9]\\d*)';
+const PRERELEASE_IDENTIFIER = `(?:${NUMERIC_IDENTIFIER}|\\d*[A-Za-z-][0-9A-Za-z-]*)`;
+const VERSION_PATTERN = new RegExp(
+  `^${NUMERIC_IDENTIFIER}\\.${NUMERIC_IDENTIFIER}\\.${NUMERIC_IDENTIFIER}` +
+    `(?:-${PRERELEASE_IDENTIFIER}(?:\\.${PRERELEASE_IDENTIFIER})*)?$`,
+);
 // A sha384 digest is 48 bytes: exactly 64 base64 characters, with no padding.
 const SRI_PATTERN = /^sha384-[A-Za-z0-9+/]{64}$/;
 const CARRIER_VERSION_PATTERNS = [
@@ -754,9 +760,13 @@ function compareVersions(a, b) {
       return x === undefined ? -1 : 1;
     }
     if (x !== y) {
-      const [xNumber, yNumber] = [Number(x), Number(y)];
-      if (Number.isInteger(xNumber) && Number.isInteger(yNumber)) {
-        return xNumber > yNumber ? 1 : -1;
+      // SemVer: numeric identifiers compare numerically and sort below alphanumeric ones.
+      const [xNumeric, yNumeric] = [/^\d+$/.test(x), /^\d+$/.test(y)];
+      if (xNumeric && yNumeric) {
+        return Number(x) > Number(y) ? 1 : -1;
+      }
+      if (xNumeric !== yNumeric) {
+        return xNumeric ? -1 : 1;
       }
       return x > y ? 1 : -1;
     }
@@ -979,6 +989,7 @@ function releasedEntries(changelog, version) {
   }
   const entries = [];
   let current;
+  let afterBlank = false;
   for (const line of lines.slice(start + 1)) {
     if (line.startsWith('## ')) {
       break;
@@ -986,10 +997,16 @@ function releasedEntries(changelog, version) {
     if (line.startsWith('- ')) {
       current = [line.slice(2)];
       entries.push(current);
-    } else if (current && line.trim() !== '' && !line.trim().startsWith('#')) {
+      afterBlank = false;
+    } else if (line.trim() === '') {
+      // A blank line can separate paragraphs of one entry; beachball indents the paragraphs that follow it.
+      afterBlank = true;
+    } else if (current && !line.trim().startsWith('#') && (!afterBlank || /^\s/.test(line))) {
       current.push(line);
+      afterBlank = false;
     } else {
       current = undefined;
+      afterBlank = false;
     }
   }
   return new Set(entries.map((entry) => normalizeText(entry.join(' '))));
@@ -1065,20 +1082,43 @@ function checkConsumedChanges({ version, prepCommit, repoRoot, readFile, readDir
   return results;
 }
 
+// Each link kind by exact host and path; the query and fragment are not part of the version. The announcement is for
+// Prod, so only the Prod CDN host counts.
 const ANNOUNCEMENT_LINKS = [
-  { name: 'npm', pattern: /npmjs\.com\/package\/@microsoft\/teams-js\/v\/([^/\s"'<>)]+)/, required: true },
-  { name: 'CDN', pattern: /cdn\.office\.net\/teams-js\/([^/\s"'<>)]+)\/js\//, required: true },
-  { name: 'GitHub release', pattern: /microsoft-teams-library-js\/releases\/tag\/v([^/\s"'<>)]+)/, required: false },
+  {
+    name: 'npm',
+    hosts: ['www.npmjs.com', 'npmjs.com'],
+    path: /^\/package\/@microsoft\/teams-js\/v\/([^/]+)\/?$/,
+    required: true,
+  },
+  { name: 'CDN', hosts: ['res.cdn.office.net'], path: /^\/teams-js\/([^/]+)\/js\//, required: true },
+  {
+    name: 'GitHub release',
+    hosts: ['github.com'],
+    path: /^\/OfficeDev\/microsoft-teams-library-js\/releases\/tag\/v([^/]+)\/?$/,
+    required: false,
+  },
 ];
+
+function announcementLinkVersion(url, { hosts, path: pathPattern }) {
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return undefined;
+  }
+  if (!hosts.includes(parsed.hostname.toLowerCase())) {
+    return undefined;
+  }
+  return pathPattern.exec(parsed.pathname)?.[1];
+}
 
 function checkAnnouncement({ version, text }) {
   const urls = text.match(/https?:\/\/[^\s"'<>)\]]+/g) || [];
   const results = [];
-  for (const { name, pattern, required } of ANNOUNCEMENT_LINKS) {
-    const versions = urls
-      .map((url) => url.match(pattern))
-      .filter(Boolean)
-      .map((match) => match[1]);
+  for (const link of ANNOUNCEMENT_LINKS) {
+    const { name, required } = link;
+    const versions = urls.map((url) => announcementLinkVersion(url, link)).filter(Boolean);
     if (versions.length === 0) {
       if (required) {
         results.push(result(Outcome.fail, `the announcement has no ${name} link`));
