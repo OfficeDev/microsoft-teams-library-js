@@ -27,16 +27,24 @@ reply. It never pushes, opens a PR, queues a pipeline, edits a GitHub release or
 
 ## Checks
 
-The checks are plain read-only shell (`npm view`, `curl`, `openssl`, `grep`), collected in the
-[Checks](./SKILL.md#checks) section of `SKILL.md`. They read files and public URLs and never write anything. Treat
-any lookup error as inconclusive, never as a pass.
+The deterministic checks live in [`check-release.js`](./check-release.js): Node built-ins only, reading files and
+public URLs, never writing anything. The [Checks](./SKILL.md#checks) section of `SKILL.md` lists its commands. Exit
+code 3 means a source was unreachable or answered unexpectedly, and is never success.
+
+Run its tests with:
+
+```bash
+node --test .github/skills/release-teamsjs/check-release.test.js
+```
 
 ## Folder contents
 
-| File               | Purpose                                           |
-| ------------------ | ------------------------------------------------- |
-| `SKILL.md`         | The workflow the agent follows                    |
-| `failure-modes.md` | Symptoms, causes and fixes, with a diagnosis loop |
+| File                    | Purpose                                           |
+| ----------------------- | ------------------------------------------------- |
+| `SKILL.md`              | The workflow the agent follows                    |
+| `failure-modes.md`      | Symptoms, causes and fixes, with a diagnosis loop |
+| `check-release.js`      | Read-only release checks                          |
+| `check-release.test.js` | Tests for the checks                              |
 
 ## When something goes wrong
 
