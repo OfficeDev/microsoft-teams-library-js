@@ -253,6 +253,15 @@ test('the history reports no published beta, and fails on errors or an unexpecte
 
   const noResource = fakeAdo({ ...historyRoutes, 'pipelines/7/runs/5': { resources: { pipelines: {} } } });
   await assert.rejects(readHistory({ ...historyInput, fetchImpl: noResource.fetchImpl }), /does not name its ci/);
+
+  const noResourceVersion = fakeAdo({
+    ...historyRoutes,
+    'pipelines/7/runs/5': { resources: { pipelines: { ci: { pipeline: { id: 100 } } } } },
+  });
+  await assert.rejects(
+    readHistory({ ...historyInput, fetchImpl: noResourceVersion.fetchImpl }),
+    /does not name its ci/,
+  );
 });
 
 test('every history request has a timeout signal', async () => {
@@ -261,6 +270,17 @@ test('every history request has a timeout signal', async () => {
     return { ok: false, status: 503, json: async () => ({}) };
   };
   await assert.rejects(readHistory({ ...historyInput, fetchImpl }), /answered 503/);
+});
+
+test('a publish task that succeeded with issues counts as published', async () => {
+  const { fetchImpl } = fakeAdo({
+    ...historyRoutes,
+    'builds/5/timeline': {
+      records: [{ type: 'Task', task: { name: 'EsrpRelease' }, result: 'succeededWithIssues' }],
+    },
+  });
+  const history = await readHistory({ ...historyInput, fetchImpl });
+  assert.equal(history.lastPublished.sdfRun, '20261015.1');
 });
 
 const env = {
@@ -322,6 +342,14 @@ test('main fails a scheduled run that lacks its inputs', async () => {
   const { fetchImpl } = fakeAdo(historyRoutes);
   const quiet = () => {};
   await assert.rejects(main(['--reason', 'Schedule'], env, { fetchImpl, readFile, log: quiet }), /needs --npm-feed/);
+  await assert.rejects(
+    main(['--reason', 'Schedule', '--alias', 'ci'], env, { fetchImpl, readFile, log: quiet }),
+    /needs --npm-feed/,
+  );
+  await assert.rejects(
+    main(['--reason', 'Schedule', '--npm-feed', 'NPMFeed'], env, { fetchImpl, readFile, log: quiet }),
+    /needs --npm-feed/,
+  );
   await assert.rejects(
     main(
       scheduledArgs('2026-11-11T18:00:00Z'),
