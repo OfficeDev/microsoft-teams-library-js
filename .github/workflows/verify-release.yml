@@ -120,6 +120,7 @@ jobs:
         env:
           VERSION: ${{ steps.target.outputs.version }}
         run: |
+          set -o pipefail
           status=0
           node "$CHECK" carriers --version "$VERSION" 2>&1 | tee "$RUNNER_TEMP/carriers.txt" || status=$?
           echo "$status" > "$RUNNER_TEMP/carriers.status"
@@ -136,6 +137,7 @@ jobs:
         run: |
           # npm and the CDN can lag a Prod run, so retry only while the result is inconclusive (exit 3).
           # A failed check (exit 1) or a usage error (exit 2) stops at once.
+          set -o pipefail
           status=0
           for attempt in $(seq 1 "$ATTEMPTS"); do
             echo "Attempt $attempt of $ATTEMPTS"
@@ -160,6 +162,7 @@ jobs:
           VERSION: ${{ steps.target.outputs.version }}
           EXPECT: ${{ steps.target.outputs.expect }}
         run: |
+          set -o pipefail
           status=0
           node "$CHECK" github-release --version "$VERSION" --expect "$EXPECT" 2>&1 | tee "$RUNNER_TEMP/github-release.txt" || status=$?
           echo "$status" > "$RUNNER_TEMP/github-release.status"
