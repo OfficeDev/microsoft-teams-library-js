@@ -112,7 +112,10 @@ function decide({ reason, now, beta, releasedVersion, sourceBranch, current, las
 }
 
 async function getJson(fetchImpl, url, token) {
-  const response = await fetchImpl(url, { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } });
+  const response = await fetchImpl(url, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+    signal: AbortSignal.timeout(30_000),
+  });
   if (!response.ok) {
     throw new Error(`GET ${url} answered ${response.status}`);
   }

@@ -255,6 +255,14 @@ test('the history reports no published beta, and fails on errors or an unexpecte
   await assert.rejects(readHistory({ ...historyInput, fetchImpl: noResource.fetchImpl }), /does not name its ci/);
 });
 
+test('every history request has a timeout signal', async () => {
+  const fetchImpl = async (_url, init) => {
+    assert.ok(init.signal instanceof AbortSignal);
+    return { ok: false, status: 503, json: async () => ({}) };
+  };
+  await assert.rejects(readHistory({ ...historyInput, fetchImpl }), /answered 503/);
+});
+
 const env = {
   SYSTEM_ACCESSTOKEN: 'token',
   SYSTEM_COLLECTIONURI: 'https://ado.example/org/',
