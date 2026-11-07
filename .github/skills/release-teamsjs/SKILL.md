@@ -304,7 +304,8 @@ Then:
   agree; and the bundle hashes to their SRI. If it fails, nothing was requested or published; see "The Prod
   validation stage fails" in
   [failure-modes.md](./failure-modes.md). It applies from release branches that include it, and does not replace
-  step 6.
+  step 6. Because it checks out the branch, an "SDLSources" scan of that source runs alongside it (about 6 minutes)
+  and must also pass before the Lockbox request; see "The SDL scan fails before the Prod Lockbox request".
 - Find the Lockbox request ID in the "Lockbox Approval Request" task log (it is also in the request email). Check
   the request targets the TeamsJS release service group the runbook names; a request routed to another team cannot
   be approved by the release approvers. The email's To: line lists exactly who can approve right now. **⛔ Gate 6:**

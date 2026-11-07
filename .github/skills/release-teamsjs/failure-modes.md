@@ -59,6 +59,17 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   run. For a missing script or failing YAML, update the release branch from `main`, with any fix merged there first.
   Do not skip the stage to get past it.
 
+### The SDL scan fails before the Prod Lockbox request
+
+- **Symptom:** the Prod run fails in its "SDLSources" stage, which runs alongside "Validate the pinned CI build", and
+  no Lockbox request is raised.
+- **Cause:** the validation job checks out the release branch, so the pipeline template scans that source (CredScan,
+  PoliCheck, ESLint and others) and blocks on a finding. The release branch's own CI run scans the same commit, so a
+  finding here usually means a scanner or rule changed since that run.
+- **Fix:** nothing was published and no approval was asked for. Compare with the SDL result of the release branch's
+  CI run, fix the finding through a PR into `main` and the release branch, and queue again. Do not skip or suppress
+  the scan to get past it.
+
 ### The Lockbox request cannot be approved by the release approvers
 
 - **Symptom:** approvers say the request is not theirs, or it never appears for them.
