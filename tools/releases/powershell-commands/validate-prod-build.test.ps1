@@ -34,6 +34,7 @@ try {
 
   Assert-Exit valid { param($cdn) New-Item -ItemType Directory (Join-Path $cdn '2.59.0') | Out-Null } 0
   Assert-Exit empty { param($cdn) } 1 'expected exactly one'
+  Assert-Exit file-named-version { param($cdn) Set-Content -Encoding ascii (Join-Path $cdn '2.59.0') x } 1
   Assert-Exit hidden-extra-version {
     param($cdn)
     New-Item -ItemType Directory (Join-Path $cdn '2.59.0') | Out-Null
@@ -54,6 +55,16 @@ try {
       throw
     }
   }
+
+  $missing = Join-Path $repo 'missing-CDNFeed'
+  $output = & $shell -NoProfile -File $script -CDNFeed $missing 2>&1 | Out-String
+  if ($LASTEXITCODE -ne 1 -or $output -notmatch 'artifact was not found') {
+    throw "missing-CDNFeed did not fail at the existence check: $output"
+  }
+  Write-Host 'Passed: missing-CDNFeed'
+
+  Remove-Item $check
+  Assert-Exit missing-check { param($cdn) New-Item -ItemType Directory (Join-Path $cdn '2.59.0') | Out-Null } 1 'not on this branch'
 } finally {
   $env:PATH = $oldPath
   Remove-Item $root -Recurse -Force -ErrorAction SilentlyContinue
