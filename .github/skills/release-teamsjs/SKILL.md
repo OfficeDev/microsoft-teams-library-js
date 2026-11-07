@@ -73,6 +73,7 @@ Every write is a gate:
 3. **Each PR** (prep, merge-back, downstream bumps): show title, base, head and body first.
 4. **GitHub release create or edit**, including setting it as Latest.
 5. **Each pipeline queue**: show the pipeline by role, the branch, the CI build it consumes and the version inside it.
+   A scheduled SDF run queues itself, so for it this gate moves to its Lockbox approval (see SDF beta).
 6. **Any message** (Lockbox ask, review request, announcement). Release approval never authorizes a message. Each
    message needs its own approval of the exact text and destination, and a readback after it is sent. Test and dry
    runs are never announced.
@@ -409,13 +410,15 @@ keeps, and close the release work item. Then confirm the post-release checklist 
 The SDF release pipeline queues itself every Wednesday at 18:00 UTC with the latest successful CI build of `main`.
 Its first stage applies the skip rule with `tools/releases/sdf-beta-schedule.js` and also skips a build that is a beta
 of a version already released; a skipped run ends without a Lockbox request and with a warning naming the reason. A
-run that goes ahead still needs the Lockbox approval (Prod step 8), so watch for the request on Wednesdays, then do
-steps 2, 3 and 5 for it. To publish another build or outside the schedule, queue the pipeline manually as below;
-manual runs are never skipped.
+scheduled run is queued by the pipeline, so Gate 5 does not apply to it: its Lockbox approval is the gate. Watch for
+the request on Wednesdays; before it is approved, do steps 2 and 3 for the build the run consumes, and reject the
+request if step 2 fails. After the run, do step 5. To publish another build or outside the schedule, queue the
+pipeline manually as below; manual runs are never skipped.
 
 1. Pre-flight as in step 1. Apply the skip rule; in a Prod week there is no beta.
 2. Pick the latest successful non-PR CI build of `main`; both of its stages must be green. Its `CDNFeed` folder name is
-   the beta version. Checking it before queuing is what stops an unexpected version from being published.
+   the beta version. Checking it before queuing, or for a scheduled run before its Lockbox request is approved, is what
+   stops an unexpected version from being published.
    - The beta must be of a version that has not shipped: `<x.y.z>` in `<x.y.z>-beta.N` must be greater than
      `npm view @microsoft/teams-js dist-tags.latest --registry https://registry.npmjs.org`, and the Prod CDN folder
      for `<x.y.z>` and tag `v<x.y.z>` must not exist. A proxy's `latest` can lag, so it never decides this; if the
