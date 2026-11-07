@@ -47,7 +47,7 @@ if ($CISourceCommit -ne $QueuedCommit) {
 }
 
 $versionDirectories = @(Get-ChildItem -LiteralPath $CDNFeed -Directory -Force | Where-Object { $_.Name -notlike '_*' })
-$versions = @($versionDirectories.Name)
+$versions = @($versionDirectories | ForEach-Object { $_.Name })
 if ($versions.Count -ne 1) {
   Fail "The pinned CI build's CDNFeed holds version folders [$($versions -join ', ')], expected exactly one. Queue again with the CI run from the prep PR merge."
 }

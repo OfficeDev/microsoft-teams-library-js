@@ -9,7 +9,7 @@ $package = Join-Path $repo 'packages\teams-js\package.json'
 $stub = Join-Path $root 'stub'
 $oldPath = $env:PATH
 
-function Assert-Exit([string]$name, [scriptblock]$arrange, [int]$expected) {
+function Assert-Exit([string]$name, [scriptblock]$arrange, [int]$expected, [string]$pattern = '') {
   $cdn = Join-Path $repo 'CDNFeed'
   Remove-Item $cdn -Recurse -Force -ErrorAction SilentlyContinue
   New-Item -ItemType Directory -Force $cdn | Out-Null
@@ -17,6 +17,9 @@ function Assert-Exit([string]$name, [scriptblock]$arrange, [int]$expected) {
   $output = & $shell -NoProfile -File $script -CDNFeed $cdn 2>&1 | Out-String
   if ($LASTEXITCODE -ne $expected) {
     throw "$name expected exit $expected, got $LASTEXITCODE`: $output"
+  }
+  if ($pattern -and $output -notmatch $pattern) {
+    throw "$name output did not match '$pattern': $output"
   }
   Write-Host "Passed: $name"
 }
@@ -30,6 +33,7 @@ try {
   $env:PATH = "$stub;$oldPath"
 
   Assert-Exit valid { param($cdn) New-Item -ItemType Directory (Join-Path $cdn '2.59.0') | Out-Null } 0
+  Assert-Exit empty { param($cdn) } 1 'expected exactly one'
   Assert-Exit hidden-extra-version {
     param($cdn)
     New-Item -ItemType Directory (Join-Path $cdn '2.59.0') | Out-Null
