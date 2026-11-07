@@ -1161,6 +1161,65 @@ describe('check-release', () => {
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
     });
 
+    const asScriptText = (yaml, indicator) =>
+      [
+        '              - task: PowerShell@2',
+        '                inputs:',
+        `                  script: ${indicator}`,
+        ...yaml.split('\n').map((line) => `                    ${line.trim() ? line.trimStart() : ''}`),
+      ].join('\n');
+
+    for (const indicator of ['|', '>-', '|+2']) {
+      it(`does not count tasks written inside a ${indicator} script block`, async () => {
+        writePipelineConfig(root);
+        for (const file of ['tools/releases/prod-release.yml', 'tools/releases/ddl-release.yml']) {
+          const yaml = path.join(root, file);
+          fs.writeFileSync(yaml, asScriptText(fs.readFileSync(yaml, 'utf8'), indicator));
+        }
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('FAIL tools/releases/prod-release.yml') && line.includes('EsrpRelease')),
+          lines.join('\n'),
+        );
+        assert.ok(
+          lines.some(
+            (line) => line.startsWith('FAIL tools/releases/ddl-release.yml') && line.includes('AssetRetention'),
+          ),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    it('reads a property that follows a script block in the same task', async () => {
+      writePipelineConfig(root);
+      const prod = path.join(root, 'tools/releases/prod-release.yml');
+      fs.writeFileSync(
+        prod,
+        fs
+          .readFileSync(prod, 'utf8')
+          .replace(
+            "                  productstate: 'Latest'",
+            "                  script: |\n                    echo publishing\n                  productstate: 'Latest'",
+          ),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('reads the tasks after a block scalar has ended', async () => {
+      writePipelineConfig(root);
+      const prod = path.join(root, 'tools/releases/prod-release.yml');
+      fs.writeFileSync(prod, `steps:\n  - script: |\n      echo hi\njobs:\n${fs.readFileSync(prod, 'utf8')}`);
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('reads the real tasks around a script block that mentions other values', async () => {
+      writePipelineConfig(root);
+      const prod = path.join(root, 'tools/releases/prod-release.yml');
+      const script = asScriptText("- task: EsrpRelease@10\n  enabled: false\n  productstate: 'Beta'", '|');
+      fs.writeFileSync(prod, `${script}\n${fs.readFileSync(prod, 'utf8')}\n${script}`);
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
     it('fails when the SDF publish task says tag latest', async () => {
       writePipelineConfig(root);
       const sdf = path.join(root, 'tools/releases/sdf-release.yml');

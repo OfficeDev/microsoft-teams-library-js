@@ -19,7 +19,7 @@
  *                                                  the beta is of a version newer than latest on npm and GitHub
  *   pipeline-config                                the checkout's release YAML: Prod publishes with tag latest,
  *                                                  SDF with tag beta, and each has artifact retention @6 or later;
- *                                                  commented-out and `enabled: false` tasks don't count
+ *                                                  commented-out, `enabled: false` and script-text tasks don't count
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
  *   consumed-changes --version <v> [--prep-commit <sha>]
  *                                                  no pending change file was deleted by the prep commit; one that
@@ -774,10 +774,28 @@ function yamlScalar(value) {
   return quoted ? quoted[2] : trimmed;
 }
 
-// The `- task: Name@N` items in a pipeline YAML, ignoring comments, with the
+// Blanks the contents of YAML block scalars (`script: |`, `>-` and the like), which are text, not pipeline steps.
+function withoutBlockScalars(lines) {
+  let blockIndent = -1;
+  return lines.map((line) => {
+    const indent = line.length - line.trimStart().length;
+    if (blockIndent >= 0) {
+      if (line.trim() === '' || indent > blockIndent) {
+        return '';
+      }
+      blockIndent = -1;
+    }
+    if (/:[ \t]*[|>][+-]?\d*[+-]?[ \t]*$/.test(line)) {
+      blockIndent = indent;
+    }
+    return line;
+  });
+}
+
+// The `- task: Name@N` items in a pipeline YAML, ignoring comments and block scalars, with the
 // properties the checks read. A task with `enabled: false` is not active.
 function pipelineTasks(text) {
-  const lines = text.split(/\r?\n/).map(stripYamlComment);
+  const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
   const tasks = [];
   for (let index = 0; index < lines.length; index++) {
     const header = /^([ \t]*)-[ \t]*task:[ \t]*(['"]?)([\w.-]+)@(\d+)\2[ \t]*$/.exec(lines[index]);
