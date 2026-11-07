@@ -111,9 +111,10 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   month), for a build that is a beta of a released version (its README links a Prod CDN version at least as new, which
   is normal after a Prod release until a change file bumps the version), for the same or an older CI build than the
   one behind the last published beta, and while another run of the pipeline is in progress. The warning names the
-  reason. The stage fails rather than guess when the build is not from `main`, has no beta version or predates the
-  script, or when Azure DevOps does not answer or shows no published beta in the last 50 runs. The Prod-week rule
-  follows the calendar, not the actual release date.
+  reason. The stage fails rather than guess when the build is not from `main`, has no beta version, has no released
+  version in its README, lacks its CI run ID or commit, or predates the script; when Azure DevOps does not answer
+  within 30 seconds; or when, with no other reason to skip, there is no published beta in the last 50 runs. The
+  Prod-week rule follows the calendar, not the actual release date.
 - **Fix:** a correct skip needs nothing more; re-running it gives the same answer. If a beta is needed anyway, or the
   check failed, queue the pipeline manually with the intended build (SKILL.md, SDF beta); manual runs are never
   skipped. If a run reached Lockbox in a week that should have been skipped, reject the request; nothing publishes

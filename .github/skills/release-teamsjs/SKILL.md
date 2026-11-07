@@ -409,14 +409,17 @@ keeps, and close the release work item. Then confirm the post-release checklist 
 
 The SDF release pipeline queues itself every Wednesday at 18:00 UTC with the latest successful CI build of `main`.
 Its first stage applies the skip rule with `tools/releases/sdf-beta-schedule.js` and also skips a build that is a beta
-of a version already released; a skipped run ends without a Lockbox request and with a warning naming the reason. A
+of a version already released; a skipped run ends without a Lockbox request and with a warning naming the reason. It
+learns the released version from the build's README, which names a release only once the merge-back reaches `main`, so
+a run between a Prod release and its merge-back can't see that release. The Prod-week skip normally covers that gap;
+step 2's check before the Lockbox approval covers the rest. A
 scheduled run is queued by the pipeline, so Gate 5 does not apply to it: its Lockbox approval is the gate. Watch for
 the request on Wednesdays; before it is approved, do steps 2 and 3 for the build the run consumes, and reject the
 request if step 2 fails. After the run, do step 5. To publish another build or outside the schedule, queue the
 pipeline manually as below; manual runs are never skipped.
 
 1. Pre-flight as in step 1. Apply the skip rule; in a Prod week there is no beta.
-2. Pick the latest successful non-PR CI build of `main`; both of its stages must be green. Its `CDNFeed` folder name is
+2. Pick the latest successful non-PR CI build of `main`; both of its jobs must be green. Its `CDNFeed` folder name is
    the beta version. Checking it before queuing, or for a scheduled run before its Lockbox request is approved, is what
    stops an unexpected version from being published.
    - The beta must be of a version that has not shipped: `<x.y.z>` in `<x.y.z>-beta.N` must be greater than
