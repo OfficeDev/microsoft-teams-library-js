@@ -116,7 +116,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### The run fails at "Lockbox Approval Request" because the requester is not eligible
 
-- **Symptom:** the first stage fails with `IneligibleDeploymentUserException` ("requestor is not eligible to deploy"),
+- **Symptom:** the Lockbox stage fails with `IneligibleDeploymentUserException` ("requestor is not eligible to deploy"),
   followed by `FailureInWaitForLockboxTaskException` in deployment preparation. This is the most common first-run
   failure in the release history, for Prod and DDL alike.
 - **Cause:** the person who queued the run has no active deploy eligibility; it lapses after about 30 days unused.
