@@ -705,6 +705,25 @@ describe('check-release', () => {
       assert.match(lines[0], /missing live: \[\*\.teams\.microsoft\.com\], only live: \[old\.example\.com\]/);
     });
 
+    for (const live of [
+      { validOrigins: 5 },
+      { validOrigins: {} },
+      { validOrigins: 'teams.microsoft.com' },
+      { validOrigins: ['teams.microsoft.com', 7] },
+      { other: [] },
+      [],
+    ]) {
+      it(`is inconclusive, not a crash or a diff, for a live payload of ${JSON.stringify(live)}`, async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({ [validDomainsUrl('prod')]: response(200, live) });
+        assert.equal(await runWith(['domains'], fetchImpl), ExitCode.unreachable, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('UNREACHABLE') && line.includes('validOrigins')),
+          lines.join('\n'),
+        );
+      });
+    }
+
     it('only checks the Prod list; the SDF list is never refreshed by a DDL run', async () => {
       writeRepo(root);
       assert.equal(await runWith(['domains', '--environment', 'sdf']), ExitCode.usage);

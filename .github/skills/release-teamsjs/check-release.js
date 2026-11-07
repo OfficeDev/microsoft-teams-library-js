@@ -1049,11 +1049,20 @@ async function checkValidDomains({ repoRoot, fetchImpl, readFile }) {
   if (live.problem) {
     return [live.problem];
   }
+  const origins = live.json?.validOrigins;
+  if (!Array.isArray(origins) || !origins.every((origin) => typeof origin === 'string')) {
+    return [
+      result(
+        Outcome.unreachable,
+        `valid domains: ${url} did not return a validOrigins list of strings. This is not evidence either way.`,
+      ),
+    ];
+  }
   const source = JSON.parse(readFile(path.join(repoRoot, VALID_DOMAINS_SOURCE), 'utf8'));
   if (JSON.stringify(live.json) === JSON.stringify(source)) {
     return [result(Outcome.pass, `valid domains ${url} equals ${VALID_DOMAINS_SOURCE}`)];
   }
-  const liveOrigins = new Set(live.json.validOrigins || []);
+  const liveOrigins = new Set(origins);
   const sourceOrigins = new Set(source.validOrigins || []);
   const missingLive = [...sourceOrigins].filter((origin) => !liveOrigins.has(origin));
   const extraLive = [...liveOrigins].filter((origin) => !sourceOrigins.has(origin));
