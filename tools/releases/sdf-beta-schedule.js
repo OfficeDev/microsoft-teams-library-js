@@ -78,6 +78,9 @@ function decide({ reason, now, beta, releasedVersion, sourceBranch, current, las
   if (!releasedVersion) {
     throw new Error(`The check could not find a released version in the build's README`);
   }
+  if (!current || !/^\d+$/.test(String(current.runId || '')) || !current.commit) {
+    throw new Error(`The current CI run ID and commit are required`);
+  }
   const reasons = [];
   const week = prodWeek(now);
   if (week.isProdWeek) {

@@ -110,6 +110,13 @@ test('a scheduled run skips when nothing new reached main since the last beta', 
   const olderRun = decide({ ...scheduled, current: { runId: 90, commit: 'ccc', runName: '20261001.1' } });
   assert.equal(olderRun.publish, false);
   assert.match(olderRun.reasons[0], /not newer than 20261014\.3/);
+
+  const sameRunDifferentCommit = decide({
+    ...scheduled,
+    current: { runId: 100, commit: 'ccc', runName: '20261014.4' },
+  });
+  assert.equal(sameRunDifferentCommit.publish, false);
+  assert.match(sameRunDifferentCommit.reasons[0], /not newer than 20261014\.3/);
 });
 
 test('a scheduled run skips a beta of a version that has already shipped', () => {
@@ -146,6 +153,11 @@ test('a scheduled run fails rather than guess', () => {
   assert.throws(() => decide({ ...scheduled, sourceBranch: '' }), /unknown branch/);
   assert.throws(() => decide({ ...scheduled, beta: '2.59.0' }), /not a beta version/);
   assert.throws(() => decide({ ...scheduled, beta: undefined }), /not a beta version/);
+  assert.throws(
+
+    () => decide({ ...scheduled, current: { runId: undefined, commit: undefined, runName: undefined } }),
+    /CI run ID and commit/,
+  );
   assert.throws(() => decide({ ...scheduled, lastPublished: null }), /No published beta/);
   // In a Prod week the run skips anyway, so a missing history does not fail it.
   assert.equal(decide({ ...scheduled, now: at('2026-11-04T18:00:00Z'), lastPublished: null }).publish, false);
