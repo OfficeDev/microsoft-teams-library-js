@@ -50,6 +50,10 @@ extends:
                   pipeline: microsoft-teams-library-js-pipeline
                   artifactName: CDNFeed
                   targetPath: $(Pipeline.Workspace)/microsoft-teams-library-js-pipeline/CDNFeed
+                - input: pipelineArtifact
+                  pipeline: microsoft-teams-library-js-pipeline
+                  artifactName: NPMFeed
+                  targetPath: $(Pipeline.Workspace)/microsoft-teams-library-js-pipeline/NPMFeed
             steps:
               - checkout: self
               - task: NodeTool@0
@@ -61,7 +65,13 @@ extends:
                 inputs:
                   targetType: 'filePath'
                   filePath: 'tools/releases/powershell-commands/validate-prod-build.ps1'
-                  arguments: -CDNFeed $(Pipeline.Workspace)/microsoft-teams-library-js-pipeline/CDNFeed
+                  arguments: >-
+                    -CDNFeed '$(Pipeline.Workspace)/microsoft-teams-library-js-pipeline/CDNFeed'
+                    -NPMFeed '$(Pipeline.Workspace)/microsoft-teams-library-js-pipeline/NPMFeed'
+                    -CISourceBranch '$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceBranch)'
+                    -CISourceCommit '$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceCommit)'
+                    -QueuedBranch '$(Build.SourceBranch)'
+                    -QueuedCommit '$(Build.SourceVersion)'
       - stage: Prod_Lockbox_Approval_Deployment
         displayName: Lockbox Approval/Deployment
         dependsOn:

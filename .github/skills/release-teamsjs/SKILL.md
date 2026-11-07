@@ -298,9 +298,11 @@ run is requested as you, so your Lockbox eligibility is the one used.
 Then:
 
 - The first stage, "Validate the pinned CI build", runs before any Lockbox request. It repeats the step 6 integrity
-  gate in the pipeline: the pinned build's `CDNFeed` holds one version folder, equal to the branch's
-  `packages/teams-js/package.json` version, the branch's carriers agree, and the bundle hashes to their SRI. If it
-  fails, nothing was requested or published; see "The Prod validation stage fails" in
+  gate in the pipeline: the pinned build is of the branch and commit the run was queued from, which is
+  `release/<x.y.z>`; its `CDNFeed` holds one version folder, equal to the branch's `packages/teams-js/package.json`
+  version; its `NPMFeed`, which is what reaches npm, is `@microsoft/teams-js` at that version; the branch's carriers
+  agree; and the bundle hashes to their SRI. If it fails, nothing was requested or published; see "The Prod
+  validation stage fails" in
   [failure-modes.md](./failure-modes.md). It applies from release branches that include it, and does not replace
   step 6.
 - Find the Lockbox request ID in the "Lockbox Approval Request" task log (it is also in the request email). Check
