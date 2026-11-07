@@ -335,9 +335,77 @@ test('main sets the publish output variable', async () => {
   lines.length = 0;
   const manual = await main(['--reason', 'Manual'], {}, { fetchImpl: () => assert.fail('no requests'), log });
   assert.equal(manual.publish, true);
+  assert.ok(!lines.some((line) => line.includes('uploadsummary') || line.includes('logissue')), lines.join('\n'));
   assert.equal(lines.at(-1), '##vso[task.setvariable variable=publish;isOutput=true]true');
 });
 
+test('a scheduled run writes a job summary for the Lockbox approver', async () => {
+  const crypto = require('node:crypto');
+  const bundle = 'bundle bytes';
+  const sri = `sha384-${crypto.createHash('sha384').update(bundle).digest('base64')}`;
+  const files = { ...feed, 'MicrosoftTeams.min.js': Buffer.from(bundle) };
+  const written = {};
+  const lines = [];
+  const { fetchImpl } = fakeAdo({
+    ...historyRoutes,
+    'builds?definitions=7&': { value: historyRoutes['builds?definitions=7&'].value.slice(2) },
+  });
+  await main(
+    scheduledArgs('2026-11-11T18:00:00Z'),
+    { ...env, AGENT_TEMPDIRECTORY: 'tmp' },
+    {
+      fetchImpl,
+      readFile: (file) => files[path.basename(file)],
+      writeFile: (file, text) => (written[file] = text),
+      log: (line) => lines.push(line),
+    },
+  );
+  const file = path.join('tmp', 'sdf-beta-schedule.md');
+  assert.ok(lines.includes(`##vso[task.uploadsummary]${file}`), lines.join('\n'));
+  assert.equal(lines.at(-1), '##vso[task.setvariable variable=publish;isOutput=true]true');
+  const summary = written[file];
+  for (const expected of [
+    'Publishes 2.60.0-beta.0',
+    '20261106.1',
+    'bbb',
+    'released version in its README: 2.59.0',
+    '20261015.1',
+    'https://github.com/OfficeDev/microsoft-teams-library-js/compare/aaa...bbb',
+    sri,
+  ]) {
+    assert.ok(summary.includes(expected), `summary has ${expected}:\n${summary}`);
+  }
+});
+
+test('a skipped run summary names the reasons, and a missing bundle or failed write never changes the decision', async () => {
+  const written = {};
+  const lines = [];
+  const { fetchImpl } = fakeAdo(historyRoutes);
+  const skip = await main(scheduledArgs('2026-11-04T18:00:00Z', 'aaa', '100'), env, {
+    fetchImpl,
+    readFile,
+    writeFile: (file, text) => (written[file] = text),
+    log: (line) => lines.push(line),
+  });
+  assert.equal(skip.publish, false);
+  const summary = Object.values(written)[0];
+  assert.ok(summary.includes('Skipped'), summary);
+  assert.ok(summary.includes('Prod week'), summary);
+  assert.ok(summary.includes('MicrosoftTeams.min.js was not found'), summary);
+
+  lines.length = 0;
+  const failing = await main(scheduledArgs('2026-11-04T18:00:00Z', 'aaa', '100'), env, {
+    fetchImpl,
+    readFile,
+    writeFile: () => {
+      throw new Error('disk full');
+    },
+    log: (line) => lines.push(line),
+  });
+  assert.equal(failing.publish, false);
+  assert.ok(lines.some((line) => line.includes('task.logissue type=warning') && line.includes('disk full')));
+  assert.equal(lines.at(-1), '##vso[task.setvariable variable=publish;isOutput=true]false');
+});
 test('main fails a scheduled run that lacks its inputs', async () => {
   const { fetchImpl } = fakeAdo(historyRoutes);
   const quiet = () => {};

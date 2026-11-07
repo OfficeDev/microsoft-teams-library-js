@@ -20,7 +20,9 @@
  */
 'use strict';
 
+const crypto = require('crypto');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const MAIN_BRANCH = 'refs/heads/main';
@@ -181,7 +183,55 @@ function parseArgs(argv) {
   return options;
 }
 
-async function main(argv, env, { fetchImpl = globalThis.fetch, readFile = fs.readFileSync, log = console.log } = {}) {
+const REPOSITORY_URL = 'https://github.com/OfficeDev/microsoft-teams-library-js';
+const BUNDLE_PATH = ['dist', 'umd', 'MicrosoftTeams.min.js'];
+
+/** The sha384 SRI of the build's bundle, which is the one the SDF CDN serves, or undefined if it isn't in the feed. */
+function bundleSri(readFile, npmFeed) {
+  try {
+    const bytes = readFile(path.join(npmFeed, ...BUNDLE_PATH));
+    return bytes ? `sha384-${crypto.createHash('sha384').update(bytes).digest('base64')}` : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * The job summary a Lockbox approver reads before approving a scheduled run: the decision and its reasons, the build,
+ * what changed since the last beta, and the bundle SRI to compare with SKILL.md SDF step 3. Informational only.
+ */
+function summarize({ decision, beta, releasedVersion, current, lastPublished, sri }) {
+  const lines = [
+    '## Weekly SDF beta',
+    '',
+    decision.publish
+      ? `**Publishes ${beta}** once the Lockbox request is approved. Before approving, do SKILL.md SDF steps 2 and 3.`
+      : `**Skipped**: nothing is published and no Lockbox request is raised.`,
+    '',
+    ...decision.reasons.map((reason) => `- ${reason}`),
+    ...(decision.reasons.length > 0 ? [''] : []),
+    `- CI build: ${beta} from CI run ${current.runName} (${current.runId}) at commit ${current.commit}`,
+    `- The released version in its README: ${releasedVersion || 'none found'}`,
+    lastPublished
+      ? `- Last published beta: SDF run ${lastPublished.sdfRun}, from CI run ${lastPublished.runName} at commit ${lastPublished.commit}`
+      : '- Last published beta: none in the recent history',
+  ];
+  if (lastPublished && lastPublished.commit && current.commit && lastPublished.commit !== current.commit) {
+    lines.push(`- Changes since then: ${REPOSITORY_URL}/compare/${lastPublished.commit}...${current.commit}`);
+  }
+  lines.push(
+    sri
+      ? `- Bundle SRI (dist/umd/MicrosoftTeams.min.js): ${sri}`
+      : '- Bundle SRI: MicrosoftTeams.min.js was not found in the NPMFeed artifact',
+  );
+  return `${lines.join('\n')}\n`;
+}
+
+async function main(
+  argv,
+  env,
+  { fetchImpl = globalThis.fetch, readFile = fs.readFileSync, writeFile = fs.writeFileSync, log = console.log } = {},
+) {
   const options = parseArgs(argv);
   const now = options.now ? new Date(options.now) : new Date();
   if (Number.isNaN(now.getTime())) {
@@ -189,6 +239,7 @@ async function main(argv, env, { fetchImpl = globalThis.fetch, readFile = fs.rea
   }
 
   let decision;
+  let summaryInput;
   if (options.reason !== 'Schedule') {
     decision = decide({ reason: options.reason });
   } else {
@@ -221,27 +272,58 @@ async function main(argv, env, { fetchImpl = globalThis.fetch, readFile = fs.rea
       const last = history.lastPublished;
       log(`Last published beta: run ${last.sdfRun}, from CI run ${last.runName} at ${last.commit}`);
     }
+    const current = {
+      runId: options['run-id'],
+      commit: options.commit,
+      runName: options['run-name'] || options['run-id'],
+    };
     decision = decide({
       reason: options.reason,
       now,
       beta,
       releasedVersion,
       sourceBranch: options['source-branch'],
-      current: { runId: options['run-id'], commit: options.commit, runName: options['run-name'] || options['run-id'] },
+      current,
       lastPublished: history.lastPublished,
       inFlight: history.inFlight,
     });
+    summaryInput = {
+      beta,
+      releasedVersion,
+      current,
+      lastPublished: history.lastPublished,
+      sri: bundleSri(readFile, options['npm-feed']),
+    };
   }
 
   for (const reason of decision.reasons) {
     log(decision.publish ? reason : `##vso[task.logissue type=warning]Skipping the weekly beta. ${reason}`);
   }
   log(decision.publish ? 'Publishing the beta.' : 'Not publishing: the release stage will be skipped.');
+  if (summaryInput) {
+    // The summary is for the approver; failing to write it never changes the decision.
+    try {
+      const file = path.join(env.AGENT_TEMPDIRECTORY || os.tmpdir(), 'sdf-beta-schedule.md');
+      writeFile(file, summarize({ decision, ...summaryInput }));
+      log(`##vso[task.uploadsummary]${file}`);
+    } catch (error) {
+      log(`##vso[task.logissue type=warning]Could not write the job summary: ${error?.message ?? String(error)}`);
+    }
+  }
   log(`##vso[task.setvariable variable=publish;isOutput=true]${decision.publish}`);
   return decision;
 }
 
-module.exports = { compareReleases, decide, main, parseArgs, prodWeek, readHistory, releasedVersionFromReadme };
+module.exports = {
+  compareReleases,
+  decide,
+  main,
+  parseArgs,
+  prodWeek,
+  readHistory,
+  releasedVersionFromReadme,
+  summarize,
+};
 
 if (require.main === module) {
   main(process.argv.slice(2), process.env).catch((error) => {
