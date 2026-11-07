@@ -15,7 +15,7 @@ $checkScript = '.github/skills/release-teamsjs/check-release.js'
 if (-not (Test-Path $checkScript)) {
   Fail "$checkScript is not on this branch. Update the release branch from main, then queue again."
 }
-if (-not $CDNFeed -or -not (Test-Path $CDNFeed)) {
+if (-not $CDNFeed -or -not (Test-Path -LiteralPath $CDNFeed)) {
   Fail "The CDNFeed artifact was not found at '$CDNFeed'."
 }
 if (-not $NPMFeed -or -not (Test-Path $NPMFeed)) {
@@ -46,7 +46,8 @@ if ($CISourceCommit -ne $QueuedCommit) {
   Fail "The pinned CI build is of commit $CISourceCommit but $QueuedBranch was at $QueuedCommit when this run was queued. Queue again with the CI run of $QueuedCommit."
 }
 
-$versions = @(Get-ChildItem -Path $CDNFeed -Directory -Name -Exclude _*)
+$versionDirectories = @(Get-ChildItem -LiteralPath $CDNFeed -Directory -Force | Where-Object { $_.Name -notlike '_*' })
+$versions = @($versionDirectories.Name)
 if ($versions.Count -ne 1) {
   Fail "The pinned CI build's CDNFeed holds version folders [$($versions -join ', ')], expected exactly one. Queue again with the CI run from the prep PR merge."
 }
