@@ -44,12 +44,15 @@ const CDN_HOSTS = { prod: 'res.cdn.office.net', sdf: 'res-sdf.cdn.office.net' };
 const DEFAULT_REGISTRY = 'https://registry.npmjs.org';
 const GITHUB_API = 'https://api.github.com';
 const VERSION_PATTERN = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
-const SRI_PATTERN = /^sha384-[A-Za-z0-9+/]+={0,2}$/;
+// A sha384 digest is 48 bytes: exactly 64 base64 characters, with no padding.
+const SRI_PATTERN = /^sha384-[A-Za-z0-9+/]{64}$/;
 const CARRIER_VERSION_PATTERNS = [
   /res\.cdn\.office\.net\/teams-js\/([^/\s"')]+)\/js\/MicrosoftTeams\.min\.js/g,
   /node_modules\/@microsoft\/teams-js@([^/\s"')]+)\/dist\/MicrosoftTeams\.min\.js/g,
 ];
-const INTEGRITY_PATTERN = /integrity="([^"]*)"/g;
+const SCRIPT_TAG_PATTERN = /<script\b[^>]*>/g;
+const CDN_SCRIPT_SRC_PATTERN = /\bsrc="[^"]*res\.cdn\.office\.net\/teams-js\/[^"]*\/js\/MicrosoftTeams\.min\.js"/;
+const INTEGRITY_ATTRIBUTE_PATTERN = /\bintegrity="([^"]*)"/;
 const SRI_CARRIER_FILES = ['packages/teams-js/README.md', 'apps/teams-test-app/index_cdn.html'];
 const PACKAGE_JSON_FILES = ['packages/teams-js/package.json', 'apps/teams-test-app/package.json'];
 const VALID_DOMAINS_SOURCE = 'packages/teams-js/src/artifactsForCDN/validDomains.json';
@@ -127,6 +130,14 @@ function matchAll(text, pattern) {
   return Array.from(text.matchAll(pattern), (match) => match[1]);
 }
 
+// The integrity attribute of each teams-js CDN <script> in a carrier ('' when one has none). Other elements'
+// integrity attributes are not this bundle's.
+function cdnScriptIntegrities(text) {
+  return Array.from(text.matchAll(SCRIPT_TAG_PATTERN), ([tag]) => tag)
+    .filter((tag) => CDN_SCRIPT_SRC_PATTERN.test(tag))
+    .map((tag) => INTEGRITY_ATTRIBUTE_PATTERN.exec(tag)?.[1] ?? '');
+}
+
 function distinctIntegrities(carriers) {
   return [...new Set(carriers.sriFiles.flatMap(({ integrities }) => integrities))];
 }
@@ -140,7 +151,7 @@ function readCarriers(repoRoot, readFile = fs.readFileSync) {
       return {
         file,
         versions: CARRIER_VERSION_PATTERNS.flatMap((pattern) => matchAll(text, pattern)),
-        integrities: matchAll(text, INTEGRITY_PATTERN),
+        integrities: cdnScriptIntegrities(text),
       };
     }),
   };
@@ -162,7 +173,10 @@ function checkCarriers(carriers, version) {
     );
     add(
       integrities.length > 0 && integrities.every((value) => SRI_PATTERN.test(value)),
-      integrities.length === 0 ? `${file} has no integrity attribute` : `${file} integrity attributes are sha384 SRI`,
+      integrities.length === 0
+        ? `${file} has no teams-js CDN script with an integrity attribute`
+        : `${file} teams-js CDN script integrity is ${integrities.map((value) => value || '(none)').join(', ')}, ` +
+            'expected a sha384 SRI (64 base64 characters)',
     );
   }
   const distinct = distinctIntegrities(carriers);

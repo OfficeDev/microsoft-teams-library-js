@@ -25,7 +25,10 @@ const BUNDLE = Buffer.from('console.log("teams-js bundle");');
 const BUNDLE_SRI = computeSri(BUNDLE);
 const DOMAINS = { validOrigins: ['teams.microsoft.com', '*.teams.microsoft.com'] };
 
-function writeRepo(root, { version = VERSION, integrity = BUNDLE_SRI, htmlIntegrity = integrity } = {}) {
+function writeRepo(
+  root,
+  { version = VERSION, integrity = BUNDLE_SRI, htmlIntegrity = integrity, readmeExtra = '', htmlExtra = '' } = {},
+) {
   const write = (relativePath, contents) => {
     fs.mkdirSync(path.dirname(path.join(root, relativePath)), { recursive: true });
     fs.writeFileSync(path.join(root, relativePath), contents);
@@ -36,14 +39,25 @@ function writeRepo(root, { version = VERSION, integrity = BUNDLE_SRI, htmlIntegr
     'packages/teams-js/README.md',
     [
       `[from here](https://res.cdn.office.net/teams-js/${version}/js/MicrosoftTeams.min.js)`,
-      `<script src="https://res.cdn.office.net/teams-js/${version}/js/MicrosoftTeams.min.js"`,
-      `  integrity="${integrity}"`,
+      '<script',
+      `  src="https://res.cdn.office.net/teams-js/${version}/js/MicrosoftTeams.min.js"`,
+      ...(integrity === null ? [] : [`  integrity="${integrity}"`]),
+      '  crossorigin="anonymous"',
+      '></script>',
       `<script src="node_modules/@microsoft/teams-js@${version}/dist/MicrosoftTeams.min.js"></script>`,
+      readmeExtra,
     ].join('\n'),
   );
   write(
     'apps/teams-test-app/index_cdn.html',
-    `<script src="https://res.cdn.office.net/teams-js/${version}/js/MicrosoftTeams.min.js"\n integrity="${htmlIntegrity}"`,
+    [
+      '<script',
+      `  src="https://res.cdn.office.net/teams-js/${version}/js/MicrosoftTeams.min.js"`,
+      ...(htmlIntegrity === null ? [] : [`  integrity="${htmlIntegrity}"`]),
+      '  crossorigin="anonymous"',
+      '></script>',
+      htmlExtra,
+    ].join('\n'),
   );
   write('packages/teams-js/src/artifactsForCDN/validDomains.json', JSON.stringify(DOMAINS));
 }
@@ -245,6 +259,39 @@ describe('check-release', () => {
     it('passes when every carrier names the version and shares one hash', async () => {
       writeRepo(root);
       assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.passed);
+    });
+
+    for (const [name, value] of [
+      ['a short digest', 'sha384-abc'],
+      ['a padded digest', `${BUNDLE_SRI}=`],
+      ['a 65-character digest', `${BUNDLE_SRI}A`],
+    ]) {
+      it(`fails for ${name}, which cannot be a sha384 SRI`, async () => {
+        writeRepo(root, { integrity: value });
+        assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+      });
+    }
+
+    it('fails when the CDN script has no integrity, even if another element carries the hash', async () => {
+      const elsewhere = `<link rel="preload" href="other.js" as="script" integrity="${BUNDLE_SRI}">`;
+      writeRepo(root, { integrity: null, readmeExtra: elsewhere });
+      assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL packages/teams-js/README.md') && line.includes('integrity')),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails when a second teams-js CDN script in a carrier has no integrity', async () => {
+      const second = `<script src="https://res.cdn.office.net/teams-js/${VERSION}/js/MicrosoftTeams.min.js"></script>`;
+      writeRepo(root, { readmeExtra: second });
+      assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('ignores the integrity of other scripts in a carrier', async () => {
+      const other = '<script src="https://cdn.example/other.js" integrity="sha384-' + 'B'.repeat(64) + '"></script>';
+      writeRepo(root, { htmlExtra: other });
+      assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
       assert.ok(
         lines.every((line) => line.startsWith('PASS')),
         lines.join('\n'),
