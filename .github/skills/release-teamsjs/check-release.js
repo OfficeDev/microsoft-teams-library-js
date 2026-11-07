@@ -50,9 +50,11 @@ const CARRIER_VERSION_PATTERNS = [
   /res\.cdn\.office\.net\/teams-js\/([^/\s"')]+)\/js\/MicrosoftTeams\.min\.js/g,
   /node_modules\/@microsoft\/teams-js@([^/\s"')]+)\/dist\/MicrosoftTeams\.min\.js/g,
 ];
-const SCRIPT_TAG_PATTERN = /<script\b[^>]*>/g;
-const CDN_SCRIPT_SRC_PATTERN = /\bsrc="[^"]*res\.cdn\.office\.net\/teams-js\/[^"]*\/js\/MicrosoftTeams\.min\.js"/;
-const INTEGRITY_ATTRIBUTE_PATTERN = /\bintegrity="([^"]*)"/;
+const SCRIPT_TAG_PATTERN = /<script\b[^>]*>/gi;
+// Attribute names are case-insensitive and must be whole names: `data-src` and `data-integrity` are not them.
+const CDN_SCRIPT_SRC_PATTERN =
+  /\ssrc\s*=\s*"[^"]*res\.cdn\.office\.net\/teams-js\/[^"]*\/js\/MicrosoftTeams\.min\.js"/i;
+const INTEGRITY_ATTRIBUTE_PATTERN = /\sintegrity\s*=\s*"([^"]*)"/i;
 const SRI_CARRIER_FILES = ['packages/teams-js/README.md', 'apps/teams-test-app/index_cdn.html'];
 const PACKAGE_JSON_FILES = ['packages/teams-js/package.json', 'apps/teams-test-app/package.json'];
 const VALID_DOMAINS_SOURCE = 'packages/teams-js/src/artifactsForCDN/validDomains.json';
@@ -248,8 +250,9 @@ async function readBody(response, read, label, url) {
 }
 
 // A 404 is evidence that something is absent only when the origin itself sent it, not a proxy, captive portal or
-// login page in between. The Prod and SDF CDNs (Azure Blob storage) answer a missing path with a BlobNotFound
-// error; GitHub's API and the npm registry answer with JSON.
+// login page in between. The Prod and SDF CDNs (Azure Blob storage) answer a missing path with a BlobNotFound error,
+// GitHub's API with { "message": "Not Found" }, and the npm registry with "version not found: <v>" for a version or
+// { "error": "Not found" } for a package. Other registries (a proxy) are never authoritative for absence.
 async function isOriginNotFound(response, url) {
   let text;
   try {
@@ -257,15 +260,27 @@ async function isOriginNotFound(response, url) {
   } catch {
     return false;
   }
-  if (/^https:\/\/res(-sdf)?\.cdn\.office\.net\//.test(url)) {
+  const host = new URL(url).hostname;
+  if (host === 'res.cdn.office.net' || host === 'res-sdf.cdn.office.net') {
     return /<Code>BlobNotFound<\/Code>/.test(text);
   }
+  let body;
   try {
-    JSON.parse(text);
-    return true;
+    body = JSON.parse(text);
   } catch {
     return false;
   }
+  const isObject = body !== null && typeof body === 'object';
+  if (host === 'registry.npmjs.org') {
+    return (
+      (typeof body === 'string' && /^version not found\b/i.test(body)) ||
+      (isObject && typeof body.error === 'string' && /not found/i.test(body.error))
+    );
+  }
+  if (host === 'api.github.com') {
+    return isObject && body.message === 'Not Found';
+  }
+  return isObject;
 }
 
 function notFromOrigin(label, url) {
@@ -314,7 +329,9 @@ async function checkCdnScript({ version, environment, expectedSri, fetchImpl }) 
     return unreachable;
   }
   if (response.status === 404) {
-    return result(Outcome.fail, `CDN ${url} returned HTTP 404`);
+    return (await isOriginNotFound(response, url))
+      ? result(Outcome.fail, `CDN ${url} returned HTTP 404`)
+      : notFromOrigin('CDN', url);
   }
   if (response.status !== 200) {
     return inconclusiveStatus('CDN', url, response.status);
@@ -1118,7 +1135,11 @@ async function readCdnBytes(fetchImpl, version) {
     return { problem: unreachable };
   }
   if (response.status === 404) {
-    return { problem: result(Outcome.fail, `CDN ${url} returned HTTP 404`) };
+    return {
+      problem: (await isOriginNotFound(response, url))
+        ? result(Outcome.fail, `CDN ${url} returned HTTP 404`)
+        : notFromOrigin('CDN', url),
+    };
   }
   if (response.status !== 200) {
     return { problem: inconclusiveStatus('CDN', url, response.status) };

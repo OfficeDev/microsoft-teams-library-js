@@ -107,8 +107,20 @@ const BLOB_NOT_FOUND =
   '\uFEFF<?xml version="1.0" encoding="utf-8"?><Error><Code>BlobNotFound</Code>' +
   '<Message>The specified blob does not exist.</Message></Error>';
 const HTML_404 = '<!DOCTYPE html><html><body><h1>Not Found</h1><p>Proxy error page</p></body></html>';
+// The npm registry's own 404 bodies, per the registry's published OpenAPI description: a JSON string for a missing
+// version, an { error } object for a missing package.
 function originNotFound(url) {
-  return url.includes('cdn.office.net') ? response(404, BLOB_NOT_FOUND) : response(404, { message: 'Not Found' });
+  const { hostname, pathname } = new URL(url);
+  if (hostname === 'res.cdn.office.net' || hostname === 'res-sdf.cdn.office.net') {
+    return response(404, BLOB_NOT_FOUND);
+  }
+  if (hostname === 'registry.npmjs.org') {
+    return response(
+      404,
+      pathname.split('/').length > 2 ? `"version not found: ${pathname.split('/').pop()}"` : { error: 'Not found' },
+    );
+  }
+  return response(404, { message: 'Not Found' });
 }
 
 function fakeFetch(routes) {
@@ -295,6 +307,34 @@ describe('check-release', () => {
     it('fails when a second teams-js CDN script in a carrier has no integrity', async () => {
       const second = `<script src="https://res.cdn.office.net/teams-js/${VERSION}/js/MicrosoftTeams.min.js"></script>`;
       writeRepo(root, { readmeExtra: second });
+      assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('reads an upper-case SCRIPT tag and attributes', async () => {
+      writeRepo(root);
+      const html = path.join(root, 'apps/teams-test-app/index_cdn.html');
+      fs.writeFileSync(
+        html,
+        fs
+          .readFileSync(html, 'utf8')
+          .replace('<script', '<SCRIPT')
+          .replace('  src=', '  SRC=')
+          .replace('  integrity=', '  INTEGRITY='),
+      );
+      assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('does not take data-integrity for the integrity attribute', async () => {
+      writeRepo(root);
+      const html = path.join(root, 'apps/teams-test-app/index_cdn.html');
+      fs.writeFileSync(html, fs.readFileSync(html, 'utf8').replace('  integrity=', '  data-integrity='));
+      assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('does not take data-src for the CDN script source', async () => {
+      writeRepo(root);
+      const html = path.join(root, 'apps/teams-test-app/index_cdn.html');
+      fs.writeFileSync(html, fs.readFileSync(html, 'utf8').replace('  src=', '  data-src='));
       assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
     });
 
@@ -1665,6 +1705,48 @@ describe('check-release', () => {
     }
   });
   describe('a 404 or 200 that is not from the origin', () => {
+    for (const [name, body] of [
+      ['unrelated JSON', { error: 'upstream unavailable' }],
+      ['an unrelated JSON string', '"upstream unavailable"'],
+      ['null', 'null'],
+      ['an empty object', {}],
+    ]) {
+      it(`check-version is inconclusive when the registry 404 is ${name}`, async () => {
+        const { fetchImpl } = fakeFetch({ [registryVersion(NPM, '2.60.0')]: response(404, body) });
+        assert.equal(await runWith(['check-version', '--version', '2.60.0'], fetchImpl), ExitCode.unreachable);
+      });
+
+      it(`check-version is inconclusive when the GitHub tag 404 is ${name}`, async () => {
+        const { fetchImpl } = fakeFetch({ [`${GITHUB_REPO_API}/git/ref/tags/v2.60.0`]: response(404, body) });
+        assert.equal(await runWith(['check-version', '--version', '2.60.0'], fetchImpl), ExitCode.unreachable);
+      });
+    }
+
+    it('published is inconclusive when the CDN 404 is not a blob-not-found answer', async () => {
+      writeRepo(root);
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(404, HTML_404),
+        [registryVersion(NPM, VERSION)]: response(200, { version: VERSION }),
+      });
+      assert.equal(
+        await runWith(['published', '--version', VERSION], fetchImpl),
+        ExitCode.unreachable,
+        lines.join('\n'),
+      );
+    });
+
+    it('size is inconclusive when the CDN 404 is not a blob-not-found answer', async () => {
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl(VERSION, 'prod')]: response(404, HTML_404),
+        [cdnScriptUrl('2.58.0', 'prod')]: response(200, BUNDLE),
+      });
+      assert.equal(
+        await runWith(['size', '--version', VERSION, '--previous', '2.58.0'], fetchImpl),
+        ExitCode.unreachable,
+        lines.join('\n'),
+      );
+    });
+
     it('check-version is inconclusive when the registry 404 is an HTML page', async () => {
       const { fetchImpl } = fakeFetch({
         [registryVersion(NPM, '2.60.0')]: response(404, HTML_404),
