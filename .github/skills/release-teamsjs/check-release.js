@@ -247,13 +247,43 @@ async function readBody(response, read, label, url) {
   }
 }
 
+// A 404 is evidence that something is absent only when the origin itself sent it, not a proxy, captive portal or
+// login page in between. The Prod and SDF CDNs (Azure Blob storage) answer a missing path with a BlobNotFound
+// error; GitHub's API and the npm registry answer with JSON.
+async function isOriginNotFound(response, url) {
+  let text;
+  try {
+    text = await response.text();
+  } catch {
+    return false;
+  }
+  if (/^https:\/\/res(-sdf)?\.cdn\.office\.net\//.test(url)) {
+    return /<Code>BlobNotFound<\/Code>/.test(text);
+  }
+  try {
+    JSON.parse(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function notFromOrigin(label, url) {
+  return result(
+    Outcome.unreachable,
+    `${label}: ${url} returned HTTP 404, but not the origin's own not-found answer. This is not evidence either way.`,
+  );
+}
+
 async function expectAbsent(fetchImpl, url, label, takenMessage = 'so this version is taken') {
   const { response, unreachable } = await fetchOrUnreachable(fetchImpl, url, label);
   if (unreachable) {
     return unreachable;
   }
   if (response.status === 404) {
-    return result(Outcome.pass, `${label}: ${url} does not exist yet`);
+    return (await isOriginNotFound(response, url))
+      ? result(Outcome.pass, `${label}: ${url} does not exist yet`)
+      : notFromOrigin(label, url);
   }
   if (response.status === 200) {
     return result(Outcome.fail, `${label}: ${url} already exists, ${takenMessage}`);
@@ -302,7 +332,9 @@ async function getJson(fetchImpl, url, label) {
     return { status: 'unreachable', problem: unreachable };
   }
   if (response.status === 404) {
-    return { status: 'missing', problem: result(Outcome.fail, `${label}: ${url} does not exist`) };
+    return (await isOriginNotFound(response, url))
+      ? { status: 'missing', problem: result(Outcome.fail, `${label}: ${url} does not exist`) }
+      : { status: 'unreachable', problem: notFromOrigin(label, url) };
   }
   if (response.status !== 200) {
     return { status: 'unreachable', problem: inconclusiveStatus(label, url, response.status) };
@@ -913,6 +945,7 @@ function checkPipelineConfig({ repoRoot, readFile }) {
 }
 
 const CHANGELOG_PATH = 'packages/teams-js/CHANGELOG.md';
+const CHANGELOG_TITLE = '# Change Log - @microsoft/teams-js';
 const CHANGE_DIRECTORY = 'change';
 
 function normalizeText(text) {
@@ -1061,6 +1094,14 @@ async function checkMergedBack({ version, fetchImpl }) {
   const body = await readBody(response, (r) => r.text(), 'main CHANGELOG', url);
   if (body.unreachable) {
     return [body.unreachable];
+  }
+  if (!body.value.replace(/^\uFEFF/, '').startsWith(CHANGELOG_TITLE)) {
+    return [
+      result(
+        Outcome.unreachable,
+        `main CHANGELOG ${url} returned HTTP 200 but not the CHANGELOG. This is not evidence either way.`,
+      ),
+    ];
   }
   const found = body.value.split(/\r?\n/).some((line) => line.trim() === heading);
   return [

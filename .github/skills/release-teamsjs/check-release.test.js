@@ -101,6 +101,16 @@ function unreachable(...urls) {
   return Object.fromEntries(urls.map((url) => [url, new Error('TLS alert 40')]));
 }
 
+// The 404 each origin really sends for a missing path (observed Nov 7 2026): Azure Blob XML for the CDN, JSON for
+// GitHub's API and the npm registry.
+const BLOB_NOT_FOUND =
+  '\uFEFF<?xml version="1.0" encoding="utf-8"?><Error><Code>BlobNotFound</Code>' +
+  '<Message>The specified blob does not exist.</Message></Error>';
+const HTML_404 = '<!DOCTYPE html><html><body><h1>Not Found</h1><p>Proxy error page</p></body></html>';
+function originNotFound(url) {
+  return url.includes('cdn.office.net') ? response(404, BLOB_NOT_FOUND) : response(404, { message: 'Not Found' });
+}
+
 function fakeFetch(routes) {
   const requested = [];
   const options = [];
@@ -111,7 +121,7 @@ function fakeFetch(routes) {
     if (route instanceof Error) {
       throw route;
     }
-    return route ?? response(404);
+    return route ?? originNotFound(url);
   };
   return { fetchImpl, requested, options };
 }
@@ -1470,13 +1480,13 @@ describe('check-release', () => {
 
   describe('merged-back', () => {
     it('passes when main has the version section in its CHANGELOG', async () => {
-      const changelog = `# Change Log\n\n## ${VERSION}\n\nWed\n\n## 2.58.0\n`;
+      const changelog = `# Change Log - @microsoft/teams-js\n\n## ${VERSION}\n\nWed\n\n## 2.58.0\n`;
       const { fetchImpl } = fakeFetch({ [MAIN_CHANGELOG]: response(200, Buffer.from(changelog)) });
       assert.equal(await runWith(['merged-back', '--version', VERSION], fetchImpl), ExitCode.passed);
     });
 
     it('fails when main lacks the section, even if a longer version starts the same', async () => {
-      const changelog = `# Change Log\n\n## ${VERSION}1\n\n## 2.58.0\n`;
+      const changelog = `# Change Log - @microsoft/teams-js\n\n## ${VERSION}1\n\n## 2.58.0\n`;
       const { fetchImpl } = fakeFetch({ [MAIN_CHANGELOG]: response(200, Buffer.from(changelog)) });
       assert.equal(await runWith(['merged-back', '--version', VERSION], fetchImpl), ExitCode.failed);
     });
@@ -1653,6 +1663,62 @@ describe('check-release', () => {
         assert.equal(await runWith(['merged-back', '--version', VERSION], fetchImpl), ExitCode.unreachable);
       });
     }
+  });
+  describe('a 404 or 200 that is not from the origin', () => {
+    it('check-version is inconclusive when the registry 404 is an HTML page', async () => {
+      const { fetchImpl } = fakeFetch({
+        [registryVersion(NPM, '2.60.0')]: response(404, HTML_404),
+      });
+      assert.equal(await runWith(['check-version', '--version', '2.60.0'], fetchImpl), ExitCode.unreachable);
+    });
+
+    it('check-version is inconclusive when the Prod CDN 404 is not a blob-not-found answer', async () => {
+      const { fetchImpl } = fakeFetch({
+        [cdnScriptUrl('2.60.0', 'prod')]: response(404, HTML_404),
+      });
+      assert.equal(await runWith(['check-version', '--version', '2.60.0'], fetchImpl), ExitCode.unreachable);
+      assert.ok(
+        lines.some((line) => line.startsWith('UNREACHABLE Prod CDN')),
+        lines.join('\n'),
+      );
+    });
+
+    it('check-version is inconclusive when the GitHub tag 404 is not GitHub JSON', async () => {
+      const { fetchImpl } = fakeFetch({
+        [`${GITHUB_REPO_API}/git/ref/tags/v2.60.0`]: response(404, HTML_404),
+      });
+      assert.equal(await runWith(['check-version', '--version', '2.60.0'], fetchImpl), ExitCode.unreachable);
+    });
+
+    it('check-version still passes on the real 404 answers', async () => {
+      const { fetchImpl } = fakeFetch({});
+      assert.equal(
+        await runWith(['check-version', '--version', '2.60.0'], fetchImpl),
+        ExitCode.passed,
+        lines.join('\n'),
+      );
+    });
+
+    it('github-release is inconclusive when a release 404 is an HTML page', async () => {
+      const routes = githubRoutes({ prerelease: true });
+      routes[`${GITHUB_REPO_API}/releases/tags/v${VERSION}`] = response(404, HTML_404);
+      const { fetchImpl } = fakeFetch(routes);
+      const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
+    });
+
+    it('merged-back is inconclusive when a 200 is not the CHANGELOG', async () => {
+      const { fetchImpl } = fakeFetch({ [MAIN_CHANGELOG]: response(200, HTML_404) });
+      assert.equal(await runWith(['merged-back', '--version', VERSION], fetchImpl), ExitCode.unreachable);
+    });
+
+    it('is inconclusive for a malformed GitHub ref', async () => {
+      const routes = githubRoutes({ prerelease: true });
+      routes[`${GITHUB_REPO_API}/git/ref/tags/v${VERSION}`] = response(200, { object: { type: 'commit', sha: 'zz' } });
+      const { fetchImpl } = fakeFetch(routes);
+      const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
+      assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
+    });
   });
   describe('links and usage', () => {
     it('prints the public links only', async () => {
