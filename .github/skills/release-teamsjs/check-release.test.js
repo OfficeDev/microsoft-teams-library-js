@@ -1418,6 +1418,19 @@ describe('check-release', () => {
       assert.equal(await runWith(argv), ExitCode.failed, lines.join('\n'));
     });
 
+    it('checks a GitHub release link whose owner and repository differ in case', async () => {
+      const file = path.join(root, 'announcement.txt');
+      fs.writeFileSync(
+        file,
+        [draft(VERSION), 'https://github.com/officedev/Microsoft-Teams-Library-JS/releases/tag/v2.58.0'].join('\n'),
+      );
+      const argv = ['announcement', '--version', VERSION, '--file', file];
+      assert.equal(await runWith(argv), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('GitHub release') && line.includes('2.58.0')),
+        lines.join('\n'),
+      );
+    });
     it('ignores a link on another host whose path looks like a release link', async () => {
       const file = path.join(root, 'announcement.txt');
       fs.writeFileSync(

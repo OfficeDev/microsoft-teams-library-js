@@ -1095,7 +1095,7 @@ const ANNOUNCEMENT_LINKS = [
   {
     name: 'GitHub release',
     hosts: ['github.com'],
-    path: /^\/OfficeDev\/microsoft-teams-library-js\/releases\/tag\/v([^/]+)\/?$/,
+    path: /^\/OfficeDev\/microsoft-teams-library-js\/releases\/tag\/v([^/]+)\/?$/i,
     required: false,
   },
 ];
