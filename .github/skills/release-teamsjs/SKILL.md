@@ -308,9 +308,10 @@ Then:
 - Judge the run by these tasks in the job, **not** the run status: artifact retention, "Publish to npm (tag latest) -
   ESRP release" and "Push teams-js to M365 1CDN (Prod)". The npm task name must say **tag latest**; a past typo
   published a Prod release with the `beta` tag.
-- Until [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) lands, a successful Prod run ends
-  **failed**: "View Published Package URLs" is the only red task, and because of it the template's closing "Publish
-  to ARROW" step is skipped. Any other red task is a real failure. A warning that the ESRP release task "will be
+- A Prod run from a release branch cut before [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187)
+  merged still ends **failed** at "View Published Package URLs", its only red task, and the template's closing
+  "Publish to ARROW" step is skipped. From a branch that includes the fix, that step passes and prints the run's own
+  CDN link and the npm link. Any other red task is a real failure. A warning that the ESRP release task "will be
   blocked in future releases" appears on every run and does not block today.
 
 Never re-queue a run that may have published without first checking npm and the CDN (step 9). The CDN upload does not
