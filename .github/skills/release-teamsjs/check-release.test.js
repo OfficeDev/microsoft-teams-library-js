@@ -778,6 +778,24 @@ describe('check-release', () => {
   });
 
   describe('github-release', () => {
+    for (const [name, tagName] of [
+      ['another release', 'v2.58.0'],
+      ['no tag_name', undefined],
+      ['an array tag_name', [`v${VERSION}`]],
+    ]) {
+      it(`is inconclusive when the release by tag returns ${name}`, async () => {
+        const routes = githubRoutes({ prerelease: true });
+        routes[`${GITHUB_REPO_API}/releases/tags/v${VERSION}`] = response(200, {
+          tag_name: tagName,
+          prerelease: true,
+          draft: false,
+        });
+        const { fetchImpl } = fakeFetch(routes);
+        const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
+        assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
+      });
+    }
+
     it('passes for a pre-release whose tag carries the bump', async () => {
       const { fetchImpl } = fakeFetch(githubRoutes({ prerelease: true }));
       const argv = ['github-release', '--version', VERSION, '--expect', 'prerelease'];
@@ -1024,6 +1042,20 @@ describe('check-release', () => {
       });
       assert.equal(await runWith(['beta-version', '--version', '2.60.0-beta.0'], fetchImpl), ExitCode.unreachable);
     });
+
+    for (const tagName of [['v2.59.0'], { name: 'v2.59.0' }, 2.59]) {
+      it(`does not count a GitHub Latest tag_name of ${JSON.stringify(tagName)} when npm is unreachable`, async () => {
+        const { fetchImpl } = fakeFetch({
+          ...unreachable(registryTags(NPM)),
+          [`${GITHUB_REPO_API}/releases/latest`]: response(200, { tag_name: tagName }),
+        });
+        assert.equal(
+          await runWith(['beta-version', '--version', '2.60.0-beta.0'], fetchImpl),
+          ExitCode.unreachable,
+          lines.join('\n'),
+        );
+      });
+    }
 
     it('does not crash when dist-tags has no latest', async () => {
       const { fetchImpl } = fakeFetch({

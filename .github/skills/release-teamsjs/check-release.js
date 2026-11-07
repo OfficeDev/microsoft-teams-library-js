@@ -546,7 +546,8 @@ async function checkGithubRelease({ version, expect, fetchImpl }) {
   const results = [];
   const release = await readGithubJson(fetchImpl, githubReleaseUrl(version), 'GitHub release', {
     missingMessage: `GitHub release ${tag} is missing or still a draft (drafts are not visible by tag)`,
-    ...GITHUB_SHAPES.release,
+    valid: (json) => GITHUB_SHAPES.release.valid(json) && json.tag_name === tag,
+    fields: `${GITHUB_SHAPES.release.fields} and tag_name ${tag}`,
   });
   const readLatest = () =>
     readGithubJson(fetchImpl, githubLatestReleaseUrl(), 'GitHub latest release', GITHUB_SHAPES.latest);
@@ -708,7 +709,8 @@ async function checkBetaVersion({ version, registry, fetchImpl }) {
       authoritative: source.kind === 'authoritative',
     }));
   const githubLatest = await getJson(fetchImpl, githubLatestReleaseUrl(), 'GitHub Latest release');
-  const githubTag = githubLatest.status === 'ok' ? String(githubLatest.json.tag_name || '') : '';
+  const githubTag =
+    githubLatest.status === 'ok' && typeof githubLatest.json.tag_name === 'string' ? githubLatest.json.tag_name : '';
   if (VERSION_PATTERN.test(githubTag.replace(/^v/, ''))) {
     latests.push({ name: 'GitHub Latest release', value: githubTag.replace(/^v/, ''), authoritative: true });
   }
