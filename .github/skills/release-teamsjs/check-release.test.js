@@ -1021,6 +1021,127 @@ describe('check-release', () => {
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
     });
 
+    for (const file of ['tools/releases/prod-release.yml', 'tools/releases/sdf-release.yml']) {
+      it(`fails when ${file} has its publish task commented out`, async () => {
+        writePipelineConfig(root);
+        const yaml = path.join(root, file);
+        const commented = fs
+          .readFileSync(yaml, 'utf8')
+          .split('\n')
+          .map((line) => (line.includes('AssetRetention') ? line : line.replace(/^(\s*)/, '$1# ')))
+          .join('\n');
+        fs.writeFileSync(yaml, commented);
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith(`FAIL ${file}`) && line.includes('EsrpRelease')),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    it('does not let a commented Latest hide an active double-quoted Beta product state', async () => {
+      writePipelineConfig(root);
+      const prod = path.join(root, 'tools/releases/prod-release.yml');
+      fs.writeFileSync(
+        prod,
+        fs
+          .readFileSync(prod, 'utf8')
+          .replace(
+            "                  productstate: 'Latest'",
+            '                  # productstate: \'Latest\'\n                  productstate: "Beta"',
+          ),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL tools/releases/prod-release.yml') && line.includes('Beta')),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails when the Prod product state is unquoted Beta', async () => {
+      writePipelineConfig(root);
+      const prod = path.join(root, 'tools/releases/prod-release.yml');
+      fs.writeFileSync(prod, fs.readFileSync(prod, 'utf8').replace("productstate: 'Latest'", 'productstate: Beta'));
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('accepts double-quoted, unquoted and trailing-comment product states', async () => {
+      writePipelineConfig(root);
+      const prod = path.join(root, 'tools/releases/prod-release.yml');
+      const sdf = path.join(root, 'tools/releases/sdf-release.yml');
+      fs.writeFileSync(prod, fs.readFileSync(prod, 'utf8').replace("productstate: 'Latest'", 'productstate: "Latest"'));
+      fs.writeFileSync(sdf, fs.readFileSync(sdf, 'utf8').replace("productstate: 'Beta'", 'productstate: Beta # SDF'));
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    const editProd = (from, to) => {
+      const prod = path.join(root, 'tools/releases/prod-release.yml');
+      const text = fs.readFileSync(prod, 'utf8');
+      assert.ok(text.includes(from), `fixture has ${from}`);
+      fs.writeFileSync(prod, text.replace(from, to));
+    };
+
+    it('does not let a disabled sibling task disable the task before it', async () => {
+      writePipelineConfig(root);
+      editProd(
+        '              - task: EsrpRelease@10',
+        '              - task: PowerShell@2\n                enabled: false\n              - task: EsrpRelease@10',
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('keeps a # inside a quoted display name', async () => {
+      writePipelineConfig(root);
+      editProd(
+        'displayName: Publish to npm (tag latest) - ESRP release',
+        'displayName: "Step #1: Publish to npm (tag latest)"',
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('accepts an explicitly enabled publish task', async () => {
+      writePipelineConfig(root);
+      editProd('- task: EsrpRelease@10', '- task: EsrpRelease@10\n                enabled: true');
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    for (const [name, from, to] of [
+      ['has no product state', "                  productstate: 'Latest'", ''],
+      [
+        'repeats productstate with Beta',
+        "productstate: 'Latest'",
+        "productstate: 'Latest'\n                  productstate: 'Beta'",
+      ],
+      ['names no npm tag', 'Publish to npm (tag latest) - ESRP release', 'Publish to npm - ESRP release'],
+    ]) {
+      it(`fails when the Prod publish task ${name}`, async () => {
+        writePipelineConfig(root);
+        editProd(from, to);
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+      });
+    }
+
+    for (const task of ['EsrpRelease@10', 'AssetRetention@6']) {
+      it(`fails when the Prod ${task} task is disabled`, async () => {
+        writePipelineConfig(root);
+        const prod = path.join(root, 'tools/releases/prod-release.yml');
+        fs.writeFileSync(
+          prod,
+          fs.readFileSync(prod, 'utf8').replace(`- task: ${task}`, `- task: ${task}\n                enabled: false`),
+        );
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+      });
+    }
+
+    it('fails when Prod has a second, Beta, publish task', async () => {
+      writePipelineConfig(root);
+      const prod = path.join(root, 'tools/releases/prod-release.yml');
+      const text = fs.readFileSync(prod, 'utf8');
+      const publish = text.slice(text.indexOf('              - task: EsrpRelease@10'));
+      fs.writeFileSync(prod, `${text}\n${publish.replace("'Latest'", "'Beta'")}`);
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
+
     it('fails when the SDF publish task says tag latest', async () => {
       writePipelineConfig(root);
       const sdf = path.join(root, 'tools/releases/sdf-release.yml');

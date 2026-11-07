@@ -18,7 +18,8 @@
  *   beta-version  --version <x.y.z>-beta.<n> [--registry <url>]
  *                                                  the beta is of a version newer than latest on npm and GitHub
  *   pipeline-config                                the checkout's release YAML: Prod publishes with tag latest,
- *                                                  SDF with tag beta, and each has artifact retention @6 or later
+ *                                                  SDF with tag beta, and each has artifact retention @6 or later;
+ *                                                  commented-out and `enabled: false` tasks don't count
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
  *   consumed-changes --version <v> [--prep-commit <sha>]
  *                                                  no pending change file was deleted by the prep commit; one that
@@ -749,14 +750,78 @@ const PIPELINE_FILES = [
 ];
 const MINIMUM_ASSET_RETENTION_VERSION = 6;
 
+// Drops a YAML comment: a # at the line start or after whitespace, outside a quoted scalar.
+function stripYamlComment(line) {
+  let quote = null;
+  for (let index = 0; index < line.length; index++) {
+    const character = line[index];
+    if (quote) {
+      if (character === quote) {
+        quote = null;
+      }
+    } else if ((character === "'" || character === '"') && (index === 0 || /[\s:\-[{,]/.test(line[index - 1]))) {
+      quote = character;
+    } else if (character === '#' && (index === 0 || /\s/.test(line[index - 1]))) {
+      return line.slice(0, index);
+    }
+  }
+  return line;
+}
+
+function yamlScalar(value) {
+  const trimmed = value.trim();
+  const quoted = /^(['"])(.*)\1$/.exec(trimmed);
+  return quoted ? quoted[2] : trimmed;
+}
+
+// The `- task: Name@N` items in a pipeline YAML, ignoring comments, with the
+// properties the checks read. A task with `enabled: false` is not active.
+function pipelineTasks(text) {
+  const lines = text.split(/\r?\n/).map(stripYamlComment);
+  const tasks = [];
+  for (let index = 0; index < lines.length; index++) {
+    const header = /^([ \t]*)-[ \t]*task:[ \t]*(['"]?)([\w.-]+)@(\d+)\2[ \t]*$/.exec(lines[index]);
+    if (!header) {
+      continue;
+    }
+    const indent = header[1].length;
+    const task = { name: header[3], version: Number(header[4]), enabled: true, displayName: '', productState: [] };
+    for (let next = index + 1; next < lines.length; next++) {
+      const line = lines[next];
+      if (line.trim() === '') {
+        continue;
+      }
+      if (line.length - line.trimStart().length <= indent) {
+        break;
+      }
+      const property = /^[ \t]*([\w.]+):[ \t]*(.*)$/.exec(line);
+      if (!property) {
+        continue;
+      }
+      const [, key, value] = property;
+      if (key === 'enabled' && /^false$/i.test(yamlScalar(value))) {
+        task.enabled = false;
+      } else if (key === 'displayName') {
+        task.displayName = yamlScalar(value);
+      } else if (key.toLowerCase() === 'productstate') {
+        task.productState.push(yamlScalar(value));
+      }
+    }
+    tasks.push(task);
+  }
+  return tasks;
+}
+
 function checkPipelineConfig({ repoRoot, readFile }) {
   const results = [];
   for (const { file, npmTag, productState } of PIPELINE_FILES) {
-    const text = readFile(path.join(repoRoot, file), 'utf8');
-    const retention = matchAll(text, /^[ \t]*-[ \t]*task:[ \t]*AssetRetention@(\d+)/gm).map(Number);
+    const tasks = pipelineTasks(readFile(path.join(repoRoot, file), 'utf8')).filter((task) => task.enabled);
+    const retention = tasks.filter((task) => task.name === 'AssetRetention').map((task) => task.version);
     const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
     if (retention.length === 0) {
-      results.push(result(Outcome.fail, `${file} has no AssetRetention task, so artifact retention is not configured`));
+      results.push(
+        result(Outcome.fail, `${file} has no enabled AssetRetention task, so artifact retention is not configured`),
+      );
     } else {
       results.push(
         result(
@@ -768,10 +833,15 @@ function checkPipelineConfig({ repoRoot, readFile }) {
       );
     }
     if (npmTag) {
-      const tags = matchAll(text, /Publish to npm \(tag (\w+)\)/g);
-      const states = matchAll(text, /productstate:\s*'(\w+)'/g);
-      const tagOk = tags.length > 0 && tags.every((found) => found === npmTag);
-      const stateOk = states.length > 0 && states.every((found) => found === productState);
+      const publish = tasks.filter((task) => task.name === 'EsrpRelease');
+      if (publish.length === 0) {
+        results.push(result(Outcome.fail, `${file} has no enabled EsrpRelease task, so nothing publishes to npm`));
+        continue;
+      }
+      const tags = publish.map((task) => /Publish to npm \(tag (\w+)\)/.exec(task.displayName)?.[1] ?? '(none)');
+      const states = publish.flatMap((task) => (task.productState.length > 0 ? task.productState : ['(none)']));
+      const tagOk = tags.every((found) => found === npmTag);
+      const stateOk = states.every((found) => found === productState);
       results.push(
         result(tagOk ? Outcome.pass : Outcome.fail, `${file} npm publish says tag ${tags.join(', ') || '(none)'}`),
         result(
