@@ -1272,7 +1272,11 @@ describe('check-release', () => {
           ['@microsoft-teams-js-released.json', `Released ${VERSION}`, 'none'],
         ],
       });
-      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+      assert.equal(
+        await runWith(['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234']),
+        ExitCode.passed,
+        lines.join('\n'),
+      );
     });
 
     it('fails for each change file the release already consumed, naming it', async () => {
@@ -1301,12 +1305,19 @@ describe('check-release', () => {
         changelog: RELEASED_CHANGELOG,
         changeFiles: [['@microsoft-teams-js-old.json', 'Added `stageView.self.isCloseResultSupported`.']],
       });
-      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+      assert.equal(
+        await runWith(['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234']),
+        ExitCode.passed,
+        lines.join('\n'),
+      );
     });
 
     it('fails when the CHANGELOG has no section for the version', async () => {
       writeCleanup(root, { changelog: RELEASED_CHANGELOG, changeFiles: [] });
-      assert.equal(await runWith(['consumed-changes', '--version', '2.60.0']), ExitCode.failed);
+      assert.equal(
+        await runWith(['consumed-changes', '--version', '2.60.0', '--prep-commit', 'abc1234']),
+        ExitCode.failed,
+      );
     });
 
     it('matches a comment whose whitespace or line breaks differ from the CHANGELOG entry', async () => {
@@ -1318,7 +1329,11 @@ describe('check-release', () => {
         changelog: wrapped,
         changeFiles: [['@microsoft-teams-js-clipboard.json', 'Added  `clipboard.read`\npermission APIs.']],
       });
-      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.unreachable, lines.join('\n'));
+      assert.equal(
+        await runWith(['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234']),
+        ExitCode.unreachable,
+        lines.join('\n'),
+      );
       assert.ok(
         lines.some((line) => line.startsWith('UNREACHABLE change/@microsoft-teams-js-clipboard.json')),
         lines.join('\n'),
@@ -1353,16 +1368,24 @@ describe('check-release', () => {
       );
     });
 
-    it('without --prep-commit, a comment match is inconclusive, not a delete instruction', async () => {
+    it('requires --prep-commit, since without it a re-added change file passes', async () => {
       writeCleanup(root, {
         changelog: RELEASED_CHANGELOG,
-        changeFiles: [['@microsoft-teams-js-clipboard.json', 'Added `clipboard.read` permission APIs.']],
+        changeFiles: [['@microsoft-teams-js-clipboard.json', 'Added clipboard read APIs (edited).']],
       });
-      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.unreachable, lines.join('\n'));
-      assert.ok(
-        lines.some((line) => line.includes('@microsoft-teams-js-clipboard.json') && line.includes('--prep-commit')),
-        lines.join('\n'),
-      );
+      listDeletedChangeFiles = () => ['@microsoft-teams-js-clipboard.json'];
+      assert.equal(await runWith(['consumed-changes', '--version', VERSION]), ExitCode.usage, lines.join('\n'));
+      assert.match(lines.join('\n'), /--prep-commit <prep PR squash commit> is required/);
+    });
+
+    it('rejects a --prep-commit that is not a commit SHA', async () => {
+      writeCleanup(root, { changelog: RELEASED_CHANGELOG, changeFiles: [] });
+      for (const value of ['HEAD', 'abc12', 'main~1', 'g'.repeat(40)]) {
+        lines = [];
+        const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', value];
+        assert.equal(await runWith(argv), ExitCode.usage, value);
+        assert.match(lines.join('\n'), /must be a commit SHA/, value);
+      }
     });
   });
 
@@ -1454,7 +1477,7 @@ describe('check-release', () => {
         assert.ok(text.includes(command), command);
       }
       assert.ok(text.includes('check-version --version [--registry]'), text);
-      assert.ok(text.includes('consumed-changes --version [--prep-commit]'), text);
+      assert.ok(text.includes('consumed-changes --version --prep-commit:'), text);
     });
 
     it('gives every request a timeout and reports a timeout as inconclusive', async () => {
@@ -1504,7 +1527,7 @@ describe('check-release', () => {
         ['carriers', '--version', VERSION],
         ['domains'],
         ['pipeline-config'],
-        ['consumed-changes', '--version', VERSION],
+        ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'],
         ['published', '--version', VERSION],
       ]) {
         lines = [];

@@ -21,7 +21,7 @@
  *                                                  SDF with tag beta, and each has artifact retention @6 or later;
  *                                                  commented-out, `enabled: false` and script-text tasks don't count
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
- *   consumed-changes --version <v> [--prep-commit <sha>]
+ *   consumed-changes --version <v> --prep-commit <sha>
  *                                                  no pending change file was deleted by the prep commit; one that
  *                                                  only repeats an entry released in <v> is inconclusive
  *                                                  (run on the merge-back branch after merging main)
@@ -922,7 +922,7 @@ function checkConsumedChanges({ version, prepCommit, repoRoot, readFile, readDir
   if (!entries) {
     return [result(Outcome.fail, `${CHANGELOG_PATH} has no "## ${version}" section; run this on the cleanup branch`)];
   }
-  const deletedByPrep = new Set(prepCommit ? listDeletedChangeFiles(prepCommit, repoRoot) : []);
+  const deletedByPrep = new Set(listDeletedChangeFiles(prepCommit, repoRoot));
   const changeFiles = readDirectory(path.join(repoRoot, CHANGE_DIRECTORY)).filter((name) => name.endsWith('.json'));
   const results = [];
   for (const name of changeFiles) {
@@ -941,7 +941,7 @@ function checkConsumedChanges({ version, prepCommit, repoRoot, readFile, readDir
         result(
           Outcome.unreachable,
           `${CHANGE_DIRECTORY}/${name} has the same comment as an entry released in ${version}, but ` +
-            (prepCommit ? `the prep commit ${prepCommit} did not delete it` : 'no --prep-commit was given') +
+            `the prep commit ${prepCommit} did not delete it` +
             '; keep it if it is a new change, delete it if it is the released change re-added under another name',
         ),
       );
@@ -952,7 +952,7 @@ function checkConsumedChanges({ version, prepCommit, repoRoot, readFile, readDir
       result(
         Outcome.pass,
         `none of the ${changeFiles.length} pending change files repeats an entry released in ${version}` +
-          (prepCommit ? ` or was consumed by ${prepCommit}` : ''),
+          ` or was consumed by ${prepCommit}`,
       ),
     ];
   }
@@ -1292,12 +1292,17 @@ const commands = {
   },
   'consumed-changes': {
     flags: ['version', 'prep-commit'],
-    optional: ['prep-commit'],
     checkout: true,
     summary: 'on the merge-back branch, no pending change file was already consumed by the release',
     run: async (options, deps) => {
       const prepCommit = options['prep-commit'];
-      if (prepCommit !== undefined && !/^[0-9a-f]{7,40}$/i.test(prepCommit)) {
+      if (prepCommit === undefined) {
+        throw new UsageError(
+          '--prep-commit <prep PR squash commit> is required: without it a consumed change file re-added with an ' +
+            'edited comment passes',
+        );
+      }
+      if (!/^[0-9a-f]{7,40}$/i.test(prepCommit)) {
         throw new UsageError('--prep-commit must be a commit SHA (7-40 hex characters)');
       }
       return checkConsumedChanges({ version: requireVersion(options), prepCommit, ...deps });
