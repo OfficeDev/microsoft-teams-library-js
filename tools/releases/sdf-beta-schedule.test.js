@@ -154,10 +154,12 @@ test('a scheduled run fails rather than guess', () => {
   assert.throws(() => decide({ ...scheduled, beta: '2.59.0' }), /not a beta version/);
   assert.throws(() => decide({ ...scheduled, beta: undefined }), /not a beta version/);
   assert.throws(
-
     () => decide({ ...scheduled, current: { runId: undefined, commit: undefined, runName: undefined } }),
     /CI run ID and commit/,
   );
+  assert.throws(() => decide({ ...scheduled, beta: '2.60.0-beta.0-extra' }), /not a beta version/);
+  assert.throws(() => decide({ ...scheduled, beta: '02.60.0-beta.0' }), /not a beta version/);
+  assert.throws(() => decide({ ...scheduled, beta: '2.60.0-beta.00' }), /not a beta version/);
   assert.throws(() => decide({ ...scheduled, lastPublished: null }), /No published beta/);
   // In a Prod week the run skips anyway, so a missing history does not fail it.
   assert.equal(decide({ ...scheduled, now: at('2026-11-04T18:00:00Z'), lastPublished: null }).publish, false);

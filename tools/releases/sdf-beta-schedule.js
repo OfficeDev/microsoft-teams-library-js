@@ -24,7 +24,8 @@ const fs = require('fs');
 const path = require('path');
 
 const MAIN_BRANCH = 'refs/heads/main';
-const BETA_VERSION = /^(\d+\.\d+\.\d+)-beta\.\d+$/;
+const BETA_VERSION =
+  /^((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))-beta\.(?:0|[1-9]\d*)$/;
 const PROD_CDN_SCRIPT = /res\.cdn\.office\.net\/teams-js\/(\d+\.\d+\.\d+)\/js\/MicrosoftTeams\.min\.js/g;
 const NPM_PUBLISH_TASK = 'EsrpRelease';
 const SUCCEEDED = ['succeeded', 'succeededWithIssues'];
