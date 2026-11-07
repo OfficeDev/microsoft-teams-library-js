@@ -138,6 +138,19 @@ function cdnScriptIntegrities(text) {
     .map((tag) => INTEGRITY_ATTRIBUTE_PATTERN.exec(tag)?.[1] ?? '');
 }
 
+class LocalFileError extends Error {}
+
+// Reads a JSON file from the checkout, tolerating a UTF-8 BOM as beachball and npm do. A file that is not JSON is
+// a FAIL naming it, not a crash.
+function readLocalJson(readFile, file, relativePath) {
+  const text = readFile(file, 'utf8').replace(/^\uFEFF/, '');
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    throw new LocalFileError(`${relativePath} is not valid JSON (${error.message})`);
+  }
+}
+
 function distinctIntegrities(carriers) {
   return [...new Set(carriers.sriFiles.flatMap(({ integrities }) => integrities))];
 }
@@ -145,7 +158,10 @@ function distinctIntegrities(carriers) {
 function readCarriers(repoRoot, readFile = fs.readFileSync) {
   const read = (relativePath) => readFile(path.join(repoRoot, relativePath), 'utf8');
   return {
-    packageVersions: PACKAGE_JSON_FILES.map((file) => ({ file, version: JSON.parse(read(file)).version })),
+    packageVersions: PACKAGE_JSON_FILES.map((file) => {
+      const json = readLocalJson(readFile, path.join(repoRoot, file), file);
+      return { file, version: json && typeof json === 'object' ? json.version : undefined };
+    }),
     sriFiles: SRI_CARRIER_FILES.map((file) => {
       const text = read(file);
       return {
@@ -202,7 +218,9 @@ async function fetchOrUnreachable(fetchImpl, url, label) {
     return { response: await fetchImpl(url, { redirect: 'follow', signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) }) };
   } catch (error) {
     const reason =
-      error && error.name === 'TimeoutError' ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s` : error.message;
+      error && error.name === 'TimeoutError'
+        ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
+        : error?.message ?? String(error);
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -217,7 +235,9 @@ async function readBody(response, read, label, url) {
     return { value: await read(response) };
   } catch (error) {
     const reason =
-      error && error.name === 'TimeoutError' ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s` : error.message;
+      error && error.name === 'TimeoutError'
+        ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
+        : error?.message ?? String(error);
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -337,10 +357,14 @@ function unpkgPackageJsonUrl(spec) {
 }
 
 function pickTags(tags, tagNames) {
-  const picked = {};
+  const picked = Object.create(null);
   if (tags && typeof tags === 'object') {
     for (const tagName of tagNames) {
-      if (typeof tags[tagName] === 'string' && VERSION_PATTERN.test(tags[tagName])) {
+      if (
+        Object.prototype.hasOwnProperty.call(tags, tagName) &&
+        typeof tags[tagName] === 'string' &&
+        VERSION_PATTERN.test(tags[tagName])
+      ) {
         picked[tagName] = tags[tagName];
       }
     }
@@ -360,7 +384,7 @@ async function observeNpm({ version, tagNames, registry, fetchImpl }) {
     registries.push({ url: registry, kind: 'proxy', name: registry });
   }
   for (const { url, kind, name } of registries) {
-    const source = { name, kind, hasVersion: undefined, tags: {}, problems: [] };
+    const source = { name, kind, hasVersion: undefined, tags: Object.create(null), problems: [] };
     if (version) {
       const answer = await getJson(fetchImpl, npmVersionUrl(url, version), name);
       if (answer.status === 'ok') {
@@ -389,7 +413,7 @@ async function observeNpm({ version, tagNames, registry, fetchImpl }) {
     sources.push(source);
   }
 
-  const jsdelivr = { name: 'jsDelivr', kind: 'mirror', hasVersion: undefined, tags: {}, problems: [] };
+  const jsdelivr = { name: 'jsDelivr', kind: 'mirror', hasVersion: undefined, tags: Object.create(null), problems: [] };
   const listing = await getJson(fetchImpl, JSDELIVR_PACKAGE_URL, 'jsDelivr');
   if (listing.status === 'ok') {
     const versions = Array.isArray(listing.json.versions) ? listing.json.versions : [];
@@ -400,7 +424,7 @@ async function observeNpm({ version, tagNames, registry, fetchImpl }) {
   }
   sources.push(jsdelivr);
 
-  const unpkg = { name: 'unpkg', kind: 'mirror', hasVersion: undefined, tags: {}, problems: [] };
+  const unpkg = { name: 'unpkg', kind: 'mirror', hasVersion: undefined, tags: Object.create(null), problems: [] };
   if (version) {
     const answer = await getJson(fetchImpl, unpkgPackageJsonUrl(version), 'unpkg');
     if (answer.status === 'ok' && answer.json.version === version) {
@@ -942,7 +966,23 @@ function checkConsumedChanges({ version, prepCommit, repoRoot, readFile, readDir
   const changeFiles = readDirectory(path.join(repoRoot, CHANGE_DIRECTORY)).filter((name) => name.endsWith('.json'));
   const results = [];
   for (const name of changeFiles) {
-    const changeFile = JSON.parse(readFile(path.join(repoRoot, CHANGE_DIRECTORY, name), 'utf8'));
+    const relativePath = `${CHANGE_DIRECTORY}/${name}`;
+    let changeFile;
+    try {
+      changeFile = readLocalJson(readFile, path.join(repoRoot, CHANGE_DIRECTORY, name), relativePath);
+    } catch (error) {
+      if (!(error instanceof LocalFileError)) {
+        throw error;
+      }
+      results.push(result(Outcome.fail, `${error.message}; beachball cannot read it either`));
+      continue;
+    }
+    if (!changeFile || typeof changeFile !== 'object' || typeof changeFile.comment !== 'string') {
+      results.push(
+        result(Outcome.fail, `${relativePath} is not a beachball change file (no string comment); fix or delete it`),
+      );
+      continue;
+    }
     if (deletedByPrep.has(name)) {
       results.push(
         result(
@@ -1092,7 +1132,10 @@ async function checkValidDomains({ repoRoot, fetchImpl, readFile }) {
       ),
     ];
   }
-  const source = JSON.parse(readFile(path.join(repoRoot, VALID_DOMAINS_SOURCE), 'utf8'));
+  const source = readLocalJson(readFile, path.join(repoRoot, VALID_DOMAINS_SOURCE), VALID_DOMAINS_SOURCE);
+  if (!source || !Array.isArray(source.validOrigins) || !source.validOrigins.every((o) => typeof o === 'string')) {
+    return [result(Outcome.fail, `${VALID_DOMAINS_SOURCE} has no validOrigins list of strings`)];
+  }
   if (JSON.stringify(live.json) === JSON.stringify(source)) {
     return [result(Outcome.pass, `valid domains ${url} equals ${VALID_DOMAINS_SOURCE}`)];
   }
@@ -1111,7 +1154,7 @@ async function checkValidDomains({ repoRoot, fetchImpl, readFile }) {
 
 function parseArgs(argv) {
   const [command, ...rest] = argv;
-  const options = {};
+  const options = Object.create(null);
   for (let index = 0; index < rest.length; index += 2) {
     const flag = rest[index];
     const value = rest[index + 1];
@@ -1413,6 +1456,10 @@ async function run(
     if (error instanceof UsageError) {
       log(`USAGE ${error.message}`);
       return ExitCode.usage;
+    }
+    if (error instanceof LocalFileError) {
+      log(`FAIL ${error.message}`);
+      return ExitCode.failed;
     }
     if (error && error.code === 'ENOENT' && error.path) {
       log(

@@ -1572,6 +1572,88 @@ describe('check-release', () => {
     });
   });
 
+  describe('malformed input never crashes', () => {
+    const NPM_TAGS = 'https://registry.npmjs.org/-/package/@microsoft%2fteams-js/dist-tags';
+
+    for (const tag of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) {
+      it(`--dist-tag ${tag} is a clean result, not a crash`, async () => {
+        writeRepo(root);
+        const { fetchImpl } = fakeFetch({
+          [cdnScriptUrl(VERSION, 'prod')]: response(200, BUNDLE),
+          [`https://registry.npmjs.org/@microsoft%2fteams-js/${VERSION}`]: response(200, { version: VERSION }),
+          [NPM_TAGS]: response(200, { latest: VERSION }),
+        });
+        const code = await runWith(['published', '--version', VERSION, '--dist-tag', tag], fetchImpl);
+        assert.ok([ExitCode.failed, ExitCode.unreachable].includes(code), `${code}\n${lines.join('\n')}`);
+      });
+    }
+
+    it('rejects --__proto__ as an unknown flag instead of dropping it', async () => {
+      assert.equal(await runWith(['links', '--version', VERSION, '--__proto__', 'x']), ExitCode.usage);
+    });
+
+    for (const [name, source, message] of [
+      ['not JSON', 'not json', /not valid JSON/],
+      ['validOrigins an object', '{"validOrigins": {}}', /validOrigins/],
+      ['null', 'null', /validOrigins/],
+    ]) {
+      it(`fails cleanly when the source valid-domains file is ${name}`, async () => {
+        writeRepo(root);
+        fs.writeFileSync(path.join(root, 'packages/teams-js/src/artifactsForCDN/validDomains.json'), source);
+        const { fetchImpl } = fakeFetch({ [validDomainsUrl('prod')]: response(200, DOMAINS) });
+        assert.equal(await runWith(['domains'], fetchImpl), ExitCode.failed, lines.join('\n'));
+        assert.match(lines.join('\n'), message);
+      });
+    }
+
+    it('reads a change file with a UTF-8 BOM', async () => {
+      writeCleanup(root, { changelog: RELEASED_CHANGELOG, changeFiles: [] });
+      const body = { type: 'minor', comment: 'Added `clipboard.read` permission APIs.' };
+      fs.writeFileSync(path.join(root, 'change', 'bom.json'), `\ufeff${JSON.stringify(body)}`);
+      const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'];
+      assert.equal(await runWith(argv), ExitCode.unreachable, lines.join('\n'));
+    });
+
+    for (const [name, text] of [
+      ['malformed JSON', '{oops'],
+      ['null', 'null'],
+      ['an object with no comment', '{}'],
+      ['a non-string comment', '{"comment": 5}'],
+    ]) {
+      it(`fails naming a change file that is ${name}`, async () => {
+        writeCleanup(root, { changelog: RELEASED_CHANGELOG, changeFiles: [] });
+        fs.writeFileSync(path.join(root, 'change', 'bad.json'), text);
+        const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'];
+        assert.equal(await runWith(argv), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('FAIL') && line.includes('bad.json')),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    it('reads a package.json with a UTF-8 BOM', async () => {
+      writeRepo(root);
+      const file = path.join(root, 'packages/teams-js/package.json');
+      fs.writeFileSync(file, `\ufeff${fs.readFileSync(file, 'utf8')}`);
+      assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('fails naming a package.json that is not JSON', async () => {
+      writeRepo(root);
+      fs.writeFileSync(path.join(root, 'packages/teams-js/package.json'), 'null');
+      assert.equal(await runWith(['carriers', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+    });
+
+    for (const thrown of [null, undefined, 'boom', 42]) {
+      it(`reports a fetch that throws ${String(thrown)} as inconclusive`, async () => {
+        const fetchImpl = async () => {
+          throw thrown;
+        };
+        assert.equal(await runWith(['merged-back', '--version', VERSION], fetchImpl), ExitCode.unreachable);
+      });
+    }
+  });
   describe('links and usage', () => {
     it('prints the public links only', async () => {
       assert.equal(await runWith(['links', '--version', VERSION]), ExitCode.passed);
