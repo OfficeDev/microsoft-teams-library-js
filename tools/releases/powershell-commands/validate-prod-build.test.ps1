@@ -36,6 +36,20 @@ try {
     $extra = New-Item -ItemType Directory (Join-Path $cdn '9.9.9')
     $extra.Attributes = $extra.Attributes -bor [IO.FileAttributes]::Hidden
   } 1
+  try {
+    Assert-Exit symlink-version {
+      param($cdn)
+      $target = Join-Path (Split-Path $cdn) 'outside'
+      New-Item -ItemType Directory -Force $target | Out-Null
+      New-Item -ItemType SymbolicLink -Path (Join-Path $cdn '2.59.0') -Target $target | Out-Null
+    } 1
+  } catch {
+    if ($_.Exception.Message -match 'privilege required') {
+      Write-Host 'Skipped: symlink-version (symbolic links require elevation)'
+    } else {
+      throw
+    }
+  }
 } finally {
   $env:PATH = $oldPath
   Remove-Item $root -Recurse -Force -ErrorAction SilentlyContinue

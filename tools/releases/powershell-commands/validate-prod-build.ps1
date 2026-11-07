@@ -51,6 +51,9 @@ $versions = @($versionDirectories.Name)
 if ($versions.Count -ne 1) {
   Fail "The pinned CI build's CDNFeed holds version folders [$($versions -join ', ')], expected exactly one. Queue again with the CI run from the prep PR merge."
 }
+if (($versionDirectories[0].Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+  Fail "The pinned CI build's version folder is a link, expected an artifact directory."
+}
 $version = $versions[0]
 
 if ($QueuedBranch -cne "refs/heads/release/$version") {
