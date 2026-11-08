@@ -1029,7 +1029,27 @@ function checkConsumedChanges({ version, prepCommit, repoRoot, readFile, readDir
   if (!entries) {
     return [result(Outcome.fail, `${CHANGELOG_PATH} has no "## ${version}" section; run this on the cleanup branch`)];
   }
-  const deletedByPrep = new Set(listDeletedChangeFiles(prepCommit, repoRoot));
+  let deleted;
+  try {
+    deleted = listDeletedChangeFiles(prepCommit, repoRoot);
+  } catch (error) {
+    const detail = String(error?.stderr || error?.message || error)
+      .trim()
+      .split(/\r?\n/)[0];
+    return [result(Outcome.unreachable, `cannot read the prep commit ${prepCommit} (${detail}); check the SHA`)];
+  }
+  // beachball's bump deletes every change file it consumes, so a prep commit that deleted none is the wrong commit:
+  // a typo that names another commit, or a merge commit, whose combined diff lists no deletions.
+  if (deleted.length === 0) {
+    return [
+      result(
+        Outcome.unreachable,
+        `the prep commit ${prepCommit} deleted no change files, but a prep commit always does; pass the prep PR's ` +
+          'squash commit, not a merge commit',
+      ),
+    ];
+  }
+  const deletedByPrep = new Set(deleted);
   const changeFiles = readDirectory(path.join(repoRoot, CHANGE_DIRECTORY)).filter((name) => name.endsWith('.json'));
   const results = [];
   for (const name of changeFiles) {

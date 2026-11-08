@@ -262,7 +262,7 @@ describe('check-release', () => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'release-teamsjs-'));
     lines = [];
     env = {};
-    listDeletedChangeFiles = () => [];
+    listDeletedChangeFiles = () => ['@microsoft-teams-js-shipped.json'];
   });
 
   afterEach(() => {
@@ -1591,6 +1591,67 @@ describe('check-release', () => {
         assert.equal(await runWith(argv), ExitCode.usage, value);
         assert.match(lines.join('\n'), /must be a commit SHA/, value);
       }
+    });
+
+    it('is inconclusive when the prep commit deleted no change files, since a real prep commit always does', async () => {
+      writeCleanup(root, {
+        changelog: RELEASED_CHANGELOG,
+        changeFiles: [['@microsoft-teams-js-clipboard.json', 'Added clipboard read APIs (edited).']],
+      });
+      listDeletedChangeFiles = () => [];
+      const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'];
+      assert.equal(await runWith(argv), ExitCode.unreachable, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('UNREACHABLE') && line.includes('abc1234') && line.includes('deleted no')),
+        lines.join('\n'),
+      );
+      assert.ok(!lines.some((line) => line.startsWith('PASS')), lines.join('\n'));
+    });
+
+    it('is inconclusive, not a crash, when git cannot read the prep commit', async () => {
+      writeCleanup(root, { changelog: RELEASED_CHANGELOG, changeFiles: [] });
+      listDeletedChangeFiles = () => {
+        throw Object.assign(new Error('fatal: bad object abc1234'), { status: 128 });
+      };
+      const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', 'abc1234'];
+      assert.equal(await runWith(argv), ExitCode.unreachable, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('UNREACHABLE') && line.includes('bad object')),
+        lines.join('\n'),
+      );
+    });
+
+    it('is inconclusive for a real merge commit, whose combined diff lists no deletions', async () => {
+      const git = (...args) =>
+        childProcess.execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], {
+          cwd: root,
+          encoding: 'utf8',
+          stdio: ['ignore', 'pipe', 'ignore'],
+        });
+      writeCleanup(root, {
+        changelog: RELEASED_CHANGELOG,
+        changeFiles: [['@microsoft-teams-js-clipboard.json', 'Added clipboard read APIs (edited).']],
+      });
+      git('init', '-q', '-b', 'main');
+      git('add', '-A');
+      git('commit', '-q', '-m', 'base');
+      git('switch', '-q', '-c', 'release');
+      git('rm', '-q', 'change/@microsoft-teams-js-clipboard.json');
+      git('commit', '-q', '-m', 'prep');
+      git('switch', '-q', 'main');
+      git('merge', '-q', '--no-ff', '-m', 'merge release', 'release');
+      const mergeCommit = git('rev-parse', 'HEAD').trim();
+      git('checkout', '-q', 'HEAD~1', '--', 'change/@microsoft-teams-js-clipboard.json');
+      listDeletedChangeFiles = undefined;
+      const argv = ['consumed-changes', '--version', VERSION, '--prep-commit', mergeCommit];
+      assert.equal(await runWith(argv), ExitCode.unreachable, lines.join('\n'));
+      lines = [];
+      const prepCommit = git('rev-parse', 'release').trim();
+      assert.equal(
+        await runWith(['consumed-changes', '--version', VERSION, '--prep-commit', prepCommit]),
+        ExitCode.failed,
+        lines.join('\n'),
+      );
     });
   });
 

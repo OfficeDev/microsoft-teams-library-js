@@ -347,7 +347,9 @@ failure modes); stop before queuing one.
   `check consumed-changes --version "$version" --prep-commit <prep PR squash commit>` must pass: no file under
   `change/` was deleted by the prep commit. Exit 3 names a change file with the same comment as a released entry that
   the prep commit did not delete: keep it if it is a new change, delete it if it is the released change re-added under
-  another name. Other changes `main` gained after the cut are expected in the diff.
+  another name. Exit 3 also when the prep commit deleted no change files (a prep commit always does, so it is the
+  wrong commit or a merge commit) or git cannot read it. Other changes `main` gained after the cut are expected in the
+  diff.
   Never force-push `main`. A PR from release content can run an extra end-to-end check against the newly deployed
   CDN; leave the PR open until it completes. After it merges, `check merged-back --version "$version"` confirms
   `main` has the release's CHANGELOG section (the merge-back is squashed, so commit ancestry cannot show it).
@@ -470,7 +472,7 @@ check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 | `domains`              | the live Prod valid-domains list equals the source                                                                                                                                                                                                                        |
 | `github-release`       | `--expect prerelease` or `latest`: the release is in that state, tag `v<v>` carries the bump and sits at the release branch head, and Latest is right for the stage                                                                                                       |
 | `merged-back`          | `main`'s CHANGELOG has the version's section                                                                                                                                                                                                                              |
-| `consumed-changes`     | on the merge-back branch, no pending change file was deleted by `--prep-commit <sha>`; one that only repeats a released entry's text is inconclusive                                                                                                                      |
+| `consumed-changes`     | on the merge-back branch, no pending change file was deleted by `--prep-commit <sha>`; one that only repeats a released entry's text is inconclusive, and so is a prep commit that deleted no change files                                                                |
 | `pipeline-config`      | the checkout's release YAML: Prod publishes with `tag latest` and `Latest`, SDF with `tag beta` and `Beta`, and the Prod, SDF and DDL YAML and `security.yml` each have an artifact retention task @6+; commented-out, `enabled: false` and script-text tasks don't count |
 | `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version that has not shipped: newer than `latest` on npm and GitHub, and absent from the Prod CDN and as tag `v<x.y.z>`                                                                                                                 |
 | `announcement`         | every npm, CDN and GitHub release link in a draft names the version, and npm and CDN links are present                                                                                                                                                                    |
