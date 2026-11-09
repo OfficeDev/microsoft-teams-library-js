@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Fixed the release pipelines' \"View Published Package URLs\" step, which read a stale artifact path and marked every release run as failed.",
+  "packageName": "@microsoft/teams-js",
+  "email": "palatter@microsoft.com",
+  "dependentChangeType": "none"
+}
