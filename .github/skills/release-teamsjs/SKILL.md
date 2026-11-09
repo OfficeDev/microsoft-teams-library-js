@@ -30,7 +30,7 @@ here.
   the release work item created.
 - **Release morning:** content freeze, version gate, release branch, prep PR, code-owner review.
 - **After the prep PR merges:** the release CI run, the integrity gate, the GitHub pre-release, Prod with Lockbox.
-- **After Prod:** verify npm and the CDN, promote to Latest, merge back, hub test bump, announcements, size table.
+- **After Prod:** verify npm and the CDN, promote to Latest, merge back, hub test bump, announcements.
 - **Any time something is red:** [`failure-modes.md`](./failure-modes.md) before re-running anything.
 
 ## Release types
@@ -70,7 +70,7 @@ Every write is a gate:
 6. **Any message** (Lockbox ask, review request, announcement). Release approval never authorizes a message. Each
    message needs its own approval of the exact text and destination, and a readback after it is sent. Test and dry
    runs are never announced.
-7. **Any wiki or work-item create or edit**, including the size table and the release work item.
+7. **Any wiki or work-item create or edit**, including the release work item and a CDN purge request.
 
 The releaser never approves their own Lockbox request or their own PR. Never merge a PR without a human code-owner
 approval on its current head.
@@ -161,22 +161,17 @@ changed files: consumed change files deleted, `packages/teams-js/CHANGELOG.md`, 
 `packages/teams-js/README.md` and `apps/teams-test-app/index_cdn.html` (script `src` and `integrity`), and
 `pnpm-lock.yaml`. Anything else is a reason to stop and look.
 
-Check the carriers and that the version is free (see [Checks](#checks) for the helpers):
+Check the carriers and that the version is free (see [Checks](#checks)):
 
 ```bash
-carriers_check "$version"
-versions="$(npm view @microsoft/teams-js versions --json --registry https://registry.npmjs.org)"   # an npm error stops here: inconclusive
-printf '%s' "$versions" \
-  | node -e 'process.exit(JSON.parse(require("fs").readFileSync(0, "utf8")).includes(process.argv[1]) ? 1 : 0)' "$version" \
-  || { echo "$version is already on npm" >&2; exit 1; }
-http_status "$(cdn_url prod "$version")"           # must print 404
-git ls-remote --tags origin "v$version"            # must print nothing
+check carriers --version "$version"
+check check-version --version "$version"
 ```
 
-The version is free only when all three say so. Only `registry.npmjs.org` can show that a version is absent; a proxy
-or mirror that lacks it may simply lag. Do not query the exact version (`npm view <package>@<version>`): when it is
-missing, npm exits 1 with E404, which looks the same as a lookup failure. An npm error, a timeout or any status other
-than 404 is inconclusive: resolve it from another network, do not proceed on a guess.
+`check-version` exits 0 only when `registry.npmjs.org`, the Prod CDN folder and the `v<version>` tag all show the
+version absent, and no mirror lists it. A proxy or mirror that lacks the version proves nothing, so where the public
+registry is unreachable the npm leg is inconclusive (exit 3): resolve it from another network, do not proceed on a
+guess.
 
 **⛔ Gate 1:** show the version, the diff summary, the new CHANGELOG section and the branch names. Cross-check the
 version against the latest beta (`npm view @microsoft/teams-js dist-tags.beta`): without its `-beta.N` suffix it is
@@ -242,7 +237,7 @@ reviewers may comment on those files rather than the bump. Answer with evidence,
 set -euo pipefail
 git fetch origin "release/$version"
 git switch --detach "origin/release/$version"
-carriers_check "$version"
+check carriers --version "$version"
 ```
 
 A tag or GitHub release created before the bump lands points at the wrong commit.
@@ -259,8 +254,7 @@ PR merge**, at the release branch's head commit, never an earlier one. Note its 
 
 ```bash
 ls "<download>/CDNFeed"                             # _manifest plus one folder, named $version
-sri "<download>/CDNFeed/$version/js/MicrosoftTeams.min.js"
-readme_sri                                          # the two lines must be identical
+check artifact --version "$version" --file "<download>/CDNFeed/$version/js/MicrosoftTeams.min.js"
 ```
 
 This proves the bundle the pipeline will ship is the one the README and test app SRI were computed from. A mismatch
@@ -271,7 +265,11 @@ means the published SRI would break every page that uses it: stop.
 **⛔ Gate 4:** once the CI run in step 6 has passed, create the GitHub release: tag `v<x.y.z>` (a new tag), target
 `release/<x.y.z>` at the verified commit, title `v<x.y.z>`, body the CHANGELOG section, **pre-release** ticked, no
 binaries attached (publishing adds them). It stays a pre-release until step 9 passes. Read it back: the tag points at
-the release branch head, it is a pre-release, and the previous release is still Latest.
+the release branch head, it is a pre-release, and the previous release is still Latest:
+
+```bash
+check github-release --version "$version" --expect prerelease
+```
 
 The internal runbook creates it straight after the prep PR merges, before CI. Waiting for CI means a failed build
 never leaves a dangling tag; either order works as long as it happens before Prod is queued.
@@ -283,11 +281,12 @@ lands, this step becomes "verify the pre-release the workflow created" rather th
 
 **⛔ Gate 5:** in the internal ADO project, run the Prod release pipeline from branch `release/<x.y.z>` (not `main`)
 and **explicitly set the pipeline artifact** to the CI build from step 6; do not accept whatever is preselected.
-Before queuing, confirm the artifact retention task succeeded in the latest `main` CI run, and that the release
-branch uses the same task version:
+Before queuing, confirm the artifact retention task succeeded in the latest `main` CI run, and check the release
+branch's pipeline YAML (Prod publishes with `tag latest`, artifact retention is @6 or later) from a checkout of it:
 
 ```bash
-git grep -n 'AssetRetention@' "origin/release/$version" -- tools   # every line @6 or later
+git switch --detach "origin/release/$version"
+check pipeline-config
 ```
 
 You can queue through the Azure DevOps pipelines REST API instead of the UI, with the repository ref set to
@@ -319,19 +318,16 @@ overwrite, so a second attempt at a published version fails rather than repairin
 ### 9. Verify publication, fail closed
 
 ```bash
-curl -fsSL -o /tmp/teams-js.min.js "$(cdn_url prod "$version")"
-sri /tmp/teams-js.min.js; readme_sri                # identical
-wc -c < /tmp/teams-js.min.js                        # bytes, for the size record
-npm view "@microsoft/teams-js@$version" version --registry https://registry.npmjs.org   # prints the version
-npm view @microsoft/teams-js dist-tags.latest --registry https://registry.npmjs.org    # prints the version
+check published --version "$version" --dist-tag latest
 ```
 
 It passes only when the Prod CDN file hashes to the carrier SRI **and** npm reports the version with `latest` pointing
 at it. npm and the CDN together are the release; one without the other is half published. The npmjs.com package page
-can lag by about 40 minutes; trust the registry answer. If this device cannot reach the public registry, the result
-is inconclusive. The fallbacks in Prerequisites (a proxy or mirror, the publish task's "npm notice version" line, the
-npmjs.com version page) can confirm the version is there, but not that `latest` points at it; a proxy that lacks it
-or still shows the old `latest` may only be lagging: never treat that as "not published" or re-queue because of it.
+can lag by about 40 minutes; trust the registry answer. Where the public registry is unreachable, the check also asks
+jsDelivr and unpkg: they can confirm the version is there, but not that `latest` still points at it, so the `latest`
+result is inconclusive (exit 3) unless a mirror shows a newer `latest`, which fails. Confirm `latest` from another
+network or on the npmjs.com package page in a browser, and never re-queue because of it. Note the CDN byte count it
+prints for the size record.
 
 The Prod pipeline always publishes with the `latest` tag. That is right for a release of the newest version only. A
 hotfix on an older line would move `latest` backwards, so it is a maintainer decision outside this skill (see the
@@ -339,19 +335,24 @@ failure modes); stop before queuing one.
 
 ### 10. Promote, merge back and update consumers
 
-- **⛔ Gate 4:** edit the GitHub release: untick pre-release and set it as the latest release. The repository page
-  should then show it under Releases.
+- **⛔ Gate 4:** edit the GitHub release: untick pre-release and set it as the latest release, then
+  `check github-release --version "$version" --expect latest`.
 - **⛔ Gates 2-3:** merge `release/<x.y.z>` back to `main` with a PR titled `Cleanup release v<x.y.z>`. If `main` has
   not moved since the branch was cut, a PR straight from the release branch merges cleanly. Otherwise cut
   `<alias>/cleanup_release_<x.y.z>` from `release/<x.y.z>`, merge `origin/main` into it and open the PR from that,
   with a `none` change file (`pnpm changefile`, comment `Released <x.y.z>`); PR CI's change-file check requires it
   even when a local `beachball check` says none is needed.
-  Merging `main` can bring back change files the release already consumed; delete any change file whose comment
-  appears in the new CHANGELOG section, or the next release ships those entries twice. Before opening the PR, every
-  file under `change/` that is not on `origin/release/$version` must be the new `none` file or a change file whose
-  comment is not in the new CHANGELOG section. Other changes `main` gained after the cut are expected in the diff.
+  Merging `main` can bring back change files the release already consumed; delete any change file the prep commit
+  deleted, or the next release ships those entries twice. Before opening the PR,
+  `check consumed-changes --version "$version" --prep-commit <prep PR squash commit>` must pass: no file under
+  `change/` was deleted by the prep commit. Exit 3 names a change file with the same comment as a released entry that
+  the prep commit did not delete: keep it if it is a new change, delete it if it is the released change re-added under
+  another name. Exit 3 also when the prep commit deleted no change files (a prep commit always does, so it is the
+  wrong commit or a merge commit) or git cannot read it. Other changes `main` gained after the cut are expected in the
+  diff.
   Never force-push `main`. A PR from release content can run an extra end-to-end check against the newly deployed
-  CDN; leave the PR open until it completes.
+  CDN; leave the PR open until it completes. After it merges, `check merged-back --version "$version"` confirms
+  `main` has the release's CHANGELOG section (the merge-back is squashed, so commit ancestry cannot show it).
 - **Never push to `release/<x.y.z>` after Prod.** Internal downstream tests check that branch out by name.
 - **⛔ Gates 2-3:** update the internal hub end-to-end tests to cover the new version, per the internal runbook. On the
   web side that is a PR that bumps the pinned TeamsJS version and adds the version to the client SDK checkpoint lists
@@ -359,7 +360,7 @@ failure modes); stop before queuing one.
   step is easy to forget, and one recent release went without it.
 - `postrelease.yml` tries to notify a downstream repository when the prep PR merges. It currently fails on every
   release with a credentials error, so that repository is not being notified; report it, do not block on it.
-- Compare the valid-domains list (DDL section, step 3). If the live list differs from `main`, raise a DDL run with
+- Compare the valid-domains list (DDL section, step 4). If the live list differs from `main`, raise a DDL run with
   the release owner.
 
 ### 11. Communication drafts
@@ -373,8 +374,9 @@ Prepare, do not send:
   (`https://www.npmjs.com/package/@microsoft/teams-js/v/<x.y.z>`), the Prod CDN URL, the GitHub release, and the
   Minor changes and Patches lists copied from the real CHANGELOG section, not from memory or the PR list. Tag the
   current contacts listed in the runbook; older example posts tag people who are no longer the contacts.
-  Two recent announcements linked the previous version: check every link contains `<x.y.z>` and open it fresh before
-  sending. You may also mention the partner who asked for a feature in the release.
+  Two recent announcements linked the previous version: save the draft to a file, run
+  `check announcement --version "$version" --file <draft>`, and open every link fresh before sending. You may also
+  mention the partner who asked for a feature in the release.
   - Post within about three hours of verified publication; past announcements slipped by most of a day, and one
     release was never announced. Read the destination's newest messages first, so a retry never double-posts.
   - Announce Prod releases only. Never announce SDF betas, test builds or dry runs. Beyond the platform SDK channel
@@ -385,40 +387,39 @@ Each is a separate **⛔ Gate 6**. Record what was sent and where, so a retry ne
 
 ### 12. Close out
 
-**⛔ Gate 7:** record the bundle size and the delta from the previous version in the size table the internal runbook
-keeps, and close the release work item. Then confirm the post-release checklist and run the retro (below).
+**⛔ Gate 7:** close the release work item. `check size --version "$version" --previous <previous version>` prints the
+bundle size and the change from the previous version if the announcement or a reviewer wants it; the runbook's size
+table is no longer kept. Then confirm the post-release checklist and run the retro (below).
 
 ### Post-release checklist
 
-- [ ] npm has the version, and `latest` points at it (step 9)
-- [ ] The Prod CDN serves `MicrosoftTeams.min.js` for the version with the README SRI (step 9)
-- [ ] The GitHub release is published, not a pre-release, and marked Latest (step 10)
-- [ ] The release branch is merged back to `main` (step 10)
-- [ ] The web hub end-to-end tests cover the new version; iOS is automatic (step 10)
+- [ ] npm has the version, and `latest` points at it: `check published --version <v> --dist-tag latest`
+- [ ] The Prod CDN serves `MicrosoftTeams.min.js` for the version with the README SRI: the same command
+- [ ] The GitHub release is published, not a pre-release, and marked Latest:
+      `check github-release --version <v> --expect latest`
+- [ ] The release branch is merged back to `main`: `check merged-back --version <v>`
+- [ ] The web hub end-to-end tests cover the new version; iOS is automatic (step 10; internal, so not scripted)
 - [ ] The announcement is posted (step 11)
-- [ ] The size table has the new entry (step 12)
 
 ## SDF beta
 
 1. Pre-flight as in step 1. Apply the skip rule; in a Prod week there is no beta.
-2. Pick the latest successful non-PR CI build of `main`; both of its stages must be green. Its `CDNFeed` folder name is
+2. Pick the latest successful non-PR CI build of `main`; both of its jobs must be green. Its `CDNFeed` folder name is
    the beta version. Checking it before queuing is what stops an unexpected version from being published.
-   - The beta must be of a version that has not shipped: `<x.y.z>` in `<x.y.z>-beta.N` must be greater than
-     `npm view @microsoft/teams-js dist-tags.latest --registry https://registry.npmjs.org`, and the Prod CDN folder
-     for `<x.y.z>` and tag `v<x.y.z>` must not exist. A proxy's `latest` can lag, so it never decides this; if the
-     public registry cannot be reached, the check is inconclusive. Two past betas were published for versions that
-     had already shipped, which sorts them below the release.
+   - The beta must be newer than the current `latest`: `check beta-version --version "<beta>"` passes only when
+     `<x.y.z>` in `<x.y.z>-beta.N` is greater than the highest `latest` from npm and the GitHub Latest release, and
+     inconclusive when neither `registry.npmjs.org` nor the GitHub Latest release answers (a proxy or mirror `latest`
+     can only fail it). Two past betas were published for versions that had already shipped, which
+     sorts them below the release.
    - Note any feature that will reach Prod without a beta soak (merged after the last beta) and tell the release
      owner.
-3. `sri "<download>/CDNFeed/<beta>/js/MicrosoftTeams.min.js"` and keep the result.
+3. `check sri --file "<download>/CDNFeed/<beta>/js/MicrosoftTeams.min.js"` and keep the result.
 4. **⛔ Gate 5:** queue the SDF release pipeline with that build as its resource. Lockbox and judging the run work as
    in Prod step 8.
 5. Verify:
 
    ```bash
-   curl -fsSL -o /tmp/teams-js-beta.min.js "$(cdn_url sdf "<beta>")"
-   sri /tmp/teams-js-beta.min.js                    # equals the result of step 3
-   npm view @microsoft/teams-js dist-tags.beta      # prints <beta>
+   check published --version "<beta>" --environment sdf --dist-tag beta --expected-sri "<sri from step 3>"
    ```
 
    The npm publish task's log also shows the published version ("npm notice version"); it must match `<beta>`.
@@ -434,7 +435,7 @@ No release branch, PR, GitHub release or announcement for a beta unless the inte
    ask the approvers the same way as Prod step 8. A successful DDL run normally ends "partially succeeded".
 3. The upload only updates the origin copy. The list lives at a path with no version, and the CDN serves it with a
    one-year `Cache-Control: max-age`; on the last two DDL runs the edge did not refresh on its own. So right after every
-   DDL run whose upload task ("Push valid domains to M365 1CDN") succeeded, **⛔ request the purge** through the
+   DDL run whose upload task ("Push valid domains to M365 1CDN") succeeded, **⛔ Gate 7:** request the purge through the
    process in the internal runbook. That includes a run that fails later: the upload runs before artifact retention, so
    a run can end red with the new list already at the origin. In the request:
    - The content path is relative to the storage container: `teams-js/validDomains/json/validDomains.json`. Separate
@@ -442,8 +443,8 @@ No release branch, PR, GitHub release or announcement for a beta unless the inte
    - Keep the reason to one short, title-like line, under about 80 characters (the exact limit isn't documented). It
      becomes the title of a work item on the CDN side, and a longer reason once made a purge fail without any error.
    - A "submitted" confirmation does not mean the purge ran; no email or receipt arrives either way.
-4. Verify on `res.cdn.office.net` only, from a checkout of that build's commit: `domains_check` prints nothing when the
-   live list equals the source, and the `Last-Modified` header (`curl -sI <url>`) is at or after the run. Other CDN
+4. Verify on `res.cdn.office.net` only, from a checkout of that build's commit: `check domains` passes when the live
+   list equals the source, and the `Last-Modified` header (`curl -sI <url>`) is at or after the run. Other CDN
    hostnames can refresh earlier or inconsistently, and the edge ignores cache-busting query strings, so neither proves
    anything. Budget hours, not minutes: if the list is still stale about 45 minutes after the request, ask the CDN team
    through the support contact in the internal runbook whether the request was picked up. Do not queue the DDL again to
@@ -455,31 +456,45 @@ No release branch, PR, GitHub release or announcement for a beta unless the inte
 
 ## Checks
 
-Paste these into the bash session before a release. They only read files and public URLs.
+The deterministic checks live in [`check-release.js`](./check-release.js). It uses only Node built-ins, reads files
+and public URLs, and never writes anything. Define a shorthand once per shell:
 
 ```bash
-cdn_url() { # cdn_url prod|sdf <version>
-  case "$1" in prod) host=res.cdn.office.net ;; sdf) host=res-sdf.cdn.office.net ;; *) return 2 ;; esac
-  echo "https://$host/teams-js/$2/js/MicrosoftTeams.min.js"
-}
-http_status() { curl -s -o /dev/null -w '%{http_code}\n' "$1"; }
-sri() { local digest; digest="$(openssl dgst -sha384 -binary "$1" | openssl base64 -A)" || return; [ -n "$digest" ] || return 1; echo "sha384-$digest"; }
-readme_sri() { grep -o 'integrity="[^"]*"' packages/teams-js/README.md | cut -d'"' -f2 | sort -u; }
-carriers_check() { # every carrier names $1, and the README and test app share one SRI
-  grep -h '"version"' packages/teams-js/package.json apps/teams-test-app/package.json
-  grep -ho 'teams-js[/@][0-9][^/]*/' packages/teams-js/README.md apps/teams-test-app/index_cdn.html | sort | uniq -c
-  grep -ho 'integrity="[^"]*"' packages/teams-js/README.md apps/teams-test-app/index_cdn.html | sort | uniq -c
-}
-domains_check() {
-  local live='https://res.cdn.office.net/teams-js/validDomains/json/validDomains.json'
-  local normalize='console.log(JSON.stringify(JSON.parse(require("fs").readFileSync(0,"utf8")),null,1))'
-  diff <(curl -fsSL "$live" | node -e "$normalize") \
-    <(node -e "$normalize" < packages/teams-js/src/artifactsForCDN/validDomains.json)
-}
+check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 ```
 
-`carriers_check` should show `$version` everywhere and exactly one distinct `integrity` value. Read its output; do
-not skim it.
+| Command                | Passes when                                                                                                                                                                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `check-version`        | `registry.npmjs.org` lacks the version, no mirror lists it, and the Prod CDN and GitHub tag lack it                                                                                                                                                                       |
+| `carriers`             | both `package.json` files, the README and the test app name the version, and their teams-js CDN `<script>` tags share one full sha384 SRI                                                                                                                                 |
+| `artifact`             | a downloaded CI bundle is under `CDNFeed/<v>/js`, `<v>` is the only version folder (besides `_manifest`), and it hashes to that SRI                                                                                                                                       |
+| `published`            | the CDN bytes match the SRI and npm has the version, and the dist-tag if given, by the source rules below                                                                                                                                                                 |
+| `domains`              | the live Prod valid-domains list equals the source                                                                                                                                                                                                                        |
+| `github-release`       | `--expect prerelease` or `latest`: the release is in that state, tag `v<v>` carries the bump and sits at the release branch head, and Latest is right for the stage                                                                                                       |
+| `merged-back`          | `main`'s CHANGELOG has the version's section                                                                                                                                                                                                                              |
+| `consumed-changes`     | on the merge-back branch, no pending change file was deleted by `--prep-commit <sha>`; one that only repeats a released entry's text is inconclusive, and so is a prep commit that deleted no change files                                                                |
+| `pipeline-config`      | the checkout's release YAML: Prod publishes with `tag latest` and `Latest`, SDF with `tag beta` and `Beta`, and the Prod, SDF and DDL YAML and `security.yml` each have an artifact retention task @6+; commented-out, `enabled: false` and script-text tasks don't count |
+| `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version that has not shipped: newer than `latest` on npm and GitHub, and absent from the Prod CDN and as tag `v<x.y.z>`                                                                                                                 |
+| `announcement`         | every npm, CDN and GitHub release link in a draft names the version, and npm and CDN links are present                                                                                                                                                                    |
+| `size`, `links`, `sri` | (informational) bundle bytes and change from `--previous`, announcement links, a file's SRI                                                                                                                                                                               |
+| `help`                 | lists every command and the flags it takes; any other flag is a usage error                                                                                                                                                                                               |
+
+**npm source rules.** `registry.npmjs.org` is the only source that can show a version is absent or a dist-tag is
+current. A `--registry` proxy, jsDelivr and unpkg can lag, so they only add evidence that a version exists, and a
+proxy alone never makes a check pass. A mirror's dist-tag can only fail a check, by showing a newer value; it never
+confirms a tag is current. When the public registry cannot be reached and the mirrors do not settle it, the npm
+result is inconclusive (exit 3), never a failure.
+
+GitHub API calls send `GITHUB_TOKEN` as a bearer token when it is set, which avoids anonymous rate limits. Every
+request times out after 30 seconds.
+
+Exit codes: `0` passed, `1` a check failed, `2` usage error, `3` a source was unreachable or answered unexpectedly.
+Exit 3 is never success.
+
+Commands that read files (`carriers`, `artifact`, `domains`, `pipeline-config`, `consumed-changes`, and `published`
+without `--expected-sri`) check the git checkout you run them in (`git rev-parse --show-toplevel`), not the one the
+script lives in, so run them from the checkout you mean, such as the cleanup branch. Outside a checkout, or when a file
+is missing, they stop with exit 2.
 
 ## Retro: feed back what the run taught
 
@@ -507,7 +522,7 @@ This skill documents the process as it runs today and points at the automation t
   (3/4, a required check on PRs into `release/*`) and
   [#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143) (4/4, GitHub pre-release creation on
   merge, replacing the closed #3141). When they land, steps 4-7 become checks of what the automation did, and their
-  validation replaces the manual carrier check.
+  validation overlaps `check carriers`; prefer theirs in CI.
 - [#3032](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3032): agent instructions and the contributor
   skill, which own build, test and change-file guidance.
 - [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) and
@@ -525,3 +540,4 @@ This skill documents the process as it runs today and points at the automation t
 | Prod, SDF and DDL release pipelines | `tools/releases/prod-release.yml`, `sdf-release.yml`, `ddl-release.yml`           |
 | Downstream notification             | `.github/workflows/postrelease.yml`                                               |
 | Valid-domains source                | `packages/teams-js/src/artifactsForCDN/validDomains.json`                         |
+| Read-only checks                    | `.github/skills/release-teamsjs/check-release.js`                                 |
