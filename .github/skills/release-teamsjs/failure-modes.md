@@ -21,8 +21,8 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Cause:** the script that step runs reads a stale artifact path.
 - **Fix:** none needed for the release. Check that artifact retention, the ESRP npm publish and the 1CDN upload
   succeeded, verify as in Prod step 9, and carry on. Any other red task is a real failure. Fixed by
-  [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) once it lands and reaches the release
-  branch. That step also prints an SDF CDN link on Prod runs; do not mistake it for the Prod URL.
+  [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) for release branches cut after it
+  merged; on an older branch the step also prints an SDF CDN link on Prod runs, so do not mistake it for the Prod URL.
 - **Not to confuse with:** a successful DDL run, which normally ends "partially succeeded".
 
 ### Prod published with the wrong npm tag
