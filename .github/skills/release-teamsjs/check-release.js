@@ -1280,8 +1280,11 @@ async function checkValidDomains({ repoRoot, fetchImpl, readFile }) {
   ];
 }
 
-// The beachball change types a release uses, highest bump first. Any other type is a FAIL to look at by hand.
-const CHANGE_TYPES = ['major', 'minor', 'patch', 'none'];
+// The change types this repository's beachball.config.js allows, highest bump first. It disallows major and
+// prerelease, so beachball's bump rejects a change file of either type; a release never makes them.
+const CHANGE_TYPES = ['minor', 'patch', 'none'];
+const DISALLOWED_CHANGE_TYPES = ['major', 'prerelease'];
+const DEPENDENT_CHANGE_TYPES = ['major', 'minor', 'patch', 'prerelease', 'none'];
 const MAIN_CI_WORKFLOW = 'main.yml';
 
 function mainCiRunsUrl() {
@@ -1289,6 +1292,33 @@ function mainCiRunsUrl() {
     `${GITHUB_API}/repos/${REPOSITORY}/actions/workflows/${MAIN_CI_WORKFLOW}/runs` +
     '?branch=main&event=push&status=completed&per_page=1'
   );
+}
+
+// Why a parsed change file is not one beachball would count for a teams-js bump, or undefined when it is.
+function changeFileProblem(changeFile) {
+  if (!changeFile || typeof changeFile !== 'object' || Array.isArray(changeFile)) {
+    return 'is not a beachball change file (not a JSON object)';
+  }
+  if (Object.prototype.hasOwnProperty.call(changeFile, 'changes')) {
+    return 'is a grouped change file, which this check does not read; check it by hand';
+  }
+  const { type, packageName, comment, dependentChangeType } = changeFile;
+  if (typeof type === 'string' && DISALLOWED_CHANGE_TYPES.includes(type)) {
+    return `has type ${type}, which beachball.config.js disallows, so beachball's bump rejects it`;
+  }
+  if (typeof type !== 'string' || !CHANGE_TYPES.includes(type)) {
+    return `has no change type a release uses (${CHANGE_TYPES.join(', ')})`;
+  }
+  if (packageName !== PACKAGE_NAME) {
+    return `is for package ${typeof packageName === 'string' ? packageName : '(none)'}, not ${PACKAGE_NAME}`;
+  }
+  if (typeof comment !== 'string' || comment.trim() === '') {
+    return 'has no comment for the CHANGELOG';
+  }
+  if (typeof dependentChangeType !== 'string' || !DEPENDENT_CHANGE_TYPES.includes(dependentChangeType)) {
+    return 'has no valid dependentChangeType';
+  }
+  return undefined;
 }
 
 function readPendingChanges({ repoRoot, readFile, readDirectory }) {
@@ -1310,30 +1340,28 @@ function readPendingChanges({ repoRoot, readFile, readDirectory }) {
     try {
       changeFile = readLocalJson(readFile, path.join(repoRoot, CHANGE_DIRECTORY, name), relativePath);
     } catch (error) {
-      if (!(error instanceof LocalFileError)) {
-        throw error;
+      if (error instanceof LocalFileError) {
+        problems.push(result(Outcome.fail, `${error.message}; beachball cannot read it either`));
+        continue;
       }
-      problems.push(result(Outcome.fail, `${error.message}; beachball cannot read it either`));
+      if (error && typeof error.code === 'string' && error.code !== 'ENOENT') {
+        problems.push(result(Outcome.fail, `${relativePath} cannot be read as a file (${error.code})`));
+        continue;
+      }
+      throw error;
+    }
+    const problem = changeFileProblem(changeFile);
+    if (problem) {
+      problems.push(result(Outcome.fail, `${relativePath} ${problem}`));
       continue;
     }
-    const type =
-      changeFile && typeof changeFile === 'object' && !Array.isArray(changeFile) ? changeFile.type : undefined;
-    if (typeof type !== 'string' || !CHANGE_TYPES.includes(type)) {
-      problems.push(
-        result(Outcome.fail, `${relativePath} has no change type a release uses (${CHANGE_TYPES.join(', ')})`),
-      );
-      continue;
-    }
-    counts[type] = (counts[type] || 0) + 1;
+    counts[changeFile.type] = (counts[changeFile.type] || 0) + 1;
   }
   return { counts, problems };
 }
 
 function bumpVersion(version, type) {
   const [major, minor, patch] = parseVersion(version).core;
-  if (type === 'major') {
-    return `${major + 1}.0.0`;
-  }
   return type === 'minor' ? `${major}.${minor + 1}.0` : `${major}.${minor}.${patch + 1}`;
 }
 
@@ -1366,6 +1394,16 @@ function pendingChangesResults({ repoRoot, readFile, readDirectory }) {
   const current = readLocalJson(readFile, path.join(repoRoot, PACKAGE_JSON_FILES[0]), PACKAGE_JSON_FILES[0])?.version;
   if (typeof current !== 'string' || !VERSION_PATTERN.test(current)) {
     results.push(result(Outcome.fail, `${PACKAGE_JSON_FILES[0]} has no semantic version`));
+    return { results };
+  }
+  if (!/^\d+\.\d+\.\d+$/.test(current)) {
+    results.push(
+      result(
+        Outcome.fail,
+        `${PACKAGE_JSON_FILES[0]} is at the prerelease ${current}; a Prod pre-flight expects main's released version, ` +
+          'and beachball bumps a prerelease differently',
+      ),
+    );
     return { results };
   }
   const next = bumpVersion(current, bump);
@@ -1452,11 +1490,13 @@ async function checkPreflight({ version, registry, repoRoot, readFile, readDirec
 
 function changelogSection(changelog, version) {
   const lines = changelog.split(/\r?\n/);
-  const start = lines.findIndex((line) => line.trim() === `## ${version}`);
+  // Headings start at column 0; an indented line is part of an entry, never a heading.
+  const start = lines.findIndex((line) => line.replace(/\s+$/, '') === `## ${version}`);
   if (start === -1) {
     return undefined;
   }
   const groups = [];
+  let orphans = 0;
   let group;
   let entry;
   let afterBlank = false;
@@ -1468,7 +1508,12 @@ function changelogSection(changelog, version) {
       group = { heading: line.slice(4).trim(), entries: [] };
       groups.push(group);
       entry = undefined;
-    } else if (line.startsWith('- ') && group) {
+    } else if (line.startsWith('- ')) {
+      if (!group) {
+        orphans += 1;
+        entry = undefined;
+        continue;
+      }
       entry = [line.slice(2)];
       group.entries.push(entry);
       afterBlank = false;
@@ -1484,18 +1529,31 @@ function changelogSection(changelog, version) {
     }
     afterBlank = false;
   }
-  return groups
-    .map(({ heading, entries }) => ({ heading, entries: entries.map((lines) => normalizeText(lines.join(' '))) }))
-    .filter(({ entries }) => entries.length > 0);
+  return {
+    orphans,
+    groups: groups
+      .map(({ heading, entries }) => ({ heading, entries: entries.map((lines) => normalizeText(lines.join(' '))) }))
+      .filter(({ entries }) => entries.length > 0),
+  };
 }
 
 function draftAnnouncement({ version, repoRoot, readFile }) {
-  const groups = changelogSection(readFile(path.join(repoRoot, CHANGELOG_PATH), 'utf8'), version);
-  if (!groups) {
+  const section = changelogSection(readFile(path.join(repoRoot, CHANGELOG_PATH), 'utf8'), version);
+  if (!section) {
     return [
       result(
         Outcome.fail,
         `${CHANGELOG_PATH} has no "## ${version}" section; run this on release/${version} after the prep PR merges`,
+      ),
+    ];
+  }
+  const { groups, orphans } = section;
+  if (orphans > 0) {
+    return [
+      result(
+        Outcome.fail,
+        `the "## ${version}" section of ${CHANGELOG_PATH} has ${orphans} ${orphans === 1 ? 'entry' : 'entries'} before ` +
+          'its first ### heading; fix the CHANGELOG rather than announce part of it',
       ),
     ];
   }

@@ -2032,21 +2032,45 @@ describe('check-release', () => {
       assert.match(lines.join('\n'), /bump 2\.58\.0 to 2\.59\.0/);
     });
 
-    it('bumps a patch and a major the way beachball does', async () => {
+    it('bumps a patch the way beachball does', async () => {
       setUp({ changeFiles: [['@microsoft-teams-js-a.json', 'A fix.', 'patch']] });
       assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.passed, lines.join('\n'));
       assert.match(lines.join('\n'), /bump 2\.58\.0 to 2\.58\.1/);
-      lines = [];
-      setUp({ changeFiles: [['@microsoft-teams-js-a.json', 'Breaking.', 'major']] });
-      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.passed, lines.join('\n'));
-      assert.match(lines.join('\n'), /bump 2\.58\.0 to 3\.0\.0/);
     });
 
+    for (const type of ['major', 'prerelease']) {
+      it(`fails a ${type} change file, which beachball.config.js disallows`, async () => {
+        setUp({ changeFiles: [['@microsoft-teams-js-a.json', 'Breaking.', type]] });
+        assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('FAIL') && line.includes(type) && line.includes('beachball.config.js')),
+          lines.join('\n'),
+        );
+        assert.ok(!lines.some((line) => line.includes('3.0.0')), lines.join('\n'));
+      });
+    }
+
+    const changeFile = (fields) =>
+      JSON.stringify({
+        type: 'minor',
+        comment: 'x',
+        packageName: '@microsoft/teams-js',
+        dependentChangeType: 'patch',
+        ...fields,
+      });
     for (const [name, contents] of [
       ['not JSON', '{ "type": '],
-      ['an unknown type', JSON.stringify({ type: 'feature', comment: 'x' })],
-      ['a prototype key as its type', JSON.stringify({ type: '__proto__', comment: 'x' })],
+      ['an unknown type', changeFile({ type: 'feature' })],
+      ['a prototype key as its type', changeFile({ type: '__proto__' })],
+      ['toString as its type', changeFile({ type: 'toString' })],
       ['an array', '[]'],
+      ['null', 'null'],
+      ['missing its package name', changeFile({ packageName: undefined })],
+      ['for another package', changeFile({ packageName: '@microsoft/other' })],
+      ['missing its comment', changeFile({ comment: undefined })],
+      ['missing its dependentChangeType', changeFile({ dependentChangeType: undefined })],
+      ['an unknown dependentChangeType', changeFile({ dependentChangeType: 'sometimes' })],
+      ['a grouped change file', JSON.stringify({ changes: [JSON.parse(changeFile({}))] })],
     ]) {
       it(`fails, naming the file, when a change file is ${name}`, async () => {
         setUp();
@@ -2058,6 +2082,27 @@ describe('check-release', () => {
         );
       });
     }
+
+    it('fails cleanly, naming it, when a folder in change/ is named like a change file', async () => {
+      setUp();
+      fs.mkdirSync(path.join(root, 'change', 'odd.json'));
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('change/odd.json')),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails when the checkout is already on a prerelease version', async () => {
+      setUp();
+      writeRepo(root, { version: '2.59.0-beta.0' });
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('2.59.0-beta.0')),
+        lines.join('\n'),
+      );
+      assert.ok(!lines.some((line) => line.includes('bump 2.59.0-beta.0')), lines.join('\n'));
+    });
 
     it('ignores files in the change folder that are not JSON', async () => {
       setUp();
@@ -2207,6 +2252,34 @@ describe('check-release', () => {
         ['# Change Log - @microsoft/teams-js', '', `## ${VERSION}`, '', 'Wed, 04 Nov 2026', '', '## 2.58.0'].join('\n'),
       );
       assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('fails instead of dropping an entry that sits before the first ### heading', async () => {
+      write([`## ${VERSION}`, '- Orphan entry.', '### Patches', '- Ordinary fix.', '## 2.58.0'].join('\n'));
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+      assert.ok(!lines.some((line) => line.startsWith('INFO announcement draft')), lines.join('\n'));
+    });
+
+    it('only takes a version heading at the start of a line, allowing trailing spaces', async () => {
+      write(
+        [
+          '## 2.60.0',
+          '### Patches',
+          '- Prior entry',
+          `  ## ${VERSION}`,
+          '  continuation',
+          '### Patches',
+          '- Wrongly captured.',
+          `## ${VERSION}  `,
+          '### Patches',
+          '- The real entry.',
+          '## 2.58.0',
+        ].join('\n'),
+      );
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+      const draft = draftOf();
+      assert.ok(draft.includes('- The real entry.'), draft);
+      assert.ok(!draft.includes('Wrongly captured'), draft);
     });
 
     it('keeps every heading in order and joins an entry that wraps or has a second paragraph', async () => {
