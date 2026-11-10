@@ -55,8 +55,6 @@ jobs:
         run: pnpm build
       - name: Run Unit Tests
         run: pnpm test
-      - name: Run release skill check tests
-        run: node --test .github/skills/release-teamsjs/check-release.test.js
       - name: Check for lint errors
         run: pnpm lint
 
@@ -66,6 +64,44 @@ jobs:
         with:
           name: Unit Test Results (Jest ${{ matrix.node-version }})
           path: packages/*/test-results/unit/unit-tests-report.xml
+
+  # Tests for the release skill and release pipeline scripts. They use only Node and PowerShell built-ins, so no install
+  # step. Windows, because the release pipeline PowerShell scripts run on Windows agents.
+  release-tooling:
+    name: Release tooling tests (Node ${{ matrix.node-version }})
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Run Node tests
+        shell: pwsh
+        run: |
+          $tests = @(Get-ChildItem -Path .github/skills/release-teamsjs, tools/releases -Recurse -Filter *.test.js | ForEach-Object FullName)
+          if ($tests.Count -eq 0) { throw 'No release tooling tests found' }
+          node --test @tests
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run PowerShell tests
+        shell: pwsh
+        run: |
+          foreach ($test in Get-ChildItem -Path tools/releases -Recurse -Filter *.test.ps1) {
+            Write-Host "Running $($test.FullName)"
+            pwsh -NoProfile -File $test.FullName
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
 
   publish-test-results:
     name: 'Publish Unit Tests Results'

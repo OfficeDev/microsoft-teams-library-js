@@ -21,8 +21,8 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Cause:** the script that step runs reads a stale artifact path.
 - **Fix:** none needed for the release. Check that artifact retention, the ESRP npm publish and the 1CDN upload
   succeeded, verify as in Prod step 9, and carry on. Any other red task is a real failure. Fixed by
-  [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) once it lands and reaches the release
-  branch. That step also prints an SDF CDN link on Prod runs; do not mistake it for the Prod URL.
+  [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) for release branches cut after it
+  merged; on an older branch the step also prints an SDF CDN link on Prod runs, so do not mistake it for the Prod URL.
 - **Not to confuse with:** a successful DDL run, which normally ends "partially succeeded".
 
 ### Prod published with the wrong npm tag
@@ -57,8 +57,9 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### The artifact retention (ARROW) task fails on an end-of-life Node runtime
 
-- **Symptom:** the artifact retention task fails before publishing because the agent refuses end-of-life Node 16
-  task runtimes.
+- **Symptom:** the artifact retention task fails because the agent refuses end-of-life Node 16 task runtimes. In the Prod
+  and SDF pipelines it runs before publishing, so nothing is published. In the DDL pipeline it runs after the upload, so
+  the new list may already be at the origin: purge and verify anyway (DDL steps 3-4).
 - **Cause:** `AssetRetention` versions 3-5 run on Node 16. Queue-time variable overrides are not allowed on these
   pipelines, so the agent setting cannot be switched off for one run.
 - **Fix:** `main` uses `AssetRetention@6` in `tools/yaml-templates/security.yml` and the three release YAMLs since
@@ -129,8 +130,10 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   prep PR consumed them. Relative to the merge base the release side never touched them, so the merge keeps `main`'s
   copies.
 - **Fix:** delete them in the cleanup branch before opening the PR. Left in place, the next release lists those
-  entries again. Afterwards `git diff --stat "origin/release/<x.y.z>" HEAD` should show only the new `none` change
-  file, and `check consumed-changes --version <x.y.z>` passes.
+  entries again. Afterwards `check consumed-changes --version <x.y.z> --prep-commit <prep PR squash commit>` must
+  pass: no file under `change/` was deleted by the prep commit. A change file whose comment only repeats a released
+  entry is inconclusive (exit 3): keep it if it is a new change, delete it if it is the released change re-added under
+  another name. Other changes `main` gained after the cut are expected.
 
 ### A fix must ship on an older release line (hotfix)
 
@@ -159,9 +162,11 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 ### A tag or GitHub release points at a commit without the bump
 
 - **Cause:** the release was created before the prep PR merged.
-- **Fix:** do not move a published tag. If nothing has been published, delete the draft or pre-release and recreate
-  it at the verified commit (Prod steps 5 and 7) with approval. If the version has been published, raise it with the
-  maintainers before changing anything.
+- **Fix:** do not move a published tag. Deleting a GitHub release leaves tag `v<x.y.z>` in place, and a release
+  recreated with that tag reuses its old commit. If nothing has been published, stop for a maintainer decision that
+  covers both the pre-release and the unshipped tag; removing them is a **⛔ Gate 4** write, and the release is
+  recreated at the verified commit (Prod steps 5 and 7) only after the tag is gone. If the version has been
+  published, raise it with the maintainers before changing anything.
 
 ### `beachball check` or the bump rejects a change type
 
@@ -213,13 +218,16 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   `https://res.cdn.office.net/teams-js/validDomains/json/validDomains.json` still serves the old list, and its
   `Last-Modified` header predates the run.
 - **Cause:** the file's path has no version and the CDN caches it for a year, so the edge keeps serving the previous
-  copy after the upload.
-- **Fix:** request a CDN cache purge through the process in the internal runbook, then compare again. Do not
-  re-run the DDL to refresh the cache, and do not change the SDK's fallback list to work around it. A cache-busting
-  query string does not get past the edge cache, so it is not proof either way.
+  copy after the upload. This is expected after every DDL run, not an exception.
+- **Fix:** request a CDN cache purge right after the run (DDL steps 3-4), then compare again on `res.cdn.office.net`.
+  A "submitted" purge request may still not have run: one with a long reason failed without any error or email. If
+  the list is still stale about 45 minutes later, ask the CDN team through the support contact in the internal runbook
+  whether the request was picked up. Do not re-run the DDL to refresh the cache, and do not change the SDK's fallback
+  list to work around it. A cache-busting query string does not get past the edge cache, so it is not proof either
+  way.
 
 ### New origins merged and released, but hosts still reject them
 
 - **Cause:** once the SDK has fetched the live list from the CDN it validates against that list, not the list bundled
   in the npm package. A Prod release alone does not make new origins valid; only a DDL run that reaches the edge does.
-- **Fix:** run the DDL (and purge if needed) for the merged `validDomains.json`, then check the live list.
+- **Fix:** run the DDL and purge the CDN cache for the merged `validDomains.json`, then check the live list.
