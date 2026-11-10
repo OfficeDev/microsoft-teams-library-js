@@ -1,5 +1,5 @@
 ---
-applyTo: 'tools/releases/**,tools/cli/preRelease.js,tools/cli/readChangelog.js,packages/teams-js/prepBetaRelease.cjs,packages/teams-js/scripts/**,.github/workflows/prerelease.yml,.github/workflows/postrelease.yml,.github/skills/release-teamsjs/**'
+applyTo: 'tools/releases/**,tools/yaml-templates/build-test-publish.yml,tools/yaml-templates/install-dotnet-sdk.yml,tools/yaml-templates/security.yml,tools/cli/preRelease.js,tools/cli/readChangelog.js,packages/teams-js/prepBetaRelease.cjs,packages/teams-js/scripts/**,.github/workflows/prerelease.yml,.github/workflows/postrelease.yml,.github/workflows/verify-release.yml,.github/skills/release-teamsjs/**'
 ---
 
 # Release pipelines and tooling
@@ -13,6 +13,7 @@ These files drive how `@microsoft/teams-js` is versioned and published. Before c
 - Tasks that only run on `main` or release builds (for example artifact retention) are not exercised by PR builds.
   State how the change will be proven.
 - Keep the skill in step: if a change adds, removes or renames a pipeline step, a version carrier or a script the
-  skill names, update `SKILL.md` and `failure-modes.md` in the same PR.
+  skill names, update `SKILL.md`, `failure-modes.md` and `check-release.js` in the same PR, and run
+  `node --test .github/skills/release-teamsjs/check-release.test.js`.
 - This repository is public. Do not add internal pipeline IDs, URLs, approver groups or people's names.
 - Do not add steps that bypass a review, a branch ruleset or a pipeline approval, or that force-push a release branch.
