@@ -43,8 +43,14 @@ here.
 
 - The beta version comes from `packages/teams-js/prepBetaRelease.cjs`, which `main` CI runs: the next beachball
   version plus `-beta.N`. Nobody edits a beta version by hand.
-- **Beta skip rule.** Skip a weekly beta only when nothing has merged to `main` since the build the last beta
-  published. Confirm that from commit history, not memory, and record the skip with the reason.
+- **Beta skip rule.** This is the one definition of when a weekly beta is skipped; other sections point here. Skip it
+  in a Prod week (the Monday-Sunday week, in UTC, that contains the first Wednesday of the month), when nothing has
+  merged to `main` since the build the last beta published, or when the CI build's beta is of a version that has
+  already shipped. `prepBetaRelease.cjs` runs `beachball bump` first, so until a patch or minor change file lands on
+  `main` after a release, the beta stays on the released version (for example `2.59.0-beta.1` after 2.59.0), which
+  sorts below the release. Don't hand-bump `main` to get past it: the release version also comes from
+  `beachball bump`, so a hand bump would skip a version. Confirm the rule from commit history and the build's
+  version, not memory, and record the skip with the reason.
 - The Prod pipeline publishes the npm package and the versioned CDN folder only. It does **not** push the
   valid-domains list; that is the DDL pipeline's job. Every TeamsJS version bundles a copy of the list, but uses it
   only until the live list loads from the CDN, when that fetch fails, and in server-side rendering; once the live list
