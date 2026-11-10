@@ -42,6 +42,7 @@ node --test .github/skills/release-teamsjs/check-release.test.js
 | File                    | Purpose                                           |
 | ----------------------- | ------------------------------------------------- |
 | `SKILL.md`              | The workflow the agent follows                    |
+| `README.md`             | This overview                                     |
 | `failure-modes.md`      | Symptoms, causes and fixes, with a diagnosis loop |
 | `check-release.js`      | Read-only release checks                          |
 | `check-release.test.js` | Tests for the checks                              |
