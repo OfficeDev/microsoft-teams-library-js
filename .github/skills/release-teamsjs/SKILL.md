@@ -288,7 +288,8 @@ lands, this step becomes "verify the pre-release the workflow created" rather th
 **⛔ Gate 5:** in the internal ADO project, run the Prod release pipeline from branch `release/<x.y.z>` (not `main`)
 and **explicitly set the pipeline artifact** to the CI build from step 6; do not accept whatever is preselected.
 Before queuing, confirm the artifact retention task succeeded in the latest `main` CI run, and check the release
-branch's pipeline YAML (Prod publishes with `tag latest`, artifact retention is @6 or later) from a checkout of it:
+branch's pipeline YAML (Prod publishes with `tag latest`, artifact retention is @6 or later, and the Lockbox stage waits
+for the validation stage) from a checkout of it:
 
 ```bash
 git switch --detach "origin/release/$version"

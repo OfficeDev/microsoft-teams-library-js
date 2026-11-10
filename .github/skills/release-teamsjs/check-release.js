@@ -17,8 +17,9 @@
  *   size          --version <v> --previous <p>     Prod CDN bundle bytes and the change from <p>
  *   beta-version  --version <x.y.z>-beta.<n> [--registry <url>]
  *                                                  the beta is of a version newer than latest on npm and GitHub
- *   pipeline-config                                the checkout's release YAML: Prod publishes with tag latest,
- *                                                  SDF with tag beta, and each has artifact retention @6 or later;
+ *   pipeline-config                                the checkout's release YAML: Prod runs validate-prod-build.ps1 in
+ *                                                  a stage the Lockbox stage depends on and publishes with tag
+ *                                                  latest, SDF with tag beta, and each has artifact retention @6 or later;
  *                                                  commented-out, `enabled: false` and script-text tasks don't count
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
  *   consumed-changes --version <v> --prep-commit <sha>
@@ -848,6 +849,10 @@ const PIPELINE_FILES = [
   { file: 'tools/yaml-templates/security.yml' },
 ];
 const MINIMUM_ASSET_RETENTION_VERSION = 6;
+// The Prod validation stage runs this script, and the Lockbox stage must wait for it.
+const PROD_VALIDATION_SCRIPT = 'tools/releases/powershell-commands/validate-prod-build.ps1';
+const PROD_VALIDATION_STAGE = 'Prod_Validation';
+const PROD_LOCKBOX_STAGE = 'Prod_Lockbox_Approval_Deployment';
 
 // Drops a YAML comment: a # at the line start or after whitespace, outside a quoted scalar.
 function stripYamlComment(line) {
@@ -902,7 +907,14 @@ function pipelineTasks(text) {
       continue;
     }
     const indent = header[1].length;
-    const task = { name: header[3], version: Number(header[4]), enabled: true, displayName: '', productState: [] };
+    const task = {
+      name: header[3],
+      version: Number(header[4]),
+      enabled: true,
+      displayName: '',
+      filePath: '',
+      productState: [],
+    };
     for (let next = index + 1; next < lines.length; next++) {
       const line = lines[next];
       if (line.trim() === '') {
@@ -920,6 +932,8 @@ function pipelineTasks(text) {
         task.enabled = false;
       } else if (key === 'displayName') {
         task.displayName = yamlScalar(value);
+      } else if (key === 'filePath') {
+        task.filePath = yamlScalar(value);
       } else if (key.toLowerCase() === 'productstate') {
         task.productState.push(yamlScalar(value));
       }
@@ -929,10 +943,88 @@ function pipelineTasks(text) {
   return tasks;
 }
 
+// The stage names a `- stage: <name>` item lists under `dependsOn`, as an inline value, a flow list or a block list,
+// ignoring comments and block scalars. Undefined when the stage is not declared.
+function stageDependsOn(text, stage) {
+  const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
+  const start = lines.findIndex((line) => {
+    const header = /^[ \t]*-[ \t]*stage:[ \t]*(.+?)[ \t]*$/.exec(line);
+    return header && yamlScalar(header[1]) === stage;
+  });
+  if (start === -1) {
+    return undefined;
+  }
+  const stageIndent = lines[start].length - lines[start].trimStart().length;
+  const names = [];
+  for (let index = start + 1; index < lines.length; index++) {
+    const line = lines[index];
+    if (line.trim() === '') {
+      continue;
+    }
+    const indent = line.length - line.trimStart().length;
+    if (indent <= stageIndent) {
+      break;
+    }
+    const property = /^[ \t]*dependsOn:[ \t]*(.*)$/.exec(line);
+    if (!property) {
+      continue;
+    }
+    const value = property[1].trim();
+    if (value.startsWith('[')) {
+      names.push(
+        ...value
+          .replace(/^\[|\]$/g, '')
+          .split(',')
+          .map(yamlScalar)
+          .filter(Boolean),
+      );
+    } else if (value) {
+      names.push(yamlScalar(value));
+    } else {
+      for (let next = index + 1; next < lines.length; next++) {
+        const item = /^([ \t]*)-[ \t]*(.+?)[ \t]*$/.exec(lines[next]);
+        if (lines[next].trim() === '') {
+          continue;
+        }
+        // YAML allows the items of a block list at the same indent as its key.
+        if (!item || item[1].length < indent) {
+          break;
+        }
+        names.push(yamlScalar(item[2]));
+      }
+    }
+    break;
+  }
+  return names;
+}
+
+function checkProdValidation(file, text, tasks) {
+  const validation = tasks.some((task) => task.name === 'PowerShell' && task.filePath === PROD_VALIDATION_SCRIPT);
+  const stageDeclared = stageDependsOn(text, PROD_VALIDATION_STAGE) !== undefined;
+  const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
+  return [
+    result(
+      validation && stageDeclared ? Outcome.pass : Outcome.fail,
+      validation && stageDeclared
+        ? `${file} has the ${PROD_VALIDATION_STAGE} stage running ${PROD_VALIDATION_SCRIPT}`
+        : `${file} has no ${PROD_VALIDATION_STAGE} stage with an enabled task running ${PROD_VALIDATION_SCRIPT}, so a ` +
+            'wrong CI build is caught only after the Lockbox approval',
+    ),
+    result(
+      lockboxDependsOn.includes(PROD_VALIDATION_STAGE) ? Outcome.pass : Outcome.fail,
+      `${file} ${PROD_LOCKBOX_STAGE} depends on [${lockboxDependsOn.join(', ')}], expected ${PROD_VALIDATION_STAGE}`,
+    ),
+  ];
+}
+
 function checkPipelineConfig({ repoRoot, readFile }) {
   const results = [];
   for (const { file, npmTag, productState } of PIPELINE_FILES) {
-    const tasks = pipelineTasks(readFile(path.join(repoRoot, file), 'utf8')).filter((task) => task.enabled);
+    const text = readFile(path.join(repoRoot, file), 'utf8');
+    const tasks = pipelineTasks(text).filter((task) => task.enabled);
+    if (file === PIPELINE_FILES[0].file) {
+      results.push(...checkProdValidation(file, text, tasks));
+    }
     const retention = tasks.filter((task) => task.name === 'AssetRetention').map((task) => task.version);
     const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
     if (retention.length === 0) {
@@ -1468,7 +1560,8 @@ const commands = {
   'pipeline-config': {
     flags: [],
     checkout: true,
-    summary: "the checkout's release YAML: Prod tag latest, SDF tag beta, AssetRetention@6 or later",
+    summary:
+      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF tag beta, AssetRetention@6 or later",
     run: async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
   },
   'consumed-changes': {
