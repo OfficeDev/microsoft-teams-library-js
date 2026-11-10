@@ -998,8 +998,33 @@ function stageDependsOn(text, stage) {
   return names;
 }
 
-function checkProdValidation(file, text, tasks) {
-  const validation = tasks.some((task) => task.name === 'PowerShell' && task.filePath === PROD_VALIDATION_SCRIPT);
+// The lines of a `- stage: <name>` item, up to the next line at or below its indent, ignoring comments and block
+// scalars. Empty when the stage is not declared.
+function stageText(text, stage) {
+  const raw = text.split(/\r?\n/);
+  const lines = withoutBlockScalars(raw.map(stripYamlComment));
+  const start = lines.findIndex((line) => {
+    const header = /^[ \t]*-[ \t]*stage:[ \t]*(.+?)[ \t]*$/.exec(line);
+    return header && yamlScalar(header[1]) === stage;
+  });
+  if (start === -1) {
+    return '';
+  }
+  const stageIndent = lines[start].length - lines[start].trimStart().length;
+  let end = start + 1;
+  while (
+    end < lines.length &&
+    (lines[end].trim() === '' || lines[end].length - lines[end].trimStart().length > stageIndent)
+  ) {
+    end++;
+  }
+  return raw.slice(start, end).join('\n');
+}
+
+function checkProdValidation(file, text) {
+  const validation = pipelineTasks(stageText(text, PROD_VALIDATION_STAGE)).some(
+    (task) => task.enabled && task.name === 'PowerShell' && task.filePath === PROD_VALIDATION_SCRIPT,
+  );
   const stageDeclared = stageDependsOn(text, PROD_VALIDATION_STAGE) !== undefined;
   const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
   return [
@@ -1023,7 +1048,7 @@ function checkPipelineConfig({ repoRoot, readFile }) {
     const text = readFile(path.join(repoRoot, file), 'utf8');
     const tasks = pipelineTasks(text).filter((task) => task.enabled);
     if (file === PIPELINE_FILES[0].file) {
-      results.push(...checkProdValidation(file, text, tasks));
+      results.push(...checkProdValidation(file, text));
     }
     const retention = tasks.filter((task) => task.name === 'AssetRetention').map((task) => task.version);
     const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
