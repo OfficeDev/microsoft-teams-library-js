@@ -9,7 +9,13 @@ const { test } = require('node:test');
 const { decide, main, prodWeek, readHistory, releasedVersionFromReadme } = require('./sdf-beta-schedule.js');
 
 const at = (iso) => new Date(iso);
-const lastPublished = { runId: 100, commit: 'aaa', runName: '20261014.3', sdfRun: '20261015.1' };
+const lastPublished = {
+  runId: 100,
+  commit: 'aaa',
+  runName: '20261014.3',
+  sdfRun: '20261015.1',
+  version: '2.59.0-beta.3',
+};
 const scheduled = {
   reason: 'Schedule',
   now: at('2026-11-11T18:00:00Z'),
@@ -186,6 +192,10 @@ function fakeAdo(routes) {
       return { ok: false, status: 404, json: async () => ({}) };
     }
     const body = routes[key];
+    if (body === 204) {
+      // Azure DevOps answers 204 with no body for a run whose timeline retention has removed.
+      return { ok: true, status: 204, json: async () => JSON.parse('') };
+    }
     return typeof body === 'number'
       ? { ok: false, status: body, json: async () => ({}) }
       : { ok: true, status: 200, json: async () => body };
@@ -193,7 +203,25 @@ function fakeAdo(routes) {
   return { fetchImpl, requested };
 }
 
-const published = { records: [{ type: 'Task', task: { name: 'EsrpRelease' }, result: 'succeeded' }] };
+const publishedRecords = (finishTime, jobId = 'job-1', logUrl = 'https://ado.example/org/logs/369') => [
+  {
+    type: 'Task',
+    task: { name: 'Npm' },
+    result: 'succeeded',
+    parentId: jobId,
+    log: { url: logUrl },
+  },
+  { type: 'Task', task: { name: 'EsrpRelease' }, result: 'succeeded', parentId: jobId, finishTime },
+];
+const published = { records: publishedRecords('2026-10-16T22:32:24Z') };
+const packLog = (version) => ({
+  count: 3,
+  value: [
+    '2026-10-16T22:29:05.6082754Z npm notice',
+    `2026-10-16T22:29:05.6083311Z npm notice package: @microsoft/teams-js@${version}`,
+    '2026-10-16T22:29:05.6267238Z npm notice package size: 949.6 kB',
+  ],
+});
 const notPublished = {
   records: [
     { type: 'Task', task: { name: 'EsrpRelease' }, result: 'skipped' },
@@ -212,11 +240,13 @@ const historyRoutes = {
   },
   'builds/6/timeline': notPublished,
   'builds/5/timeline': published,
+  'builds/4/timeline': notPublished,
   // As Azure DevOps answers it: the resource's pipeline.id is the consumed CI run's ID.
   'pipelines/7/runs/5': {
     resources: { pipelines: { ci: { pipeline: { id: 100 }, version: '20261014.3' } } },
   },
   'builds/100?': { id: 100, buildNumber: '20261014.3', sourceVersion: 'aaa' },
+  'logs/369?': packLog('2.59.0-beta.3'),
 };
 const historyInput = {
   collectionUri: 'https://ado.example/org/',
@@ -232,10 +262,9 @@ test('the history names the CI build behind the newest published beta and the ru
   const history = await readHistory({ ...historyInput, fetchImpl });
   assert.deepEqual(history, {
     inFlight: ['20261111.1'],
-    lastPublished: { runId: 100, commit: 'aaa', runName: '20261014.3', sdfRun: '20261015.1' },
+    lastPublished: { runId: 100, commit: 'aaa', runName: '20261014.3', sdfRun: '20261015.1', version: '2.59.0-beta.3' },
   });
   assert.ok(requested[0].startsWith('https://ado.example/org/project-id/_apis/build/builds?definitions=7&'));
-  assert.ok(!requested.some((url) => url.includes('builds/4/timeline')), 'stops at the newest published run');
 });
 
 test('the history reports no published beta, and fails on errors or an unexpected CI run', async () => {
@@ -272,11 +301,95 @@ test('every history request has a timeout signal', async () => {
   await assert.rejects(readHistory({ ...historyInput, fetchImpl }), /answered 503/);
 });
 
+test('the last published beta is the run whose publish finished last, not the newest queued one', async () => {
+  const { fetchImpl } = fakeAdo({
+    ...historyRoutes,
+    // Run 6 was queued after run 5 but its publish finished first.
+    'builds/6/timeline': {
+      records: publishedRecords('2026-10-16T20:00:00Z', 'job-6', 'https://ado.example/org/logs/601'),
+    },
+    'builds/5/timeline': published,
+    'pipelines/7/runs/6': { resources: { pipelines: { ci: { pipeline: { id: 90 }, version: '20261013.1' } } } },
+    'builds/90?': { id: 90, buildNumber: '20261013.1', sourceVersion: 'old' },
+    'logs/601?': packLog('2.59.0-beta.2'),
+  });
+  const history = await readHistory({ ...historyInput, fetchImpl });
+  assert.equal(history.lastPublished.sdfRun, '20261015.1');
+  assert.equal(history.lastPublished.version, '2.59.0-beta.3');
+});
+
+test('in the usual order, the newest queued run that published is the last published beta', async () => {
+  const { fetchImpl } = fakeAdo({
+    ...historyRoutes,
+    'builds/6/timeline': {
+      records: publishedRecords('2026-11-04T22:00:00Z', 'job-6', 'https://ado.example/org/logs/601'),
+    },
+    'pipelines/7/runs/6': { resources: { pipelines: { ci: { pipeline: { id: 110 }, version: '20261103.1' } } } },
+    'builds/110?': { id: 110, buildNumber: '20261103.1', sourceVersion: 'new' },
+    'logs/601?': packLog('2.59.0-beta.4'),
+  });
+  const history = await readHistory({ ...historyInput, fetchImpl });
+  assert.equal(history.lastPublished.sdfRun, '20261104.1');
+  assert.equal(history.lastPublished.version, '2.59.0-beta.4');
+});
+test('the history fails rather than guess when the published version or publish time cannot be read', async () => {
+  const noLog = fakeAdo({ ...historyRoutes, 'logs/369?': { count: 1, value: ['npm notice'] } });
+  await assert.rejects(readHistory({ ...historyInput, fetchImpl: noLog.fetchImpl }), /does not name the version/);
+
+  const noPackTask = fakeAdo({
+    ...historyRoutes,
+    'builds/5/timeline': { records: published.records.filter((record) => record.task.name !== 'Npm') },
+  });
+  await assert.rejects(readHistory({ ...historyInput, fetchImpl: noPackTask.fetchImpl }), /no npm pack log/);
+
+  const packInOtherJob = fakeAdo({
+    ...historyRoutes,
+    'builds/5/timeline': {
+      records: published.records.map((record) => (record.task.name === 'Npm' ? { ...record, parentId: 'x' } : record)),
+    },
+  });
+  await assert.rejects(readHistory({ ...historyInput, fetchImpl: packInOtherJob.fetchImpl }), /no npm pack log/);
+
+  const noFinish = fakeAdo({
+    ...historyRoutes,
+    'builds/5/timeline': {
+      records: published.records.map((record) =>
+        record.task.name === 'EsrpRelease' ? { ...record, finishTime: null } : record,
+      ),
+    },
+  });
+  await assert.rejects(readHistory({ ...historyInput, fetchImpl: noFinish.fetchImpl }), /no finish time/);
+});
+
+test('a scheduled run skips a newer build that carries the version already published', () => {
+  // Two main builds made before the beta published both got 2.60.0-beta.0; the older one was published.
+  const last = { ...lastPublished, version: '2.60.0-beta.0' };
+  const sameVersion = decide({ ...scheduled, lastPublished: last });
+  assert.equal(sameVersion.publish, false);
+  assert.match(sameVersion.reasons[0], /2\.60\.0-beta\.0 is not newer than 2\.60\.0-beta\.0, the last published beta/);
+  assert.equal(decide({ ...scheduled, beta: '2.59.1-beta.0', lastPublished: last }).publish, false);
+  assert.equal(decide({ ...scheduled, beta: '2.60.0-beta.1', lastPublished: last }).publish, true);
+  assert.equal(
+    decide({ ...scheduled, beta: '2.60.0-beta.10', lastPublished: { ...last, version: '2.60.0-beta.9' } }).publish,
+    true,
+  );
+  assert.throws(() => decide({ ...scheduled, lastPublished: { ...last, version: '2.60.0' } }), /must be betas/);
+});
+
+test('the history skips a run whose timeline Azure DevOps no longer keeps', async () => {
+  const { fetchImpl } = fakeAdo({ ...historyRoutes, 'builds/4/timeline': 204 });
+  const history = await readHistory({ ...historyInput, fetchImpl });
+  assert.equal(history.lastPublished.version, '2.59.0-beta.3');
+  const gone = fakeAdo({ ...historyRoutes, 'builds/5/timeline': 204, 'builds/4/timeline': 204 });
+  assert.equal((await readHistory({ ...historyInput, fetchImpl: gone.fetchImpl })).lastPublished, null);
+});
 test('a publish task that succeeded with issues counts as published', async () => {
   const { fetchImpl } = fakeAdo({
     ...historyRoutes,
     'builds/5/timeline': {
-      records: [{ type: 'Task', task: { name: 'EsrpRelease' }, result: 'succeededWithIssues' }],
+      records: publishedRecords('2026-10-16T22:32:24Z').map((record) =>
+        record.task.name === 'EsrpRelease' ? { ...record, result: 'succeededWithIssues' } : record,
+      ),
     },
   });
   const history = await readHistory({ ...historyInput, fetchImpl });

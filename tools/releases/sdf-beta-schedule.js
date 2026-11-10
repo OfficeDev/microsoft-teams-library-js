@@ -7,7 +7,7 @@
  *   - it is a Prod week: the Monday-Sunday week (UTC) that contains the first Wednesday of a month;
  *   - the CI build is a beta of a version that has already shipped (the README in the build names it on the CDN);
  *   - nothing new reached main since the last beta: the CI build has the same commit as the build the last
- *     published beta used, or is not newer than it;
+ *     published beta used, or is not newer than it, or its beta version is not newer than the published one;
  *   - another run of this pipeline is still in progress.
  * Anything it cannot establish (no beta version, a build that is not from main, Azure DevOps not answering, no
  * published beta in the recent history) fails the step, so a scheduled run never publishes on a guess.
@@ -29,6 +29,7 @@ const MAIN_BRANCH = 'refs/heads/main';
 const BETA_VERSION = /^((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))-beta\.(?:0|[1-9]\d*)$/;
 const PROD_CDN_SCRIPT = /res\.cdn\.office\.net\/teams-js\/(\d+\.\d+\.\d+)\/js\/MicrosoftTeams\.min\.js/g;
 const NPM_PUBLISH_TASK = 'EsrpRelease';
+const NPM_PACK_TASK = 'Npm';
 const SUCCEEDED = ['succeeded', 'succeededWithIssues'];
 const HISTORY_SIZE = 50;
 
@@ -52,6 +53,18 @@ function compareReleases(a, b) {
   return 0;
 }
 
+/** Orders two <x.y.z>-beta.<n> versions; a version that is not a beta sorts as unknown, which throws. */
+function compareBetas(a, b) {
+  const left = BETA_VERSION.exec(a || '');
+  const right = BETA_VERSION.exec(b || '');
+  if (!left || !right) {
+    throw new Error(
+      `Cannot compare ${a} with the last published version ${b}; both must be betas such as 2.60.0-beta.0`,
+    );
+  }
+  return compareReleases(left[1], right[1]) || Number(a.split('.').pop()) - Number(b.split('.').pop());
+}
+
 /** The highest Prod CDN version the README links to, which is the last release the build's source had merged. */
 function releasedVersionFromReadme(readme) {
   const versions = Array.from(readme.matchAll(PROD_CDN_SCRIPT), (match) => match[1]);
@@ -62,7 +75,7 @@ function releasedVersionFromReadme(readme) {
 }
 
 /**
- * The pure decision. `lastPublished` is { runId, commit, runName, sdfRun } for the CI build behind the newest
+ * The pure decision. `lastPublished` is { runId, commit, runName, sdfRun, version } for the CI build behind the newest
  * published beta; `inFlight` lists other runs of this pipeline that have not completed.
  * Returns { publish, reasons }; throws when a scheduled run cannot be judged safely.
  */
@@ -105,6 +118,9 @@ function decide({ reason, now, beta, releasedVersion, sourceBranch, current, las
     reasons.push(
       `Nothing new: CI run ${current.runName} is not newer than ${lastPublished.runName}, the last published beta's build`,
     );
+  } else if (lastPublished.version && compareBetas(beta, lastPublished.version) <= 0) {
+    // Two main builds made before a beta publishes can carry the same version, and npm never takes a version twice.
+    reasons.push(`Nothing new: ${beta} is not newer than ${lastPublished.version}, the last published beta`);
   }
   if (inFlight.length > 0) {
     reasons.push(`Another run of this pipeline is in progress: ${inFlight.join(', ')}`);
@@ -120,12 +136,43 @@ async function getJson(fetchImpl, url, token) {
   if (!response.ok) {
     throw new Error(`GET ${url} answered ${response.status}`);
   }
-  return response.json();
+  // 204 No Content: for example the timeline of a run that retention has removed.
+  return response.status === 204 ? null : response.json();
+}
+
+const PACKED_VERSION = /npm notice package: @microsoft\/teams-js@(\S+)/;
+
+/**
+ * The version a run published, from `npm notice package: @microsoft/teams-js@<version>` in the log of the npm pack
+ * task in the same job as the publish task. Two CI builds can carry the same beta version, so the commit alone does
+ * not show a build's beta is still unpublished.
+ */
+async function publishedVersion({ fetchImpl, token, records, publish, run }) {
+  const pack = records.find(
+    (record) =>
+      record.type === 'Task' &&
+      record.task &&
+      record.task.name === NPM_PACK_TASK &&
+      record.parentId === publish.parentId &&
+      SUCCEEDED.includes(record.result),
+  );
+  if (!pack || !pack.log || !pack.log.url) {
+    throw new Error(`Run ${run.buildNumber} published a beta but has no npm pack log to read its version from`);
+  }
+  const log = await getJson(fetchImpl, `${pack.log.url}?api-version=7.1`, token);
+  const lines = log && Array.isArray(log.value) ? log.value : [];
+  for (const line of lines) {
+    const match = PACKED_VERSION.exec(String(line));
+    if (match) {
+      return match[1];
+    }
+  }
+  throw new Error(`Run ${run.buildNumber} published a beta but its npm pack log does not name the version`);
 }
 
 /**
- * Reads this pipeline's recent runs. The newest completed run whose npm publish task succeeded published the current
- * beta; its pipeline resource names the CI run that beta came from.
+ * Reads this pipeline's recent runs. The completed run whose npm publish task finished last published the current
+ * beta; its pipeline resource names the CI run that beta came from, and its npm pack log names the version.
  */
 async function readHistory({ fetchImpl, collectionUri, project, definitionId, buildId, alias, token }) {
   const base = `${collectionUri.replace(/\/+$/, '')}/${project}/_apis`;
@@ -137,18 +184,32 @@ async function readHistory({ fetchImpl, collectionUri, project, definitionId, bu
   const others = runs.value.filter((run) => String(run.id) !== String(buildId));
   const inFlight = others.filter((run) => run.status !== 'completed').map((run) => run.buildNumber);
 
+  // Overlapping manual runs can publish out of queue order, so the last published beta is the run whose npm publish
+  // task finished last, not the most recently queued one.
+  let latest;
   for (const run of others.filter((candidate) => candidate.status === 'completed')) {
     const timeline = await getJson(fetchImpl, `${base}/build/builds/${run.id}/timeline?api-version=7.1`, token);
-    const published = (timeline && timeline.records ? timeline.records : []).some(
+    const records = timeline && Array.isArray(timeline.records) ? timeline.records : [];
+    const publish = records.find(
       (record) =>
         record.type === 'Task' &&
         record.task &&
         record.task.name === NPM_PUBLISH_TASK &&
         SUCCEEDED.includes(record.result),
     );
-    if (!published) {
+    if (!publish) {
       continue;
     }
+    const finished = Date.parse(publish.finishTime);
+    if (Number.isNaN(finished)) {
+      throw new Error(`Run ${run.buildNumber} published a beta but its publish task has no finish time`);
+    }
+    if (!latest || finished > latest.finished) {
+      latest = { run, records, publish, finished };
+    }
+  }
+  if (latest) {
+    const { run, records, publish } = latest;
     const details = await getJson(fetchImpl, `${base}/pipelines/${definitionId}/runs/${run.id}?api-version=7.1`, token);
     const resource = details.resources && details.resources.pipelines && details.resources.pipelines[alias];
     if (!resource || !resource.version || !resource.pipeline) {
@@ -166,6 +227,7 @@ async function readHistory({ fetchImpl, collectionUri, project, definitionId, bu
         commit: ciRun.sourceVersion,
         runName: ciRun.buildNumber,
         sdfRun: run.buildNumber,
+        version: await publishedVersion({ fetchImpl, token, records, publish, run }),
       },
     };
   }
@@ -213,7 +275,7 @@ function summarize({ decision, beta, releasedVersion, current, lastPublished, sr
     `- CI build: ${beta} from CI run ${current.runName} (${current.runId}) at commit ${current.commit}`,
     `- The released version in its README: ${releasedVersion || 'none found'}`,
     lastPublished
-      ? `- Last published beta: SDF run ${lastPublished.sdfRun}, from CI run ${lastPublished.runName} at commit ${lastPublished.commit}`
+      ? `- Last published beta: ${lastPublished.version || '(version unknown)'} by SDF run ${lastPublished.sdfRun}, from CI run ${lastPublished.runName} at commit ${lastPublished.commit}`
       : '- Last published beta: none in the recent history',
   ];
   if (lastPublished && lastPublished.commit && current.commit && lastPublished.commit !== current.commit) {
@@ -270,7 +332,7 @@ async function main(
     log(`Released version in its README: ${releasedVersion || 'none found'}`);
     if (history.lastPublished) {
       const last = history.lastPublished;
-      log(`Last published beta: run ${last.sdfRun}, from CI run ${last.runName} at ${last.commit}`);
+      log(`Last published beta: ${last.version} by run ${last.sdfRun}, from CI run ${last.runName} at ${last.commit}`);
     }
     const current = {
       runId: options['run-id'],
