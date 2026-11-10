@@ -1966,6 +1966,311 @@ describe('check-release', () => {
       assert.equal(await runWith(argv, fetchImpl), ExitCode.unreachable, lines.join('\n'));
     });
   });
+
+  describe('preflight', () => {
+    const MAIN_CI_RUNS = `${GITHUB_REPO_API}/actions/workflows/main.yml/runs?branch=main&event=push&status=completed&per_page=1`;
+    const RUN_URL = 'https://github.com/OfficeDev/microsoft-teams-library-js/actions/runs/1';
+    const ciRun = (conclusion) =>
+      response(200, { workflow_runs: [{ conclusion, html_url: RUN_URL, head_sha: 'b'.repeat(40) }] });
+    const healthy = (extra = {}) =>
+      fakeFetch({
+        [registryTags(NPM)]: response(200, { latest: '2.58.0', beta: '2.59.0-beta.0' }),
+        [MAIN_CI_RUNS]: ciRun('success'),
+        ...extra,
+      });
+    const setUp = ({ changeFiles = [['@microsoft-teams-js-new.json', 'Added `brandNew`.', 'minor']] } = {}) => {
+      writeRepo(root, { version: '2.58.0' });
+      writePipelineConfig(root);
+      writeCleanup(root, { changelog: RELEASED_CHANGELOG, changeFiles });
+    };
+
+    it('passes with a pending bump, good pipeline YAML, a reachable registry and green CI', async () => {
+      setUp();
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.passed, lines.join('\n'));
+      const text = lines.join('\n');
+      assert.match(text, /^PASS 1 pending change file \(minor 1\)/m);
+      assert.match(text, /^INFO the pending change files bump 2\.58\.0 to 2\.59\.0/m);
+      assert.match(text, /^INFO npm .*latest 2\.58\.0, beta 2\.59\.0-beta\.0/m);
+      assert.match(text, /^PASS .*main\.yml.*succeeded/m);
+      assert.match(text, /^INFO not checked here: .*Lockbox/m);
+    });
+
+    it('fails when there are no pending change files', async () => {
+      setUp({ changeFiles: [] });
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('nothing to release')),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails when the change folder is missing', async () => {
+      setUp({ changeFiles: [] });
+      fs.rmSync(path.join(root, 'change'), { recursive: true });
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('fails when every pending change file is type none', async () => {
+      setUp({ changeFiles: [['@microsoft-teams-js-released.json', 'Released 2.58.0', 'none']] });
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('none')),
+        lines.join('\n'),
+      );
+    });
+
+    it('takes the highest bump across change files', async () => {
+      setUp({
+        changeFiles: [
+          ['@microsoft-teams-js-a.json', 'A fix.', 'patch'],
+          ['@microsoft-teams-js-b.json', 'A feature.', 'minor'],
+          ['@microsoft-teams-js-c.json', 'Released 2.58.0', 'none'],
+        ],
+      });
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.passed, lines.join('\n'));
+      assert.match(lines.join('\n'), /^PASS 3 pending change files \(minor 1, none 1, patch 1\)/m);
+      assert.match(lines.join('\n'), /bump 2\.58\.0 to 2\.59\.0/);
+    });
+
+    it('bumps a patch and a major the way beachball does', async () => {
+      setUp({ changeFiles: [['@microsoft-teams-js-a.json', 'A fix.', 'patch']] });
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.passed, lines.join('\n'));
+      assert.match(lines.join('\n'), /bump 2\.58\.0 to 2\.58\.1/);
+      lines = [];
+      setUp({ changeFiles: [['@microsoft-teams-js-a.json', 'Breaking.', 'major']] });
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.passed, lines.join('\n'));
+      assert.match(lines.join('\n'), /bump 2\.58\.0 to 3\.0\.0/);
+    });
+
+    for (const [name, contents] of [
+      ['not JSON', '{ "type": '],
+      ['an unknown type', JSON.stringify({ type: 'feature', comment: 'x' })],
+      ['a prototype key as its type', JSON.stringify({ type: '__proto__', comment: 'x' })],
+      ['an array', '[]'],
+    ]) {
+      it(`fails, naming the file, when a change file is ${name}`, async () => {
+        setUp();
+        fs.writeFileSync(path.join(root, 'change', '@microsoft-teams-js-bad.json'), contents);
+        assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('FAIL') && line.includes('@microsoft-teams-js-bad.json')),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    it('ignores files in the change folder that are not JSON', async () => {
+      setUp();
+      fs.writeFileSync(path.join(root, 'change', 'README.md'), 'notes');
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('fails when the pipeline YAML would publish Prod with the wrong tag', async () => {
+      setUp();
+      writePipelineConfig(root, { prodTag: 'beta' });
+      assert.equal(await runWith(['preflight'], healthy().fetchImpl), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('fails, with the run link, when the latest completed main CI run did not succeed', async () => {
+      setUp();
+      const { fetchImpl } = healthy({ [MAIN_CI_RUNS]: ciRun('failure') });
+      assert.equal(await runWith(['preflight'], fetchImpl), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('failure') && line.includes(RUN_URL)),
+        lines.join('\n'),
+      );
+    });
+
+    for (const [name, body] of [
+      ['no runs', { workflow_runs: [] }],
+      ['a malformed run list', { workflow_runs: 'x' }],
+      ['a run without a conclusion', { workflow_runs: [{ html_url: RUN_URL }] }],
+    ]) {
+      it(`is inconclusive when the CI answer has ${name}`, async () => {
+        setUp();
+        const { fetchImpl } = healthy({ [MAIN_CI_RUNS]: response(200, body) });
+        assert.equal(await runWith(['preflight'], fetchImpl), ExitCode.unreachable, lines.join('\n'));
+      });
+    }
+
+    it('is inconclusive, not failed, when the npm registry cannot be reached', async () => {
+      setUp();
+      const { fetchImpl } = healthy(unreachable(registryTags(NPM)));
+      assert.equal(await runWith(['preflight'], fetchImpl), ExitCode.unreachable, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('UNREACHABLE') && line.includes('dist-tags')),
+        lines.join('\n'),
+      );
+    });
+
+    it('is inconclusive when the registry answers without a latest version', async () => {
+      setUp();
+      const { fetchImpl } = healthy({ [registryTags(NPM)]: response(200, { latest: 42 }) });
+      assert.equal(await runWith(['preflight'], fetchImpl), ExitCode.unreachable, lines.join('\n'));
+    });
+
+    it('with --version, passes when the version is free and its release branch does not exist', async () => {
+      setUp();
+      const { fetchImpl, requested } = healthy();
+      assert.equal(await runWith(['preflight', '--version', '2.59.0'], fetchImpl), ExitCode.passed, lines.join('\n'));
+      assert.ok(requested.includes(`${GITHUB_REPO_API}/git/ref/heads/release/2.59.0`), requested.join('\n'));
+      assert.ok(requested.includes(cdnScriptUrl('2.59.0', 'prod')), requested.join('\n'));
+    });
+
+    it('with --version, fails when release/<v> already exists', async () => {
+      setUp();
+      const { fetchImpl } = healthy({
+        [`${GITHUB_REPO_API}/git/ref/heads/release/2.59.0`]: response(200, { name: 'release/2.59.0' }),
+      });
+      assert.equal(await runWith(['preflight', '--version', '2.59.0'], fetchImpl), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('release/2.59.0')),
+        lines.join('\n'),
+      );
+    });
+
+    it('with --version, fails when it is not the version the change files produce', async () => {
+      setUp();
+      const argv = ['preflight', '--version', '2.58.1'];
+      assert.equal(await runWith(argv, healthy().fetchImpl), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('2.58.1') && line.includes('2.59.0')),
+        lines.join('\n'),
+      );
+    });
+
+    it('with --version, fails when the version is already on npm', async () => {
+      setUp();
+      const { fetchImpl } = healthy({ [registryVersion(NPM, '2.59.0')]: response(200, { version: '2.59.0' }) });
+      assert.equal(await runWith(['preflight', '--version', '2.59.0'], fetchImpl), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('rejects a beta --version; a Prod pre-flight is for a release version', async () => {
+      setUp();
+      assert.equal(await runWith(['preflight', '--version', '2.59.0-beta.0']), ExitCode.usage, lines.join('\n'));
+    });
+
+    it('needs a checkout', async () => {
+      const code = await run(['preflight'], { repoRoot: undefined, fetchImpl: throwingFetch, log, env });
+      assert.equal(code, ExitCode.usage);
+    });
+  });
+
+  describe('announcement-draft', () => {
+    const write = (changelog) => {
+      fs.mkdirSync(path.join(root, 'packages', 'teams-js'), { recursive: true });
+      fs.writeFileSync(path.join(root, 'packages', 'teams-js', 'CHANGELOG.md'), changelog);
+    };
+    const draftOf = () => {
+      const start = lines.findIndex((line) => line.startsWith('INFO announcement draft'));
+      assert.ok(start !== -1, lines.join('\n'));
+      return lines[start].split('\n').slice(1).join('\n');
+    };
+
+    it('drafts the announcement from the CHANGELOG section, and its links pass the announcement check', async () => {
+      write(RELEASED_CHANGELOG);
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+      const draft = draftOf();
+      const links = publicLinks(VERSION);
+      assert.ok(draft.startsWith(`TeamsJS v${VERSION} Release\n`), draft);
+      assert.ok(draft.includes(`teams-js v${VERSION} has been released to npm and CDN`), draft);
+      for (const url of Object.values(links)) {
+        assert.ok(draft.includes(url), url);
+      }
+      assert.ok(
+        draft.includes(
+          'Minor changes\n- Added `clipboard.read` permission APIs.\n- Added `localNetworkAccess` permission APIs.',
+        ),
+        draft,
+      );
+      assert.ok(draft.includes('Patches\n- Added Copilot Studio origins to the valid-origins artifact.'), draft);
+      assert.ok(!draft.includes('stageView'), 'took an entry from the next section');
+      assert.ok(!draft.includes('GMT'), 'copied the date line');
+      assert.ok(
+        lines.some((line) => line === `PASS every npm link names ${VERSION}`),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails when the CHANGELOG has no section for the version', async () => {
+      write(RELEASED_CHANGELOG);
+      assert.equal(await runWith(['announcement-draft', '--version', '2.60.0']), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('## 2.60.0')),
+        lines.join('\n'),
+      );
+      assert.ok(!lines.some((line) => line.startsWith('INFO announcement draft')), lines.join('\n'));
+    });
+
+    it('fails when the section has no entries', async () => {
+      write(
+        ['# Change Log - @microsoft/teams-js', '', `## ${VERSION}`, '', 'Wed, 04 Nov 2026', '', '## 2.58.0'].join('\n'),
+      );
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('keeps every heading in order and joins an entry that wraps or has a second paragraph', async () => {
+      write(
+        [
+          `## ${VERSION}`,
+          '',
+          '### Major changes',
+          '',
+          '- Removed `legacy`.',
+          '',
+          '### Patches',
+          '',
+          '- Fixed a race',
+          '  in `app.initialize`.',
+          '',
+          '  It only affected hosts that reply twice.',
+          '- Another fix.',
+          '',
+          '## 2.58.0',
+        ].join('\r\n'),
+      );
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+      const draft = draftOf();
+      assert.ok(
+        draft.includes(
+          'Major changes\n- Removed `legacy`.\n\nPatches\n' +
+            '- Fixed a race in `app.initialize`. It only affected hosts that reply twice.\n- Another fix.',
+        ),
+        draft,
+      );
+      assert.ok(!draft.includes('\r'), 'kept a carriage return');
+    });
+
+    it('fails the draft when a CHANGELOG entry links another version', async () => {
+      write(
+        RELEASED_CHANGELOG.replace(
+          '- Added `localNetworkAccess` permission APIs.',
+          '- Added `localNetworkAccess` (see https://www.npmjs.com/package/@microsoft/teams-js/v/2.58.0).',
+        ),
+      );
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('2.58.0')),
+        lines.join('\n'),
+      );
+    });
+
+    it('rejects a beta version; betas are never announced', async () => {
+      write(RELEASED_CHANGELOG);
+      assert.equal(await runWith(['announcement-draft', '--version', '2.60.0-beta.0']), ExitCode.usage);
+    });
+
+    it('needs a checkout', async () => {
+      const code = await run(['announcement-draft', '--version', VERSION], {
+        repoRoot: undefined,
+        fetchImpl: throwingFetch,
+        log,
+        env,
+      });
+      assert.equal(code, ExitCode.usage);
+    });
+  });
+
   describe('links and usage', () => {
     it('prints the public links only', async () => {
       assert.equal(await runWith(['links', '--version', VERSION]), ExitCode.passed);

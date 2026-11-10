@@ -3,6 +3,10 @@
  * Read-only checks for a @microsoft/teams-js release. Nothing here writes files, refs, packages or messages.
  *
  *   check-version --version <v>                    <v> is free on npm, the Prod CDN and as a GitHub tag
+ *   preflight     [--version <v>] [--registry <url>]
+ *                                                  Step 1: pending change files and the version they make, the
+ *                                                  release YAML, npm reachability and GitHub CI on main; with
+ *                                                  --version, check-version and that release/<v> does not exist
  *   carriers      --version <v>                    the checkout's version carriers agree on <v> and one SRI hash
  *   artifact      --version <v> --file <path>      a downloaded CI build's MicrosoftTeams.min.js matches that SRI
  *   published     --version <v> [--environment prod|sdf] [--dist-tag <tag>] [--expected-sri <sri>] [--registry <url>]
@@ -21,6 +25,8 @@
  *                                                  SDF with tag beta, and each has artifact retention @6 or later;
  *                                                  commented-out, `enabled: false` and script-text tasks don't count
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
+ *   announcement-draft --version <v>               prints a Prod announcement draft from the checkout's CHANGELOG
+ *                                                  section for <v>, then runs the announcement check on it
  *   consumed-changes --version <v> --prep-commit <sha>
  *                                                  no pending change file was deleted by the prep commit; one that
  *                                                  only repeats an entry released in <v> is inconclusive
@@ -228,7 +234,7 @@ async function fetchOrUnreachable(fetchImpl, url, label) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : error?.message ?? String(error);
+        : (error?.message ?? String(error));
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -245,7 +251,7 @@ async function readBody(response, read, label, url) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : error?.message ?? String(error);
+        : (error?.message ?? String(error));
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -1274,6 +1280,248 @@ async function checkValidDomains({ repoRoot, fetchImpl, readFile }) {
   ];
 }
 
+// The beachball change types a release uses, highest bump first. Any other type is a FAIL to look at by hand.
+const CHANGE_TYPES = ['major', 'minor', 'patch', 'none'];
+const MAIN_CI_WORKFLOW = 'main.yml';
+
+function mainCiRunsUrl() {
+  return (
+    `${GITHUB_API}/repos/${REPOSITORY}/actions/workflows/${MAIN_CI_WORKFLOW}/runs` +
+    '?branch=main&event=push&status=completed&per_page=1'
+  );
+}
+
+function readPendingChanges({ repoRoot, readFile, readDirectory }) {
+  let names;
+  try {
+    names = readDirectory(path.join(repoRoot, CHANGE_DIRECTORY));
+  } catch (error) {
+    if (error && error.code === 'ENOENT') {
+      names = [];
+    } else {
+      throw error;
+    }
+  }
+  const counts = Object.create(null);
+  const problems = [];
+  for (const name of names.filter((file) => file.endsWith('.json')).sort()) {
+    const relativePath = `${CHANGE_DIRECTORY}/${name}`;
+    let changeFile;
+    try {
+      changeFile = readLocalJson(readFile, path.join(repoRoot, CHANGE_DIRECTORY, name), relativePath);
+    } catch (error) {
+      if (!(error instanceof LocalFileError)) {
+        throw error;
+      }
+      problems.push(result(Outcome.fail, `${error.message}; beachball cannot read it either`));
+      continue;
+    }
+    const type =
+      changeFile && typeof changeFile === 'object' && !Array.isArray(changeFile) ? changeFile.type : undefined;
+    if (typeof type !== 'string' || !CHANGE_TYPES.includes(type)) {
+      problems.push(
+        result(Outcome.fail, `${relativePath} has no change type a release uses (${CHANGE_TYPES.join(', ')})`),
+      );
+      continue;
+    }
+    counts[type] = (counts[type] || 0) + 1;
+  }
+  return { counts, problems };
+}
+
+function bumpVersion(version, type) {
+  const [major, minor, patch] = parseVersion(version).core;
+  if (type === 'major') {
+    return `${major + 1}.0.0`;
+  }
+  return type === 'minor' ? `${major}.${minor + 1}.0` : `${major}.${minor}.${patch + 1}`;
+}
+
+function pendingChangesResults({ repoRoot, readFile, readDirectory }) {
+  const { counts, problems } = readPendingChanges({ repoRoot, readFile, readDirectory });
+  const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  const results = [...problems];
+  if (total === 0) {
+    if (problems.length === 0) {
+      results.push(result(Outcome.fail, `no pending change files in ${CHANGE_DIRECTORY}/, so nothing to release`));
+    }
+    return { results };
+  }
+  const summary = Object.keys(counts)
+    .sort()
+    .map((type) => `${type} ${counts[type]}`)
+    .join(', ');
+  const bump = CHANGE_TYPES.find((type) => type !== 'none' && counts[type]);
+  if (!bump) {
+    results.push(
+      result(
+        Outcome.fail,
+        `${total} pending change ${total === 1 ? 'file' : 'files'} (${summary}), all type none, so nothing bumps the ` +
+          'version; a leftover "Released x.y.z" file from the last merge-back is one of these',
+      ),
+    );
+    return { results };
+  }
+  results.push(result(Outcome.pass, `${total} pending change ${total === 1 ? 'file' : 'files'} (${summary})`));
+  const current = readLocalJson(readFile, path.join(repoRoot, PACKAGE_JSON_FILES[0]), PACKAGE_JSON_FILES[0])?.version;
+  if (typeof current !== 'string' || !VERSION_PATTERN.test(current)) {
+    results.push(result(Outcome.fail, `${PACKAGE_JSON_FILES[0]} has no semantic version`));
+    return { results };
+  }
+  const next = bumpVersion(current, bump);
+  results.push(
+    result(Outcome.info, `the pending change files bump ${current} to ${next} (${bump}); preRelease.js makes the bump`),
+  );
+  return { results, next };
+}
+
+async function npmTagsInfo({ registry, fetchImpl }) {
+  const url = npmDistTagsUrl(registry);
+  const answer = await readJson(fetchImpl, url, 'npm dist-tags');
+  if (answer.problem) {
+    return answer.problem;
+  }
+  const { latest, beta } = answer.json;
+  if (typeof latest !== 'string' || !VERSION_PATTERN.test(latest)) {
+    return result(Outcome.unreachable, `npm dist-tags: ${url} has no latest version. This is not evidence either way.`);
+  }
+  const betaText = typeof beta === 'string' && VERSION_PATTERN.test(beta) ? `, beta ${beta}` : '';
+  return result(Outcome.info, `npm ${registry === DEFAULT_REGISTRY ? '' : '(proxy) '}latest ${latest}${betaText}`);
+}
+
+async function checkMainCi({ fetchImpl }) {
+  const url = mainCiRunsUrl();
+  const label = `GitHub Actions ${MAIN_CI_WORKFLOW} on main`;
+  const answer = await readGithubJson(fetchImpl, url, label, {
+    valid: (json) =>
+      Array.isArray(json.workflow_runs) &&
+      typeof json.workflow_runs[0]?.conclusion === 'string' &&
+      typeof json.workflow_runs[0]?.html_url === 'string',
+    fields: 'a completed run with a conclusion',
+  });
+  if (answer.problem) {
+    return answer.problem;
+  }
+  const { conclusion, html_url: runUrl } = answer.json.workflow_runs[0];
+  const internal = 'The internal CI build the release uses is not visible here; check it in the internal project.';
+  return conclusion === 'success'
+    ? result(Outcome.pass, `${label}: the latest completed run succeeded (${runUrl}). ${internal}`)
+    : result(
+        Outcome.fail,
+        `${label}: the latest completed run ended ${conclusion} (${runUrl}); confirm it is known and unrelated. ` +
+          internal,
+      );
+}
+
+async function checkPreflight({ version, registry, repoRoot, readFile, readDirectory, fetchImpl }) {
+  const changes = pendingChangesResults({ repoRoot, readFile, readDirectory });
+  const results = [...changes.results, ...checkPipelineConfig({ repoRoot, readFile })];
+  results.push(await npmTagsInfo({ registry, fetchImpl }));
+  results.push(await checkMainCi({ fetchImpl }));
+  if (version) {
+    if (changes.next && changes.next !== version) {
+      results.push(
+        result(
+          Outcome.fail,
+          `--version ${version}, but the pending change files make ${changes.next}; recheck the plan`,
+        ),
+      );
+    }
+    results.push(...(await checkVersionIsFree({ version, registry, fetchImpl })));
+    const branch = `release/${version}`;
+    // The git ref endpoint answers a missing branch with GitHub's own { "message": "Not Found" }; the branches
+    // endpoint answers "Branch not found", which is not the not-found answer the origin rule accepts.
+    results.push(
+      await expectAbsent(
+        fetchImpl,
+        `${GITHUB_API}/repos/${REPOSITORY}/git/ref/heads/${branch}`,
+        `Branch ${branch}`,
+        'so check whether it is stale before reusing it (see failure-modes.md)',
+      ),
+    );
+  }
+  results.push(
+    result(
+      Outcome.info,
+      'not checked here: Lockbox eligibility, an approver and a backup, the internal CI build, the release work item ' +
+        'and the content freeze',
+    ),
+  );
+  return results;
+}
+
+function changelogSection(changelog, version) {
+  const lines = changelog.split(/\r?\n/);
+  const start = lines.findIndex((line) => line.trim() === `## ${version}`);
+  if (start === -1) {
+    return undefined;
+  }
+  const groups = [];
+  let group;
+  let entry;
+  let afterBlank = false;
+  for (const line of lines.slice(start + 1)) {
+    if (line.startsWith('## ')) {
+      break;
+    }
+    if (line.startsWith('### ')) {
+      group = { heading: line.slice(4).trim(), entries: [] };
+      groups.push(group);
+      entry = undefined;
+    } else if (line.startsWith('- ') && group) {
+      entry = [line.slice(2)];
+      group.entries.push(entry);
+      afterBlank = false;
+      continue;
+    } else if (line.trim() === '') {
+      // Paragraphs after a blank line belong to the entry only when beachball indented them.
+      afterBlank = true;
+      continue;
+    } else if (entry && !line.trim().startsWith('#') && (!afterBlank || /^\s/.test(line))) {
+      entry.push(line);
+    } else {
+      entry = undefined;
+    }
+    afterBlank = false;
+  }
+  return groups
+    .map(({ heading, entries }) => ({ heading, entries: entries.map((lines) => normalizeText(lines.join(' '))) }))
+    .filter(({ entries }) => entries.length > 0);
+}
+
+function draftAnnouncement({ version, repoRoot, readFile }) {
+  const groups = changelogSection(readFile(path.join(repoRoot, CHANGELOG_PATH), 'utf8'), version);
+  if (!groups) {
+    return [
+      result(
+        Outcome.fail,
+        `${CHANGELOG_PATH} has no "## ${version}" section; run this on release/${version} after the prep PR merges`,
+      ),
+    ];
+  }
+  if (groups.length === 0) {
+    return [result(Outcome.fail, `the "## ${version}" section of ${CHANGELOG_PATH} has no entries to announce`)];
+  }
+  const links = publicLinks(version);
+  const text = [
+    `TeamsJS v${version} Release`,
+    '',
+    `teams-js v${version} has been released to npm and CDN.`,
+    '',
+    `npm: ${links.npm}`,
+    `CDN: ${links.cdn}`,
+    `GitHub release: ${links.githubRelease}`,
+    ...groups.flatMap(({ heading, entries }) => ['', heading, ...entries.map((entry) => `- ${entry}`)]),
+  ].join('\n');
+  return [
+    result(
+      Outcome.info,
+      'announcement draft (subject first; tag the contacts the internal runbook names before sending):\n' + text,
+    ),
+    ...checkAnnouncement({ version, text }),
+  ];
+}
+
 function parseArgs(argv) {
   const [command, ...rest] = argv;
   const options = Object.create(null);
@@ -1385,6 +1633,21 @@ function checkArtifact({ version, file, repoRoot, readFile, readDirectory }) {
 }
 
 const commands = {
+  preflight: {
+    flags: ['version', 'registry'],
+    optional: ['version', 'registry'],
+    checkout: true,
+    summary:
+      'Step 1: pending change files and the version they make, release YAML, npm reachability, GitHub CI on main; ' +
+      'with --version, also check-version and that release/<v> does not exist',
+    run: async (options, deps) => {
+      const version = options.version === undefined ? undefined : requireVersion(options);
+      if (version && !/^\d+\.\d+\.\d+$/.test(version)) {
+        throw new UsageError('preflight --version is the Prod version to release, such as 2.60.0, not a beta');
+      }
+      return checkPreflight({ version, registry: requireRegistry(options), ...deps });
+    },
+  },
   'check-version': {
     flags: ['version', 'registry'],
     optional: ['registry'],
@@ -1496,6 +1759,18 @@ const commands = {
       const version = requireVersion(options);
       const file = requireFile(options, 'announcement', 'path to the draft text');
       return checkAnnouncement({ version, text: readFile(file, 'utf8') });
+    },
+  },
+  'announcement-draft': {
+    flags: ['version'],
+    checkout: true,
+    summary: "prints a Prod announcement draft from the checkout's CHANGELOG section and runs the announcement check",
+    run: async (options, { repoRoot, readFile }) => {
+      const version = requireVersion(options);
+      if (!/^\d+\.\d+\.\d+$/.test(version)) {
+        throw new UsageError('announcement-draft is for Prod releases, such as 2.60.0; betas are never announced');
+      }
+      return draftAnnouncement({ version, repoRoot, readFile });
     },
   },
   size: {
