@@ -13,16 +13,19 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ## Pipeline outcomes
 
-### A successful Prod run ends "failed" at "View Published Package URLs"
+### A successful Prod or SDF run ends "failed" at "View Published Package URLs"
 
 - **Symptom:** since March 2026 every Prod run ends failed (one was canceled at the same step), even though the npm
-  publish and the CDN upload succeeded; earlier runs ended succeeded or partially succeeded. "View Published Package
-  URLs" is the only red task, and the template's closing "Publish to ARROW" step is skipped as a result.
+  publish and the CDN upload succeeded; earlier runs ended succeeded or partially succeeded. SDF runs have failed at
+  the same step too. "View Published Package URLs" is the only red task, and the template's closing "Publish to ARROW"
+  step is skipped as a result.
 - **Cause:** the script that step runs reads a stale artifact path.
 - **Fix:** none needed for the release. Check that artifact retention, the ESRP npm publish and the 1CDN upload
-  succeeded, verify as in Prod step 9, and carry on. Any other red task is a real failure. Fixed by
-  [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) for release branches cut after it
-  merged; on an older branch the step also prints an SDF CDN link on Prod runs, so do not mistake it for the Prod URL.
+  succeeded, verify as in Prod step 9 (or SDF step 5), and carry on. Any other red task is a real failure. Fixed by
+  [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) in CI builds made after it merged: the
+  step runs the script from the selected CI build's `scripts` artifact, not from the queued branch. For Prod that is
+  the build of a release branch cut after the fix; for SDF, a `main` build after it. With an older build the step
+  also prints an SDF CDN link on Prod runs, so do not mistake it for the Prod URL.
 - **Not to confuse with:** a successful DDL run, which normally ends "partially succeeded".
 
 ### Prod published with the wrong npm tag

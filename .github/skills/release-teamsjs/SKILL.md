@@ -134,7 +134,8 @@ Check and report:
 - Whether `release/<x.y.z>` already exists (see the failure modes for a stale branch).
 - Any release pipeline fix merged since the last release (for example [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187)
   or [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198)). The release pipelines read their YAML
-  from the branch you queue, so a fix reaches a release only if the release branch contains it. A fix still needed on
+  from the branch you queue, so a fix reaches a release only if the release branch contains it; a fix to a script in
+  the CI build's `scripts` artifact, like #3187, reaches it only through the CI build you select. A fix still needed on
   release day costs at least an hour and a half (see the failure modes), so check this the day before.
 - Lockbox eligibility (yours, confirmed or re-requested at least one business day ahead; a lapsed requester is the
   most common first-run failure) and an approver plus a backup from the owning team are lined up for today.
@@ -313,11 +314,13 @@ Then:
 - Judge the run by these tasks in the job, **not** the run status: artifact retention, "Publish to npm (tag latest) -
   ESRP release" and "Push teams-js to M365 1CDN (Prod)". The npm task name must say **tag latest**; a past typo
   published a Prod release with the `beta` tag.
-- A Prod run from a release branch cut before [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187)
-  merged still ends **failed** at "View Published Package URLs", its only red task, and the template's closing
-  "Publish to ARROW" step is skipped. From a branch that includes the fix, that step passes and prints the run's own
-  CDN link and the npm link. Any other red task is a real failure. A warning that the ESRP release task "will be
-  blocked in future releases" appears on every run and does not block today.
+- "View Published Package URLs" runs the script from the selected CI build's `scripts` artifact, not from the queued
+  branch. A run whose CI build predates [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187)
+  still ends **failed** at that step, its only red task, and the template's closing "Publish to ARROW" step is
+  skipped. Step 6 pins the build of `release/<x.y.z>` itself, so a branch cut after the fix gives a build with the
+  fixed script; that step then passes and prints the run's own CDN link and the npm link. Any other red task is a real
+  failure. A warning that the ESRP release task "will be blocked in future releases" appears on every run and does not
+  block today.
 
 Never re-queue a run that may have published without first checking npm and the CDN (step 9). The CDN upload does not
 overwrite, so a second attempt at a published version fails rather than repairing anything.
@@ -521,30 +524,39 @@ partial read of the valid-origins code produced two wrong claims, and one wrong 
 
 ## Related work
 
-This skill documents the process as it runs today and points at the automation that will replace manual steps:
+This skill documents the process as it runs today. Merged fixes it already accounts for:
+
+- [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) ("View Published Package URLs") and
+  [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198) (artifact retention @6): release pipeline
+  fixes.
+- [#3209](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3209): the SDF beta skip rule.
+- [#3210](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3210): the CI build's ESLint scan exclusions.
+
+Open proposals that would automate manual steps; none has merged, so the steps above still apply:
 
 - The release pipeline stack: [#3090](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3090) (1/4, a
   shared changelog extractor), [#3139](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3139) (2/4,
   release-integrity and SRI validation), [#3140](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3140)
   (3/4, a required check on PRs into `release/*`) and
   [#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143) (4/4, GitHub pre-release creation on
-  merge, replacing the closed #3141). When they land, steps 4-7 become checks of what the automation did, and their
+  merge, replacing the closed #3141). If they land, steps 4-7 become checks of what the automation did, and their
   validation overlaps `check carriers`; prefer theirs in CI.
 - [#3032](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3032): agent instructions and the contributor
-  skill, which own build, test and change-file guidance.
-- [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) and
-  [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198): release pipeline fixes.
+  skill, which would own build, test and change-file guidance.
 
 ## Reference
 
-| What                                | Where                                                                             |
-| ----------------------------------- | --------------------------------------------------------------------------------- |
-| Versioning and change-file rules    | `beachball.config.js`, `CONTRIBUTING.md`                                          |
-| Prod bump                           | `tools/cli/preRelease.js`                                                         |
-| Beta version                        | `packages/teams-js/prepBetaRelease.cjs`                                           |
-| CHANGELOG section for PR bodies     | `tools/cli/readChangelog.js`                                                      |
-| CI build and its artifacts          | `tools/releases/build-release.yml`, `tools/yaml-templates/build-test-publish.yml` |
-| Prod, SDF and DDL release pipelines | `tools/releases/prod-release.yml`, `sdf-release.yml`, `ddl-release.yml`           |
-| Downstream notification             | `.github/workflows/postrelease.yml`                                               |
-| Valid-domains source                | `packages/teams-js/src/artifactsForCDN/validDomains.json`                         |
-| Read-only checks                    | `.github/skills/release-teamsjs/check-release.js`                                 |
+| What                                | Where                                                                                                    |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Versioning and change-file rules    | `beachball.config.js`, `CONTRIBUTING.md`                                                                 |
+| Prod bump                           | `tools/cli/preRelease.js`                                                                                |
+| Beta version                        | `packages/teams-js/prepBetaRelease.cjs`                                                                  |
+| CHANGELOG section for PR bodies     | `tools/cli/readChangelog.js`                                                                             |
+| CI build and its artifacts          | `tools/releases/build-release.yml`, `tools/yaml-templates/build-test-publish.yml`                        |
+| Prod, SDF and DDL release pipelines | `tools/releases/prod-release.yml`, `sdf-release.yml`, `ddl-release.yml`                                  |
+| Downstream notification             | `.github/workflows/postrelease.yml`                                                                      |
+| Valid-domains source                | `packages/teams-js/src/artifactsForCDN/validDomains.json`                                                |
+| Read-only checks                    | `.github/skills/release-teamsjs/check-release.js`                                                        |
+| Published URLs step                 | `packages/teams-js/scripts/view-published-packages-urls.ps1`, run from the CI build's `scripts` artifact |
+| Failure modes                       | `.github/skills/release-teamsjs/failure-modes.md`                                                        |
+| Agent rules for release files       | `.github/instructions/release-pipelines.instructions.md`                                                 |
