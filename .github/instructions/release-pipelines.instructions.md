@@ -9,7 +9,9 @@ These files drive how `@microsoft/teams-js` is versioned and published. Before c
 - Read `.github/skills/release-teamsjs/SKILL.md` and `failure-modes.md`. A change here can change what a release
   publishes or how its run is judged.
 - The release pipelines read their YAML from the branch that is queued, usually `release/<x.y.z>`. A fix on `main`
-  takes effect only from release branches cut or updated after it merges; say so in the PR.
+  takes effect only from release branches cut or updated after it merges; say so in the PR. Scripts the release
+  pipelines run from the CI build's `scripts` artifact (`packages/teams-js/scripts/*.ps1`) take effect from the CI
+  build that is selected, not the queued branch.
 - Tasks that only run on `main` or release builds (for example artifact retention) are not exercised by PR builds.
   State how the change will be proven.
 - Keep the skill in step: if a change adds, removes or renames a pipeline step, a version carrier or a script the
