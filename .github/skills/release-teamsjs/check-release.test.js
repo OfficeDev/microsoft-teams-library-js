@@ -2153,6 +2153,24 @@ describe('check-release', () => {
       assert.equal(await runWith(['preflight'], fetchImpl), ExitCode.unreachable, lines.join('\n'));
     });
 
+    it('with --registry, still needs registry.npmjs.org; the proxy alone never passes', async () => {
+      setUp();
+      const { fetchImpl, requested } = healthy({
+        ...unreachable(registryTags(NPM)),
+        [registryTags(PROXY)]: response(200, { latest: '2.58.0' }),
+      });
+      assert.equal(
+        await runWith(['preflight', '--registry', PROXY], fetchImpl),
+        ExitCode.unreachable,
+        lines.join('\n'),
+      );
+      assert.ok(requested.includes(registryTags(NPM)), requested.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('INFO') && line.includes('(proxy)') && line.includes('2.58.0')),
+        lines.join('\n'),
+      );
+    });
+
     it('with --version, passes when the version is free and its release branch does not exist', async () => {
       setUp();
       const { fetchImpl, requested } = healthy();
@@ -2251,6 +2269,32 @@ describe('check-release', () => {
         ['# Change Log - @microsoft/teams-js', '', `## ${VERSION}`, '', 'Wed, 04 Nov 2026', '', '## 2.58.0'].join('\n'),
       );
       assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('keeps an indented heading and what follows it in the entry', async () => {
+      write(
+        [
+          `## ${VERSION}`,
+          '### Minor changes',
+          '- Added `newApi`.',
+          '  #### Migration',
+          '  Call `newApi` instead of `oldApi`, see https://www.npmjs.com/package/@microsoft/teams-js/v/2.58.0',
+          '## 2.58.0',
+        ].join('\n'),
+      );
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+      const draft = draftOf();
+      assert.ok(draft.includes('#### Migration Call `newApi` instead of `oldApi`'), draft);
+    });
+
+    it('fails on an unexpected heading at the start of a line inside the section', async () => {
+      write([`## ${VERSION}`, '### Patches', '- A fix.', '#### Notes', '- Lost note.', '## 2.58.0'].join('\n'));
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('#### Notes')),
+        lines.join('\n'),
+      );
+      assert.ok(!lines.some((line) => line.startsWith('INFO announcement draft')), lines.join('\n'));
     });
 
     it('fails instead of dropping an entry that sits before the first ### heading', async () => {

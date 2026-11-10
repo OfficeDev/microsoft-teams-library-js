@@ -234,7 +234,7 @@ async function fetchOrUnreachable(fetchImpl, url, label) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : (error?.message ?? String(error));
+        : error?.message ?? String(error);
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -251,7 +251,7 @@ async function readBody(response, read, label, url) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : (error?.message ?? String(error));
+        : error?.message ?? String(error);
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -1413,7 +1413,19 @@ function pendingChangesResults({ repoRoot, readFile, readDirectory }) {
   return { results, next };
 }
 
+// registry.npmjs.org is always read: a --registry proxy only adds an informational line, so it never stands in for it.
 async function npmTagsInfo({ registry, fetchImpl }) {
+  const results = [await npmTagsFrom({ registry: DEFAULT_REGISTRY, fetchImpl })];
+  if (registry !== DEFAULT_REGISTRY) {
+    const proxy = await npmTagsFrom({ registry, fetchImpl });
+    results.push(
+      proxy.outcome === Outcome.info ? proxy : result(Outcome.info, `(proxy, informational) ${proxy.message}`),
+    );
+  }
+  return results;
+}
+
+async function npmTagsFrom({ registry, fetchImpl }) {
   const url = npmDistTagsUrl(registry);
   const answer = await readJson(fetchImpl, url, 'npm dist-tags');
   if (answer.problem) {
@@ -1454,7 +1466,7 @@ async function checkMainCi({ fetchImpl }) {
 async function checkPreflight({ version, registry, repoRoot, readFile, readDirectory, fetchImpl }) {
   const changes = pendingChangesResults({ repoRoot, readFile, readDirectory });
   const results = [...changes.results, ...checkPipelineConfig({ repoRoot, readFile })];
-  results.push(await npmTagsInfo({ registry, fetchImpl }));
+  results.push(...(await npmTagsInfo({ registry, fetchImpl })));
   results.push(await checkMainCi({ fetchImpl }));
   if (version) {
     if (changes.next && changes.next !== version) {
@@ -1497,6 +1509,7 @@ function changelogSection(changelog, version) {
   }
   const groups = [];
   let orphans = 0;
+  const strayHeadings = [];
   let group;
   let entry;
   let afterBlank = false;
@@ -1522,7 +1535,11 @@ function changelogSection(changelog, version) {
       // Paragraphs after a blank line belong to the entry only when beachball indented them.
       afterBlank = true;
       continue;
-    } else if (entry && !line.trim().startsWith('#') && (!afterBlank || /^\s/.test(line))) {
+    } else if (line.startsWith('#')) {
+      // A heading other than ## and ### at column 0 would end the entry and drop what follows it.
+      strayHeadings.push(line.trim());
+      entry = undefined;
+    } else if (entry && (!afterBlank || /^\s/.test(line))) {
       entry.push(line);
     } else {
       entry = undefined;
@@ -1531,6 +1548,7 @@ function changelogSection(changelog, version) {
   }
   return {
     orphans,
+    strayHeadings,
     groups: groups
       .map(({ heading, entries }) => ({ heading, entries: entries.map((lines) => normalizeText(lines.join(' '))) }))
       .filter(({ entries }) => entries.length > 0),
@@ -1547,7 +1565,16 @@ function draftAnnouncement({ version, repoRoot, readFile }) {
       ),
     ];
   }
-  const { groups, orphans } = section;
+  const { groups, orphans, strayHeadings } = section;
+  if (strayHeadings.length > 0) {
+    return [
+      result(
+        Outcome.fail,
+        `the "## ${version}" section of ${CHANGELOG_PATH} has headings other than ### at the start of a line ` +
+          `(${strayHeadings.join(', ')}); fix the CHANGELOG rather than announce part of it`,
+      ),
+    ];
+  }
   if (orphans > 0) {
     return [
       result(
