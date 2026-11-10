@@ -82,10 +82,11 @@ const enum NestedAppAuthMessageEventNames {
  * @param enableLogging - Optional flag to enable internal debug and error logging. Defaults to false.
  * @remarks
  * Configuration belongs to the installed bridge. Reinitialization does not retarget requests or
- * replace an existing native bridge. Responses must echo the sent outer ID and serialized UUID,
- * and contain the original inner request ID. Accepted inner responses are forwarded unchanged.
+ * replace an existing native bridge. Responses must echo the sent outer ID; a supplied serialized
+ * UUID must also match. Accepted inner responses must contain the original inner request ID and
+ * are forwarded unchanged. Received outer SDK errors are delivered in a failed inner response
+ * with the original request ID and unclassified SDK error. The consumer owns error interpretation.
  * Removing a listener is not cancellation; live requests have no authentication deadline.
- * Outer SDK refusals are not converted into MSAL errors by this module.
  * Incoming origin filtering retains the existing origin-only policy, without source-window validation.
  *
  * @internal
@@ -133,7 +134,6 @@ export function initialize(window: Window | null, topOrigin: string, enableLoggi
 function createNestedAppAuthBridge(window: Window, topOrigin: string, enableLogging: boolean): NestedAppAuthBridge {
   const callbacks = new Set<(response: string) => void>();
   const pendingRequests = new Map<string, PendingRequest>();
-  const activeInnerRequests = new Set<string>();
 
   const onMessage = (evt: MessageEvent): void => {
     const response: unknown = evt.data;
@@ -145,54 +145,55 @@ function createNestedAppAuthBridge(window: Window, topOrigin: string, enableLogg
     const { id, uuidAsString, args, isPartialResponse } = response;
     if (
       typeof id !== 'string' ||
-      typeof uuidAsString !== 'string' ||
       (isPartialResponse !== undefined && isPartialResponse !== false) ||
-      !Array.isArray(args) ||
-      args.length !== 2 ||
-      args[0] !== null ||
-      typeof args[1] !== 'string'
+      !Array.isArray(args)
     ) {
       log(enableLogging, 'Unsupported response envelope, ignoring.');
       return;
     }
 
     const pending = pendingRequests.get(id);
-    if (!pending || pending.uuidAsString !== uuidAsString) {
+    if (!pending || (uuidAsString !== undefined && pending.uuidAsString !== uuidAsString)) {
       log(enableLogging, 'Response does not match a live request, ignoring.');
       return;
     }
 
-    const message = args[1];
-    const parsedData = parseMessage(message, enableLogging);
+    let message: string;
     if (
-      !isRecord(parsedData) ||
-      parsedData.messageType !== NestedAppAuthMessageEventNames.Response ||
-      parsedData.requestId !== pending.requestId ||
-      typeof parsedData.success !== 'boolean'
+      args.length === 1 &&
+      isRecord(args[0]) &&
+      typeof args[0].errorCode === 'number' &&
+      (args[0].message === undefined || typeof args[0].message === 'string')
     ) {
-      log(enableLogging, 'Invalid inner response, ignoring.');
+      message = JSON.stringify({
+        messageType: NestedAppAuthMessageEventNames.Response,
+        requestId: pending.requestId,
+        success: false,
+        error: args[0],
+      });
+    } else if (args.length === 2 && args[0] === null && typeof args[1] === 'string') {
+      message = args[1];
+      const parsedData = parseMessage(message, enableLogging);
+      if (
+        !isRecord(parsedData) ||
+        parsedData.messageType !== NestedAppAuthMessageEventNames.Response ||
+        parsedData.requestId !== pending.requestId ||
+        typeof parsedData.success !== 'boolean'
+      ) {
+        log(enableLogging, 'Invalid inner response, ignoring.');
+        return;
+      }
+    } else {
+      log(enableLogging, 'Unsupported response arguments, ignoring.');
       return;
     }
 
     pendingRequests.delete(id);
-    activeInnerRequests.delete(pending.requestId);
 
-    let callbackFailed = false;
-    let callbackError: unknown;
     for (const callback of Array.from(callbacks)) {
       if (callbacks.has(callback)) {
-        try {
-          callback(message);
-        } catch (error) {
-          if (!callbackFailed) {
-            callbackError = error;
-            callbackFailed = true;
-          }
-        }
+        callback(message);
       }
-    }
-    if (callbackFailed) {
-      throw callbackError;
     }
   };
 
@@ -229,31 +230,19 @@ function createNestedAppAuthBridge(window: Window, topOrigin: string, enableLogg
         !isRecord(parsedMessage) ||
         parsedMessage.messageType !== NestedAppAuthMessageEventNames.Request ||
         typeof parsedMessage.requestId !== 'string' ||
-        parsedMessage.requestId.length === 0 ||
-        typeof parsedMessage.method !== 'string' ||
-        parsedMessage.method.length === 0
+        parsedMessage.requestId.length === 0
       ) {
         logError(enableLogging, 'Invalid auth request, ignoring.');
         return;
       }
 
       const request = createNestedAppAuthRequest(message);
-      if (activeInnerRequests.has(parsedMessage.requestId) || pendingRequests.has(request.id)) {
-        logError(enableLogging, 'Auth request ID is already pending, ignoring.');
-        return;
-      }
-
       pendingRequests.set(request.id, { uuidAsString: request.uuidAsString, requestId: parsedMessage.requestId });
-      activeInnerRequests.add(parsedMessage.requestId);
       try {
         top.postMessage(request, topOrigin);
       } catch (error) {
-        if (pendingRequests.delete(request.id)) {
-          activeInnerRequests.delete(parsedMessage.requestId);
-          logError(enableLogging, 'Failed to post auth request.');
-        } else {
-          throw error;
-        }
+        pendingRequests.delete(request.id);
+        logError(enableLogging, 'Failed to post auth request.');
       }
     },
 

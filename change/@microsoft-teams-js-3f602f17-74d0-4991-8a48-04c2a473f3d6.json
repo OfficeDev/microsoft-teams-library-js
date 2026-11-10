@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Improved standalone `nestedAppAuthBridge` request correlation, serialized UUID transport, and listener lifecycle.",
+  "comment": "Fixed standalone `nestedAppAuthBridge` delivery of received SDK errors to the original nested authentication request.",
   "packageName": "@microsoft/teams-js",
   "email": "santiagov+odspmdb@microsoft.com",
   "dependentChangeType": "patch"

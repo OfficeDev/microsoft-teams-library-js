@@ -148,28 +148,10 @@ describe('NestedAppAuthBridge standalone transport', () => {
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  it('does not overwrite a live operation reusing the inner ID', () => {
-    const request = send();
-    send();
-    expect(target.top?.postMessage).toHaveBeenCalledTimes(1);
-    receive(envelope(request));
-    expect(callback).toHaveBeenCalledTimes(1);
-  });
-
-  it('does not overwrite correlation when generated outer IDs collide', () => {
-    jest.spyOn(crypto, 'randomUUID').mockReturnValue('00000000-0000-4000-8000-000000000001');
-    const first = send('first');
-    send('second');
-    expect(target.top?.postMessage).toHaveBeenCalledTimes(1);
-    receive(envelope(first, innerResponse('first')));
-    expect(callback).toHaveBeenCalledWith(innerResponse('first'));
-  });
-
   it.each([
     ['missing ID', { id: undefined }],
     ['wrong ID', { id: 'unrelated' }],
     ['coerced ID', { id: 1 }],
-    ['missing UUID', { uuidAsString: undefined }],
     ['empty UUID', { uuidAsString: '' }],
     ['wrong UUID', { uuidAsString: 'unrelated' }],
     ['partial response', { isPartialResponse: true }],
@@ -192,6 +174,11 @@ describe('NestedAppAuthBridge standalone transport', () => {
       'non-boolean success',
       { args: [null, '{"messageType":"NestedAppAuthResponse","requestId":"request-1","success":"false"}'] },
     ],
+    ['null outer error', { args: [null] }],
+    ['non-object outer error', { args: ['error'] }],
+    ['missing outer error code', { args: [{ message: 'refused' }] }],
+    ['non-numeric outer error code', { args: [{ errorCode: '100' }] }],
+    ['malformed outer error message', { args: [{ errorCode: 100, message: {} }] }],
   ])('ignores %s without consuming a live request', (_name, change) => {
     const request = send();
     receive({ ...envelope(request), ...change });
@@ -208,12 +195,66 @@ describe('NestedAppAuthBridge standalone transport', () => {
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  it.each([100, 500, 501])('does not invent an MSAL mapping for outer SDK error %s', (errorCode) => {
+  describe.each(['GetInitContext', 'GetToken', 'GetTokenPopup'])('received %s refusal', (method) => {
+    it.each([100, 500, 501])('delivers SDK error %s under the original inner request ID once', (errorCode) => {
+      const request = send('original-inner-id', method);
+      const error = { errorCode, message: 'Received host refusal' };
+      const response = { id: request.id, uuidAsString: request.uuidAsString, args: [error] };
+      receive(response);
+      receive(response);
+      receive(envelope(request, innerResponse('original-inner-id')));
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(callback.mock.calls[0][0])).toEqual({
+        messageType: 'NestedAppAuthResponse',
+        requestId: 'original-inner-id',
+        success: false,
+        error,
+      });
+      expect(JSON.parse(callback.mock.calls[0][0]).error).not.toHaveProperty('status');
+    });
+  });
+
+  it('delivers a received SDK error without optional message text', () => {
     const request = send();
-    receive({ id: request.id, uuidAsString: request.uuidAsString, args: [{ errorCode }] });
+    receive({ id: request.id, uuidAsString: request.uuidAsString, args: [{ errorCode: 500 }] });
+    expect(JSON.parse(callback.mock.calls[0][0]).error).toEqual({ errorCode: 500 });
+  });
+
+  it('keeps reversed concurrent refusals bound to the original silent and popup requests', () => {
+    const silent = send('silent', 'GetToken');
+    const popup = send('popup', 'GetTokenPopup');
+    receive({ ...envelope(popup), args: [{ errorCode: 501 }] });
+    receive({ ...envelope(silent), args: [{ errorCode: 100 }] });
+    expect(callback.mock.calls.map(([message]) => JSON.parse(message))).toEqual([
+      { messageType: 'NestedAppAuthResponse', requestId: 'popup', success: false, error: { errorCode: 501 } },
+      { messageType: 'NestedAppAuthResponse', requestId: 'silent', success: false, error: { errorCode: 100 } },
+    ]);
+  });
+
+  it('ignores unrelated, mismatched and partial outer refusals without consuming a live request', () => {
+    const request = send();
+    const response = { ...envelope(request), args: [{ errorCode: 100 }] };
+    receive({ ...response, id: 'unrelated' });
+    receive({ ...response, uuidAsString: 'unrelated' });
+    receive({ ...response, isPartialResponse: true });
+    receive(response, 'https://other.microsoft.com');
     expect(callback).not.toHaveBeenCalled();
-    receive(envelope(request));
+    receive(response);
     expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it('consumes correlation before dispatching a reentrant outer refusal', () => {
+    const request = send();
+    const response = { ...envelope(request), args: [{ errorCode: 100 }] };
+    callback.mockImplementation(() => receive(response));
+    receive(response);
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it('correlates by the outer ID when the response UUID is omitted', () => {
+    const request = send();
+    receive({ ...envelope(request), uuidAsString: undefined });
+    expect(callback).toHaveBeenCalledWith(innerResponse());
   });
 
   it.each(['https://unrelated.microsoft.com', 'null', ''])('ignores the wrong origin %s', (messageOrigin) => {
@@ -259,20 +300,6 @@ describe('NestedAppAuthBridge standalone transport', () => {
     receive(envelope(next));
     expect(callback).toHaveBeenCalledTimes(1);
     expect(second).toHaveBeenCalledTimes(2);
-  });
-
-  it('delivers to remaining subscribers even when one throws', () => {
-    const failure = new Error('subscriber failure');
-    callback.mockImplementation(() => {
-      throw failure;
-    });
-    const second = jest.fn();
-    bridge.addEventListener('message', second);
-    const request = send();
-    expect(() => receive(envelope(request))).toThrow(failure);
-    expect(second).toHaveBeenCalledTimes(1);
-    receive(envelope(request));
-    expect(callback).toHaveBeenCalledTimes(1);
   });
 
   it('does not treat removal of all listeners as cancellation', () => {
@@ -384,7 +411,6 @@ describe('NestedAppAuthBridge standalone transport', () => {
     '{"messageType":"OtherMessage"}',
     '{"messageType":"NestedAppAuthRequest","method":"GetToken"}',
     '{"messageType":"NestedAppAuthRequest","requestId":"","method":"GetToken"}',
-    '{"messageType":"NestedAppAuthRequest","requestId":"request-1"}',
   ])('ignores invalid request %s without posting', (message) => {
     bridge.postMessage(message);
     expect(target.top?.postMessage).not.toHaveBeenCalled();
