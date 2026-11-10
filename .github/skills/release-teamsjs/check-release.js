@@ -1500,6 +1500,9 @@ async function checkPreflight({ version, registry, repoRoot, readFile, readDirec
   return results;
 }
 
+// The date line beachball writes under each version heading, e.g. "Wed, 04 Nov 2026 19:13:09 GMT".
+const RELEASE_DATE_LINE = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} [A-Z][a-z]{2} \d{4}( \d{2}:\d{2}:\d{2} GMT)?\s*$/;
+
 function changelogSection(changelog, version) {
   const lines = changelog.split(/\r?\n/);
   // Headings start at column 0; an indented line is part of an entry, never a heading.
@@ -1510,9 +1513,9 @@ function changelogSection(changelog, version) {
   const groups = [];
   let orphans = 0;
   const strayHeadings = [];
+  const looseText = [];
   let group;
   let entry;
-  let afterBlank = false;
   for (const line of lines.slice(start + 1)) {
     if (line.startsWith('## ')) {
       break;
@@ -1529,26 +1532,23 @@ function changelogSection(changelog, version) {
       }
       entry = [line.slice(2)];
       group.entries.push(entry);
-      afterBlank = false;
-      continue;
     } else if (line.trim() === '') {
-      // Paragraphs after a blank line belong to the entry only when beachball indented them.
-      afterBlank = true;
       continue;
     } else if (line.startsWith('#')) {
       // A heading other than ## and ### at column 0 would end the entry and drop what follows it.
       strayHeadings.push(line.trim());
       entry = undefined;
-    } else if (entry && (!afterBlank || /^\s/.test(line))) {
+    } else if (entry) {
+      // beachball writes a comment verbatim after "- ", so a later paragraph of it starts at column 0.
       entry.push(line);
-    } else {
-      entry = undefined;
+    } else if (group || !RELEASE_DATE_LINE.test(line)) {
+      looseText.push(line.trim());
     }
-    afterBlank = false;
   }
   return {
     orphans,
     strayHeadings,
+    looseText,
     groups: groups
       .map(({ heading, entries }) => ({ heading, entries: entries.map((lines) => normalizeText(lines.join(' '))) }))
       .filter(({ entries }) => entries.length > 0),
@@ -1565,13 +1565,22 @@ function draftAnnouncement({ version, repoRoot, readFile }) {
       ),
     ];
   }
-  const { groups, orphans, strayHeadings } = section;
+  const { groups, orphans, strayHeadings, looseText } = section;
   if (strayHeadings.length > 0) {
     return [
       result(
         Outcome.fail,
         `the "## ${version}" section of ${CHANGELOG_PATH} has headings other than ### at the start of a line ` +
           `(${strayHeadings.join(', ')}); fix the CHANGELOG rather than announce part of it`,
+      ),
+    ];
+  }
+  if (looseText.length > 0) {
+    return [
+      result(
+        Outcome.fail,
+        `the "## ${version}" section of ${CHANGELOG_PATH} has text that belongs to no entry ` +
+          `(${looseText.join(' / ')}); fix the CHANGELOG rather than announce part of it`,
       ),
     ];
   }

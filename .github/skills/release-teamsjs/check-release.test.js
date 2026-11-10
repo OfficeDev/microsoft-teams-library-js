@@ -2297,6 +2297,44 @@ describe('check-release', () => {
       assert.ok(!lines.some((line) => line.startsWith('INFO announcement draft')), lines.join('\n'));
     });
 
+    it('keeps a second paragraph that beachball writes at column 0, and checks its links', async () => {
+      write(
+        [
+          `## ${VERSION}`,
+          '',
+          'Wed, 04 Nov 2026 19:13:09 GMT',
+          '',
+          '### Minor changes',
+          '',
+          '- Added `newApi`.',
+          '',
+          'Call `newApi` instead of `oldApi`, see https://www.npmjs.com/package/@microsoft/teams-js/v/2.58.0',
+          '- Another change.',
+          '',
+          '## 2.58.0',
+        ].join('\n'),
+      );
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+      const draft = draftOf();
+      assert.ok(draft.includes('- Added `newApi`. Call `newApi` instead of `oldApi`'), draft);
+      assert.ok(draft.includes('- Another change.'), draft);
+    });
+
+    for (const [name, section] of [
+      ['under a heading before any entry', ['### Patches', '', 'A loose note.', '- A fix.']],
+      ['before the first ### heading', ['', 'Wed, 04 Nov 2026', '', 'A loose note.', '', '### Patches', '- A fix.']],
+    ]) {
+      it(`fails on text that belongs to no entry ${name}`, async () => {
+        write([`## ${VERSION}`, ...section, '## 2.58.0'].join('\n'));
+        assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('FAIL') && line.includes('A loose note.')),
+          lines.join('\n'),
+        );
+        assert.ok(!lines.some((line) => line.startsWith('INFO announcement draft')), lines.join('\n'));
+      });
+    }
+
     it('fails instead of dropping an entry that sits before the first ### heading', async () => {
       write([`## ${VERSION}`, '- Orphan entry.', '### Patches', '- Ordinary fix.', '## 2.58.0'].join('\n'));
       assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
