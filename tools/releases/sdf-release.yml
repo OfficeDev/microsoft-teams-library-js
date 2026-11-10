@@ -61,10 +61,9 @@ extends:
                   taskType: credentialFetchTaskAzureRM
                   armserviceconnection: $(serviceConnectionId)
                   subscriptionid: $(subscriptionId)
-              - task: AssetRetention@3
+              - task: AssetRetention@6
                 displayName: ARtifact Retention Orchestrator Workflow (ARROW)
                 inputs:
-                  ArrowServiceConnection: $(arrowServiceConnectionId)
                   IsShipped: true
               - task: NodeTool@0
                 displayName: Use Node 18.x
@@ -109,4 +108,4 @@ extends:
                 inputs:
                   targetType: 'filePath'
                   filePath: 'microsoft-teams-library-js-pipeline/scripts/view-published-packages-urls.ps1'
-                  arguments: -PIPELINE_WORKSPACE $(System.DefaultWorkingDirectory)
+                  arguments: -PIPELINE_WORKSPACE $(System.DefaultWorkingDirectory) -CDN_HOST res-sdf.cdn.office.net
