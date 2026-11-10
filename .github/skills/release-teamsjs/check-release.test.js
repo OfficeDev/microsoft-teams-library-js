@@ -2120,10 +2120,9 @@ describe('check-release', () => {
       setUp();
       const { fetchImpl } = healthy({ [MAIN_CI_RUNS]: ciRun('failure') });
       assert.equal(await runWith(['preflight'], fetchImpl), ExitCode.failed, lines.join('\n'));
-      assert.ok(
-        lines.some((line) => line.startsWith('FAIL') && line.includes('failure') && line.includes(RUN_URL)),
-        lines.join('\n'),
-      );
+      const failure = lines.find((line) => line.startsWith('FAIL') && line.includes('ended failure'));
+      assert.ok(failure, lines.join('\n'));
+      assert.equal(/\((https:\/\/[^)\s]+)\)/.exec(failure)?.[1], RUN_URL, failure);
     });
 
     for (const [name, body] of [
