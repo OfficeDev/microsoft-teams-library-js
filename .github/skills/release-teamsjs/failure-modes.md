@@ -21,17 +21,17 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Cause:** the script that step runs reads a stale artifact path.
 - **Fix:** none needed for the release. Check that artifact retention, the ESRP npm publish and the 1CDN upload
   succeeded, verify as in Prod step 9, and carry on. Any other red task is a real failure. Fixed by
-  [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) once it lands and reaches the release
-  branch. That step also prints an SDF CDN link on Prod runs; do not mistake it for the Prod URL.
+  [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) for release branches cut after it
+  merged; on an older branch the step also prints an SDF CDN link on Prod runs, so do not mistake it for the Prod URL.
 - **Not to confuse with:** a successful DDL run, which normally ends "partially succeeded".
 
 ### Prod published with the wrong npm tag
 
 - **Symptom:** after a Prod run, `latest` still points at the previous version and the new version carries `beta`.
 - **Cause:** a typo in the release YAML once named the Prod publish task "tag beta" and published with that tag.
-- **Fix:** before queuing, the npm task in `tools/releases/prod-release.yml` must say `tag latest` with
-  `productstate: 'Latest'`. If it already happened, raise it with the maintainers; moving a dist-tag is a separate,
-  approved npm operation, never a republish.
+- **Fix:** before queuing, `check pipeline-config` on the release branch confirms the npm task in
+  `tools/releases/prod-release.yml` says `tag latest` with `productstate: 'Latest'`. If it already happened, raise it
+  with the maintainers; moving a dist-tag is a separate, approved npm operation, never a republish.
 
 ### The Prod run used the wrong CI build
 
@@ -39,7 +39,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Cause:** the pipeline artifact defaulted to an older CI run of the same branch. Every release branch has a run
   from the branch push and one from the prep PR merge, and a reused branch can carry a run with old content.
 - **Fix:** always set the artifact explicitly to the run from the prep PR merge, and check its `CDNFeed` folder name
-  equals the version before queuing (Prod step 6).
+  equals the version before queuing (Prod step 6; `check artifact` fails on any other folder).
 
 ### The Prod validation stage fails
 
@@ -159,9 +159,10 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   prep PR consumed them. Relative to the merge base the release side never touched them, so the merge keeps `main`'s
   copies.
 - **Fix:** delete them in the cleanup branch before opening the PR. Left in place, the next release lists those
-  entries again. Afterwards every file under `change/` that is not on `origin/release/<x.y.z>` must be the new `none`
-  file or a change file whose comment is not in the new CHANGELOG section; other changes `main` gained after the cut
-  are expected.
+  entries again. Afterwards `check consumed-changes --version <x.y.z> --prep-commit <prep PR squash commit>` must
+  pass: no file under `change/` was deleted by the prep commit. A change file whose comment only repeats a released
+  entry is inconclusive (exit 3): keep it if it is a new change, delete it if it is the released change re-added under
+  another name. Other changes `main` gained after the cut are expected.
 
 ### A fix must ship on an older release line (hotfix)
 
@@ -212,8 +213,9 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   about 10 minutes. npmjs.com web pages refuse automated requests, so check them in a browser.
 - **Fix:** a proxy or mirror can confirm that a version is present, never that it is absent or that a dist-tag is
   current. Prove a version free only from `registry.npmjs.org`, from another network if needed, and treat any lookup
-  error, timeout or unexpected status as inconclusive. Never re-queue a publish because a proxy lacks the version.
-  The CDN upload never overwrites, so an existing CDN folder also blocks a version.
+  error, timeout or unexpected status as inconclusive; `check-version`, `published` and `beta-version` exit 3 for
+  these. Never re-queue a publish because a proxy lacks the version. The CDN upload never overwrites, so an existing
+  CDN folder also blocks a version.
 
 ## Build and tooling
 
