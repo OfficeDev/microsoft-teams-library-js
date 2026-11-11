@@ -1,0 +1,11 @@
+{
+  "name": "teams-js-cli-tools",
+  "version": "0.0.0",
+  "private": true,
+  "description": "TeamsJS release/CI helper scripts and their unit tests",
+  "license": "MIT",
+  "author": "Microsoft Teams",
+  "scripts": {
+    "test": "jest"
+  }
+}
