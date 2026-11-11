@@ -19,7 +19,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   publish and the CDN upload succeeded; earlier runs ended succeeded or partially succeeded. "View Published Package
   URLs" is the only red task, and the template's closing "Publish to ARROW" step is skipped as a result.
 - **Cause:** the script that step runs reads a stale artifact path.
-- **Fix:** none needed for the release. Check that artifact retention, the ESRP npm publish and the 1CDN upload
+- **Fix:** none needed for the release. Check retention coverage and that the ESRP npm publish and the 1CDN upload
   succeeded, verify as in Prod step 9, and carry on. Any other red task is a real failure. Fixed by
   [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) for release branches cut after it
   merged; on an older branch the step also prints an SDF CDN link on Prod runs, so do not mistake it for the Prod URL.
@@ -57,15 +57,26 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### The artifact retention (ARROW) task fails on an end-of-life Node runtime
 
-- **Symptom:** the artifact retention task fails because the agent refuses end-of-life Node 16 task runtimes. In the Prod
-  and SDF pipelines it runs before publishing, so nothing is published. In the DDL pipeline it runs after the upload, so
+- **Symptom:** the artifact retention task fails because the agent refuses end-of-life Node 16 task runtimes. In older
+  Prod and SDF pipeline YAML it runs before publishing, so nothing is published. In older DDL it runs after the upload, so
   the new list may already be at the origin: purge and verify anyway (DDL steps 3-4).
 - **Cause:** `AssetRetention` versions 3-5 run on Node 16. Queue-time variable overrides are not allowed on these
   pipelines, so the agent setting cannot be switched off for one run.
-- **Fix:** `main` uses `AssetRetention@6` in `tools/yaml-templates/security.yml` and the three release YAMLs since
+- **Fix:** `AssetRetention@6` replaced the older task in `tools/yaml-templates/security.yml` and the release YAMLs in
   [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198); it runs on Node 20. If you see this
   failure, the queued branch predates that change: carry it into the release branch through a reviewed PR. PR builds
   skip this task, so only a `main` or release CI run proves a change to it.
+
+### Release pipelines have no explicit retention task
+
+- **Symptom:** `check pipeline-config` reports that Prod, SDF and DDL have no enabled `AssetRetention` task.
+- **Cause:** the explicit retention tasks were removed. Prod and SDF publish npm in the hosted `PublishNpm` release
+  job, followed by CDN upload in the dependent custom-pool `Agent_job`. DDL keeps only artifact download, deployment
+  preparation and CDN upload; its unused Node installer was also removed. Removing the explicit task does not prove
+  that the governed template sends equivalent ship signals, especially while SDF has `isProduction: false`.
+- **Fix:** verify template-provided retention and ship signals with the release owners before publishing. Do not
+  change production classification just to silence this check. Also verify ESRP authentication on the hosted job:
+  deployment preparation in the later CDN job cannot supply credentials to npm publishing.
 
 ### A pipeline fix merged to `main` is not in effect for the release
 

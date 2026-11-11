@@ -1153,7 +1153,12 @@ describe('check-release', () => {
         fs.writeFileSync(yaml, fs.readFileSync(yaml, 'utf8').replace(/^.*AssetRetention@6.*$/m, ''));
         assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
         assert.ok(
-          lines.some((line) => line.startsWith(`FAIL ${file}`) && line.includes('AssetRetention')),
+          lines.some(
+            (line) =>
+              line.startsWith(`FAIL ${file}`) &&
+              line.includes('AssetRetention') &&
+              line.includes('verify template-provided retention and ship signals'),
+          ),
           lines.join('\n'),
         );
       });

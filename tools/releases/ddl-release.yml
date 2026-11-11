@@ -37,10 +37,6 @@ extends:
                   taskType: credentialFetchTaskAzureRM
                   armserviceconnection: $(serviceConnectionId)
                   subscriptionid: $(subscriptionId)
-              - task: NodeTool@0
-                displayName: Use Node 18.x
-                inputs:
-                  versionSpec: 18.x
               - task: M365CdnAssetsUpload@3
                 displayName: Push valid domains to M365 1CDN (Prod)
                 inputs:
@@ -48,7 +44,3 @@ extends:
                   ConnectedServiceNameARM: $(serviceConnectionId)
                   ContainerName: teams-js
                   AdditionalArgumentsForBlobCopy: --log-level=INFO --recursive --overwrite=true
-              - task: AssetRetention@6
-                displayName: ARtifact Retention Orchestrator Workflow (ARROW)
-                inputs:
-                  IsShipped: true

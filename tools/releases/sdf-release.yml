@@ -36,35 +36,16 @@ extends:
               subscriptionIds:
                 - $(subscriptionId)
         jobs:
-          - job: Agent_job
+          - job: PublishNpm
+            displayName: Publish npm package
             templateContext:
               type: releaseJob
-              workflow: m365-custom
               inputs:
                 - input: pipelineArtifact
                   pipeline: microsoft-teams-library-js-pipeline
                   artifactName: NPMFeed
                   targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/NPMFeed
-                - input: pipelineArtifact
-                  pipeline: microsoft-teams-library-js-pipeline
-                  artifactName: CDNFeed
-                  targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/CDNFeed
-                - input: pipelineArtifact
-                  pipeline: microsoft-teams-library-js-pipeline
-                  artifactName: scripts
-                  targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/scripts
-
             steps:
-              - task: prepare-deployment@1
-                displayName: Prepare deployment
-                inputs:
-                  taskType: credentialFetchTaskAzureRM
-                  armserviceconnection: $(serviceConnectionId)
-                  subscriptionid: $(subscriptionId)
-              - task: AssetRetention@6
-                displayName: ARtifact Retention Orchestrator Workflow (ARROW)
-                inputs:
-                  IsShipped: true
               - task: NodeTool@0
                 displayName: Use Node 18.x
                 inputs:
@@ -95,6 +76,27 @@ extends:
                   mainpublisher: '$(mainPublisher)'
                   domaintenantid: '$(domainTenantId)'
                   productstate: 'Beta'
+          - job: Agent_job
+            dependsOn: PublishNpm
+            templateContext:
+              type: releaseJob
+              workflow: m365-custom
+              inputs:
+                - input: pipelineArtifact
+                  pipeline: microsoft-teams-library-js-pipeline
+                  artifactName: CDNFeed
+                  targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/CDNFeed
+                - input: pipelineArtifact
+                  pipeline: microsoft-teams-library-js-pipeline
+                  artifactName: scripts
+                  targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/scripts
+            steps:
+              - task: prepare-deployment@1
+                displayName: Prepare deployment
+                inputs:
+                  taskType: credentialFetchTaskAzureRM
+                  armserviceconnection: $(serviceConnectionId)
+                  subscriptionid: $(subscriptionId)
               - task: M365CdnAssetsUpload@3
                 displayName: Push teams-js to M365 1CDN (SDF)
                 inputs:

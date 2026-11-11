@@ -19,6 +19,7 @@
  *                                                  the beta is of a version newer than latest on npm and GitHub
  *   pipeline-config                                the checkout's release YAML: Prod publishes with tag latest,
  *                                                  SDF with tag beta, and each has artifact retention @6 or later;
+ *                                                  missing tasks require template-retention verification before publishing;
  *                                                  commented-out, `enabled: false` and script-text tasks don't count
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
  *   consumed-changes --version <v> --prep-commit <sha>
@@ -228,7 +229,7 @@ async function fetchOrUnreachable(fetchImpl, url, label) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : error?.message ?? String(error);
+        : (error?.message ?? String(error));
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -245,7 +246,7 @@ async function readBody(response, read, label, url) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : error?.message ?? String(error);
+        : (error?.message ?? String(error));
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -937,7 +938,10 @@ function checkPipelineConfig({ repoRoot, readFile }) {
     const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
     if (retention.length === 0) {
       results.push(
-        result(Outcome.fail, `${file} has no enabled AssetRetention task, so artifact retention is not configured`),
+        result(
+          Outcome.fail,
+          `${file} has no enabled AssetRetention task; verify template-provided retention and ship signals before publishing`,
+        ),
       );
     } else {
       results.push(
