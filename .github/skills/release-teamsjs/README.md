@@ -37,6 +37,9 @@ Run its tests with:
 node --test .github/skills/release-teamsjs/check-release.test.js
 ```
 
+CI runs them, with the release pipeline script tests, in the "Release tooling tests" job of
+[`main.yml`](../../workflows/main.yml).
+
 ## Folder contents
 
 | File                    | Purpose                                           |
