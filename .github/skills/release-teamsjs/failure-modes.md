@@ -144,7 +144,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   is normal after a Prod release until a change file bumps the version), for the same or an older CI build than the
   one behind the last published beta, for a beta version that is not newer than the highest beta published in the last 50 runs, and while another run of the pipeline is in progress. The warning names the
   reason. The stage fails rather than guess when the build is not from `main`, has no beta version, has no released
-  version in its README, lacks its CI run ID or commit, or predates the script; when Azure DevOps does not answer
+  version in its README, lacks its CI run ID or commit or its own build ID, or predates the script; when Azure DevOps does not answer
   within 30 seconds; when a published run's npm pack log does not name its version; or when, with no other reason to skip, there is no published beta in the last 50 runs. The
   Prod-week rule follows the calendar, not the actual release date.
 - **Fix:** a correct skip needs nothing more; re-running it gives the same answer. If a beta is needed anyway, or the

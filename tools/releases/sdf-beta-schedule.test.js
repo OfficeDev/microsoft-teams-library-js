@@ -578,6 +578,17 @@ test('main fails a scheduled run that lacks its inputs', async () => {
     ),
     /Missing SYSTEM_ACCESSTOKEN/,
   );
+  // Without its own build ID the run would count itself as another run in progress.
+  for (const buildId of [undefined, '', 'abc']) {
+    await assert.rejects(
+      main(
+        scheduledArgs('2026-11-11T18:00:00Z'),
+        { ...env, BUILD_BUILDID: buildId },
+        { fetchImpl, readFile, log: quiet },
+      ),
+      /BUILD_BUILDID/,
+    );
+  }
   await assert.rejects(main(scheduledArgs('not a date'), env, { fetchImpl, readFile, log: quiet }), /is not a date/);
   await assert.rejects(main(['--reason'], env, { fetchImpl, readFile, log: quiet }), /takes a value/);
 });

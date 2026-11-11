@@ -338,9 +338,14 @@ async function main(
       'SYSTEM_COLLECTIONURI',
       'SYSTEM_TEAMPROJECTID',
       'SYSTEM_DEFINITIONID',
+      'BUILD_BUILDID',
     ].filter((name) => !env[name]);
     if (missing.length > 0) {
       throw new Error(`Missing ${missing.join(', ')}`);
+    }
+    // The history excludes this run by its ID; without it the run would count itself as another run in progress.
+    if (!/^\d+$/.test(env.BUILD_BUILDID)) {
+      throw new Error(`BUILD_BUILDID ${env.BUILD_BUILDID} is not a build ID`);
     }
     const history = await readHistory({
       fetchImpl,
