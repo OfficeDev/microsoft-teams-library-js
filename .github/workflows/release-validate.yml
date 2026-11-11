@@ -1,0 +1,55 @@
+name: Validate Release PR
+
+# Runs on pull requests targeting a release/* branch (the PR opened by the
+# release bootstrap workflow). Encodes the former manual reviewer checklist as
+# required status checks: version consistency, changelog/PR-body consistency,
+# README + test app CDN references, and SRI integrity correctness.
+on:
+  pull_request:
+    branches:
+      - 'release/*'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '18.x'
+
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 9.0.6
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Derive release version from base branch
+        id: version
+        run: echo "version=${GITHUB_BASE_REF#release/}" >> "$GITHUB_OUTPUT"
+
+      - name: Write PR body to file
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: printf '%s' "$PR_BODY" > pr-body.md
+
+      - name: Validate release integrity
+        run: node tools/cli/validate-release-integrity.js --version ${{ steps.version.outputs.version }} --pr-body-file pr-body.md
+
+      - name: Build TeamsJS
+        run: pnpm build
+
+      - name: Verify CDN integrity hashes (SRI)
+        run: node tools/cli/verify-sri.js
+
+      - name: Run unit tests
+        run: pnpm test
