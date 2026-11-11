@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added optional `useHeaderlessDialog` support to request URL-based dialogs without a header.",
+  "packageName": "@microsoft/teams-js",
+  "email": "dmitrylesnoy@microsoft.com",
+  "dependentChangeType": "patch"
+}
