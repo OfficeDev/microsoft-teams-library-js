@@ -429,8 +429,14 @@ table is no longer kept. Then confirm the post-release checklist and run the ret
 4. Before queuing, verify template-provided artifact retention and ship signals: SDF no longer has an explicit
    `AssetRetention` task, so `check pipeline-config` flags its absence and cannot verify template coverage.
    The hosted `PublishNpm` release job runs Node setup, `npm pack` and ESRP publishing using `NPMFeed`;
-   confirm ESRP authentication works without custom-pool deployment preparation. The dependent `Agent_job` downloads
-   `CDNFeed` and `scripts`, then runs deployment preparation, CDN upload and "View Published Package URLs".
+   confirm ESRP authentication works without custom-pool deployment preparation. The dependent hosted `Agent_job`
+   downloads `CDNFeed` and `scripts`, then runs CDN upload and the credential-independent
+   "View Published Package URLs" script; it no longer runs "Prepare deployment".
+   Owners must configure the required pipeline variable `cdnFederatedServiceConnection` to an authorized
+   workload-identity-federated Azure Resource Manager service connection with SDF CDN upload permissions.
+   Do not reuse the legacy `serviceConnectionId` or give this variable a fallback. Local checks cannot prove
+   federation, permissions or Lockbox: an approved SDF run from a branch containing this change must prove them.
+   The stage retains `isProduction: false`; template retention coverage remains unverified.
    **⛔ Gate 5:** queue the SDF release pipeline with that build as its resource only after these prerequisites are
    verified. Lockbox approval still applies to the stage as in Prod step 8; judge both jobs by their publishing tasks.
 5. Verify:
@@ -496,6 +502,10 @@ check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 | `announcement`         | every npm, CDN and GitHub release link in a draft names the version, and npm and CDN links are present                                                                                                                                                                                                                                                  |
 | `size`, `links`, `sri` | (informational) bundle bytes and change from `--previous`, announcement links, a file's SRI                                                                                                                                                                                                                                                             |
 | `help`                 | lists every command and the flags it takes; any other flag is a usage error                                                                                                                                                                                                                                                                             |
+
+`pipeline-config` also checks SDF's hosted CDN job, removal of legacy credential preparation, the explicit
+`$(cdnFederatedServiceConnection)` input, npm-before-CDN ordering and the retained stage Lockbox configuration.
+These are static YAML guards, not validation of the governed template, WIF authentication or runtime approvals.
 
 **npm source rules.** `registry.npmjs.org` is the only source that can show a version is absent or a dist-tag is
 current. A `--registry` proxy, jsDelivr and unpkg can lag, so they only add evidence that a version exists, and a

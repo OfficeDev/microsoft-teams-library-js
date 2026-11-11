@@ -244,7 +244,34 @@ function writePipelineConfig(root, { prodTag = 'latest', prodState = 'Latest', r
       `                  productstate: '${state}'`,
     ].join('\n');
   write('tools/releases/prod-release.yml', publish(prodTag, prodState));
-  write('tools/releases/sdf-release.yml', publish('beta', 'Beta'));
+  write(
+    'tools/releases/sdf-release.yml',
+    [
+      '      - stage: Prod_Lockbox_Approval_Deployment',
+      '        templateContext:',
+      '          cloud: Public',
+      '          isProduction: false',
+      '          approval:',
+      '            workflow: lockbox',
+      '            scope:',
+      '              subscriptionIds:',
+      '                - $(subscriptionId)',
+      '        jobs:',
+      '          - job: PublishNpm',
+      '            steps:',
+      publish('beta', 'Beta'),
+      '          - job: Agent_job',
+      '            dependsOn: PublishNpm',
+      '            templateContext:',
+      '              type: releaseJob',
+      '            steps:',
+      '              - task: M365CdnAssetsUpload@3',
+      '                inputs:',
+      '                  ConnectedServiceNameARM: $(cdnFederatedServiceConnection)',
+      '              - task: PowerShell@2',
+      '                displayName: View Published Package URLs',
+    ].join('\n'),
+  );
   write('tools/releases/ddl-release.yml', `              - task: AssetRetention@${retention}`);
   write('tools/yaml-templates/security.yml', `  - task: AssetRetention@${retention}`);
 }
@@ -1117,6 +1144,75 @@ describe('check-release', () => {
   });
 
   describe('pipeline-config', () => {
+    for (const [name, from, to, diagnostic] of [
+      ['custom workflow', 'type: releaseJob', 'type: releaseJob\n              workflow: m365-custom', 'is hosted'],
+      ['job pool override', 'dependsOn: PublishNpm', 'dependsOn: PublishNpm\n            pool: legacy', 'is hosted'],
+      ['missing CDN job', '- job: Agent_job', '- job: Renamed', 'is hosted'],
+      [
+        'legacy preparation',
+        '- task: M365CdnAssetsUpload@3',
+        '- task: prepare-deployment@1\n              - task: M365CdnAssetsUpload@3',
+        'no legacy credential',
+      ],
+      [
+        'legacy connection',
+        'ConnectedServiceNameARM: $(cdnFederatedServiceConnection)',
+        'ConnectedServiceNameARM: $(serviceConnectionId)',
+        'explicitly uses',
+      ],
+      [
+        'different connection variable',
+        'ConnectedServiceNameARM: $(cdnFederatedServiceConnection)',
+        'ConnectedServiceNameARM: $(connectedServiceName)',
+        'explicitly uses',
+      ],
+      [
+        'missing connection input',
+        'ConnectedServiceNameARM: $(cdnFederatedServiceConnection)',
+        '# ConnectedServiceNameARM: $(cdnFederatedServiceConnection)',
+        'explicitly uses',
+      ],
+      ['removed npm dependency', 'dependsOn: PublishNpm', 'dependsOn: []', 'depends on PublishNpm'],
+      [
+        'disabled CDN upload',
+        '- task: M365CdnAssetsUpload@3',
+        '- task: M365CdnAssetsUpload@3\n                enabled: false',
+        'explicitly uses',
+      ],
+      [
+        'URL display before upload',
+        '- task: M365CdnAssetsUpload@3',
+        '- task: PowerShell@2\n                displayName: View Published Package URLs\n              - task: M365CdnAssetsUpload@3',
+        'uploads before displaying',
+      ],
+      ['changed production classification', 'isProduction: false', 'isProduction: true', 'stage Lockbox'],
+      ['removed Lockbox', 'workflow: lockbox', 'workflow: other', 'stage Lockbox'],
+      ['removed approval subscription', '- $(subscriptionId)', '- other', 'stage Lockbox'],
+    ]) {
+      it(`rejects SDF ${name}`, async () => {
+        writePipelineConfig(root);
+        const sdf = path.join(root, 'tools/releases/sdf-release.yml');
+        const text = fs.readFileSync(sdf, 'utf8');
+        assert.ok(text.includes(from), `fixture must contain ${from}`);
+        fs.writeFileSync(sdf, text.replace(from, to));
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('FAIL tools/releases/sdf-release.yml') && line.includes(diagnostic)),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    it('ignores legacy credential text in SDF comments and script bodies', async () => {
+      writePipelineConfig(root);
+      const sdf = path.join(root, 'tools/releases/sdf-release.yml');
+      fs.appendFileSync(
+        sdf,
+        '\n# $(serviceConnectionId)\nnotes: |\n  - task: prepare-deployment@1\n  credentialFetchTaskAzureRM\n',
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
     it('passes when Prod publishes with tag latest and artifact retention is v6 or later', async () => {
       writePipelineConfig(root);
       assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));

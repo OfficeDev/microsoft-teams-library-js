@@ -71,12 +71,25 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 - **Symptom:** `check pipeline-config` reports that Prod, SDF and DDL have no enabled `AssetRetention` task.
 - **Cause:** the explicit retention tasks were removed. Prod and SDF publish npm in the hosted `PublishNpm` release
-  job, followed by CDN upload in the dependent custom-pool `Agent_job`. DDL keeps only artifact download, deployment
+  job. Prod's dependent CDN `Agent_job` still uses the custom pool; SDF's is hosted and uses a federated service
+  connection without deployment preparation. DDL keeps only artifact download, deployment
   preparation and CDN upload; its unused Node installer was also removed. Removing the explicit task does not prove
   that the governed template sends equivalent ship signals, especially while SDF has `isProduction: false`.
 - **Fix:** verify template-provided retention and ship signals with the release owners before publishing. Do not
   change production classification just to silence this check. Also verify ESRP authentication on the hosted job:
   deployment preparation in the later CDN job cannot supply credentials to npm publishing.
+
+### The SDF CDN upload fails after removing deployment preparation
+
+- **Symptom:** SDF npm publishing succeeds, but the CDN task cannot resolve its service connection or authenticate.
+- **Cause:** `cdnFederatedServiceConnection` is missing, unauthorized or not configured for workload identity
+  federation with the required SDF CDN upload permissions. SDF's hosted `Agent_job` no longer runs
+  "Prepare deployment"; the URL-display script only reads local directories and prints links.
+- **Fix:** the release owner must configure the required pipeline variable to the authorized federated Azure Resource
+  Manager service connection; never fall back to `serviceConnectionId`. Keep connection details in the private runbook.
+  Prove authentication and the unchanged stage Lockbox approval in an approved SDF run from a branch containing
+  the fix. Local `check pipeline-config` guards configuration only; it cannot verify WIF, Lockbox or template retention.
+  Check npm and the CDN before any retry: npm may already have published and CDN uploads do not overwrite.
 
 ### A pipeline fix merged to `main` is not in effect for the release
 

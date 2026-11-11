@@ -903,7 +903,14 @@ function pipelineTasks(text) {
       continue;
     }
     const indent = header[1].length;
-    const task = { name: header[3], version: Number(header[4]), enabled: true, displayName: '', productState: [] };
+    const task = {
+      name: header[3],
+      version: Number(header[4]),
+      enabled: true,
+      displayName: '',
+      productState: [],
+      properties: {},
+    };
     for (let next = index + 1; next < lines.length; next++) {
       const line = lines[next];
       if (line.trim() === '') {
@@ -917,6 +924,7 @@ function pipelineTasks(text) {
         continue;
       }
       const [, key, value] = property;
+      task.properties[key] = yamlScalar(value);
       if (key === 'enabled' && /^false$/i.test(yamlScalar(value))) {
         task.enabled = false;
       } else if (key === 'displayName') {
@@ -930,10 +938,72 @@ function pipelineTasks(text) {
   return tasks;
 }
 
+// Narrow guards for the checked-in block-style SDF YAML, not a governed-template/schema evaluator.
+function pipelineBlock(text, header) {
+  const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
+  const start = lines.findIndex((line) => header.test(line));
+  if (start < 0) {
+    return '';
+  }
+  const indent = lines[start].length - lines[start].trimStart().length;
+  let end = start + 1;
+  while (end < lines.length && (lines[end].trim() === '' || lines[end].search(/\S/) > indent)) {
+    end++;
+  }
+  return lines.slice(start, end).join('\n');
+}
+
+function checkSdfCdnConfig(text, file) {
+  const stage = pipelineBlock(text, /^\s*- stage: Prod_Lockbox_Approval_Deployment\s*$/);
+  const job = pipelineBlock(stage, /^\s*- job: Agent_job\s*$/);
+  const context = pipelineBlock(job, /^\s*templateContext:\s*$/);
+  const stageContext = pipelineBlock(stage, /^\s*templateContext:\s*$/);
+  const approval = pipelineBlock(stageContext, /^\s*approval:\s*$/);
+  const tasks = pipelineTasks(job).filter((task) => task.enabled);
+  const cdn = tasks.filter((task) => task.name === 'M365CdnAssetsUpload');
+  const cleanText = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment)).join('\n');
+  const checks = [
+    [
+      /^\s*type: releaseJob\s*$/m.test(context) && !/^\s*(workflow|pool):/m.test(job),
+      'SDF CDN Agent_job is hosted without a custom workflow or pool override',
+    ],
+    [
+      !pipelineTasks(cleanText).some((task) => task.name === 'prepare-deployment') &&
+        !/credentialFetchTaskAzureRM|\$\(serviceConnectionId\)/.test(cleanText),
+      'SDF has no legacy credential preparation or serviceConnectionId reference',
+    ],
+    [
+      cdn.length === 1 && cdn[0].properties.ConnectedServiceNameARM === '$(cdnFederatedServiceConnection)',
+      'SDF CDN explicitly uses $(cdnFederatedServiceConnection); owner must configure WIF',
+    ],
+    [
+      /^\s*dependsOn: PublishNpm\s*$/m.test(job) &&
+        tasks.length === 2 &&
+        tasks[0].name === 'M365CdnAssetsUpload' &&
+        tasks[0].version === 3 &&
+        tasks[1].name === 'PowerShell' &&
+        tasks[1].displayName === 'View Published Package URLs',
+      'SDF CDN depends on PublishNpm and uploads before displaying URLs',
+    ],
+    [
+      /^\s*cloud: Public\s*$/m.test(stageContext) &&
+        /^\s*isProduction: false\s*$/m.test(stageContext) &&
+        /^\s*workflow: lockbox\s*$/m.test(approval) &&
+        /^\s*-\s*\$\(subscriptionId\)\s*$/m.test(approval),
+      'SDF retains Public cloud, isProduction: false and stage Lockbox approval',
+    ],
+  ];
+  return checks.map(([ok, message]) => result(ok ? Outcome.pass : Outcome.fail, `${file} ${message}`));
+}
+
 function checkPipelineConfig({ repoRoot, readFile }) {
   const results = [];
   for (const { file, npmTag, productState } of PIPELINE_FILES) {
-    const tasks = pipelineTasks(readFile(path.join(repoRoot, file), 'utf8')).filter((task) => task.enabled);
+    const text = readFile(path.join(repoRoot, file), 'utf8');
+    const tasks = pipelineTasks(text).filter((task) => task.enabled);
+    if (file === 'tools/releases/sdf-release.yml') {
+      results.push(...checkSdfCdnConfig(text, file));
+    }
     const retention = tasks.filter((task) => task.name === 'AssetRetention').map((task) => task.version);
     const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
     if (retention.length === 0) {
