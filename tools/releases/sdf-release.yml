@@ -22,6 +22,7 @@ extends:
     serviceTreeId: $(serviceTreeId)
     customBuildTags:
       - ES365AIMigrationTooling-Release-MOBR
+      - migrate-customjob-plugin
     stages:
       - stage: Prod_Lockbox_Approval_Deployment
         displayName: Lockbox Approval/Deployment
@@ -80,7 +81,6 @@ extends:
             dependsOn: PublishNpm
             templateContext:
               type: releaseJob
-              workflow: m365-custom
               inputs:
                 - input: pipelineArtifact
                   pipeline: microsoft-teams-library-js-pipeline
@@ -91,17 +91,11 @@ extends:
                   artifactName: scripts
                   targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/scripts
             steps:
-              - task: prepare-deployment@1
-                displayName: Prepare deployment
-                inputs:
-                  taskType: credentialFetchTaskAzureRM
-                  armserviceconnection: $(serviceConnectionId)
-                  subscriptionid: $(subscriptionId)
               - task: M365CdnAssetsUpload@3
                 displayName: Push teams-js to M365 1CDN (SDF)
                 inputs:
                   SourcePath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/CDNFeed/*
-                  ConnectedServiceNameARM: $(serviceConnectionId)
+                  ConnectedServiceNameARM: $(cdnFederatedServiceConnection)
                   Environment: PublicCloudSDF
                   ContainerName: teams-js
                   AdditionalArgumentsForBlobCopy: --overwrite=false --log-level=INFO --recursive
