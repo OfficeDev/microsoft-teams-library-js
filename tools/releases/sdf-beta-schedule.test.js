@@ -263,6 +263,7 @@ test('the history names the CI build behind the newest published beta and the ru
   assert.deepEqual(history, {
     inFlight: ['20261111.1'],
     lastPublished: { runId: 100, commit: 'aaa', runName: '20261014.3', sdfRun: '20261015.1', version: '2.59.0-beta.3' },
+    highestPublished: { version: '2.59.0-beta.3', sdfRun: '20261015.1' },
   });
   assert.ok(requested[0].startsWith('https://ado.example/org/project-id/_apis/build/builds?definitions=7&'));
 });
@@ -374,6 +375,44 @@ test('a scheduled run skips a newer build that carries the version already publi
     true,
   );
   assert.throws(() => decide({ ...scheduled, lastPublished: { ...last, version: '2.60.0' } }), /must be betas/);
+});
+
+// Overlapping manual runs published CI run 130's 2.60.0-beta.0 first, then CI run 120's 2.59.1-beta.0 last.
+const descendingRoutes = {
+  ...historyRoutes,
+  'builds/6/timeline': {
+    records: publishedRecords('2026-10-16T20:00:00Z', 'job-6', 'https://ado.example/org/logs/601'),
+  },
+  'builds/5/timeline': published,
+  'pipelines/7/runs/6': { resources: { pipelines: { ci: { pipeline: { id: 130 }, version: '20261112.1' } } } },
+  'builds/130?': { id: 130, buildNumber: '20261112.1', sourceVersion: 'ccc' },
+  'logs/601?': packLog('2.60.0-beta.0'),
+  'pipelines/7/runs/5': { resources: { pipelines: { ci: { pipeline: { id: 120 }, version: '20261106.1' } } } },
+  'builds/120?': { id: 120, buildNumber: '20261106.1', sourceVersion: 'bbb' },
+  'logs/369?': packLog('2.59.1-beta.0'),
+};
+
+test('the history also reports the highest beta published, which a later publication of an older one can hide', async () => {
+  const { fetchImpl } = fakeAdo(descendingRoutes);
+  const history = await readHistory({ ...historyInput, fetchImpl });
+  assert.equal(history.lastPublished.version, '2.59.1-beta.0');
+  assert.equal(history.lastPublished.runId, 120);
+  assert.deepEqual(history.highestPublished, { version: '2.60.0-beta.0', sdfRun: '20261104.1' });
+});
+
+test('a scheduled run skips a build whose version is not newer than the highest beta published', () => {
+  const decision = decide({
+    ...scheduled,
+    current: { runId: 130, commit: 'ccc', runName: '20261112.1' },
+    lastPublished: { runId: 120, commit: 'bbb', runName: '20261106.1', sdfRun: '20261015.1', version: '2.59.1-beta.0' },
+    highestPublished: { version: '2.60.0-beta.0', sdfRun: '20261104.1' },
+  });
+  assert.equal(decision.publish, false);
+  assert.match(
+    decision.reasons[0],
+    /2\.60\.0-beta\.0 is not newer than 2\.60\.0-beta\.0, the highest beta published \(SDF run 20261104\.1\)/,
+  );
+  assert.throws(() => decide({ ...scheduled, highestPublished: { version: '2.60.0', sdfRun: 'x' } }), /must be betas/);
 });
 
 test('the history skips a run whose timeline Azure DevOps no longer keeps', async () => {
@@ -541,4 +580,17 @@ test('main fails a scheduled run that lacks its inputs', async () => {
   );
   await assert.rejects(main(scheduledArgs('not a date'), env, { fetchImpl, readFile, log: quiet }), /is not a date/);
   await assert.rejects(main(['--reason'], env, { fetchImpl, readFile, log: quiet }), /takes a value/);
+});
+
+test('main skips a scheduled run when an older beta was published after its version', async () => {
+  const { fetchImpl } = fakeAdo({
+    ...descendingRoutes,
+    'builds?definitions=7&': { value: historyRoutes['builds?definitions=7&'].value.slice(2) },
+  });
+  const decision = await main(scheduledArgs('2026-11-18T18:00:00Z', 'ccc', '130'), env, {
+    fetchImpl,
+    readFile,
+    log: () => {},
+  });
+  assert.equal(decision.publish, false);
 });

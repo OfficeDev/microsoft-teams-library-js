@@ -79,7 +79,17 @@ function releasedVersionFromReadme(readme) {
  * published beta; `inFlight` lists other runs of this pipeline that have not completed.
  * Returns { publish, reasons }; throws when a scheduled run cannot be judged safely.
  */
-function decide({ reason, now, beta, releasedVersion, sourceBranch, current, lastPublished, inFlight = [] }) {
+function decide({
+  reason,
+  now,
+  beta,
+  releasedVersion,
+  sourceBranch,
+  current,
+  lastPublished,
+  highestPublished,
+  inFlight = [],
+}) {
   if (reason !== 'Schedule') {
     return { publish: true, reasons: [`${reason || 'Unknown'} run: the skip rule applies only to scheduled runs`] };
   }
@@ -121,6 +131,12 @@ function decide({ reason, now, beta, releasedVersion, sourceBranch, current, las
   } else if (lastPublished.version && compareBetas(beta, lastPublished.version) <= 0) {
     // Two main builds made before a beta publishes can carry the same version, and npm never takes a version twice.
     reasons.push(`Nothing new: ${beta} is not newer than ${lastPublished.version}, the last published beta`);
+  } else if (highestPublished && compareBetas(beta, highestPublished.version) <= 0) {
+    // Overlapping manual runs can publish a newer beta before an older one, which then hides it as the last published.
+    reasons.push(
+      `Nothing new: ${beta} is not newer than ${highestPublished.version}, the highest beta published ` +
+        `(SDF run ${highestPublished.sdfRun})`,
+    );
   }
   if (inFlight.length > 0) {
     reasons.push(`Another run of this pipeline is in progress: ${inFlight.join(', ')}`);
@@ -185,8 +201,10 @@ async function readHistory({ fetchImpl, collectionUri, project, definitionId, bu
   const inFlight = others.filter((run) => run.status !== 'completed').map((run) => run.buildNumber);
 
   // Overlapping manual runs can publish out of queue order, so the last published beta is the run whose npm publish
-  // task finished last, not the most recently queued one.
+  // task finished last, not the most recently queued one. A later publication of an older beta can also hide a newer
+  // one, so every publication's version is read and the highest is kept too.
   let latest;
+  let highestPublished = null;
   for (const run of others.filter((candidate) => candidate.status === 'completed')) {
     const timeline = await getJson(fetchImpl, `${base}/build/builds/${run.id}/timeline?api-version=7.1`, token);
     const records = timeline && Array.isArray(timeline.records) ? timeline.records : [];
@@ -204,12 +222,16 @@ async function readHistory({ fetchImpl, collectionUri, project, definitionId, bu
     if (Number.isNaN(finished)) {
       throw new Error(`Run ${run.buildNumber} published a beta but its publish task has no finish time`);
     }
+    const version = await publishedVersion({ fetchImpl, token, records, publish, run });
+    if (!highestPublished || compareBetas(version, highestPublished.version) > 0) {
+      highestPublished = { version, sdfRun: run.buildNumber };
+    }
     if (!latest || finished > latest.finished) {
-      latest = { run, records, publish, finished };
+      latest = { run, finished, version };
     }
   }
   if (latest) {
-    const { run, records, publish } = latest;
+    const { run, version } = latest;
     const details = await getJson(fetchImpl, `${base}/pipelines/${definitionId}/runs/${run.id}?api-version=7.1`, token);
     const resource = details.resources && details.resources.pipelines && details.resources.pipelines[alias];
     if (!resource || !resource.version || !resource.pipeline) {
@@ -227,11 +249,12 @@ async function readHistory({ fetchImpl, collectionUri, project, definitionId, bu
         commit: ciRun.sourceVersion,
         runName: ciRun.buildNumber,
         sdfRun: run.buildNumber,
-        version: await publishedVersion({ fetchImpl, token, records, publish, run }),
+        version,
       },
+      highestPublished,
     };
   }
-  return { inFlight, lastPublished: null };
+  return { inFlight, lastPublished: null, highestPublished: null };
 }
 
 function parseArgs(argv) {
@@ -334,6 +357,10 @@ async function main(
       const last = history.lastPublished;
       log(`Last published beta: ${last.version} by run ${last.sdfRun}, from CI run ${last.runName} at ${last.commit}`);
     }
+    if (history.highestPublished && history.highestPublished.version !== history.lastPublished?.version) {
+      const highest = history.highestPublished;
+      log(`Highest beta published: ${highest.version} by run ${highest.sdfRun}`);
+    }
     const current = {
       runId: options['run-id'],
       commit: options.commit,
@@ -347,6 +374,7 @@ async function main(
       sourceBranch: options['source-branch'],
       current,
       lastPublished: history.lastPublished,
+      highestPublished: history.highestPublished,
       inFlight: history.inFlight,
     });
     summaryInput = {
