@@ -1,4 +1,14 @@
 trigger: none
+# The weekly SDF beta queues itself every Wednesday at 18:00 UTC (10:00 PST, 11:00 PDT), within the hours it has been
+# queued by hand. Check_Skip decides whether a scheduled run publishes, using tools/releases/sdf-beta-schedule.js from
+# the CI build's scripts artifact; manual runs always publish. Both still need the Lockbox approval.
+schedules:
+  - cron: '0 18 * * 3'
+    displayName: Weekly SDF beta
+    branches:
+      include:
+        - main
+    always: true
 resources:
   repositories:
     - repository: CustomPipelineTemplates
@@ -6,9 +16,12 @@ resources:
       name: 1ESPipelineTemplates/OfficePipelineTemplates
       ref: refs/tags/release
   pipelines:
+    # Without a branch, a scheduled run takes the latest successful run of the CI pipeline on any branch, which can be
+    # a release branch build with no beta version. Manual runs can still pick another build.
     - pipeline: microsoft-teams-library-js-pipeline
       source: 'microsoft-teams-library-js/M365 Platform/App SDK/OfficeDev.microsoft-teams-library-js'
       project: ISS
+      branch: main
 variables:
   - name: System.Debug
     value: true
@@ -23,9 +36,54 @@ extends:
     customBuildTags:
       - ES365AIMigrationTooling-Release-MOBR
     stages:
+      - stage: Check_Skip
+        displayName: Check the weekly beta skip rule
+        dependsOn: []
+        jobs:
+          - job: Check
+            displayName: Decide whether this run publishes
+            # A release job, so the stage adds no source analysis and the Lockbox stage waits only for this decision.
+            # Release jobs cannot check out the repository, so the script comes from the CI build.
+            templateContext:
+              type: releaseJob
+              isProduction: false
+              inputs:
+                - input: pipelineArtifact
+                  pipeline: microsoft-teams-library-js-pipeline
+                  artifactName: NPMFeed
+                  targetPath: $(Pipeline.Workspace)/NPMFeed
+                - input: pipelineArtifact
+                  pipeline: microsoft-teams-library-js-pipeline
+                  artifactName: scripts
+                  targetPath: $(Pipeline.Workspace)/scripts
+            steps:
+              - task: NodeTool@0
+                displayName: Use Node 18.x
+                condition: eq(variables['Build.Reason'], 'Schedule')
+                inputs:
+                  versionSpec: 18.x
+              - task: PowerShell@2
+                name: Decide
+                displayName: Apply the skip rule
+                condition: eq(variables['Build.Reason'], 'Schedule')
+                inputs:
+                  targetType: inline
+                  script: >-
+                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'
+                    --reason '$(Build.Reason)'
+                    --npm-feed '$(Pipeline.Workspace)/NPMFeed'
+                    --alias microsoft-teams-library-js-pipeline
+                    --source-branch '$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceBranch)'
+                    --run-id '$(resources.pipeline.microsoft-teams-library-js-pipeline.runID)'
+                    --run-name '$(resources.pipeline.microsoft-teams-library-js-pipeline.runName)'
+                    --commit '$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceCommit)'
+                env:
+                  SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       - stage: Prod_Lockbox_Approval_Deployment
         displayName: Lockbox Approval/Deployment
-        dependsOn: []
+        dependsOn: Check_Skip
+        # Manual runs skip the Decide step and always publish.
+        condition: and(succeeded(), or(ne(variables['Build.Reason'], 'Schedule'), eq(dependencies.Check_Skip.outputs['Check.Decide.publish'], 'true')))
         templateContext:
           cloud: Public
           isProduction: false

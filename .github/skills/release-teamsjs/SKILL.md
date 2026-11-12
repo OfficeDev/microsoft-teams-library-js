@@ -38,7 +38,7 @@ here.
 | Type     | When                                                       | Publishes                                                                   | Built from                                             |
 | -------- | ---------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------ |
 | Prod     | First Wednesday of the month                               | npm `latest` and the Prod CDN (`res.cdn.office.net`)                        | CI build of `release/<x.y.z>` after the prep PR merges |
-| SDF beta | Weekly, except the week of a Prod release                  | npm `beta` and the SDF CDN (`res-sdf.cdn.office.net`)                       | Latest successful non-PR CI build of `main`            |
+| SDF beta | Weekly on a schedule, except the week of a Prod release    | npm `beta` and the SDF CDN (`res-sdf.cdn.office.net`)                       | Latest successful non-PR CI build of `main`            |
 | DDL      | When a `validDomains.json` change must reach the live list | `teams-js/validDomains/json/validDomains.json` on the Prod CDN, overwriting | A CI build containing the change                       |
 
 - The beta version comes from `packages/teams-js/prepBetaRelease.cjs`, which `main` CI runs: the next beachball
@@ -49,8 +49,8 @@ here.
   already shipped. `prepBetaRelease.cjs` runs `beachball bump` first, so until a patch or minor change file lands on
   `main` after a release, the beta stays on the released version (for example `2.59.0-beta.1` after 2.59.0), which
   sorts below the release. Don't hand-bump `main` to get past it: the release version also comes from
-  `beachball bump`, so a hand bump would skip a version. Confirm the rule from commit history and the build's
-  version, not memory, and record the skip with the reason.
+  `beachball bump`, so a hand bump would skip a version. Scheduled runs apply the rule themselves (see SDF beta); for a
+  manual run, confirm it from commit history and the build's version, not memory, and record the skip with the reason.
 - The Prod pipeline publishes the npm package and the versioned CDN folder only. It does **not** push the
   valid-domains list; that is the DDL pipeline's job. Every TeamsJS version bundles a copy of the list, but uses it
   only until the live list loads from the CDN, when that fetch fails, and in server-side rendering; once the live list
@@ -73,6 +73,7 @@ Every write is a gate:
 3. **Each PR** (prep, merge-back, downstream bumps): show title, base, head and body first.
 4. **GitHub release create or edit**, including setting it as Latest.
 5. **Each pipeline queue**: show the pipeline by role, the branch, the CI build it consumes and the version inside it.
+   A scheduled SDF run queues itself, so for it this gate moves to its Lockbox approval (see SDF beta).
 6. **Any message** (Lockbox ask, review request, announcement). Release approval never authorizes a message. Each
    message needs its own approval of the exact text and destination, and a readback after it is sent. Test and dry
    runs are never announced.
@@ -438,9 +439,22 @@ table is no longer kept. Then confirm the post-release checklist and run the ret
 
 ## SDF beta
 
+The SDF release pipeline queues itself every Wednesday at 18:00 UTC with the latest successful CI build of `main`. Its
+first stage applies the skip rule with `tools/releases/sdf-beta-schedule.js` and also skips a build that is a beta of a
+version already released; a skipped run ends without a Lockbox request and with a warning naming the reason. It learns
+the released version from the build's README, which names a release only once the merge-back reaches `main`, so a run
+between a Prod release and its merge-back can't see that release. The Prod-week skip normally covers that gap; step 2's
+check before the Lockbox approval covers the rest. A scheduled run is queued by the pipeline, so Gate 5 does not apply
+to it: its Lockbox approval is the gate. Watch for the request on Wednesdays; before it is approved, do steps 2 and 3
+for the build the run consumes, and reject the request if step 2 fails. The run's job summary lists the decision and its
+reasons, the CI build, a link to the changes since the last beta and the bundle SRI to compare with step 3. After the
+run, do step 5. To publish another build or outside the schedule, queue the pipeline manually as below; manual runs are
+never skipped.
+
 1. Pre-flight as in step 1. Apply the skip rule; in a Prod week there is no beta.
 2. Pick the latest successful non-PR CI build of `main`; both of its jobs must be green. Its `CDNFeed` folder name is
-   the beta version. Checking it before queuing is what stops an unexpected version from being published.
+   the beta version. Checking it before queuing, or for a scheduled run before its Lockbox request is approved, is what
+   stops an unexpected version from being published.
    - The beta must be newer than the current `latest`: `check beta-version --version "<beta>"` passes only when
      `<x.y.z>` in `<x.y.z>-beta.N` is greater than the highest `latest` from npm and the GitHub Latest release, and
      inconclusive when neither `registry.npmjs.org` nor the GitHub Latest release answers (a proxy or mirror `latest`
