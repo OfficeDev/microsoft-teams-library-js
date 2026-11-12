@@ -867,7 +867,7 @@ const SDF_SKIP_SCRIPT = 'sdf-beta-schedule.js';
 const SDF_SKIP_STAGE = 'Check_Skip';
 const SDF_SKIP_JOB = 'Check';
 const SDF_SKIP_STEP = 'Decide';
-// The Lockbox stage condition, in either order of its or() branches, compared without spaces, case or quote style.
+// The Lockbox stage condition, in either order of its or() branches, as normalizeExpression writes it.
 const SDF_MANUAL_BRANCH = "ne(variables['build.reason'],'schedule')";
 const SDF_PUBLISH_BRANCH = "eq(dependencies.check_skip.outputs['check.decide.publish'],'true')";
 const SDF_LOCKBOX_CONDITIONS = [
@@ -1117,10 +1117,34 @@ function stageProperty(text, stage, key) {
 // Whether a step's script text runs the skip script with node, outside a PowerShell comment.
 function runsSkipScript(script) {
   const code = script
+    .replace(/<#[\s\S]*?#>/g, ' ')
     .split(/\r?\n/)
     .map((line) => line.replace(/(^|\s)#.*$/, ''))
     .join(' ');
-  return new RegExp(`(^|\\s)node\\s+(['"]?)[^\\s'"]*${SDF_SKIP_SCRIPT.replace('.', '\\.')}\\2(\\s|$)`).test(code);
+  return new RegExp(`(^|\\s)node\\s+(['"]?)(?:[^\\s'"]*[\\\\/])?${SDF_SKIP_SCRIPT.replace('.', '\\.')}\\2(\\s|$)`).test(
+    code,
+  );
+}
+
+// A pipeline expression with whitespace outside string literals removed, double quotes made single and case folded,
+// which Azure Pipelines ignores in function names and string comparisons.
+function normalizeExpression(expression) {
+  let normalized = '';
+  let quote = null;
+  for (const character of expression) {
+    if (quote) {
+      normalized += character === quote ? "'" : character;
+      if (character === quote) {
+        quote = null;
+      }
+    } else if (character === "'" || character === '"') {
+      quote = character;
+      normalized += "'";
+    } else if (!/\s/.test(character)) {
+      normalized += character;
+    }
+  }
+  return normalized.toLowerCase();
 }
 
 function checkSdfSkipGate(file, text) {
@@ -1131,7 +1155,7 @@ function checkSdfSkipGate(file, text) {
   );
   const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
   const condition = stageProperty(text, PROD_LOCKBOX_STAGE, 'condition') || '';
-  const conditionOk = SDF_LOCKBOX_CONDITIONS.includes(condition.replace(/\s+/g, '').replace(/"/g, "'").toLowerCase());
+  const conditionOk = SDF_LOCKBOX_CONDITIONS.includes(normalizeExpression(condition));
   return [
     result(
       gateOk ? Outcome.pass : Outcome.fail,

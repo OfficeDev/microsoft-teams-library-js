@@ -1370,6 +1370,23 @@ describe('check-release', () => {
         },
       ],
       [
+        'compares Build.Reason with a spaced-out Schedule literal',
+        { sdfLockboxCondition: SDF_LOCKBOX_CONDITION.replace("'Schedule'", "'Sched ule'") },
+      ],
+      [
+        'has the skip script only in a PowerShell block comment',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+            "<# node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js' #>",
+          ),
+        },
+      ],
+      [
+        'runs a different script whose name ends in sdf-beta-schedule.js',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('scripts/sdf-beta-schedule.js', 'scripts/not-sdf-beta-schedule.js') },
+      ],
+      [
         'wraps the Lockbox stage condition in or(true, ...)',
         { sdfLockboxCondition: `${SDF_LOCKBOX_CONDITION.replace('condition: and(', 'condition: or(true, and(')})` },
       ],
