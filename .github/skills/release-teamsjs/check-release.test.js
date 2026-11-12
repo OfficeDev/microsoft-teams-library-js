@@ -1548,6 +1548,10 @@ describe('check-release', () => {
         },
       ],
       [
+        'ends the skip command with an option that has no value, which makes it throw',
+        { sdfSkipGate: SDF_SKIP_GATE.replace("--reason '$(Build.Reason)'", "--reason '$(Build.Reason)' --alias") },
+      ],
+      [
         'passes an option twice',
         {
           sdfSkipGate: SDF_SKIP_GATE.replace(
