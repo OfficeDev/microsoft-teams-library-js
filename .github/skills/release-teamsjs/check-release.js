@@ -22,8 +22,9 @@
  *   beta-version  --version <x.y.z>-beta.<n> [--registry <url>]
  *                                                  the beta is of a version newer than latest on npm and GitHub
  *   pipeline-config                                the checkout's release YAML: Prod runs validate-prod-build.ps1 in
- *                                                  a stage the Lockbox stage depends on, with no continueOnError and no
- *                                                  condition but succeeded(), and publishes with tag
+ *                                                  the Validate_CI_build job of a stage the Lockbox stage depends on,
+ *                                                  with no continueOnError and no condition but succeeded() on the
+ *                                                  task, the job or the Lockbox stage, and publishes with tag
  *                                                  latest, SDF gates its Lockbox stage on the Check_Skip decision and
  *                                                  publishes with tag beta, and each has artifact retention @6 or later;
  *                                                  commented-out, `enabled: false` and script-text tasks don't count
@@ -237,7 +238,7 @@ async function fetchOrUnreachable(fetchImpl, url, label) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : error?.message ?? String(error);
+        : (error?.message ?? String(error));
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -254,7 +255,7 @@ async function readBody(response, read, label, url) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : error?.message ?? String(error);
+        : (error?.message ?? String(error));
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -860,6 +861,7 @@ const MINIMUM_ASSET_RETENTION_VERSION = 6;
 // The Prod validation stage runs this script, and the Lockbox stage must wait for it.
 const PROD_VALIDATION_SCRIPT = 'tools/releases/powershell-commands/validate-prod-build.ps1';
 const PROD_VALIDATION_STAGE = 'Prod_Validation';
+const PROD_VALIDATION_JOB = 'Validate_CI_build';
 const PROD_LOCKBOX_STAGE = 'Prod_Lockbox_Approval_Deployment';
 // The SDF skip gate: the Check job's Decide step runs this script, and the Lockbox stage waits for it and runs a
 // scheduled build only when the step's publish output is true. Manual runs skip the step and always publish.
@@ -1095,26 +1097,27 @@ function stageText(text, stage) {
   return itemText(text, 'stage', stage);
 }
 
-// The value of a `- stage: <name>` item's own property, not a job's or step's, ignoring comments and block scalars.
-// Undefined when the stage or the property is not declared.
-function stageProperty(text, stage, key) {
+// The value of a `- <kind>: <name>` item's own property (a stage's or a job's), not a nested job's or step's, ignoring
+// comments and block scalars. Undefined when the item or the property is not declared, and empty when the value is on
+// another line.
+function itemProperty(text, kind, name, key) {
   const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
   const start = lines.findIndex((line) => {
-    const header = /^[ \t]*-[ \t]*stage:[ \t]*(.+?)[ \t]*$/.exec(line);
-    return header && yamlScalar(header[1]) === stage;
+    const header = new RegExp(`^[ \\t]*-[ \\t]*${kind}:[ \\t]*(.+?)[ \\t]*$`).exec(line);
+    return header && yamlScalar(header[1]) === name;
   });
   if (start === -1) {
     return undefined;
   }
-  const stageIndent = lines[start].length - lines[start].trimStart().length;
-  const propertyIndent = lines[start].indexOf('stage:');
+  const itemIndent = lines[start].length - lines[start].trimStart().length;
+  const propertyIndent = lines[start].indexOf(`${kind}:`);
   for (let index = start + 1; index < lines.length; index++) {
     const line = lines[index];
     if (line.trim() === '') {
       continue;
     }
     const indent = line.length - line.trimStart().length;
-    if (indent <= stageIndent) {
+    if (indent <= itemIndent) {
       break;
     }
     const property = /^[ \t]*(['"]?)([\w.]+)\1[ \t]*:[ \t]*(.*)$/.exec(line);
@@ -1123,6 +1126,10 @@ function stageProperty(text, stage, key) {
     }
   }
   return undefined;
+}
+
+function stageProperty(text, stage, key) {
+  return itemProperty(text, 'stage', stage, key);
 }
 
 // The inline script of a PowerShell@2 task written in the one shape the check supports, or undefined. The task's own
@@ -1254,8 +1261,10 @@ function commandWords(command) {
   return words;
 }
 
-// Whether the step runs `node <path>/sdf-beta-schedule.js` with exactly one --reason of $(Build.Reason) or Schedule.
-// The script reads its options in pairs and treats a missing or other reason as a manual run, which always publishes.
+// Whether the step runs `node <path>/sdf-beta-schedule.js` with exactly one --reason of $(Build.Reason) or Schedule,
+// and the non-empty --npm-feed and --alias a scheduled run needs. The script reads its options in pairs, treats a
+// missing or other reason as a manual run, which always publishes, and throws on a scheduled run without --npm-feed or
+// --alias.
 function runsSkipRule(task) {
   const command = scriptCommand(task);
   const words = command === undefined ? undefined : commandWords(command);
@@ -1273,7 +1282,11 @@ function runsSkipRule(task) {
     }
     options.set(words[index], words[index + 1]);
   }
-  return ['$(Build.Reason)', 'Schedule'].includes(options.get('--reason'));
+  return (
+    ['$(Build.Reason)', 'Schedule'].includes(options.get('--reason')) &&
+    Boolean(options.get('--npm-feed')) &&
+    Boolean(options.get('--alias'))
+  );
 }
 
 // The Decide step may run on every build, after success, or on scheduled builds only.
@@ -1339,29 +1352,58 @@ function checkSdfSkipGate(file, text) {
   ];
 }
 
+// A job or stage condition that leaves the default, so the item runs only when everything before it succeeded.
+function runsOnlyAfterSuccess(condition) {
+  return condition === undefined || normalizeExpression(condition) === 'succeeded()';
+}
+
 function checkProdValidation(file, text) {
-  // A condition can skip the task and continueOnError lets it fail, and either way its job still succeeds.
-  const validation = pipelineTasks(stageText(text, PROD_VALIDATION_STAGE)).some(
+  // A condition can skip the task and continueOnError lets it fail, and either way its job still succeeds. The same
+  // holds for the job's own condition and continueOnError, and a Lockbox stage condition can ignore the result.
+  const job = itemText(stageText(text, PROD_VALIDATION_STAGE), 'job', PROD_VALIDATION_JOB);
+  const validation = pipelineTasks(job).some(
     (task) =>
       task.enabled &&
       task.name === 'PowerShell' &&
       task.filePath === PROD_VALIDATION_SCRIPT &&
       (task.continueOnError === '' || /^false$/i.test(task.continueOnError)) &&
-      (task.condition === '' || /^succeeded\(\s*\)$/.test(task.condition)),
+      (task.condition === '' || normalizeExpression(task.condition) === 'succeeded()'),
   );
   const stageDeclared = stageDependsOn(text, PROD_VALIDATION_STAGE) !== undefined;
+  const jobCondition = itemProperty(job, 'job', PROD_VALIDATION_JOB, 'condition');
+  const jobContinueOnError = itemProperty(job, 'job', PROD_VALIDATION_JOB, 'continueOnError');
+  const jobOk =
+    runsOnlyAfterSuccess(jobCondition) && (jobContinueOnError === undefined || /^false$/i.test(jobContinueOnError));
   const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
+  const lockboxCondition = stageProperty(text, PROD_LOCKBOX_STAGE, 'condition');
+  const lockboxConditionOk = runsOnlyAfterSuccess(lockboxCondition);
   return [
     result(
       validation && stageDeclared ? Outcome.pass : Outcome.fail,
       validation && stageDeclared
         ? `${file} has the ${PROD_VALIDATION_STAGE} stage running ${PROD_VALIDATION_SCRIPT}`
-        : `${file} has no ${PROD_VALIDATION_STAGE} stage with an enabled task running ${PROD_VALIDATION_SCRIPT}, so a ` +
-            'wrong CI build is caught only after the Lockbox approval',
+        : `${file} has no ${PROD_VALIDATION_STAGE} stage whose ${PROD_VALIDATION_JOB} job has an enabled task running ` +
+            `${PROD_VALIDATION_SCRIPT} with no condition other than succeeded() and no continueOnError, so a wrong CI ` +
+            'build is caught only after the Lockbox approval',
+    ),
+    result(
+      jobOk ? Outcome.pass : Outcome.fail,
+      jobOk
+        ? `${file} ${PROD_VALIDATION_JOB} fails when the validation fails`
+        : `${file} ${PROD_VALIDATION_JOB} has condition ${jobCondition ?? '(none)'} and continueOnError ` +
+            `${jobContinueOnError ?? '(none)'}, expected no condition other than succeeded() and no continueOnError, ` +
+            'so that a failed validation stops the Lockbox stage',
     ),
     result(
       lockboxDependsOn.includes(PROD_VALIDATION_STAGE) ? Outcome.pass : Outcome.fail,
       `${file} ${PROD_LOCKBOX_STAGE} depends on [${lockboxDependsOn.join(', ')}], expected ${PROD_VALIDATION_STAGE}`,
+    ),
+    result(
+      lockboxConditionOk ? Outcome.pass : Outcome.fail,
+      lockboxConditionOk
+        ? `${file} ${PROD_LOCKBOX_STAGE} runs only after its dependencies succeed`
+        : `${file} ${PROD_LOCKBOX_STAGE} condition is ${lockboxCondition || '(on another line)'}, expected none or ` +
+            'succeeded(), so that it never runs after a failed validation',
     ),
   ];
 }
