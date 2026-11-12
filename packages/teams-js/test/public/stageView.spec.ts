@@ -54,7 +54,7 @@ describe('stageView', () => {
   });
 
   describe('open', () => {
-    const allowedContexts = [FrameContexts.content];
+    const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel];
     it('should not allow calls before initialization', async () => {
       await expect(stageView.open(stageViewParams)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
@@ -65,35 +65,42 @@ describe('stageView', () => {
           await utils.initializeWithContext(frameContext);
 
           await expect(() => stageView.open(stageViewParams)).rejects.toThrowError(
-            `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
+            `This call is only allowed in following contexts: ${JSON.stringify(allowedContexts)}. Current context: "${frameContext}".`,
           );
         });
       }
     });
 
-    it('should not allow a null StageViewParams parameter', async () => {
-      expect.assertions(1);
-      await utils.initializeWithContext(FrameContexts.content);
-      makeRuntimeSupportStageViewCapability();
+    it.each(allowedContexts)(
+      'should not allow a null StageViewParams parameter in %s context',
+      async (frameContext) => {
+        await utils.initializeWithContext(frameContext);
+        makeRuntimeSupportStageViewCapability();
 
-      expect(() => stageView.open(null)).rejects.toThrowError('[stageView.open] Stage view params cannot be null');
-    });
+        await expect(stageView.open(null)).rejects.toThrowError('[stageView.open] Stage view params cannot be null');
+      },
+    );
 
-    it('should pass along entire StageViewParams parameter in content context', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      makeRuntimeSupportStageViewCapability();
+    it.each(allowedContexts)(
+      'should pass along entire StageViewParams parameter in %s context',
+      async (frameContext) => {
+        await utils.initializeWithContext(frameContext);
+        makeRuntimeSupportStageViewCapability();
 
-      const promise = stageView.open(stageViewParams);
+        const promise = stageView.open(stageViewParams);
 
-      const openStageViewMessage = utils.findMessageByFunc('stageView.open');
-      expect(openStageViewMessage).not.toBeNull();
-      expect(openStageViewMessage.args).toEqual([stageViewParams]);
+        const openStageViewMessage = utils.findMessageByFunc('stageView.open');
+        expect(openStageViewMessage).not.toBeNull();
+        expect(openStageViewMessage.args).toEqual([stageViewParams]);
 
-      await expect(promise).resolves;
-    });
+        utils.respondToMessage(openStageViewMessage, null);
 
-    it('should return promise and resolve', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
+        await expect(promise).resolves.toBeUndefined();
+      },
+    );
+
+    it.each(allowedContexts)('should return promise and resolve in %s context', async (frameContext) => {
+      await utils.initializeWithContext(frameContext);
       makeRuntimeSupportStageViewCapability();
 
       const promise = stageView.open(stageViewParams);
@@ -106,8 +113,8 @@ describe('stageView', () => {
       await expect(promise).resolves.not.toThrowError();
     });
 
-    it('should properly handle errors', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
+    it.each(allowedContexts)('should properly handle errors in %s context', async (frameContext) => {
+      await utils.initializeWithContext(frameContext);
       makeRuntimeSupportStageViewCapability();
 
       const promise = stageView.open(stageViewParams);
@@ -121,18 +128,16 @@ describe('stageView', () => {
       await expect(promise).rejects.toEqual(err);
     });
 
-    it('should throw error when stageView is not supported.', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+    it.each(allowedContexts)(
+      'should throw error when stageView is not supported in %s context',
+      async (frameContext) => {
+        await utils.initializeWithContext(frameContext);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-      expect.assertions(1);
-
-      try {
-        await stageView.open(stageViewParams);
-      } catch (e) {
-        expect(e).toEqual(errorNotSupportedOnPlatform);
-      }
-    });
+        await expect(stageView.open(stageViewParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+        expect(utils.findMessageByFunc('stageView.open')).toBeNull();
+      },
+    );
   });
 
   describe('self isSupported', () => {
