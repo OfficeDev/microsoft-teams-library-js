@@ -867,6 +867,20 @@ const SDF_SKIP_SCRIPT = 'sdf-beta-schedule.js';
 const SDF_SKIP_STAGE = 'Check_Skip';
 const SDF_SKIP_JOB = 'Check';
 const SDF_SKIP_STEP = 'Decide';
+// The options the pipeline passes to the skip script. Its --now option is for local testing only.
+const SDF_SKIP_OPTIONS = new Set([
+  '--reason',
+  '--npm-feed',
+  '--alias',
+  '--source-branch',
+  '--run-id',
+  '--run-name',
+  '--commit',
+]);
+// pipelineTasks records a task key whose value is on or continued onto another line as this, which matches no
+// accepted value.
+const UNREADABLE_VALUE = '\u0000unreadable';
+const UNSET_VALUE = '\u0000unset';
 // The Lockbox stage condition, in either order of its or() branches, as normalizeExpression writes it.
 const SDF_MANUAL_BRANCH = "ne(variables['build.reason'],'schedule')";
 const SDF_PUBLISH_BRANCH = "eq(dependencies.check_skip.outputs['check.decide.publish'],'true')";
@@ -963,12 +977,20 @@ function pipelineTasks(text) {
       }
       const [, , key, value] = property;
       const own = lineIndent === keyIndent;
+      // A task's own scalar key has no children, so a deeper line after it puts or continues its value on another line,
+      // which the checks don't read; record that as a value no check accepts. A key with no value is null, the default.
+      let after = end + 1;
+      while (after < lines.length && lines[after].trim() === '') {
+        after++;
+      }
+      const continued = after < lines.length && lines[after].length - lines[after].trimStart().length > lineIndent;
+      const scalar = continued ? UNREADABLE_VALUE : yamlScalar(value);
       if (key === 'name' && own) {
         task.stepName = yamlScalar(value);
       } else if (key === 'condition' && own) {
-        task.condition = yamlScalar(value);
+        task.condition = scalar;
       } else if (key === 'continueOnError' && own) {
-        task.continueOnError = yamlScalar(value);
+        task.continueOnError = scalar;
       } else if (key === 'enabled' && /^false$/i.test(yamlScalar(value))) {
         task.enabled = false;
       } else if (key === 'displayName') {
@@ -1240,19 +1262,29 @@ function runsSkipRule(task) {
   if (!words || words.length < 2 || !/^node(\.exe)?$/i.test(words[0])) {
     return false;
   }
-  if (words[1].split(/[\\/]/).pop() !== SDF_SKIP_SCRIPT) {
+  if (words[1].startsWith('-') || words[1].split(/[\\/]/).pop() !== SDF_SKIP_SCRIPT) {
     return false;
   }
-  const reasons = [];
+  // Only the options the pipeline passes, each once; --now would replace the date the skip rule reads.
+  const options = new Map();
   for (let index = 2; index < words.length; index += 2) {
-    if (!words[index].startsWith('--') || words[index + 1] === undefined) {
+    if (!SDF_SKIP_OPTIONS.has(words[index]) || options.has(words[index]) || words[index + 1] === undefined) {
       return false;
     }
-    if (words[index] === '--reason') {
-      reasons.push(words[index + 1]);
-    }
+    options.set(words[index], words[index + 1]);
   }
-  return reasons.length === 1 && ['$(Build.Reason)', 'Schedule'].includes(reasons[0]);
+  return ['$(Build.Reason)', 'Schedule'].includes(options.get('--reason'));
+}
+
+// The Decide step may run on every build, after success, or on scheduled builds only.
+const DECIDE_CONDITIONS = new Set([
+  UNSET_VALUE,
+  'succeeded()',
+  "eq(variables['build.reason'],'schedule')",
+  "and(succeeded(),eq(variables['build.reason'],'schedule'))",
+]);
+function decideRunsOnSchedule(task) {
+  return DECIDE_CONDITIONS.has(task.condition === '' ? UNSET_VALUE : normalizeExpression(task.condition));
 }
 
 // A pipeline expression with whitespace outside string literals removed, double quotes made single and case folded,
@@ -1280,7 +1312,7 @@ function checkSdfSkipGate(file, text) {
   // The step that sets the publish output must be the one that runs the script, in the job the condition names.
   const job = itemText(stageText(text, SDF_SKIP_STAGE), 'job', SDF_SKIP_JOB);
   const gateOk = pipelineTasks(job).some(
-    (task) => task.enabled && task.stepName === SDF_SKIP_STEP && runsSkipRule(task),
+    (task) => task.enabled && task.stepName === SDF_SKIP_STEP && decideRunsOnSchedule(task) && runsSkipRule(task),
   );
   const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
   const condition = stageProperty(text, PROD_LOCKBOX_STAGE, 'condition') || '';

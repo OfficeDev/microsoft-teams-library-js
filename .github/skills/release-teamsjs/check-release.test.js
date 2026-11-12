@@ -1530,6 +1530,51 @@ describe('check-release', () => {
         },
       ],
       [
+        'runs node --eval with a path-like value ending in the script name',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+            "node '--eval=console.log(1)//sdf-beta-schedule.js'",
+          ),
+        },
+      ],
+      [
+        'passes --now, which overrides the date the skip rule uses',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "--reason '$(Build.Reason)'",
+            "--reason '$(Build.Reason)'\n                    --now 2026-11-11T18:00:00Z",
+          ),
+        },
+      ],
+      [
+        'passes an option twice',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "--reason '$(Build.Reason)'",
+            "--alias pipe\n                    --reason '$(Build.Reason)'\n                    --alias other",
+          ),
+        },
+      ],
+      [
+        'gives Decide condition: false, so it never runs and every scheduled beta skips',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "                condition: eq(variables['Build.Reason'], 'Schedule')",
+            '                condition: false',
+          ),
+        },
+      ],
+      [
+        'gives Decide a condition written on the next line',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "                condition: eq(variables['Build.Reason'], 'Schedule')",
+            '                condition:\n                  false',
+          ),
+        },
+      ],
+      [
         'prints the skip command with Write-Host instead of running it',
         {
           sdfSkipGate: SDF_SKIP_GATE.replace(
@@ -1639,6 +1684,15 @@ describe('check-release', () => {
         },
       ],
       [
+        'no Decide condition, since a manual run publishes anyway',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "                condition: eq(variables['Build.Reason'], 'Schedule')\n",
+            '',
+          ),
+        },
+      ],
+      [
         'a one-line Decide script',
         {
           sdfSkipGate: SDF_SKIP_GATE.replace(
@@ -1693,6 +1747,12 @@ describe('check-release', () => {
       ["continueOnError: 'True'", "                continueOnError: 'True'"],
       ['a template expression for continueOnError', '                continueOnError: ${{ true }}'],
       ['a variable for continueOnError', '                continueOnError: $(ignoreValidation)'],
+      ['continueOnError: true written on the next line', '                continueOnError:\n                  true'],
+      ['condition: false written on the next line', '                condition:\n                  false'],
+      [
+        'continueOnError: false continued on the next line',
+        '                continueOnError: false\n                  true',
+      ],
     ]) {
       it(`fails when the Prod validation task has ${name}`, async () => {
         writePipelineConfig(root, {
@@ -1730,6 +1790,7 @@ describe('check-release', () => {
     for (const [name, after, setting] of [
       ['condition: succeeded()', 'displayName', '                condition: succeeded()'],
       ['continueOnError: false', 'displayName', '                continueOnError: false'],
+      ['continueOnError with no value, which is null', 'displayName', '                continueOnError:'],
       ['a commented-out continueOnError: true', 'displayName', '                # continueOnError: true'],
       ['continueOnError: true only under inputs', 'targetType', '                  continueOnError: true'],
     ]) {
