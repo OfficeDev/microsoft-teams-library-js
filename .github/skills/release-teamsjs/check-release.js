@@ -23,7 +23,8 @@
  *                                                  the beta is of a version newer than latest on npm and GitHub
  *   pipeline-config                                the checkout's release YAML: Prod runs validate-prod-build.ps1 in
  *                                                  a stage the Lockbox stage depends on and publishes with tag
- *                                                  latest, SDF with tag beta, and each has artifact retention @6 or later;
+ *                                                  latest, SDF gates its Lockbox stage on the Check_Skip decision and
+ *                                                  publishes with tag beta, and each has artifact retention @6 or later;
  *                                                  commented-out, `enabled: false` and script-text tasks don't count
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
  *   announcement-draft --version <v>               prints a Prod announcement draft from the checkout's CHANGELOG
@@ -859,6 +860,15 @@ const MINIMUM_ASSET_RETENTION_VERSION = 6;
 const PROD_VALIDATION_SCRIPT = 'tools/releases/powershell-commands/validate-prod-build.ps1';
 const PROD_VALIDATION_STAGE = 'Prod_Validation';
 const PROD_LOCKBOX_STAGE = 'Prod_Lockbox_Approval_Deployment';
+// The SDF skip gate: the Check job's Decide step runs this script, and the Lockbox stage waits for it and runs a
+// scheduled build only when the step's publish output is true. Manual runs skip the step and always publish.
+const SDF_SKIP_SCRIPT = 'sdf-beta-schedule.js';
+const SDF_SKIP_STAGE = 'Check_Skip';
+const SDF_SKIP_JOB = 'Check';
+const SDF_SKIP_STEP = 'Decide';
+const SDF_PUBLISH_CONDITION =
+  /eq\(\s*dependencies\.Check_Skip\.outputs\[\s*(['"])Check\.Decide\.publish\1\s*\]\s*,\s*(['"])true\2\s*\)/;
+const SDF_MANUAL_CONDITION = /ne\(\s*variables\[\s*(['"])Build\.Reason\1\s*\]\s*,\s*(['"])Schedule\2\s*\)/;
 
 // Drops a YAML comment: a # at the line start or after whitespace, outside a quoted scalar.
 function stripYamlComment(line) {
@@ -920,21 +930,29 @@ function pipelineTasks(text) {
       displayName: '',
       filePath: '',
       productState: [],
+      stepName: '',
     };
+    let propertyIndent = -1;
     for (let next = index + 1; next < lines.length; next++) {
       const line = lines[next];
       if (line.trim() === '') {
         continue;
       }
-      if (line.length - line.trimStart().length <= indent) {
+      const lineIndent = line.length - line.trimStart().length;
+      if (lineIndent <= indent) {
         break;
       }
       const property = /^[ \t]*([\w.]+):[ \t]*(.*)$/.exec(line);
       if (!property) {
         continue;
       }
+      if (propertyIndent === -1) {
+        propertyIndent = lineIndent;
+      }
       const [, key, value] = property;
-      if (key === 'enabled' && /^false$/i.test(yamlScalar(value))) {
+      if (key === 'name' && lineIndent === propertyIndent) {
+        task.stepName = yamlScalar(value);
+      } else if (key === 'enabled' && /^false$/i.test(yamlScalar(value))) {
         task.enabled = false;
       } else if (key === 'displayName') {
         task.displayName = yamlScalar(value);
@@ -1033,6 +1051,71 @@ function stageText(text, stage) {
   return raw.slice(start, end).join('\n');
 }
 
+// The value of a `- stage: <name>` item's own property, not a job's or step's, ignoring comments and block scalars.
+// Undefined when the stage or the property is not declared.
+function stageProperty(text, stage, key) {
+  const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
+  const start = lines.findIndex((line) => {
+    const header = /^[ \t]*-[ \t]*stage:[ \t]*(.+?)[ \t]*$/.exec(line);
+    return header && yamlScalar(header[1]) === stage;
+  });
+  if (start === -1) {
+    return undefined;
+  }
+  const stageIndent = lines[start].length - lines[start].trimStart().length;
+  const propertyIndent = lines[start].indexOf('stage:');
+  for (let index = start + 1; index < lines.length; index++) {
+    const line = lines[index];
+    if (line.trim() === '') {
+      continue;
+    }
+    const indent = line.length - line.trimStart().length;
+    if (indent <= stageIndent) {
+      break;
+    }
+    const property = /^[ \t]*([\w.]+):[ \t]*(.*)$/.exec(line);
+    if (property && indent === propertyIndent && property[1] === key) {
+      return yamlScalar(property[2]);
+    }
+  }
+  return undefined;
+}
+
+function checkSdfSkipGate(file, text) {
+  const gate = stageText(text, SDF_SKIP_STAGE);
+  const gateLines = gate.split(/\r?\n/).map(stripYamlComment);
+  const job = gateLines.some((line) => {
+    const header = /^[ \t]*-[ \t]*job:[ \t]*(.+?)[ \t]*$/.exec(line);
+    return header && yamlScalar(header[1]) === SDF_SKIP_JOB;
+  });
+  const decide = pipelineTasks(gate).some((task) => task.enabled && task.stepName === SDF_SKIP_STEP);
+  const script = gateLines.some((line) => line.includes(SDF_SKIP_SCRIPT));
+  const gateOk = job && decide && script;
+  const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
+  const condition = stageProperty(text, PROD_LOCKBOX_STAGE, 'condition') || '';
+  const conditionOk = SDF_PUBLISH_CONDITION.test(condition) && SDF_MANUAL_CONDITION.test(condition);
+  return [
+    result(
+      gateOk ? Outcome.pass : Outcome.fail,
+      gateOk
+        ? `${file} has the ${SDF_SKIP_STAGE} stage with the ${SDF_SKIP_JOB}.${SDF_SKIP_STEP} step running ${SDF_SKIP_SCRIPT}`
+        : `${file} has no ${SDF_SKIP_STAGE} stage with an enabled ${SDF_SKIP_JOB}.${SDF_SKIP_STEP} step running ` +
+            `${SDF_SKIP_SCRIPT}, so a scheduled run that should skip still asks for the Lockbox approval`,
+    ),
+    result(
+      lockboxDependsOn.includes(SDF_SKIP_STAGE) ? Outcome.pass : Outcome.fail,
+      `${file} ${PROD_LOCKBOX_STAGE} depends on [${lockboxDependsOn.join(', ')}], expected ${SDF_SKIP_STAGE}`,
+    ),
+    result(
+      conditionOk ? Outcome.pass : Outcome.fail,
+      conditionOk
+        ? `${file} ${PROD_LOCKBOX_STAGE} runs manual builds, and scheduled builds only when ${SDF_SKIP_STAGE} says publish`
+        : `${file} ${PROD_LOCKBOX_STAGE} condition is ${condition || '(none)'}, expected one that runs manual builds ` +
+            `and scheduled builds only when ${SDF_SKIP_STAGE}.outputs['${SDF_SKIP_JOB}.${SDF_SKIP_STEP}.publish'] is 'true'`,
+    ),
+  ];
+}
+
 function checkProdValidation(file, text) {
   const validation = pipelineTasks(stageText(text, PROD_VALIDATION_STAGE)).some(
     (task) => task.enabled && task.name === 'PowerShell' && task.filePath === PROD_VALIDATION_SCRIPT,
@@ -1061,6 +1144,8 @@ function checkPipelineConfig({ repoRoot, readFile }) {
     const tasks = pipelineTasks(text).filter((task) => task.enabled);
     if (file === PIPELINE_FILES[0].file) {
       results.push(...checkProdValidation(file, text));
+    } else if (file === PIPELINE_FILES[1].file) {
+      results.push(...checkSdfSkipGate(file, text));
     }
     const retention = tasks.filter((task) => task.name === 'AssetRetention').map((task) => task.version);
     const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
@@ -1949,7 +2034,7 @@ const commands = {
     flags: [],
     checkout: true,
     summary:
-      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF tag beta, AssetRetention@6 or later",
+      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF skip gate before Lockbox, SDF tag beta, AssetRetention@6 or later",
     run: async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
   },
   'consumed-changes': {

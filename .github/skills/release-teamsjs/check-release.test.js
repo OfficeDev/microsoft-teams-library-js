@@ -244,6 +244,26 @@ const PROD_VALIDATION = [
   "                  filePath: 'tools/releases/powershell-commands/validate-prod-build.ps1'",
 ].join('\n');
 const LOCKBOX_DEPENDS_ON = ['        dependsOn:', '          - Prod_Validation'].join('\n');
+// The SDF skip gate as sdf-release.yml declares it, and the Lockbox stage's dependency on it and condition.
+const SDF_SKIP_GATE = [
+  '      - stage: Check_Skip',
+  '        dependsOn: []',
+  '        jobs:',
+  '          - job: Check',
+  '            steps:',
+  '              - task: PowerShell@2',
+  '                name: Decide',
+  "                condition: eq(variables['Build.Reason'], 'Schedule')",
+  '                inputs:',
+  '                  targetType: inline',
+  '                  script: >-',
+  "                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+  "                    --reason '$(Build.Reason)'",
+].join('\n');
+const SDF_LOCKBOX_DEPENDS_ON = '        dependsOn: Check_Skip';
+const SDF_LOCKBOX_CONDITION =
+  "        condition: and(succeeded(), or(ne(variables['Build.Reason'], 'Schedule'), " +
+  "eq(dependencies.Check_Skip.outputs['Check.Decide.publish'], 'true')))";
 function writePipelineConfig(
   root,
   {
@@ -252,6 +272,9 @@ function writePipelineConfig(
     retention = 6,
     validation = PROD_VALIDATION,
     lockboxDependsOn = LOCKBOX_DEPENDS_ON,
+    sdfSkipGate = SDF_SKIP_GATE,
+    sdfLockboxDependsOn = SDF_LOCKBOX_DEPENDS_ON,
+    sdfLockboxCondition = SDF_LOCKBOX_CONDITION,
   } = {},
 ) {
   const write = (relativePath, contents) => {
@@ -280,7 +303,21 @@ function writePipelineConfig(
       publish(prodTag, prodState),
     ].join('\n'),
   );
-  write('tools/releases/sdf-release.yml', publish('beta', 'Beta'));
+  write(
+    'tools/releases/sdf-release.yml',
+    [
+      '    stages:',
+      sdfSkipGate,
+      '      - stage: Prod_Lockbox_Approval_Deployment',
+      '        displayName: Lockbox Approval/Deployment',
+      sdfLockboxDependsOn,
+      sdfLockboxCondition,
+      '        jobs:',
+      '          - job: Agent_job',
+      '            steps:',
+      publish('beta', 'Beta'),
+    ].join('\n'),
+  );
   write('tools/releases/ddl-release.yml', `              - task: AssetRetention@${retention}`);
   write('tools/yaml-templates/security.yml', `  - task: AssetRetention@${retention}`);
 }
@@ -1282,6 +1319,79 @@ describe('check-release', () => {
       writePipelineConfig(root, { validation: PROD_VALIDATION.replace('stage: Prod_Validation', 'stage: Renamed') });
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
     });
+    for (const [name, options] of [
+      ['has no Check_Skip stage', { sdfSkipGate: '' }],
+      [
+        'has the Decide step commented out',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('- task: PowerShell@2', '# - task: PowerShell@2') },
+      ],
+      [
+        'has the Decide step disabled',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                name: Decide',
+            '                name: Decide\n                enabled: false',
+          ),
+        },
+      ],
+      [
+        'runs another script in the Decide step',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('sdf-beta-schedule.js', 'other.js') },
+      ],
+      [
+        'names the skip script only in a comment',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+            'node other.js # sdf-beta-schedule.js',
+          ),
+        },
+      ],
+      [
+        'renames the Check job the publish output names',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('job: Check', 'job: Other') },
+      ],
+      ['has a Lockbox stage that depends on nothing', { sdfLockboxDependsOn: '        dependsOn: []' }],
+      ['has a Lockbox stage with no condition', { sdfLockboxCondition: '' }],
+      ['has a Lockbox stage condition of succeeded() only', { sdfLockboxCondition: '        condition: succeeded()' }],
+      [
+        'has the Lockbox stage condition commented out',
+        { sdfLockboxCondition: SDF_LOCKBOX_CONDITION.replace('condition:', '# condition:') },
+      ],
+      [
+        'publishes a scheduled run when the publish output is false',
+        { sdfLockboxCondition: SDF_LOCKBOX_CONDITION.replace("publish'], 'true'", "publish'], 'false'") },
+      ],
+      [
+        'drops the manual-run branch from the Lockbox stage condition',
+        {
+          sdfLockboxCondition:
+            "        condition: and(succeeded(), eq(dependencies.Check_Skip.outputs['Check.Decide.publish'], 'true'))",
+        },
+      ],
+    ]) {
+      it(`fails when sdf-release.yml ${name}`, async () => {
+        writePipelineConfig(root, options);
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('FAIL tools/releases/sdf-release.yml') && line.includes('Check_Skip')),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    it("takes the SDF Lockbox stage's own condition, not a job's", async () => {
+      writePipelineConfig(root, { sdfLockboxCondition: '' });
+      const sdf = path.join(root, 'tools/releases/sdf-release.yml');
+      fs.writeFileSync(
+        sdf,
+        fs
+          .readFileSync(sdf, 'utf8')
+          .replace('          - job: Agent_job', `          - job: Agent_job\n    ${SDF_LOCKBOX_CONDITION}`),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
+
     it('fails when the Prod publish task says tag beta', async () => {
       writePipelineConfig(root, { prodTag: 'beta' });
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
