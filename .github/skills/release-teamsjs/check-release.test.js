@@ -1387,6 +1387,88 @@ describe('check-release', () => {
         { sdfSkipGate: SDF_SKIP_GATE.replace('scripts/sdf-beta-schedule.js', 'scripts/not-sdf-beta-schedule.js') },
       ],
       [
+        'names the skip script after a command other than node',
+        { sdfSkipGate: SDF_SKIP_GATE.replace("node '$(Pipeline", "echo '$(Pipeline") },
+      ],
+      [
+        'puts --reason on a second line of a literal block, which runs as its own command',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace('script: >-', 'script: |').replace(
+            "sdf-beta-schedule.js'",
+            "sdf-beta-schedule.js' --alias pipe",
+          ),
+        },
+      ],
+      [
+        'ends the skip command with ; before --reason',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'", "sdf-beta-schedule.js' --alias pipe;"),
+        },
+      ],
+      [
+        'comments out --reason with #',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'", "sdf-beta-schedule.js' --alias #"),
+        },
+      ],
+      [
+        'passes the skip script an argument that is not an option pair, which makes it throw',
+        { sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'", "sdf-beta-schedule.js' stray words") },
+      ],
+      [
+        'splits the skip command with a blank line, which a folded block keeps as a line break',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'\n", "sdf-beta-schedule.js' --alias pipe\n\n"),
+        },
+      ],
+      [
+        'prints the skip command with Write-Host instead of running it',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+            "Write-Host node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+          ),
+        },
+      ],
+      [
+        'has the skip command only inside a quoted string',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            [
+              "                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+              "                    --reason '$(Build.Reason)'",
+            ].join('\n'),
+            '                    Write-Host "e.g. node scripts/sdf-beta-schedule.js --reason Schedule"',
+          ),
+        },
+      ],
+      [
+        'runs a second command after the skip script in a literal block',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace('script: >-', 'script: |').replace(
+            "                    --reason '$(Build.Reason)'",
+            "                    Write-Host '##vso[task.setvariable variable=publish;isOutput=true]true'",
+          ),
+        },
+      ],
+      [
+        'does not pass --reason to the skip script',
+        { sdfSkipGate: SDF_SKIP_GATE.replace("\n                    --reason '$(Build.Reason)'", '') },
+      ],
+      [
+        'passes --reason Manual to the skip script',
+        { sdfSkipGate: SDF_SKIP_GATE.replace("--reason '$(Build.Reason)'", '--reason Manual') },
+      ],
+      [
+        'passes --reason twice, the last one Manual',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "--reason '$(Build.Reason)'",
+            "--reason '$(Build.Reason)'\n                    --reason Manual",
+          ),
+        },
+      ],
+      [
         'wraps the Lockbox stage condition in or(true, ...)',
         { sdfLockboxCondition: `${SDF_LOCKBOX_CONDITION.replace('condition: and(', 'condition: or(true, and(')})` },
       ],
@@ -1461,6 +1543,22 @@ describe('check-release', () => {
           ),
         },
       ],
+      [
+        'a literal one-line block running NODE with Windows path separators',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            [
+              '                  script: >-',
+              "                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+              "                    --reason '$(Build.Reason)'",
+            ].join('\n'),
+            [
+              '                  script: |',
+              "                    NODE '$(Pipeline.Workspace)\\scripts\\sdf-beta-schedule.js' --reason '$(Build.Reason)' --alias \"pipe\"",
+            ].join('\n'),
+          ),
+        },
+      ],
     ]) {
       it(`passes the SDF skip gate with ${name}`, async () => {
         writePipelineConfig(root, options);
@@ -1485,6 +1583,8 @@ describe('check-release', () => {
       ['a condition that can skip it', "                condition: eq(variables['Build.Reason'], 'Schedule')"],
       ['continueOnError: true', '                continueOnError: true'],
       ["continueOnError: 'True'", "                continueOnError: 'True'"],
+      ['a template expression for continueOnError', '                continueOnError: ${{ true }}'],
+      ['a variable for continueOnError', '                continueOnError: $(ignoreValidation)'],
     ]) {
       it(`fails when the Prod validation task has ${name}`, async () => {
         writePipelineConfig(root, {

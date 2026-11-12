@@ -943,8 +943,9 @@ function pipelineTasks(text) {
       productState: [],
       stepName: '',
       condition: '',
-      continueOnError: false,
+      continueOnError: '',
       script: '',
+      scriptStyle: '',
     };
     for (let next = index + 1; next < lines.length; next++) {
       const line = lines[next];
@@ -966,7 +967,7 @@ function pipelineTasks(text) {
       } else if (key === 'condition' && own) {
         task.condition = yamlScalar(value);
       } else if (key === 'continueOnError' && own) {
-        task.continueOnError = /^true$/i.test(yamlScalar(value));
+        task.continueOnError = yamlScalar(value);
       } else if (key === 'script') {
         if (/^[|>][+-]?\d*[+-]?$/.test(value.trim())) {
           const block = [];
@@ -978,6 +979,7 @@ function pipelineTasks(text) {
             block.push(raw[body]);
           }
           task.script = block.join('\n');
+          task.scriptStyle = value.trim()[0];
         } else {
           task.script = yamlScalar(value);
         }
@@ -1114,16 +1116,65 @@ function stageProperty(text, stage, key) {
   return undefined;
 }
 
-// Whether a step's script text runs the skip script with node, outside a PowerShell comment.
-function runsSkipScript(script) {
-  const code = script
-    .replace(/<#[\s\S]*?#>/g, ' ')
-    .split(/\r?\n/)
-    .map((line) => line.replace(/(^|\s)#.*$/, ''))
-    .join(' ');
-  return new RegExp(`(^|\\s)node\\s+(['"]?)(?:[^\\s'"]*[\\\\/])?${SDF_SKIP_SCRIPT.replace('.', '\\.')}\\2(\\s|$)`).test(
-    code,
-  );
+// The one command a step's script runs, or undefined when the script is anything else: an inline value, a one-line
+// literal block, or a folded block whose lines share one indent with no blank line between them.
+function scriptCommand(task) {
+  if (task.scriptStyle === '') {
+    return task.script.trim();
+  }
+  const lines = task.script.split('\n');
+  while (lines.length > 0 && lines[lines.length - 1].trim() === '') {
+    lines.pop();
+  }
+  while (lines.length > 0 && lines[0].trim() === '') {
+    lines.shift();
+  }
+  const indents = new Set(lines.map((line) => line.length - line.trimStart().length));
+  if (lines.some((line) => line.trim() === '') || indents.size !== 1) {
+    return undefined;
+  }
+  if (task.scriptStyle === '|' && lines.length !== 1) {
+    return undefined;
+  }
+  return lines.map((line) => line.trim()).join(' ');
+}
+
+// The words of a command written as plain words, single-quoted strings, double-quoted strings without $ or `, and
+// $(Variable) macros; undefined for anything else, such as a second command, a comment, a pipe or a redirect.
+function commandWords(command) {
+  const word = /\s*(?:'([^']*)'|"([^"$`]*)"|((?:[\w.\-/\\=:]|\$\([\w.-]+\))+))(?=\s|$)/y;
+  const words = [];
+  while (command.slice(word.lastIndex).trim() !== '') {
+    const match = word.exec(command);
+    if (!match) {
+      return undefined;
+    }
+    words.push(match[1] ?? match[2] ?? match[3]);
+  }
+  return words;
+}
+
+// Whether the step runs `node <path>/sdf-beta-schedule.js` with exactly one --reason of $(Build.Reason) or Schedule.
+// The script reads its options in pairs and treats a missing or other reason as a manual run, which always publishes.
+function runsSkipRule(task) {
+  const command = scriptCommand(task);
+  const words = command === undefined ? undefined : commandWords(command);
+  if (!words || words.length < 2 || !/^node(\.exe)?$/i.test(words[0])) {
+    return false;
+  }
+  if (words[1].split(/[\\/]/).pop() !== SDF_SKIP_SCRIPT) {
+    return false;
+  }
+  const reasons = [];
+  for (let index = 2; index < words.length; index += 2) {
+    if (!words[index].startsWith('--') || words[index + 1] === undefined) {
+      return false;
+    }
+    if (words[index] === '--reason') {
+      reasons.push(words[index + 1]);
+    }
+  }
+  return reasons.length === 1 && ['$(Build.Reason)', 'Schedule'].includes(reasons[0]);
 }
 
 // A pipeline expression with whitespace outside string literals removed, double quotes made single and case folded,
@@ -1151,7 +1202,7 @@ function checkSdfSkipGate(file, text) {
   // The step that sets the publish output must be the one that runs the script, in the job the condition names.
   const job = itemText(stageText(text, SDF_SKIP_STAGE), 'job', SDF_SKIP_JOB);
   const gateOk = pipelineTasks(job).some(
-    (task) => task.enabled && task.stepName === SDF_SKIP_STEP && runsSkipScript(task.script),
+    (task) => task.enabled && task.stepName === SDF_SKIP_STEP && runsSkipRule(task),
   );
   const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
   const condition = stageProperty(text, PROD_LOCKBOX_STAGE, 'condition') || '';
@@ -1185,7 +1236,7 @@ function checkProdValidation(file, text) {
       task.enabled &&
       task.name === 'PowerShell' &&
       task.filePath === PROD_VALIDATION_SCRIPT &&
-      !task.continueOnError &&
+      (task.continueOnError === '' || /^false$/i.test(task.continueOnError)) &&
       (task.condition === '' || /^succeeded\(\s*\)$/.test(task.condition)),
   );
   const stageDeclared = stageDependsOn(text, PROD_VALIDATION_STAGE) !== undefined;
