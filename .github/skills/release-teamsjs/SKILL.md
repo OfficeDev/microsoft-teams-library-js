@@ -184,10 +184,6 @@ guess.
 version against the latest beta (`npm view @microsoft/teams-js dist-tags.beta`): without its `-beta.N` suffix it is
 normally the same version. Explain any difference before asking.
 
-Do not use `.github/workflows/prerelease.yml`. It has never been run: it lacks `contents: write`, it would force-push
-`release/<version>` from `main`'s head while the bump goes to a separate generated PR, and the ruleset blocks
-force-pushes to release branches. Follow the manual steps here.
-
 ### 3. Create the release branch
 
 The branch must be named exactly `release/<x.y.z>`: the CI build triggers on `release/*`, the Prod pipeline only runs
