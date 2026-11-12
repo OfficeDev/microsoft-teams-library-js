@@ -3,6 +3,10 @@
  * Read-only checks for a @microsoft/teams-js release. Nothing here writes files, refs, packages or messages.
  *
  *   check-version --version <v>                    <v> is free on npm, the Prod CDN and as a GitHub tag
+ *   preflight     [--version <v>] [--registry <url>]
+ *                                                  Step 1: pending change files and the version they make, the
+ *                                                  release YAML, npm reachability and GitHub CI on main; with
+ *                                                  --version, check-version and that release/<v> does not exist
  *   carriers      --version <v>                    the checkout's version carriers agree on <v> and one SRI hash
  *   artifact      --version <v> --file <path>      a downloaded CI build's MicrosoftTeams.min.js matches that SRI
  *   published     --version <v> [--environment prod|sdf] [--dist-tag <tag>] [--expected-sri <sri>] [--registry <url>]
@@ -17,10 +21,13 @@
  *   size          --version <v> --previous <p>     Prod CDN bundle bytes and the change from <p>
  *   beta-version  --version <x.y.z>-beta.<n> [--registry <url>]
  *                                                  the beta is of a version newer than latest on npm and GitHub
- *   pipeline-config                                the checkout's release YAML: Prod publishes with tag latest,
- *                                                  SDF with tag beta, and each has artifact retention @6 or later;
+ *   pipeline-config                                the checkout's release YAML: Prod runs validate-prod-build.ps1 in
+ *                                                  a stage the Lockbox stage depends on and publishes with tag
+ *                                                  latest, SDF with tag beta, and each has artifact retention @6 or later;
  *                                                  commented-out, `enabled: false` and script-text tasks don't count
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
+ *   announcement-draft --version <v>               prints a Prod announcement draft from the checkout's CHANGELOG
+ *                                                  section for <v>, then runs the announcement check on it
  *   consumed-changes --version <v> --prep-commit <sha>
  *                                                  no pending change file was deleted by the prep commit; one that
  *                                                  only repeats an entry released in <v> is inconclusive
@@ -848,6 +855,10 @@ const PIPELINE_FILES = [
   { file: 'tools/yaml-templates/security.yml' },
 ];
 const MINIMUM_ASSET_RETENTION_VERSION = 6;
+// The Prod validation stage runs this script, and the Lockbox stage must wait for it.
+const PROD_VALIDATION_SCRIPT = 'tools/releases/powershell-commands/validate-prod-build.ps1';
+const PROD_VALIDATION_STAGE = 'Prod_Validation';
+const PROD_LOCKBOX_STAGE = 'Prod_Lockbox_Approval_Deployment';
 
 // Drops a YAML comment: a # at the line start or after whitespace, outside a quoted scalar.
 function stripYamlComment(line) {
@@ -902,7 +913,14 @@ function pipelineTasks(text) {
       continue;
     }
     const indent = header[1].length;
-    const task = { name: header[3], version: Number(header[4]), enabled: true, displayName: '', productState: [] };
+    const task = {
+      name: header[3],
+      version: Number(header[4]),
+      enabled: true,
+      displayName: '',
+      filePath: '',
+      productState: [],
+    };
     for (let next = index + 1; next < lines.length; next++) {
       const line = lines[next];
       if (line.trim() === '') {
@@ -920,6 +938,8 @@ function pipelineTasks(text) {
         task.enabled = false;
       } else if (key === 'displayName') {
         task.displayName = yamlScalar(value);
+      } else if (key === 'filePath') {
+        task.filePath = yamlScalar(value);
       } else if (key.toLowerCase() === 'productstate') {
         task.productState.push(yamlScalar(value));
       }
@@ -929,10 +949,113 @@ function pipelineTasks(text) {
   return tasks;
 }
 
+// The stage names a `- stage: <name>` item lists under `dependsOn`, as an inline value, a flow list or a block list,
+// ignoring comments and block scalars. Undefined when the stage is not declared.
+function stageDependsOn(text, stage) {
+  const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
+  const start = lines.findIndex((line) => {
+    const header = /^[ \t]*-[ \t]*stage:[ \t]*(.+?)[ \t]*$/.exec(line);
+    return header && yamlScalar(header[1]) === stage;
+  });
+  if (start === -1) {
+    return undefined;
+  }
+  const stageIndent = lines[start].length - lines[start].trimStart().length;
+  const names = [];
+  for (let index = start + 1; index < lines.length; index++) {
+    const line = lines[index];
+    if (line.trim() === '') {
+      continue;
+    }
+    const indent = line.length - line.trimStart().length;
+    if (indent <= stageIndent) {
+      break;
+    }
+    const property = /^[ \t]*dependsOn:[ \t]*(.*)$/.exec(line);
+    if (!property) {
+      continue;
+    }
+    const value = property[1].trim();
+    if (value.startsWith('[')) {
+      names.push(
+        ...value
+          .replace(/^\[|\]$/g, '')
+          .split(',')
+          .map(yamlScalar)
+          .filter(Boolean),
+      );
+    } else if (value) {
+      names.push(yamlScalar(value));
+    } else {
+      for (let next = index + 1; next < lines.length; next++) {
+        const item = /^([ \t]*)-[ \t]*(.+?)[ \t]*$/.exec(lines[next]);
+        if (lines[next].trim() === '') {
+          continue;
+        }
+        // YAML allows the items of a block list at the same indent as its key.
+        if (!item || item[1].length < indent) {
+          break;
+        }
+        names.push(yamlScalar(item[2]));
+      }
+    }
+    break;
+  }
+  return names;
+}
+
+// The lines of a `- stage: <name>` item, up to the next line at or below its indent, ignoring comments and block
+// scalars. Empty when the stage is not declared.
+function stageText(text, stage) {
+  const raw = text.split(/\r?\n/);
+  const lines = withoutBlockScalars(raw.map(stripYamlComment));
+  const start = lines.findIndex((line) => {
+    const header = /^[ \t]*-[ \t]*stage:[ \t]*(.+?)[ \t]*$/.exec(line);
+    return header && yamlScalar(header[1]) === stage;
+  });
+  if (start === -1) {
+    return '';
+  }
+  const stageIndent = lines[start].length - lines[start].trimStart().length;
+  let end = start + 1;
+  while (
+    end < lines.length &&
+    (lines[end].trim() === '' || lines[end].length - lines[end].trimStart().length > stageIndent)
+  ) {
+    end++;
+  }
+  return raw.slice(start, end).join('\n');
+}
+
+function checkProdValidation(file, text) {
+  const validation = pipelineTasks(stageText(text, PROD_VALIDATION_STAGE)).some(
+    (task) => task.enabled && task.name === 'PowerShell' && task.filePath === PROD_VALIDATION_SCRIPT,
+  );
+  const stageDeclared = stageDependsOn(text, PROD_VALIDATION_STAGE) !== undefined;
+  const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
+  return [
+    result(
+      validation && stageDeclared ? Outcome.pass : Outcome.fail,
+      validation && stageDeclared
+        ? `${file} has the ${PROD_VALIDATION_STAGE} stage running ${PROD_VALIDATION_SCRIPT}`
+        : `${file} has no ${PROD_VALIDATION_STAGE} stage with an enabled task running ${PROD_VALIDATION_SCRIPT}, so a ` +
+            'wrong CI build is caught only after the Lockbox approval',
+    ),
+    result(
+      lockboxDependsOn.includes(PROD_VALIDATION_STAGE) ? Outcome.pass : Outcome.fail,
+      `${file} ${PROD_LOCKBOX_STAGE} depends on [${lockboxDependsOn.join(', ')}], expected ${PROD_VALIDATION_STAGE}`,
+    ),
+  ];
+}
+
 function checkPipelineConfig({ repoRoot, readFile }) {
   const results = [];
   for (const { file, npmTag, productState } of PIPELINE_FILES) {
-    const tasks = pipelineTasks(readFile(path.join(repoRoot, file), 'utf8')).filter((task) => task.enabled);
+    const text = readFile(path.join(repoRoot, file), 'utf8');
+    const tasks = pipelineTasks(text).filter((task) => task.enabled);
+    if (file === PIPELINE_FILES[0].file) {
+      results.push(...checkProdValidation(file, text));
+    }
     const retention = tasks.filter((task) => task.name === 'AssetRetention').map((task) => task.version);
     const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
     if (retention.length === 0) {
@@ -1274,6 +1397,342 @@ async function checkValidDomains({ repoRoot, fetchImpl, readFile }) {
   ];
 }
 
+// The change types this repository's beachball.config.js allows, highest bump first. It disallows major and
+// prerelease, so beachball's bump rejects a change file of either type; a release never makes them.
+const CHANGE_TYPES = ['minor', 'patch', 'none'];
+const DISALLOWED_CHANGE_TYPES = ['major', 'prerelease'];
+const DEPENDENT_CHANGE_TYPES = ['major', 'minor', 'patch', 'prerelease', 'none'];
+const MAIN_CI_WORKFLOW = 'main.yml';
+
+function mainCiRunsUrl() {
+  return (
+    `${GITHUB_API}/repos/${REPOSITORY}/actions/workflows/${MAIN_CI_WORKFLOW}/runs` +
+    '?branch=main&event=push&status=completed&per_page=1'
+  );
+}
+
+// Why a parsed change file is not one beachball would count for a teams-js bump, or undefined when it is.
+function changeFileProblem(changeFile) {
+  if (!changeFile || typeof changeFile !== 'object' || Array.isArray(changeFile)) {
+    return 'is not a beachball change file (not a JSON object)';
+  }
+  if (Object.prototype.hasOwnProperty.call(changeFile, 'changes')) {
+    return 'is a grouped change file, which this check does not read; check it by hand';
+  }
+  const { type, packageName, comment, dependentChangeType } = changeFile;
+  if (typeof type === 'string' && DISALLOWED_CHANGE_TYPES.includes(type)) {
+    return `has type ${type}, which beachball.config.js disallows, so beachball's bump rejects it`;
+  }
+  if (typeof type !== 'string' || !CHANGE_TYPES.includes(type)) {
+    return `has no change type a release uses (${CHANGE_TYPES.join(', ')})`;
+  }
+  if (packageName !== PACKAGE_NAME) {
+    return `is for package ${typeof packageName === 'string' ? packageName : '(none)'}, not ${PACKAGE_NAME}`;
+  }
+  if (typeof comment !== 'string' || comment.trim() === '') {
+    return 'has no comment for the CHANGELOG';
+  }
+  if (typeof dependentChangeType !== 'string' || !DEPENDENT_CHANGE_TYPES.includes(dependentChangeType)) {
+    return 'has no valid dependentChangeType';
+  }
+  return undefined;
+}
+
+function readPendingChanges({ repoRoot, readFile, readDirectory }) {
+  let names;
+  try {
+    names = readDirectory(path.join(repoRoot, CHANGE_DIRECTORY));
+  } catch (error) {
+    if (error && error.code === 'ENOENT') {
+      names = [];
+    } else {
+      throw error;
+    }
+  }
+  const counts = Object.create(null);
+  const problems = [];
+  for (const name of names.filter((file) => file.endsWith('.json')).sort()) {
+    const relativePath = `${CHANGE_DIRECTORY}/${name}`;
+    let changeFile;
+    try {
+      changeFile = readLocalJson(readFile, path.join(repoRoot, CHANGE_DIRECTORY, name), relativePath);
+    } catch (error) {
+      if (error instanceof LocalFileError) {
+        problems.push(result(Outcome.fail, `${error.message}; beachball cannot read it either`));
+        continue;
+      }
+      if (error && typeof error.code === 'string' && error.code !== 'ENOENT') {
+        problems.push(result(Outcome.fail, `${relativePath} cannot be read as a file (${error.code})`));
+        continue;
+      }
+      throw error;
+    }
+    const problem = changeFileProblem(changeFile);
+    if (problem) {
+      problems.push(result(Outcome.fail, `${relativePath} ${problem}`));
+      continue;
+    }
+    counts[changeFile.type] = (counts[changeFile.type] || 0) + 1;
+  }
+  return { counts, problems };
+}
+
+function bumpVersion(version, type) {
+  const [major, minor, patch] = parseVersion(version).core;
+  return type === 'minor' ? `${major}.${minor + 1}.0` : `${major}.${minor}.${patch + 1}`;
+}
+
+function pendingChangesResults({ repoRoot, readFile, readDirectory }) {
+  const { counts, problems } = readPendingChanges({ repoRoot, readFile, readDirectory });
+  const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  const results = [...problems];
+  if (total === 0) {
+    if (problems.length === 0) {
+      results.push(result(Outcome.fail, `no pending change files in ${CHANGE_DIRECTORY}/, so nothing to release`));
+    }
+    return { results };
+  }
+  const summary = Object.keys(counts)
+    .sort()
+    .map((type) => `${type} ${counts[type]}`)
+    .join(', ');
+  const bump = CHANGE_TYPES.find((type) => type !== 'none' && counts[type]);
+  if (!bump) {
+    results.push(
+      result(
+        Outcome.fail,
+        `${total} pending change ${total === 1 ? 'file' : 'files'} (${summary}), all type none, so nothing bumps the ` +
+          'version; a leftover "Released x.y.z" file from the last merge-back is one of these',
+      ),
+    );
+    return { results };
+  }
+  results.push(result(Outcome.pass, `${total} pending change ${total === 1 ? 'file' : 'files'} (${summary})`));
+  const current = readLocalJson(readFile, path.join(repoRoot, PACKAGE_JSON_FILES[0]), PACKAGE_JSON_FILES[0])?.version;
+  if (typeof current !== 'string' || !VERSION_PATTERN.test(current)) {
+    results.push(result(Outcome.fail, `${PACKAGE_JSON_FILES[0]} has no semantic version`));
+    return { results };
+  }
+  if (!/^\d+\.\d+\.\d+$/.test(current)) {
+    results.push(
+      result(
+        Outcome.fail,
+        `${PACKAGE_JSON_FILES[0]} is at the prerelease ${current}; a Prod pre-flight expects main's released version, ` +
+          'and beachball bumps a prerelease differently',
+      ),
+    );
+    return { results };
+  }
+  const next = bumpVersion(current, bump);
+  results.push(
+    result(Outcome.info, `the pending change files bump ${current} to ${next} (${bump}); preRelease.js makes the bump`),
+  );
+  return { results, next };
+}
+
+// registry.npmjs.org is always read: a --registry proxy only adds an informational line, so it never stands in for it.
+async function npmTagsInfo({ registry, fetchImpl }) {
+  const results = [await npmTagsFrom({ registry: DEFAULT_REGISTRY, fetchImpl })];
+  if (registry !== DEFAULT_REGISTRY) {
+    const proxy = await npmTagsFrom({ registry, fetchImpl });
+    results.push(
+      proxy.outcome === Outcome.info ? proxy : result(Outcome.info, `(proxy, informational) ${proxy.message}`),
+    );
+  }
+  return results;
+}
+
+async function npmTagsFrom({ registry, fetchImpl }) {
+  const url = npmDistTagsUrl(registry);
+  const answer = await readJson(fetchImpl, url, 'npm dist-tags');
+  if (answer.problem) {
+    return answer.problem;
+  }
+  const { latest, beta } = answer.json;
+  if (typeof latest !== 'string' || !VERSION_PATTERN.test(latest)) {
+    return result(Outcome.unreachable, `npm dist-tags: ${url} has no latest version. This is not evidence either way.`);
+  }
+  const betaText = typeof beta === 'string' && VERSION_PATTERN.test(beta) ? `, beta ${beta}` : '';
+  return result(Outcome.info, `npm ${registry === DEFAULT_REGISTRY ? '' : '(proxy) '}latest ${latest}${betaText}`);
+}
+
+async function checkMainCi({ fetchImpl }) {
+  const url = mainCiRunsUrl();
+  const label = `GitHub Actions ${MAIN_CI_WORKFLOW} on main`;
+  const answer = await readGithubJson(fetchImpl, url, label, {
+    valid: (json) =>
+      Array.isArray(json.workflow_runs) &&
+      typeof json.workflow_runs[0]?.conclusion === 'string' &&
+      typeof json.workflow_runs[0]?.html_url === 'string',
+    fields: 'a completed run with a conclusion',
+  });
+  if (answer.problem) {
+    return answer.problem;
+  }
+  const { conclusion, html_url: runUrl } = answer.json.workflow_runs[0];
+  const internal = 'The internal CI build the release uses is not visible here; check it in the internal project.';
+  return conclusion === 'success'
+    ? result(Outcome.pass, `${label}: the latest completed run succeeded (${runUrl}). ${internal}`)
+    : result(
+        Outcome.fail,
+        `${label}: the latest completed run ended ${conclusion} (${runUrl}); confirm it is known and unrelated. ` +
+          internal,
+      );
+}
+
+async function checkPreflight({ version, registry, repoRoot, readFile, readDirectory, fetchImpl }) {
+  const changes = pendingChangesResults({ repoRoot, readFile, readDirectory });
+  const results = [...changes.results, ...checkPipelineConfig({ repoRoot, readFile })];
+  results.push(...(await npmTagsInfo({ registry, fetchImpl })));
+  results.push(await checkMainCi({ fetchImpl }));
+  if (version) {
+    if (changes.next && changes.next !== version) {
+      results.push(
+        result(
+          Outcome.fail,
+          `--version ${version}, but the pending change files make ${changes.next}; recheck the plan`,
+        ),
+      );
+    }
+    results.push(...(await checkVersionIsFree({ version, registry, fetchImpl })));
+    const branch = `release/${version}`;
+    // The git ref endpoint answers a missing branch with GitHub's own { "message": "Not Found" }; the branches
+    // endpoint answers "Branch not found", which is not the not-found answer the origin rule accepts.
+    results.push(
+      await expectAbsent(
+        fetchImpl,
+        `${GITHUB_API}/repos/${REPOSITORY}/git/ref/heads/${branch}`,
+        `Branch ${branch}`,
+        'so check whether it is stale before reusing it (see failure-modes.md)',
+      ),
+    );
+  }
+  results.push(
+    result(
+      Outcome.info,
+      'not checked here: Lockbox eligibility, an approver and a backup, the internal CI build, the release work item ' +
+        'and the content freeze',
+    ),
+  );
+  return results;
+}
+
+// The date line beachball writes under each version heading, e.g. "Wed, 04 Nov 2026 19:13:09 GMT".
+const RELEASE_DATE_LINE = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} [A-Z][a-z]{2} \d{4}( \d{2}:\d{2}:\d{2} GMT)?\s*$/;
+
+function changelogSection(changelog, version) {
+  const lines = changelog.split(/\r?\n/);
+  // Headings start at column 0; an indented line is part of an entry, never a heading.
+  const start = lines.findIndex((line) => line.replace(/\s+$/, '') === `## ${version}`);
+  if (start === -1) {
+    return undefined;
+  }
+  const groups = [];
+  let orphans = 0;
+  const strayHeadings = [];
+  const looseText = [];
+  let group;
+  let entry;
+  for (const line of lines.slice(start + 1)) {
+    if (line.startsWith('## ')) {
+      break;
+    }
+    if (line.startsWith('### ')) {
+      group = { heading: line.slice(4).trim(), entries: [] };
+      groups.push(group);
+      entry = undefined;
+    } else if (line.startsWith('- ')) {
+      if (!group) {
+        orphans += 1;
+        entry = undefined;
+        continue;
+      }
+      entry = [line.slice(2)];
+      group.entries.push(entry);
+    } else if (line.trim() === '') {
+      continue;
+    } else if (line.startsWith('#')) {
+      // A heading other than ## and ### at column 0 would end the entry and drop what follows it.
+      strayHeadings.push(line.trim());
+      entry = undefined;
+    } else if (entry) {
+      // beachball writes a comment verbatim after "- ", so a later paragraph of it starts at column 0.
+      entry.push(line);
+    } else if (group || !RELEASE_DATE_LINE.test(line)) {
+      looseText.push(line.trim());
+    }
+  }
+  return {
+    orphans,
+    strayHeadings,
+    looseText,
+    groups: groups
+      .map(({ heading, entries }) => ({ heading, entries: entries.map((lines) => normalizeText(lines.join(' '))) }))
+      .filter(({ entries }) => entries.length > 0),
+  };
+}
+
+function draftAnnouncement({ version, repoRoot, readFile }) {
+  const section = changelogSection(readFile(path.join(repoRoot, CHANGELOG_PATH), 'utf8'), version);
+  if (!section) {
+    return [
+      result(
+        Outcome.fail,
+        `${CHANGELOG_PATH} has no "## ${version}" section; run this on release/${version} after the prep PR merges`,
+      ),
+    ];
+  }
+  const { groups, orphans, strayHeadings, looseText } = section;
+  if (strayHeadings.length > 0) {
+    return [
+      result(
+        Outcome.fail,
+        `the "## ${version}" section of ${CHANGELOG_PATH} has headings other than ### at the start of a line ` +
+          `(${strayHeadings.join(', ')}); fix the CHANGELOG rather than announce part of it`,
+      ),
+    ];
+  }
+  if (looseText.length > 0) {
+    return [
+      result(
+        Outcome.fail,
+        `the "## ${version}" section of ${CHANGELOG_PATH} has text that belongs to no entry ` +
+          `(${looseText.join(' / ')}); fix the CHANGELOG rather than announce part of it`,
+      ),
+    ];
+  }
+  if (orphans > 0) {
+    return [
+      result(
+        Outcome.fail,
+        `the "## ${version}" section of ${CHANGELOG_PATH} has ${orphans} ${orphans === 1 ? 'entry' : 'entries'} before ` +
+          'its first ### heading; fix the CHANGELOG rather than announce part of it',
+      ),
+    ];
+  }
+  if (groups.length === 0) {
+    return [result(Outcome.fail, `the "## ${version}" section of ${CHANGELOG_PATH} has no entries to announce`)];
+  }
+  const links = publicLinks(version);
+  const text = [
+    `TeamsJS v${version} Release`,
+    '',
+    `teams-js v${version} has been released to npm and CDN.`,
+    '',
+    `npm: ${links.npm}`,
+    `CDN: ${links.cdn}`,
+    `GitHub release: ${links.githubRelease}`,
+    ...groups.flatMap(({ heading, entries }) => ['', heading, ...entries.map((entry) => `- ${entry}`)]),
+  ].join('\n');
+  return [
+    result(
+      Outcome.info,
+      'announcement draft (subject first; tag the contacts the internal runbook names before sending):\n' + text,
+    ),
+    ...checkAnnouncement({ version, text }),
+  ];
+}
+
 function parseArgs(argv) {
   const [command, ...rest] = argv;
   const options = Object.create(null);
@@ -1385,6 +1844,21 @@ function checkArtifact({ version, file, repoRoot, readFile, readDirectory }) {
 }
 
 const commands = {
+  preflight: {
+    flags: ['version', 'registry'],
+    optional: ['version', 'registry'],
+    checkout: true,
+    summary:
+      'Step 1: pending change files and the version they make, release YAML, npm reachability, GitHub CI on main; ' +
+      'with --version, also check-version and that release/<v> does not exist',
+    run: async (options, deps) => {
+      const version = options.version === undefined ? undefined : requireVersion(options);
+      if (version && !/^\d+\.\d+\.\d+$/.test(version)) {
+        throw new UsageError('preflight --version is the Prod version to release, such as 2.60.0, not a beta');
+      }
+      return checkPreflight({ version, registry: requireRegistry(options), ...deps });
+    },
+  },
   'check-version': {
     flags: ['version', 'registry'],
     optional: ['registry'],
@@ -1468,7 +1942,8 @@ const commands = {
   'pipeline-config': {
     flags: [],
     checkout: true,
-    summary: "the checkout's release YAML: Prod tag latest, SDF tag beta, AssetRetention@6 or later",
+    summary:
+      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF tag beta, AssetRetention@6 or later",
     run: async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
   },
   'consumed-changes': {
@@ -1496,6 +1971,18 @@ const commands = {
       const version = requireVersion(options);
       const file = requireFile(options, 'announcement', 'path to the draft text');
       return checkAnnouncement({ version, text: readFile(file, 'utf8') });
+    },
+  },
+  'announcement-draft': {
+    flags: ['version'],
+    checkout: true,
+    summary: "prints a Prod announcement draft from the checkout's CHANGELOG section and runs the announcement check",
+    run: async (options, { repoRoot, readFile }) => {
+      const version = requireVersion(options);
+      if (!/^\d+\.\d+\.\d+$/.test(version)) {
+        throw new UsageError('announcement-draft is for Prod releases, such as 2.60.0; betas are never announced');
+      }
+      return draftAnnouncement({ version, repoRoot, readFile });
     },
   },
   size: {

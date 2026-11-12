@@ -123,7 +123,13 @@ ls change/                                   # pending change files; none means 
 npm view @microsoft/teams-js dist-tags       # current latest and beta
 git ls-remote --heads origin 'release/*' | tail -5
 gh pr list --state open --base main --limit 50
+check preflight --version "<x.y.z>"          # see Checks; drop --version if you don't know it yet
 ```
+
+`check preflight` covers the items below that public sources can answer: pending change files and the version they
+make, the release YAML, npm reachability, the GitHub Actions CI on `main`, and, with `--version`, that the version is
+free and `release/<x.y.z>` does not exist. It prints what it does not check. A failure or an inconclusive result is a
+reason to look, not to stop blindly: the GitHub Actions CI is not the internal CI build the release uses.
 
 Check and report:
 
@@ -135,7 +141,8 @@ Check and report:
 - Whether `release/<x.y.z>` already exists (see the failure modes for a stale branch).
 - Any release pipeline fix merged since the last release (for example [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187)
   or [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198)). The release pipelines read their YAML
-  from the branch you queue, so a fix reaches a release only if the release branch contains it. A fix still needed on
+  from the branch you queue, so a fix reaches a release only if the release branch contains it; a fix to a script in
+  the CI build's `scripts` artifact, like #3187, reaches it only through the CI build you select. A fix still needed on
   release day costs at least an hour and a half (see the failure modes), so check this the day before.
 - Lockbox eligibility (yours, confirmed or re-requested at least one business day ahead; a lapsed requester is the
   most common first-run failure) and an approver plus a backup from the owning team are lined up for today.
@@ -183,10 +190,6 @@ guess.
 **⛔ Gate 1:** show the version, the diff summary, the new CHANGELOG section and the branch names. Cross-check the
 version against the latest beta (`npm view @microsoft/teams-js dist-tags.beta`): without its `-beta.N` suffix it is
 normally the same version. Explain any difference before asking.
-
-Do not use `.github/workflows/prerelease.yml`. It has never been run: it lacks `contents: write`, it would force-push
-`release/<version>` from `main`'s head while the bump goes to a separate generated PR, and the ruleset blocks
-force-pushes to release branches. Follow the manual steps here.
 
 ### 3. Create the release branch
 
@@ -289,7 +292,8 @@ lands, this step becomes "verify the pre-release the workflow created" rather th
 **⛔ Gate 5:** in the internal ADO project, run the Prod release pipeline from branch `release/<x.y.z>` (not `main`)
 and **explicitly set the pipeline artifact** to the CI build from step 6; do not accept whatever is preselected.
 Before queuing, confirm the artifact retention task succeeded in the latest `main` CI run, and check the release
-branch's pipeline YAML (Prod publishes with `tag latest`, artifact retention is @6 or later) from a checkout of it:
+branch's pipeline YAML (Prod publishes with `tag latest`, artifact retention is @6 or later, and the Lockbox stage waits
+for the validation stage) from a checkout of it:
 
 ```bash
 git switch --detach "origin/release/$version"
@@ -298,11 +302,20 @@ check pipeline-config
 
 You can queue through the Azure DevOps pipelines REST API instead of the UI, with the repository ref set to
 `refs/heads/release/<x.y.z>` and the pipeline resource version set to the CI build number. Read the run back and
-confirm both before asking the approvers; the Lockbox request itself starts as soon as the run is queued. The run is
-requested as you, so your Lockbox eligibility is the one used.
+confirm both before asking the approvers; the Lockbox request starts as soon as the run's earlier stages pass. The
+run is requested as you, so your Lockbox eligibility is the one used.
 
 Then:
 
+- The first stage, "Validate the pinned CI build", runs before any Lockbox request. It repeats the step 6 integrity
+  gate in the pipeline: the pinned build is of the branch and commit the run was queued from, which is
+  `release/<x.y.z>`; its `CDNFeed` holds one version folder, equal to the branch's `packages/teams-js/package.json`
+  version; its `NPMFeed`, which is what reaches npm, is `@microsoft/teams-js` at that version; the branch's carriers
+  agree; and the bundle hashes to their SRI. If it fails, nothing was requested or published; see "The Prod
+  validation stage fails" in
+  [failure-modes.md](./failure-modes.md). It applies from release branches that include it, and does not replace
+  step 6. Because it checks out the branch, an "SDLSources" scan of that source runs alongside it (about 6 minutes)
+  and must also pass before the Lockbox request; see "The SDL scan fails before the Prod Lockbox request".
 - Find the Lockbox request ID in the "Lockbox Approval Request" task log (it is also in the request email). Check
   the request targets the TeamsJS release service group the runbook names; a request routed to another team cannot
   be approved by the release approvers. The email's To: line lists exactly who can approve right now. **⛔ Gate 6:**
@@ -314,11 +327,13 @@ Then:
 - Judge the run by these tasks in the job, **not** the run status: artifact retention, "Publish to npm (tag latest) -
   ESRP release" and "Push teams-js to M365 1CDN (Prod)". The npm task name must say **tag latest**; a past typo
   published a Prod release with the `beta` tag.
-- A Prod run from a release branch cut before [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187)
-  merged still ends **failed** at "View Published Package URLs", its only red task, and the template's closing
-  "Publish to ARROW" step is skipped. From a branch that includes the fix, that step passes and prints the run's own
-  CDN link and the npm link. Any other red task is a real failure. A warning that the ESRP release task "will be
-  blocked in future releases" appears on every run and does not block today.
+- "View Published Package URLs" runs the script from the selected CI build's `scripts` artifact, not from the queued
+  branch. A run whose CI build predates [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187)
+  still ends **failed** at that step, its only red task, and the template's closing "Publish to ARROW" step is
+  skipped. Step 6 pins the build of `release/<x.y.z>` itself, so a branch cut after the fix gives a build with the
+  fixed script; that step then passes and prints the run's own CDN link and the npm link. Any other red task is a real
+  failure. A warning that the ESRP release task "will be blocked in future releases" appears on every run and does not
+  block today.
 
 Never re-queue a run that may have published without first checking npm and the CDN (step 9). The CDN upload does not
 overwrite, so a second attempt at a published version fails rather than repairing anything.
@@ -340,6 +355,17 @@ prints for the size record.
 The Prod pipeline always publishes with the `latest` tag. That is right for a release of the newest version only. A
 hotfix on an older line would move `latest` backwards, so it is a maintainer decision outside this skill (see the
 failure modes); stop before queuing one.
+
+The **Verify Release** GitHub Actions workflow (`.github/workflows/verify-release.yml`) runs these checks with
+`check-release.js`. It runs by itself when the pre-release is published, checking the carriers at the tag and that
+the release is still a pre-release; npm and the CDN are not checked then, because Prod has not run yet. The automatic
+run needs the workflow on the release branch, so for a branch cut before it landed, run it from the Actions tab on
+`main` instead. A release created by another workflow with its `GITHUB_TOKEN` does not start it either; run it by
+hand then too. After Prod, run
+it from the Actions tab (`workflow_dispatch`, the version, expect `prerelease`): it also checks npm and the CDN,
+retrying while they are inconclusive, and its job summary has the results and the public links. It runs again when
+the release is marked Latest. It never edits the release, never marks it Latest and never writes anywhere; promoting
+it in step 10 stays a manual **⛔ Gate 4** after you have read the result.
 
 ### 10. Promote, merge back and update consumers
 
@@ -382,9 +408,11 @@ Prepare, do not send:
   (`https://www.npmjs.com/package/@microsoft/teams-js/v/<x.y.z>`), the Prod CDN URL, the GitHub release, and the
   Minor changes and Patches lists copied from the real CHANGELOG section, not from memory or the PR list. Tag the
   current contacts listed in the runbook; older example posts tag people who are no longer the contacts.
-  Two recent announcements linked the previous version: save the draft to a file, run
-  `check announcement --version "$version" --file <draft>`, and open every link fresh before sending. You may also
-  mention the partner who asked for a feature in the release.
+  Two recent announcements linked the previous version: start from
+  `check announcement-draft --version "$version"`, run on the release branch, which prints a draft built from the
+  CHANGELOG section and the public links and checks its links. Edit it, save it to a file, run
+  `check announcement --version "$version" --file <draft>` again, and open every link fresh before sending. You may
+  also mention the partner who asked for a feature in the release.
   - Post within about three hours of verified publication; past announcements slipped by most of a day, and one
     release was never announced. Read the destination's newest messages first, so a retry never double-posts.
   - Announce Prod releases only. Never announce SDF betas, test builds or dry runs. Beyond the platform SDK channel
@@ -487,6 +515,7 @@ check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 | Command                | Passes when                                                                                                                                                                                                                                                               |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `check-version`        | `registry.npmjs.org` lacks the version, no mirror lists it, and the Prod CDN and GitHub tag lack it                                                                                                                                                                       |
+| `preflight`            | (Step 1) change files exist, not all `none`, and make `--version` if given; `pipeline-config` passes; npm `latest` reads; the last completed GitHub Actions run on `main` succeeded; with `--version`, `check-version` passes and `release/<v>` is absent                 |
 | `carriers`             | both `package.json` files, the README and the test app name the version, and their teams-js CDN `<script>` tags share one full sha384 SRI                                                                                                                                 |
 | `artifact`             | a downloaded CI bundle is under `CDNFeed/<v>/js`, `<v>` is the only version folder (besides `_manifest`), and it hashes to that SRI                                                                                                                                       |
 | `published`            | the CDN bytes match the SRI and npm has the version, and the dist-tag if given, by the source rules below                                                                                                                                                                 |
@@ -497,6 +526,7 @@ check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 | `pipeline-config`      | the checkout's release YAML: Prod publishes with `tag latest` and `Latest`, SDF with `tag beta` and `Beta`, and the Prod, SDF and DDL YAML and `security.yml` each have an artifact retention task @6+; commented-out, `enabled: false` and script-text tasks don't count |
 | `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version that has not shipped: newer than `latest` on npm and GitHub, and absent from the Prod CDN and as tag `v<x.y.z>`                                                                                                                 |
 | `announcement`         | every npm, CDN and GitHub release link in a draft names the version, and npm and CDN links are present                                                                                                                                                                    |
+| `announcement-draft`   | the version's CHANGELOG section has entries, and the draft built from it and the public links passes `announcement`                                                                                                                                                       |
 | `size`, `links`, `sri` | (informational) bundle bytes and change from `--previous`, announcement links, a file's SRI                                                                                                                                                                               |
 | `help`                 | lists every command and the flags it takes; any other flag is a usage error                                                                                                                                                                                               |
 
@@ -535,30 +565,39 @@ partial read of the valid-origins code produced two wrong claims, and one wrong 
 
 ## Related work
 
-This skill documents the process as it runs today and points at the automation that will replace manual steps:
+This skill documents the process as it runs today. Merged fixes it already accounts for:
+
+- [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) ("View Published Package URLs") and
+  [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198) (artifact retention @6): release pipeline
+  fixes.
+- [#3209](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3209): the SDF beta skip rule.
+- [#3210](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3210): the CI build's ESLint scan exclusions.
+
+Open proposals that would automate manual steps; none has merged, so the steps above still apply:
 
 - The release pipeline stack: [#3090](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3090) (1/4, a
   shared changelog extractor), [#3139](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3139) (2/4,
   release-integrity and SRI validation), [#3140](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3140)
   (3/4, a required check on PRs into `release/*`) and
   [#3143](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3143) (4/4, GitHub pre-release creation on
-  merge, replacing the closed #3141). When they land, steps 4-7 become checks of what the automation did, and their
+  merge, replacing the closed #3141). If they land, steps 4-7 become checks of what the automation did, and their
   validation overlaps `check carriers`; prefer theirs in CI.
 - [#3032](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3032): agent instructions and the contributor
-  skill, which own build, test and change-file guidance.
-- [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) and
-  [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198): release pipeline fixes.
+  skill, which would own build, test and change-file guidance.
 
 ## Reference
 
-| What                                | Where                                                                             |
-| ----------------------------------- | --------------------------------------------------------------------------------- |
-| Versioning and change-file rules    | `beachball.config.js`, `CONTRIBUTING.md`                                          |
-| Prod bump                           | `tools/cli/preRelease.js`                                                         |
-| Beta version                        | `packages/teams-js/prepBetaRelease.cjs`                                           |
-| CHANGELOG section for PR bodies     | `tools/cli/readChangelog.js`                                                      |
-| CI build and its artifacts          | `tools/releases/build-release.yml`, `tools/yaml-templates/build-test-publish.yml` |
-| Prod, SDF and DDL release pipelines | `tools/releases/prod-release.yml`, `sdf-release.yml`, `ddl-release.yml`           |
-| Downstream notification             | `.github/workflows/postrelease.yml`                                               |
-| Valid-domains source                | `packages/teams-js/src/artifactsForCDN/validDomains.json`                         |
-| Read-only checks                    | `.github/skills/release-teamsjs/check-release.js`                                 |
+| What                                | Where                                                                                                    |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Versioning and change-file rules    | `beachball.config.js`, `CONTRIBUTING.md`                                                                 |
+| Prod bump                           | `tools/cli/preRelease.js`                                                                                |
+| Beta version                        | `packages/teams-js/prepBetaRelease.cjs`                                                                  |
+| CHANGELOG section for PR bodies     | `tools/cli/readChangelog.js`                                                                             |
+| CI build and its artifacts          | `tools/releases/build-release.yml`, `tools/yaml-templates/build-test-publish.yml`                        |
+| Prod, SDF and DDL release pipelines | `tools/releases/prod-release.yml`, `sdf-release.yml`, `ddl-release.yml`                                  |
+| Downstream notification             | `.github/workflows/postrelease.yml`                                                                      |
+| Valid-domains source                | `packages/teams-js/src/artifactsForCDN/validDomains.json`                                                |
+| Read-only checks                    | `.github/skills/release-teamsjs/check-release.js`                                                        |
+| Published URLs step                 | `packages/teams-js/scripts/view-published-packages-urls.ps1`, run from the CI build's `scripts` artifact |
+| Failure modes                       | `.github/skills/release-teamsjs/failure-modes.md`                                                        |
+| Agent rules for release files       | `.github/instructions/release-pipelines.instructions.md`                                                 |
