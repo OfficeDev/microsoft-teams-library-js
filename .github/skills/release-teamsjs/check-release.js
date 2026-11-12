@@ -879,6 +879,8 @@ const SDF_SKIP_OPTIONS = new Set([
   '--run-name',
   '--commit',
 ]);
+// The options a scheduled run of the skip script needs, each with a non-empty value; without one it throws.
+const SDF_SKIP_REQUIRED_OPTIONS = ['--npm-feed', '--alias', '--source-branch', '--run-id', '--commit'];
 // pipelineTasks records a task key whose value is on or continued onto another line as this, which matches no
 // accepted value.
 const UNREADABLE_VALUE = '\u0000unreadable';
@@ -1262,9 +1264,9 @@ function commandWords(command) {
 }
 
 // Whether the step runs `node <path>/sdf-beta-schedule.js` with exactly one --reason of $(Build.Reason) or Schedule,
-// and the non-empty --npm-feed and --alias a scheduled run needs. The script reads its options in pairs, treats a
-// missing or other reason as a manual run, which always publishes, and throws on a scheduled run without --npm-feed or
-// --alias.
+// and the non-empty --npm-feed, --alias, --source-branch, --run-id and --commit a scheduled run needs. The script reads
+// its options in pairs, treats a missing or other reason as a manual run, which always publishes, and throws on a
+// scheduled run without any of the others.
 function runsSkipRule(task) {
   const command = scriptCommand(task);
   const words = command === undefined ? undefined : commandWords(command);
@@ -1284,8 +1286,7 @@ function runsSkipRule(task) {
   }
   return (
     ['$(Build.Reason)', 'Schedule'].includes(options.get('--reason')) &&
-    Boolean(options.get('--npm-feed')) &&
-    Boolean(options.get('--alias'))
+    SDF_SKIP_REQUIRED_OPTIONS.every((option) => Boolean(options.get(option)))
   );
 }
 

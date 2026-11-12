@@ -245,12 +245,21 @@ const PROD_VALIDATION = [
 ].join('\n');
 const LOCKBOX_DEPENDS_ON = ['        dependsOn:', '          - Prod_Validation'].join('\n');
 // The SDF skip gate as sdf-release.yml declares it, and the Lockbox stage's dependency on it and condition.
+// The options a scheduled run of the skip script needs, with the values sdf-release.yml passes.
+const SDF_SKIP_REQUIRED_OPTIONS = {
+  '--npm-feed': "'$(Pipeline.Workspace)/NPMFeed'",
+  '--alias': 'microsoft-teams-library-js-pipeline',
+  '--source-branch': "'$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceBranch)'",
+  '--run-id': "'$(resources.pipeline.microsoft-teams-library-js-pipeline.runID)'",
+  '--commit': "'$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceCommit)'",
+};
+// The same options for a skip command written on one line.
+const SDF_SKIP_SHORT_OPTIONS = '--npm-feed feed --alias pipe --source-branch refs/heads/main --run-id 1 --commit abc';
 const SDF_SKIP_SCRIPT_BLOCK = [
   '                  script: >-',
   "                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
   "                    --reason '$(Build.Reason)'",
-  "                    --npm-feed '$(Pipeline.Workspace)/NPMFeed'",
-  '                    --alias microsoft-teams-library-js-pipeline',
+  ...Object.entries(SDF_SKIP_REQUIRED_OPTIONS).map(([option, value]) => `                    ${option} ${value}`),
 ].join('\n');
 const SDF_SKIP_GATE = [
   '      - stage: Check_Skip',
@@ -1403,20 +1412,20 @@ describe('check-release', () => {
         {
           sdfSkipGate: SDF_SKIP_GATE.replace('script: >-', 'script: |').replace(
             "sdf-beta-schedule.js'",
-            "sdf-beta-schedule.js' --run-id 1",
+            "sdf-beta-schedule.js' --run-name 1",
           ),
         },
       ],
       [
         'ends the skip command with ; before --reason',
         {
-          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'", "sdf-beta-schedule.js' --run-id 1;"),
+          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'", "sdf-beta-schedule.js' --run-name 1;"),
         },
       ],
       [
         'comments out --reason with #',
         {
-          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'", "sdf-beta-schedule.js' --run-id #"),
+          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'", "sdf-beta-schedule.js' --run-name #"),
         },
       ],
       [
@@ -1426,7 +1435,7 @@ describe('check-release', () => {
       [
         'splits the skip command with a blank line, which a folded block keeps as a line break',
         {
-          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'\n", "sdf-beta-schedule.js' --run-id 1\n\n"),
+          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'\n", "sdf-beta-schedule.js' --run-name 1\n\n"),
         },
       ],
       [
@@ -1437,7 +1446,7 @@ describe('check-release', () => {
             "                  script: Write-Host 'publish'",
           ).replace(
             '                env:',
-            '                env:\n                  script: node scripts/sdf-beta-schedule.js --reason Schedule --npm-feed feed --alias pipe',
+            `                env:\n                  script: node scripts/sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS}`,
           ),
         },
       ],
@@ -1447,7 +1456,7 @@ describe('check-release', () => {
           sdfSkipGate: SDF_SKIP_GATE.replace(
             SDF_SKIP_SCRIPT_BLOCK,
             [
-              '                  script: node scripts/sdf-beta-schedule.js --reason Schedule --npm-feed feed --alias pipe',
+              `                  script: node scripts/sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS}`,
               '                    --reason Manual',
             ].join('\n'),
           ),
@@ -1498,7 +1507,7 @@ describe('check-release', () => {
         {
           sdfSkipGate: SDF_SKIP_GATE.replace(
             ['                inputs:', '                  targetType: inline', SDF_SKIP_SCRIPT_BLOCK].join('\n'),
-            '                inputs: { targetType: inline, script: node scripts/sdf-beta-schedule.js --reason Schedule --npm-feed feed --alias pipe }',
+            `                inputs: { targetType: inline, script: node scripts/sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS} }`,
           ),
         },
       ],
@@ -1542,8 +1551,8 @@ describe('check-release', () => {
         'ends the skip command with an option that has no value, which makes it throw',
         {
           sdfSkipGate: SDF_SKIP_GATE.replace(
-            '--alias microsoft-teams-library-js-pipeline',
-            '--alias microsoft-teams-library-js-pipeline --commit',
+            "--commit '$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceCommit)'",
+            "--commit '$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceCommit)' --run-name",
           ),
         },
       ],
@@ -1552,7 +1561,7 @@ describe('check-release', () => {
         {
           sdfSkipGate: SDF_SKIP_GATE.replace(
             "--reason '$(Build.Reason)'",
-            "--run-id 1\n                    --reason '$(Build.Reason)'\n                    --run-id 2",
+            "--run-name 1\n                    --reason '$(Build.Reason)'\n                    --run-name 2",
           ),
         },
       ],
@@ -1590,7 +1599,7 @@ describe('check-release', () => {
             SDF_SKIP_SCRIPT_BLOCK,
             [
               '                  script: >-',
-              '                    Write-Host "e.g. node scripts/sdf-beta-schedule.js --reason Schedule --npm-feed feed --alias pipe"',
+              `                    Write-Host "e.g. node scripts/sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS}"`,
             ].join('\n'),
           ),
         },
@@ -1604,20 +1613,18 @@ describe('check-release', () => {
           ),
         },
       ],
+      ...Object.entries(SDF_SKIP_REQUIRED_OPTIONS).flatMap(([option, value]) => [
+        [
+          `does not pass ${option} to the skip script, which throws on every scheduled run`,
+          { sdfSkipGate: SDF_SKIP_GATE.replace(`\n                    ${option} ${value}`, '') },
+        ],
+        [
+          `passes an empty ${option} to the skip script, which throws on every scheduled run`,
+          { sdfSkipGate: SDF_SKIP_GATE.replace(`${option} ${value}`, `${option} ''`) },
+        ],
+      ]),
       [
-        'does not pass --npm-feed to the skip script, which throws on every scheduled run',
-        { sdfSkipGate: SDF_SKIP_GATE.replace("\n                    --npm-feed '$(Pipeline.Workspace)/NPMFeed'", '') },
-      ],
-      [
-        'does not pass --alias to the skip script, which throws on every scheduled run',
-        { sdfSkipGate: SDF_SKIP_GATE.replace('\n                    --alias microsoft-teams-library-js-pipeline', '') },
-      ],
-      [
-        'passes an empty --npm-feed to the skip script, which throws on every scheduled run',
-        { sdfSkipGate: SDF_SKIP_GATE.replace("--npm-feed '$(Pipeline.Workspace)/NPMFeed'", "--npm-feed ''") },
-      ],
-      [
-        'passes an empty --alias to the skip script, which throws on every scheduled run',
+        'passes an empty --alias in double quotes to the skip script',
         { sdfSkipGate: SDF_SKIP_GATE.replace('--alias microsoft-teams-library-js-pipeline', '--alias ""') },
       ],
       [
@@ -1668,7 +1675,7 @@ describe('check-release', () => {
             '                name: Decide',
             '                inputs:',
             '                  targetType: inline',
-            '                  script: node sdf-beta-schedule.js --reason Schedule --npm-feed feed --alias pipe',
+            `                  script: node sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS}`,
           ].join('\n'),
         },
       ],
@@ -1714,7 +1721,7 @@ describe('check-release', () => {
         {
           sdfSkipGate: SDF_SKIP_GATE.replace(
             SDF_SKIP_SCRIPT_BLOCK,
-            '                  script: node $(Pipeline.Workspace)/scripts/sdf-beta-schedule.js --reason Schedule --npm-feed feed --alias pipe',
+            `                  script: node $(Pipeline.Workspace)/scripts/sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS}`,
           ),
         },
       ],
@@ -1725,7 +1732,7 @@ describe('check-release', () => {
             SDF_SKIP_SCRIPT_BLOCK,
             [
               '                  script: |',
-              "                    NODE '$(Pipeline.Workspace)\\scripts\\sdf-beta-schedule.js' --reason '$(Build.Reason)' --npm-feed feed --alias \"pipe\"",
+              `                    NODE '$(Pipeline.Workspace)\\scripts\\sdf-beta-schedule.js' --reason '$(Build.Reason)' ${SDF_SKIP_SHORT_OPTIONS.replace('pipe', '"pipe"')}`,
             ].join('\n'),
           ),
         },
