@@ -253,12 +253,15 @@ const SDF_SKIP_GATE = [
   '            steps:',
   '              - task: PowerShell@2',
   '                name: Decide',
+  '                displayName: Apply the skip rule',
   "                condition: eq(variables['Build.Reason'], 'Schedule')",
   '                inputs:',
   '                  targetType: inline',
   '                  script: >-',
   "                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
   "                    --reason '$(Build.Reason)'",
+  '                env:',
+  '                  SYSTEM_ACCESSTOKEN: $(System.AccessToken)',
 ].join('\n');
 const SDF_LOCKBOX_DEPENDS_ON = '        dependsOn: Check_Skip';
 const SDF_LOCKBOX_CONDITION =
@@ -1419,6 +1422,111 @@ describe('check-release', () => {
         'splits the skip command with a blank line, which a folded block keeps as a line break',
         {
           sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'\n", "sdf-beta-schedule.js' --alias pipe\n\n"),
+        },
+      ],
+      [
+        'runs only an output-setting command, with the skip command in env.script',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            [
+              '                  script: >-',
+              "                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+              "                    --reason '$(Build.Reason)'",
+            ].join('\n'),
+            "                  script: Write-Host 'publish'",
+          ).replace(
+            '                env:',
+            '                env:\n                  script: node scripts/sdf-beta-schedule.js --reason Schedule',
+          ),
+        },
+      ],
+      [
+        'continues a plain script value on an indented line with --reason Manual',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            [
+              '                  script: >-',
+              "                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+              "                    --reason '$(Build.Reason)'",
+            ].join('\n'),
+            [
+              '                  script: node scripts/sdf-beta-schedule.js --reason Schedule',
+              '                    --reason Manual',
+            ].join('\n'),
+          ),
+        },
+      ],
+      [
+        'runs Decide from a file, which ignores the inline script',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                  targetType: inline',
+            "                  targetType: filePath\n                  filePath: 'tools/other.ps1'",
+          ),
+        },
+      ],
+      ['runs Decide as a Bash task', { sdfSkipGate: SDF_SKIP_GATE.replace('task: PowerShell@2', 'task: Bash@3') }],
+      [
+        'gives Decide a second script input before the real one',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                  script: >-',
+            '                  script: Write-Host publish\n                  script: >-',
+          ),
+        },
+      ],
+      [
+        'gives Decide a second inputs mapping before the real one',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                inputs:',
+            '                inputs:\n                  targetType: inline\n                  script: Write-Host publish\n                inputs:',
+          ),
+        },
+      ],
+      [
+        'sets Decide targetType to filePath',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('targetType: inline', 'targetType: filePath') },
+      ],
+      [
+        'leaves out Decide targetType, which defaults to filePath',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('                  targetType: inline\n', '') },
+      ],
+      [
+        'quotes the script key',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('                  script: >-', "                  'script': >-") },
+      ],
+      [
+        'writes the Decide inputs as a flow mapping',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            [
+              '                inputs:',
+              '                  targetType: inline',
+              '                  script: >-',
+              "                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+              "                    --reason '$(Build.Reason)'",
+            ].join('\n'),
+            '                inputs: { targetType: inline, script: node scripts/sdf-beta-schedule.js --reason Schedule }',
+          ),
+        },
+      ],
+      [
+        'gives Decide an input the check does not know',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                  targetType: inline',
+            '                  targetType: inline\n                  arguments: -Publish',
+          ),
+        },
+      ],
+      [
+        'gives Decide a task key the check does not know, such as continueOnError',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                name: Decide',
+            '                name: Decide\n                continueOnError: true',
+          ),
         },
       ],
       [

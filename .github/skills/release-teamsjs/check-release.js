@@ -921,8 +921,8 @@ function withoutBlockScalars(lines) {
 }
 
 // The `- task: Name@N` items in a pipeline YAML, ignoring comments and block scalars, with the
-// properties the checks read. A task with `enabled: false` is not active. `condition`, `continueOnError` and `name`
-// are read only as the task's own keys, at the indent of `task:`; `script` is the text of an inline or block scalar.
+// properties the checks read and its raw lines. A task with `enabled: false` is not active. `condition`,
+// `continueOnError` and `name` are read only as the task's own keys, at the indent of `task:`.
 function pipelineTasks(text) {
   const raw = text.split(/\r?\n/);
   const lines = withoutBlockScalars(raw.map(stripYamlComment));
@@ -944,10 +944,11 @@ function pipelineTasks(text) {
       stepName: '',
       condition: '',
       continueOnError: '',
-      script: '',
-      scriptStyle: '',
+      lines: [],
     };
-    for (let next = index + 1; next < lines.length; next++) {
+    let end = index + 1;
+    for (; end < lines.length; end++) {
+      const next = end;
       const line = lines[next];
       if (line.trim() === '') {
         continue;
@@ -968,21 +969,6 @@ function pipelineTasks(text) {
         task.condition = yamlScalar(value);
       } else if (key === 'continueOnError' && own) {
         task.continueOnError = yamlScalar(value);
-      } else if (key === 'script') {
-        if (/^[|>][+-]?\d*[+-]?$/.test(value.trim())) {
-          const block = [];
-          for (let body = next + 1; body < raw.length; body++) {
-            const bodyIndent = raw[body].length - raw[body].trimStart().length;
-            if (raw[body].trim() !== '' && bodyIndent <= lineIndent) {
-              break;
-            }
-            block.push(raw[body]);
-          }
-          task.script = block.join('\n');
-          task.scriptStyle = value.trim()[0];
-        } else {
-          task.script = yamlScalar(value);
-        }
       } else if (key === 'enabled' && /^false$/i.test(yamlScalar(value))) {
         task.enabled = false;
       } else if (key === 'displayName') {
@@ -993,6 +979,7 @@ function pipelineTasks(text) {
         task.productState.push(yamlScalar(value));
       }
     }
+    task.lines = raw.slice(index, end);
     tasks.push(task);
   }
   return tasks;
@@ -1116,13 +1103,104 @@ function stageProperty(text, stage, key) {
   return undefined;
 }
 
+// The inline script of a PowerShell@2 task written in the one shape the check supports, or undefined. The task's own
+// keys are only name, displayName, condition, inputs and env, each once and unquoted; inputs holds only targetType
+// (inline), script, pwsh and workingDirectory, each once. Scalars can't continue on another line, and env is not read.
+const DECIDE_TASK_KEYS = new Set(['name', 'displayName', 'condition', 'inputs', 'env']);
+const DECIDE_INPUT_KEYS = new Set(['targetType', 'script', 'pwsh', 'workingDirectory']);
+function inlineScript(task) {
+  if (task.name !== 'PowerShell' || task.version !== 2) {
+    return undefined;
+  }
+  const raw = task.lines;
+  const indentOf = (line) => line.length - line.trimStart().length;
+  const keyIndent = /^[ \t]*-[ \t]*/.exec(raw[0])[0].length;
+  const seen = new Set();
+  let inputs;
+  for (let index = 1; index < raw.length; ) {
+    const line = stripYamlComment(raw[index]);
+    if (line.trim() === '') {
+      index++;
+      continue;
+    }
+    const property = /^[ \t]*([\w.]+):(?:[ \t]+(.*))?$/.exec(line);
+    if (indentOf(line) !== keyIndent || !property || seen.has(property[1]) || !DECIDE_TASK_KEYS.has(property[1])) {
+      return undefined;
+    }
+    seen.add(property[1]);
+    const value = (property[2] || '').trim();
+    index++;
+    if (property[1] === 'inputs' || property[1] === 'env') {
+      const start = index;
+      while (index < raw.length && (raw[index].trim() === '' || indentOf(raw[index]) > keyIndent)) {
+        index++;
+      }
+      if (value !== '') {
+        return undefined;
+      }
+      if (property[1] === 'inputs') {
+        inputs = scriptInput(raw.slice(start, index));
+        if (!inputs) {
+          return undefined;
+        }
+      }
+    } else if (value === '' || /^[|>]/.test(value)) {
+      return undefined;
+    }
+  }
+  return inputs;
+}
+
+function scriptInput(block) {
+  const indentOf = (line) => line.length - line.trimStart().length;
+  const first = block.find((line) => line.trim() !== '');
+  if (first === undefined) {
+    return undefined;
+  }
+  const childIndent = indentOf(first);
+  const seen = new Set();
+  let script;
+  for (let index = 0; index < block.length; ) {
+    const line = stripYamlComment(block[index]);
+    if (line.trim() === '') {
+      index++;
+      continue;
+    }
+    const property = /^[ \t]*([\w.]+):(?:[ \t]+(.*))?$/.exec(line);
+    if (indentOf(line) !== childIndent || !property || seen.has(property[1]) || !DECIDE_INPUT_KEYS.has(property[1])) {
+      return undefined;
+    }
+    seen.add(property[1]);
+    const value = (property[2] || '').trim();
+    index++;
+    if (property[1] === 'script' && /^[|>][+-]?$/.test(value)) {
+      const start = index;
+      while (index < block.length && (block[index].trim() === '' || indentOf(block[index]) > childIndent)) {
+        index++;
+      }
+      script = { text: block.slice(start, index).join('\n'), style: value[0] };
+    } else if (value === '' || /^['"|>[{&*!%@`]/.test(value)) {
+      return undefined;
+    } else if (property[1] === 'script') {
+      script = { text: value, style: '' };
+    } else if (property[1] === 'targetType' && value !== 'inline') {
+      return undefined;
+    }
+  }
+  return seen.has('targetType') ? script : undefined;
+}
+
 // The one command a step's script runs, or undefined when the script is anything else: an inline value, a one-line
 // literal block, or a folded block whose lines share one indent with no blank line between them.
 function scriptCommand(task) {
-  if (task.scriptStyle === '') {
-    return task.script.trim();
+  const script = inlineScript(task);
+  if (!script) {
+    return undefined;
   }
-  const lines = task.script.split('\n');
+  if (script.style === '') {
+    return script.text;
+  }
+  const lines = script.text.split('\n');
   while (lines.length > 0 && lines[lines.length - 1].trim() === '') {
     lines.pop();
   }
@@ -1133,7 +1211,7 @@ function scriptCommand(task) {
   if (lines.some((line) => line.trim() === '') || indents.size !== 1) {
     return undefined;
   }
-  if (task.scriptStyle === '|' && lines.length !== 1) {
+  if (script.style === '|' && lines.length !== 1) {
     return undefined;
   }
   return lines.map((line) => line.trim()).join(' ');
