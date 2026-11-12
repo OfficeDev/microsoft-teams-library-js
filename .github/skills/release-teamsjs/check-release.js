@@ -958,6 +958,7 @@ function pipelineTasks(text) {
       enabled: true,
       displayName: '',
       filePath: '',
+      targetTypes: [],
       productState: [],
       stepName: '',
       condition: '',
@@ -1001,6 +1002,8 @@ function pipelineTasks(text) {
         task.displayName = yamlScalar(value);
       } else if (key === 'filePath') {
         task.filePath = yamlScalar(value);
+      } else if (key === 'targetType') {
+        task.targetTypes.push(scalar);
       } else if (key.toLowerCase() === 'productstate') {
         task.productState.push(yamlScalar(value));
       }
@@ -1367,6 +1370,8 @@ function checkProdValidation(file, text) {
       task.enabled &&
       task.name === 'PowerShell' &&
       task.filePath === PROD_VALIDATION_SCRIPT &&
+      // PowerShell@2 runs filePath only in its default filePath mode; an inline script replaces it.
+      task.targetTypes.every((targetType) => /^filePath$/i.test(targetType)) &&
       (task.continueOnError === '' || /^false$/i.test(task.continueOnError)) &&
       (task.condition === '' || normalizeExpression(task.condition) === 'succeeded()'),
   );
@@ -1384,7 +1389,7 @@ function checkProdValidation(file, text) {
       validation && stageDeclared
         ? `${file} has the ${PROD_VALIDATION_STAGE} stage running ${PROD_VALIDATION_SCRIPT}`
         : `${file} has no ${PROD_VALIDATION_STAGE} stage whose ${PROD_VALIDATION_JOB} job has an enabled task running ` +
-            `${PROD_VALIDATION_SCRIPT} with no condition other than succeeded() and no continueOnError, so a wrong CI ` +
+            `${PROD_VALIDATION_SCRIPT} as a file, with no condition other than succeeded() and no continueOnError, so a wrong CI ` +
             'build is caught only after the Lockbox approval',
     ),
     result(

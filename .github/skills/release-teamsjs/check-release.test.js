@@ -1803,6 +1803,44 @@ describe('check-release', () => {
       });
     }
 
+    for (const [name, change] of [
+      [
+        'targetType: inline with its own script, which ignores filePath',
+        (yaml) =>
+          yaml.replace(
+            "                  targetType: 'filePath'",
+            "                  targetType: 'inline'\n                  script: Write-Host skipped",
+          ),
+      ],
+      [
+        'a second targetType of inline',
+        (yaml) =>
+          yaml.replace(
+            "                  targetType: 'filePath'",
+            "                  targetType: 'filePath'\n                  targetType: inline",
+          ),
+      ],
+    ]) {
+      it(`fails when the Prod validation task has ${name}`, async () => {
+        writePipelineConfig(root, { validation: change(PROD_VALIDATION) });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some(
+            (line) =>
+              line.startsWith('FAIL tools/releases/prod-release.yml') && line.includes('validate-prod-build.ps1'),
+          ),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    it('passes when the Prod validation task leaves targetType unset, which defaults to filePath', async () => {
+      writePipelineConfig(root, {
+        validation: PROD_VALIDATION.replace("                  targetType: 'filePath'\n", ''),
+      });
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
     for (const [name, after, setting] of [
       ['condition: succeeded()', 'displayName', '                condition: succeeded()'],
       [
