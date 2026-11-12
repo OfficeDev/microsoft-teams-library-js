@@ -44,6 +44,35 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Fix:** always set the artifact explicitly to the run from the prep PR merge, and check its `CDNFeed` folder name
   equals the version before queuing (Prod step 6; `check artifact` fails on any other folder).
 
+### The Prod validation stage fails
+
+- **Symptom:** the Prod run fails in its first stage, "Validate the pinned CI build", and no Lockbox request is
+  raised. The stage log's error line says which check failed.
+- **Cause:** one of these:
+  - The wrong CI build is pinned: it was built from another branch or commit than the run was queued from, its
+    `CDNFeed` version folder differs from the branch's `packages/teams-js/package.json`, it holds more than one
+    version folder, its `NPMFeed` package is another name or version, or its bundle does not hash to the branch's
+    SRI.
+  - The run was not queued from `release/<x.y.z>` for the build's version.
+  - The branch's version carriers disagree on the version or the SRI.
+  - The release YAML on the branch failed its checks, or the branch predates `check-release.js`.
+- **Fix:** nothing was published and no approval was asked for. For a wrong build or branch, queue again from
+  `release/<x.y.z>` with the artifact set explicitly to the CI run from the prep PR merge (Prod step 6). For
+  disagreeing carriers, fix the release branch through a PR into it, wait for its CI run, and queue again with that
+  run. For a missing script or failing YAML, update the release branch from `main`, with any fix merged there first.
+  Do not skip the stage to get past it.
+
+### The SDL scan fails before the Prod Lockbox request
+
+- **Symptom:** the Prod run fails in its "SDLSources" stage, which runs alongside "Validate the pinned CI build", and
+  no Lockbox request is raised.
+- **Cause:** the validation job checks out the release branch, so the pipeline template scans that source (CredScan,
+  PoliCheck, ESLint and others) and blocks on a finding. The release branch's own CI run scans the same commit, so a
+  finding here usually means a scanner or rule changed since that run.
+- **Fix:** nothing was published and no approval was asked for. Compare with the SDL result of the release branch's
+  CI run, fix the finding through a PR into `main` and the release branch, and queue again. Do not skip or suppress
+  the scan to get past it.
+
 ### The Lockbox request cannot be approved by the release approvers
 
 - **Symptom:** approvers say the request is not theirs, or it never appears for them.
@@ -90,7 +119,7 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### The run fails at "Lockbox Approval Request" because the requester is not eligible
 
-- **Symptom:** the first stage fails with `IneligibleDeploymentUserException` ("requestor is not eligible to deploy"),
+- **Symptom:** the Lockbox stage fails with `IneligibleDeploymentUserException` ("requestor is not eligible to deploy"),
   followed by `FailureInWaitForLockboxTaskException` in deployment preparation. This is the most common first-run
   failure in the release history, for Prod and DDL alike.
 - **Cause:** the person who queued the run has no active deploy eligibility; it lapses after about 30 days unused.

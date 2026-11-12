@@ -285,7 +285,8 @@ lands, this step becomes "verify the pre-release the workflow created" rather th
 **⛔ Gate 5:** in the internal ADO project, run the Prod release pipeline from branch `release/<x.y.z>` (not `main`)
 and **explicitly set the pipeline artifact** to the CI build from step 6; do not accept whatever is preselected.
 Before queuing, confirm the artifact retention task succeeded in the latest `main` CI run, and check the release
-branch's pipeline YAML (Prod publishes with `tag latest`, artifact retention is @6 or later) from a checkout of it:
+branch's pipeline YAML (Prod publishes with `tag latest`, artifact retention is @6 or later, and the Lockbox stage waits
+for the validation stage) from a checkout of it:
 
 ```bash
 git switch --detach "origin/release/$version"
@@ -294,11 +295,20 @@ check pipeline-config
 
 You can queue through the Azure DevOps pipelines REST API instead of the UI, with the repository ref set to
 `refs/heads/release/<x.y.z>` and the pipeline resource version set to the CI build number. Read the run back and
-confirm both before asking the approvers; the Lockbox request itself starts as soon as the run is queued. The run is
-requested as you, so your Lockbox eligibility is the one used.
+confirm both before asking the approvers; the Lockbox request starts as soon as the run's earlier stages pass. The
+run is requested as you, so your Lockbox eligibility is the one used.
 
 Then:
 
+- The first stage, "Validate the pinned CI build", runs before any Lockbox request. It repeats the step 6 integrity
+  gate in the pipeline: the pinned build is of the branch and commit the run was queued from, which is
+  `release/<x.y.z>`; its `CDNFeed` holds one version folder, equal to the branch's `packages/teams-js/package.json`
+  version; its `NPMFeed`, which is what reaches npm, is `@microsoft/teams-js` at that version; the branch's carriers
+  agree; and the bundle hashes to their SRI. If it fails, nothing was requested or published; see "The Prod
+  validation stage fails" in
+  [failure-modes.md](./failure-modes.md). It applies from release branches that include it, and does not replace
+  step 6. Because it checks out the branch, an "SDLSources" scan of that source runs alongside it (about 6 minutes)
+  and must also pass before the Lockbox request; see "The SDL scan fails before the Prod Lockbox request".
 - Find the Lockbox request ID in the "Lockbox Approval Request" task log (it is also in the request email). Check
   the request targets the TeamsJS release service group the runbook names; a request routed to another team cannot
   be approved by the release approvers. The email's To: line lists exactly who can approve right now. **⛔ Gate 6:**

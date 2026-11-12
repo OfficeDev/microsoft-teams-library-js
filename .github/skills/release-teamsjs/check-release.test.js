@@ -230,7 +230,30 @@ const RELEASED_CHANGELOG = [
   '',
 ].join('\n');
 
-function writePipelineConfig(root, { prodTag = 'latest', prodState = 'Latest', retention = 6 } = {}) {
+// The Prod validation stage as prod-release.yml declares it, and the Lockbox stage's dependency on it.
+const PROD_VALIDATION = [
+  '      - stage: Prod_Validation',
+  '        dependsOn: []',
+  '        jobs:',
+  '          - job: Validate_CI_build',
+  '            steps:',
+  '              - task: PowerShell@2',
+  '                displayName: Check the pinned CI build',
+  '                inputs:',
+  "                  targetType: 'filePath'",
+  "                  filePath: 'tools/releases/powershell-commands/validate-prod-build.ps1'",
+].join('\n');
+const LOCKBOX_DEPENDS_ON = ['        dependsOn:', '          - Prod_Validation'].join('\n');
+function writePipelineConfig(
+  root,
+  {
+    prodTag = 'latest',
+    prodState = 'Latest',
+    retention = 6,
+    validation = PROD_VALIDATION,
+    lockboxDependsOn = LOCKBOX_DEPENDS_ON,
+  } = {},
+) {
   const write = (relativePath, contents) => {
     fs.mkdirSync(path.dirname(path.join(root, relativePath)), { recursive: true });
     fs.writeFileSync(path.join(root, relativePath), contents);
@@ -243,7 +266,20 @@ function writePipelineConfig(root, { prodTag = 'latest', prodState = 'Latest', r
       `                inputs:`,
       `                  productstate: '${state}'`,
     ].join('\n');
-  write('tools/releases/prod-release.yml', publish(prodTag, prodState));
+  write(
+    'tools/releases/prod-release.yml',
+    [
+      '    stages:',
+      validation,
+      '      - stage: Prod_Lockbox_Approval_Deployment',
+      '        displayName: Lockbox Approval/Deployment',
+      lockboxDependsOn,
+      '        jobs:',
+      '          - job: Agent_job',
+      '            steps:',
+      publish(prodTag, prodState),
+    ].join('\n'),
+  );
   write('tools/releases/sdf-release.yml', publish('beta', 'Beta'));
   write('tools/releases/ddl-release.yml', `              - task: AssetRetention@${retention}`);
   write('tools/yaml-templates/security.yml', `  - task: AssetRetention@${retention}`);
@@ -1122,6 +1158,109 @@ describe('check-release', () => {
       assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
     });
 
+    it('fails when prod-release.yml has no Prod validation task', async () => {
+      writePipelineConfig(root, { validation: '      - stage: Prod_Validation' });
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some(
+          (line) => line.startsWith('FAIL tools/releases/prod-release.yml') && line.includes('validate-prod-build.ps1'),
+        ),
+        lines.join('\n'),
+      );
+    });
+
+    for (const [name, change] of [
+      [
+        'disabled',
+        (yaml) =>
+          yaml.replace(
+            "                  targetType: 'filePath'",
+            "                  targetType: 'filePath'\n                enabled: false",
+          ),
+      ],
+      [
+        'commented out',
+        (yaml) => yaml.replace('              - task: PowerShell@2', '              # - task: PowerShell@2'),
+      ],
+    ]) {
+      it(`fails when the Prod validation task is ${name}`, async () => {
+        writePipelineConfig(root, { validation: change(PROD_VALIDATION) });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+      });
+    }
+
+    for (const [name, dependsOn] of [
+      ['an empty list', '        dependsOn: []'],
+      ['another stage', '        dependsOn: Other_Stage'],
+      ['no dependsOn', ''],
+      ['a commented-out entry', '        dependsOn:\n          # - Prod_Validation'],
+    ]) {
+      it(`fails when the Lockbox stage depends on ${name}`, async () => {
+        writePipelineConfig(root, { lockboxDependsOn: dependsOn });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('FAIL') && line.includes('Prod_Lockbox_Approval_Deployment')),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    for (const [name, dependsOn] of [
+      ['an inline value', '        dependsOn: Prod_Validation'],
+      ['a flow list', "        dependsOn: [Other_Stage, 'Prod_Validation']"],
+    ]) {
+      it(`passes when the Lockbox stage depends on Prod_Validation as ${name}`, async () => {
+        writePipelineConfig(root, { lockboxDependsOn: dependsOn });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+      });
+    }
+
+    it('fails when the Prod validation stage runs a different script', async () => {
+      writePipelineConfig(root, {
+        validation: PROD_VALIDATION.replace('validate-prod-build.ps1', 'view-published-packages-urls.ps1'),
+      });
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
+
+    it("does not take a later stage's dependsOn for the Lockbox stage", async () => {
+      writePipelineConfig(root, { lockboxDependsOn: '' });
+      const yaml = path.join(root, 'tools/releases/prod-release.yml');
+      fs.appendFileSync(yaml, '\n      - stage: Later\n        dependsOn:\n          - Prod_Validation\n');
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
+
+    it('reads a dependsOn list written at the same indent as its key', async () => {
+      writePipelineConfig(root, { lockboxDependsOn: '        dependsOn:\n        - Prod_Validation' });
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+    it('fails when the validation task runs only in the Lockbox stage, after the approval', async () => {
+      writePipelineConfig(root, {
+        validation: PROD_VALIDATION.replace('validate-prod-build.ps1', 'view-published-packages-urls.ps1'),
+      });
+      const yaml = path.join(root, 'tools/releases/prod-release.yml');
+      fs.appendFileSync(
+        yaml,
+        [
+          '',
+          '              - task: PowerShell@2',
+          '                inputs:',
+          "                  filePath: 'tools/releases/powershell-commands/validate-prod-build.ps1'",
+          '',
+        ].join('\n'),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some(
+          (line) => line.startsWith('FAIL tools/releases/prod-release.yml') && line.includes('validate-prod-build.ps1'),
+        ),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails when the Prod_Validation stage is missing even if the task and dependency are there', async () => {
+      writePipelineConfig(root, { validation: PROD_VALIDATION.replace('stage: Prod_Validation', 'stage: Renamed') });
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
     it('fails when the Prod publish task says tag beta', async () => {
       writePipelineConfig(root, { prodTag: 'beta' });
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
