@@ -1229,6 +1229,27 @@ describe('check-release', () => {
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
     });
 
+    it("reads the Lockbox stage's dependsOn when a job's dependsOn comes first", async () => {
+      writePipelineConfig(root, { lockboxDependsOn: '' });
+      const yaml = path.join(root, 'tools/releases/prod-release.yml');
+      const text = fs
+        .readFileSync(yaml, 'utf8')
+        .replace('- job: Agent_job', '- job: Agent_job\n            dependsOn: []');
+      fs.writeFileSync(yaml, `${text}\n        dependsOn:\n          - Prod_Validation\n`);
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    it("does not take a job's dependsOn for the Lockbox stage", async () => {
+      writePipelineConfig(root, { lockboxDependsOn: '' });
+      const yaml = path.join(root, 'tools/releases/prod-release.yml');
+      const text = fs.readFileSync(yaml, 'utf8');
+      fs.writeFileSync(
+        yaml,
+        text.replace('- job: Agent_job', '- job: Agent_job\n            dependsOn: Prod_Validation'),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
+
     it('reads a dependsOn list written at the same indent as its key', async () => {
       writePipelineConfig(root, { lockboxDependsOn: '        dependsOn:\n        - Prod_Validation' });
       assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));

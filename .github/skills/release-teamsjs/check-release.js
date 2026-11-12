@@ -949,13 +949,18 @@ function pipelineTasks(text) {
   return tasks;
 }
 
-// The stage names a `- stage: <name>` item lists under `dependsOn`, as an inline value, a flow list or a block list,
-// ignoring comments and block scalars. Undefined when the stage is not declared.
+// The stage names a `- stage: <name>` item lists under its own `dependsOn` key (not a job's), as an inline value, a
+// flow list or a block list, ignoring comments and block scalars. Undefined when the stage is not declared.
 function stageDependsOn(text, stage) {
   const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
+  let keyIndent = -1;
   const start = lines.findIndex((line) => {
-    const header = /^[ \t]*-[ \t]*stage:[ \t]*(.+?)[ \t]*$/.exec(line);
-    return header && yamlScalar(header[1]) === stage;
+    const header = /^([ \t]*-[ \t]*)stage:[ \t]*(.+?)[ \t]*$/.exec(line);
+    if (header && yamlScalar(header[2]) === stage) {
+      keyIndent = header[1].length;
+      return true;
+    }
+    return false;
   });
   if (start === -1) {
     return undefined;
@@ -972,7 +977,8 @@ function stageDependsOn(text, stage) {
       break;
     }
     const property = /^[ \t]*dependsOn:[ \t]*(.*)$/.exec(line);
-    if (!property) {
+    // Only the stage mapping's own keys sit at the indent of `stage:`; deeper ones belong to jobs.
+    if (!property || indent !== keyIndent) {
       continue;
     }
     const value = property[1].trim();
