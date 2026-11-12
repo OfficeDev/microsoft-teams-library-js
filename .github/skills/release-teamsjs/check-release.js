@@ -867,9 +867,16 @@ const SDF_SKIP_SCRIPT = 'sdf-beta-schedule.js';
 const SDF_SKIP_STAGE = 'Check_Skip';
 const SDF_SKIP_JOB = 'Check';
 const SDF_SKIP_STEP = 'Decide';
-const SDF_PUBLISH_CONDITION =
-  /eq\(\s*dependencies\.Check_Skip\.outputs\[\s*(['"])Check\.Decide\.publish\1\s*\]\s*,\s*(['"])true\2\s*\)/;
-const SDF_MANUAL_CONDITION = /ne\(\s*variables\[\s*(['"])Build\.Reason\1\s*\]\s*,\s*(['"])Schedule\2\s*\)/;
+// The Lockbox stage condition, in either order of its or() branches, compared without spaces, case or quote style.
+const SDF_MANUAL_BRANCH = "ne(variables['build.reason'],'schedule')";
+const SDF_PUBLISH_BRANCH = "eq(dependencies.check_skip.outputs['check.decide.publish'],'true')";
+const SDF_LOCKBOX_CONDITIONS = [
+  `and(succeeded(),or(${SDF_MANUAL_BRANCH},${SDF_PUBLISH_BRANCH}))`,
+  `and(succeeded(),or(${SDF_PUBLISH_BRANCH},${SDF_MANUAL_BRANCH}))`,
+];
+const SDF_LOCKBOX_CONDITION_TEXT =
+  "and(succeeded(), or(ne(variables['Build.Reason'], 'Schedule'), " +
+  "eq(dependencies.Check_Skip.outputs['Check.Decide.publish'], 'true')))";
 
 // Drops a YAML comment: a # at the line start or after whitespace, outside a quoted scalar.
 function stripYamlComment(line) {
@@ -914,19 +921,22 @@ function withoutBlockScalars(lines) {
 }
 
 // The `- task: Name@N` items in a pipeline YAML, ignoring comments and block scalars, with the
-// properties the checks read. A task with `enabled: false` is not active.
+// properties the checks read. A task with `enabled: false` is not active. `condition`, `continueOnError` and `name`
+// are read only as the task's own keys, at the indent of `task:`; `script` is the text of an inline or block scalar.
 function pipelineTasks(text) {
-  const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
+  const raw = text.split(/\r?\n/);
+  const lines = withoutBlockScalars(raw.map(stripYamlComment));
   const tasks = [];
   for (let index = 0; index < lines.length; index++) {
-    const header = /^([ \t]*)-[ \t]*task:[ \t]*(['"]?)([\w.-]+)@(\d+)\2[ \t]*$/.exec(lines[index]);
+    const header = /^(([ \t]*)-[ \t]*)task:[ \t]*(['"]?)([\w.-]+)@(\d+)\3[ \t]*$/.exec(lines[index]);
     if (!header) {
       continue;
     }
-    const indent = header[1].length;
+    const indent = header[2].length;
+    const keyIndent = header[1].length;
     const task = {
-      name: header[3],
-      version: Number(header[4]),
+      name: header[4],
+      version: Number(header[5]),
       enabled: true,
       displayName: '',
       filePath: '',
@@ -934,8 +944,8 @@ function pipelineTasks(text) {
       stepName: '',
       condition: '',
       continueOnError: false,
+      script: '',
     };
-    let propertyIndent = -1;
     for (let next = index + 1; next < lines.length; next++) {
       const line = lines[next];
       if (line.trim() === '') {
@@ -945,20 +955,32 @@ function pipelineTasks(text) {
       if (lineIndent <= indent) {
         break;
       }
-      const property = /^[ \t]*([\w.]+):[ \t]*(.*)$/.exec(line);
+      const property = /^[ \t]*(['"]?)([\w.]+)\1[ \t]*:[ \t]*(.*)$/.exec(line);
       if (!property) {
         continue;
       }
-      if (propertyIndent === -1) {
-        propertyIndent = lineIndent;
-      }
-      const [, key, value] = property;
-      if (key === 'name' && lineIndent === propertyIndent) {
+      const [, , key, value] = property;
+      const own = lineIndent === keyIndent;
+      if (key === 'name' && own) {
         task.stepName = yamlScalar(value);
-      } else if (key === 'condition' && lineIndent === propertyIndent) {
+      } else if (key === 'condition' && own) {
         task.condition = yamlScalar(value);
-      } else if (key === 'continueOnError' && lineIndent === propertyIndent) {
+      } else if (key === 'continueOnError' && own) {
         task.continueOnError = /^true$/i.test(yamlScalar(value));
+      } else if (key === 'script') {
+        if (/^[|>][+-]?\d*[+-]?$/.test(value.trim())) {
+          const block = [];
+          for (let body = next + 1; body < raw.length; body++) {
+            const bodyIndent = raw[body].length - raw[body].trimStart().length;
+            if (raw[body].trim() !== '' && bodyIndent <= lineIndent) {
+              break;
+            }
+            block.push(raw[body]);
+          }
+          task.script = block.join('\n');
+        } else {
+          task.script = yamlScalar(value);
+        }
       } else if (key === 'enabled' && /^false$/i.test(yamlScalar(value))) {
         task.enabled = false;
       } else if (key === 'displayName') {
@@ -1035,27 +1057,31 @@ function stageDependsOn(text, stage) {
   return names;
 }
 
-// The lines of a `- stage: <name>` item, up to the next line at or below its indent, ignoring comments and block
-// scalars. Empty when the stage is not declared.
-function stageText(text, stage) {
+// The lines of a `- <kind>: <name>` item (a stage or a job), up to the next line at or below its indent, ignoring
+// comments and block scalars. Empty when the item is not declared.
+function itemText(text, kind, name) {
   const raw = text.split(/\r?\n/);
   const lines = withoutBlockScalars(raw.map(stripYamlComment));
   const start = lines.findIndex((line) => {
-    const header = /^[ \t]*-[ \t]*stage:[ \t]*(.+?)[ \t]*$/.exec(line);
-    return header && yamlScalar(header[1]) === stage;
+    const header = new RegExp(`^[ \\t]*-[ \\t]*${kind}:[ \\t]*(.+?)[ \\t]*$`).exec(line);
+    return header && yamlScalar(header[1]) === name;
   });
   if (start === -1) {
     return '';
   }
-  const stageIndent = lines[start].length - lines[start].trimStart().length;
+  const itemIndent = lines[start].length - lines[start].trimStart().length;
   let end = start + 1;
   while (
     end < lines.length &&
-    (lines[end].trim() === '' || lines[end].length - lines[end].trimStart().length > stageIndent)
+    (lines[end].trim() === '' || lines[end].length - lines[end].trimStart().length > itemIndent)
   ) {
     end++;
   }
   return raw.slice(start, end).join('\n');
+}
+
+function stageText(text, stage) {
+  return itemText(text, 'stage', stage);
 }
 
 // The value of a `- stage: <name>` item's own property, not a job's or step's, ignoring comments and block scalars.
@@ -1080,27 +1106,32 @@ function stageProperty(text, stage, key) {
     if (indent <= stageIndent) {
       break;
     }
-    const property = /^[ \t]*([\w.]+):[ \t]*(.*)$/.exec(line);
-    if (property && indent === propertyIndent && property[1] === key) {
-      return yamlScalar(property[2]);
+    const property = /^[ \t]*(['"]?)([\w.]+)\1[ \t]*:[ \t]*(.*)$/.exec(line);
+    if (property && indent === propertyIndent && property[2] === key) {
+      return yamlScalar(property[3]);
     }
   }
   return undefined;
 }
 
+// Whether a step's script text runs the skip script with node, outside a PowerShell comment.
+function runsSkipScript(script) {
+  const code = script
+    .split(/\r?\n/)
+    .map((line) => line.replace(/(^|\s)#.*$/, ''))
+    .join(' ');
+  return new RegExp(`(^|\\s)node\\s+(['"]?)[^\\s'"]*${SDF_SKIP_SCRIPT.replace('.', '\\.')}\\2(\\s|$)`).test(code);
+}
+
 function checkSdfSkipGate(file, text) {
-  const gate = stageText(text, SDF_SKIP_STAGE);
-  const gateLines = gate.split(/\r?\n/).map(stripYamlComment);
-  const job = gateLines.some((line) => {
-    const header = /^[ \t]*-[ \t]*job:[ \t]*(.+?)[ \t]*$/.exec(line);
-    return header && yamlScalar(header[1]) === SDF_SKIP_JOB;
-  });
-  const decide = pipelineTasks(gate).some((task) => task.enabled && task.stepName === SDF_SKIP_STEP);
-  const script = gateLines.some((line) => line.includes(SDF_SKIP_SCRIPT));
-  const gateOk = job && decide && script;
+  // The step that sets the publish output must be the one that runs the script, in the job the condition names.
+  const job = itemText(stageText(text, SDF_SKIP_STAGE), 'job', SDF_SKIP_JOB);
+  const gateOk = pipelineTasks(job).some(
+    (task) => task.enabled && task.stepName === SDF_SKIP_STEP && runsSkipScript(task.script),
+  );
   const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
   const condition = stageProperty(text, PROD_LOCKBOX_STAGE, 'condition') || '';
-  const conditionOk = SDF_PUBLISH_CONDITION.test(condition) && SDF_MANUAL_CONDITION.test(condition);
+  const conditionOk = SDF_LOCKBOX_CONDITIONS.includes(condition.replace(/\s+/g, '').replace(/"/g, "'").toLowerCase());
   return [
     result(
       gateOk ? Outcome.pass : Outcome.fail,
@@ -1117,8 +1148,8 @@ function checkSdfSkipGate(file, text) {
       conditionOk ? Outcome.pass : Outcome.fail,
       conditionOk
         ? `${file} ${PROD_LOCKBOX_STAGE} runs manual builds, and scheduled builds only when ${SDF_SKIP_STAGE} says publish`
-        : `${file} ${PROD_LOCKBOX_STAGE} condition is ${condition || '(none)'}, expected one that runs manual builds ` +
-            `and scheduled builds only when ${SDF_SKIP_STAGE}.outputs['${SDF_SKIP_JOB}.${SDF_SKIP_STEP}.publish'] is 'true'`,
+        : `${file} ${PROD_LOCKBOX_STAGE} condition is ${condition || '(none)'}, expected ${SDF_LOCKBOX_CONDITION_TEXT} ` +
+            'so that manual builds run, and scheduled builds only when the skip rule says publish',
     ),
   ];
 }

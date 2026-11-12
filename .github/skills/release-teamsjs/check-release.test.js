@@ -1369,6 +1369,40 @@ describe('check-release', () => {
             "        condition: and(succeeded(), eq(dependencies.Check_Skip.outputs['Check.Decide.publish'], 'true'))",
         },
       ],
+      [
+        'wraps the Lockbox stage condition in or(true, ...)',
+        { sdfLockboxCondition: `${SDF_LOCKBOX_CONDITION.replace('condition: and(', 'condition: or(true, and(')})` },
+      ],
+      [
+        'negates the Lockbox stage condition',
+        { sdfLockboxCondition: `${SDF_LOCKBOX_CONDITION.replace('condition: and(', 'condition: not(and(')})` },
+      ],
+      [
+        'names the skip script only in the Decide display name',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                name: Decide',
+            '                name: Decide\n                displayName: Apply the sdf-beta-schedule.js skip rule',
+          ).replace(
+            "node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+            'Write-Host "##vso[task.setvariable variable=publish;isOutput=true]true"',
+          ),
+        },
+      ],
+      [
+        'runs the skip script as Decide only in a job other than Check',
+        {
+          sdfSkipGate: [
+            SDF_SKIP_GATE.replace('                name: Decide', '                name: Before'),
+            '          - job: Other',
+            '            steps:',
+            '              - task: PowerShell@2',
+            '                name: Decide',
+            '                inputs:',
+            '                  script: node sdf-beta-schedule.js',
+          ].join('\n'),
+        },
+      ],
     ]) {
       it(`fails when sdf-release.yml ${name}`, async () => {
         writePipelineConfig(root, options);
@@ -1377,6 +1411,43 @@ describe('check-release', () => {
           lines.some((line) => line.startsWith('FAIL tools/releases/sdf-release.yml') && line.includes('Check_Skip')),
           lines.join('\n'),
         );
+      });
+    }
+
+    for (const [name, options] of [
+      [
+        'double quotes and extra spaces in the Lockbox stage condition',
+        {
+          sdfLockboxCondition:
+            '        condition: and( succeeded(), or( ne(variables["Build.Reason"], "Schedule"), ' +
+            'eq(dependencies.Check_Skip.outputs["Check.Decide.publish"], "true") ) )',
+        },
+      ],
+      [
+        'the or() branches of the Lockbox stage condition in the other order',
+        {
+          sdfLockboxCondition:
+            "        condition: and(succeeded(), or(eq(dependencies.Check_Skip.outputs['Check.Decide.publish'], 'true'), " +
+            "ne(variables['Build.Reason'], 'Schedule')))",
+        },
+      ],
+      [
+        'a one-line Decide script',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            [
+              '                  script: >-',
+              "                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+              "                    --reason '$(Build.Reason)'",
+            ].join('\n'),
+            '                  script: node $(Pipeline.Workspace)/scripts/sdf-beta-schedule.js --reason Schedule',
+          ),
+        },
+      ],
+    ]) {
+      it(`passes the SDF skip gate with ${name}`, async () => {
+        writePipelineConfig(root, options);
+        assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
       });
     }
 
@@ -1413,6 +1484,21 @@ describe('check-release', () => {
           ),
           lines.join('\n'),
         );
+      });
+    }
+
+    for (const [name, setting] of [
+      ['continueOnError: true', '                continueOnError: true'],
+      ['condition: false', '                condition: false'],
+      ["a quoted 'continueOnError' key", "                'continueOnError': true"],
+    ]) {
+      it(`fails when the Prod validation task has ${name} after a quoted 'inputs' key`, async () => {
+        const validation = `${PROD_VALIDATION.replace(
+          '                displayName: Check the pinned CI build\n',
+          '',
+        ).replace('                inputs:', "                'inputs':")}\n${setting}`;
+        writePipelineConfig(root, { validation });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
       });
     }
 
