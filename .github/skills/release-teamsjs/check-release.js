@@ -22,7 +22,8 @@
  *   beta-version  --version <x.y.z>-beta.<n> [--registry <url>]
  *                                                  the beta is of a version newer than latest on npm and GitHub
  *   pipeline-config                                the checkout's release YAML: Prod runs validate-prod-build.ps1 in
- *                                                  a stage the Lockbox stage depends on and publishes with tag
+ *                                                  a stage the Lockbox stage depends on, with no continueOnError and no
+ *                                                  condition but succeeded(), and publishes with tag
  *                                                  latest, SDF gates its Lockbox stage on the Check_Skip decision and
  *                                                  publishes with tag beta, and each has artifact retention @6 or later;
  *                                                  commented-out, `enabled: false` and script-text tasks don't count
@@ -931,6 +932,8 @@ function pipelineTasks(text) {
       filePath: '',
       productState: [],
       stepName: '',
+      condition: '',
+      continueOnError: false,
     };
     let propertyIndent = -1;
     for (let next = index + 1; next < lines.length; next++) {
@@ -952,6 +955,10 @@ function pipelineTasks(text) {
       const [, key, value] = property;
       if (key === 'name' && lineIndent === propertyIndent) {
         task.stepName = yamlScalar(value);
+      } else if (key === 'condition' && lineIndent === propertyIndent) {
+        task.condition = yamlScalar(value);
+      } else if (key === 'continueOnError' && lineIndent === propertyIndent) {
+        task.continueOnError = /^true$/i.test(yamlScalar(value));
       } else if (key === 'enabled' && /^false$/i.test(yamlScalar(value))) {
         task.enabled = false;
       } else if (key === 'displayName') {
@@ -1117,8 +1124,14 @@ function checkSdfSkipGate(file, text) {
 }
 
 function checkProdValidation(file, text) {
+  // A condition can skip the task and continueOnError lets it fail, and either way its job still succeeds.
   const validation = pipelineTasks(stageText(text, PROD_VALIDATION_STAGE)).some(
-    (task) => task.enabled && task.name === 'PowerShell' && task.filePath === PROD_VALIDATION_SCRIPT,
+    (task) =>
+      task.enabled &&
+      task.name === 'PowerShell' &&
+      task.filePath === PROD_VALIDATION_SCRIPT &&
+      !task.continueOnError &&
+      (task.condition === '' || /^succeeded\(\s*\)$/.test(task.condition)),
   );
   const stageDeclared = stageDependsOn(text, PROD_VALIDATION_STAGE) !== undefined;
   const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
@@ -1710,6 +1723,8 @@ async function checkPreflight({ version, registry, repoRoot, readFile, readDirec
 
 // The date line beachball writes under each version heading, e.g. "Wed, 04 Nov 2026 19:13:09 GMT".
 const RELEASE_DATE_LINE = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} [A-Z][a-z]{2} \d{4}( \d{2}:\d{2}:\d{2} GMT)?\s*$/;
+// A CHANGELOG version heading at column 0, such as "## 2.59.0" or "## 2.60.0-beta.0".
+const VERSION_HEADING = /^## \d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?\s*$/;
 
 function changelogSection(changelog, version) {
   const lines = changelog.split(/\r?\n/);
@@ -1725,7 +1740,8 @@ function changelogSection(changelog, version) {
   let group;
   let entry;
   for (const line of lines.slice(start + 1)) {
-    if (line.startsWith('## ')) {
+    // Only a version heading ends the section; another ## heading (say, in a multiline comment) is a stray heading.
+    if (VERSION_HEADING.test(line)) {
       break;
     }
     if (line.startsWith('### ')) {

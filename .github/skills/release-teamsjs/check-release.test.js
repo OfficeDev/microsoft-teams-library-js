@@ -1392,6 +1392,46 @@ describe('check-release', () => {
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
     });
 
+    for (const [name, setting] of [
+      ['condition: false', '                condition: false'],
+      ['a condition that can skip it', "                condition: eq(variables['Build.Reason'], 'Schedule')"],
+      ['continueOnError: true', '                continueOnError: true'],
+      ["continueOnError: 'True'", "                continueOnError: 'True'"],
+    ]) {
+      it(`fails when the Prod validation task has ${name}`, async () => {
+        writePipelineConfig(root, {
+          validation: PROD_VALIDATION.replace(
+            '                displayName: Check the pinned CI build',
+            `                displayName: Check the pinned CI build\n${setting}`,
+          ),
+        });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some(
+            (line) =>
+              line.startsWith('FAIL tools/releases/prod-release.yml') && line.includes('validate-prod-build.ps1'),
+          ),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    for (const [name, after, setting] of [
+      ['condition: succeeded()', 'displayName', '                condition: succeeded()'],
+      ['continueOnError: false', 'displayName', '                continueOnError: false'],
+      ['a commented-out continueOnError: true', 'displayName', '                # continueOnError: true'],
+      ['continueOnError: true only under inputs', 'targetType', '                  continueOnError: true'],
+    ]) {
+      it(`passes when the Prod validation task has ${name}`, async () => {
+        const anchor =
+          after === 'displayName'
+            ? '                displayName: Check the pinned CI build'
+            : "                  targetType: 'filePath'";
+        writePipelineConfig(root, { validation: PROD_VALIDATION.replace(anchor, `${anchor}\n${setting}`) });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+      });
+    }
+
     it('fails when the Prod publish task says tag beta', async () => {
       writePipelineConfig(root, { prodTag: 'beta' });
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
@@ -2565,6 +2605,33 @@ describe('check-release', () => {
         lines.join('\n'),
       );
       assert.ok(!lines.some((line) => line.startsWith('INFO announcement draft')), lines.join('\n'));
+    });
+
+    it('fails on a column-0 ## heading inside a multiline comment instead of ending the section there', async () => {
+      write(
+        [
+          `## ${VERSION}`,
+          '### Minor changes',
+          '- Added `newApi`.',
+          '## Migration',
+          'Call `newApi` instead of `oldApi`.',
+          '### Patches',
+          '- A later fix.',
+          '## 2.58.0',
+        ].join('\n'),
+      );
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('## Migration')),
+        lines.join('\n'),
+      );
+      assert.ok(!lines.some((line) => line.startsWith('INFO announcement draft')), lines.join('\n'));
+    });
+
+    it('ends the section at a prerelease version heading', async () => {
+      write([`## ${VERSION}`, '### Patches', '- A fix.', '## 2.58.0-beta.1', '### Patches', '- Beta fix.'].join('\n'));
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+      assert.ok(!draftOf().includes('Beta fix.'), draftOf());
     });
 
     it('keeps a second paragraph that beachball writes at column 0, and checks its links', async () => {
