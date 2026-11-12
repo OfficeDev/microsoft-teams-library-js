@@ -122,7 +122,13 @@ ls change/                                   # pending change files; none means 
 npm view @microsoft/teams-js dist-tags       # current latest and beta
 git ls-remote --heads origin 'release/*' | tail -5
 gh pr list --state open --base main --limit 50
+check preflight --version "<x.y.z>"          # see Checks; drop --version if you don't know it yet
 ```
+
+`check preflight` covers the items below that public sources can answer: pending change files and the version they
+make, the release YAML, npm reachability, the GitHub Actions CI on `main`, and, with `--version`, that the version is
+free and `release/<x.y.z>` does not exist. It prints what it does not check. A failure or an inconclusive result is a
+reason to look, not to stop blindly: the GitHub Actions CI is not the internal CI build the release uses.
 
 Check and report:
 
@@ -401,9 +407,11 @@ Prepare, do not send:
   (`https://www.npmjs.com/package/@microsoft/teams-js/v/<x.y.z>`), the Prod CDN URL, the GitHub release, and the
   Minor changes and Patches lists copied from the real CHANGELOG section, not from memory or the PR list. Tag the
   current contacts listed in the runbook; older example posts tag people who are no longer the contacts.
-  Two recent announcements linked the previous version: save the draft to a file, run
-  `check announcement --version "$version" --file <draft>`, and open every link fresh before sending. You may also
-  mention the partner who asked for a feature in the release.
+  Two recent announcements linked the previous version: start from
+  `check announcement-draft --version "$version"`, run on the release branch, which prints a draft built from the
+  CHANGELOG section and the public links and checks its links. Edit it, save it to a file, run
+  `check announcement --version "$version" --file <draft>` again, and open every link fresh before sending. You may
+  also mention the partner who asked for a feature in the release.
   - Post within about three hours of verified publication; past announcements slipped by most of a day, and one
     release was never announced. Read the destination's newest messages first, so a retry never double-posts.
   - Announce Prod releases only. Never announce SDF betas, test builds or dry runs. Beyond the platform SDK channel
@@ -493,6 +501,7 @@ check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 | Command                | Passes when                                                                                                                                                                                                                                                               |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `check-version`        | `registry.npmjs.org` lacks the version, no mirror lists it, and the Prod CDN and GitHub tag lack it                                                                                                                                                                       |
+| `preflight`            | (Step 1) change files exist, not all `none`, and make `--version` if given; `pipeline-config` passes; npm `latest` reads; the last completed GitHub Actions run on `main` succeeded; with `--version`, `check-version` passes and `release/<v>` is absent                 |
 | `carriers`             | both `package.json` files, the README and the test app name the version, and their teams-js CDN `<script>` tags share one full sha384 SRI                                                                                                                                 |
 | `artifact`             | a downloaded CI bundle is under `CDNFeed/<v>/js`, `<v>` is the only version folder (besides `_manifest`), and it hashes to that SRI                                                                                                                                       |
 | `published`            | the CDN bytes match the SRI and npm has the version, and the dist-tag if given, by the source rules below                                                                                                                                                                 |
@@ -503,6 +512,7 @@ check() { node .github/skills/release-teamsjs/check-release.js "$@"; }
 | `pipeline-config`      | the checkout's release YAML: Prod publishes with `tag latest` and `Latest`, SDF with `tag beta` and `Beta`, and the Prod, SDF and DDL YAML and `security.yml` each have an artifact retention task @6+; commented-out, `enabled: false` and script-text tasks don't count |
 | `beta-version`         | a beta `<x.y.z>-beta.<n>` is of a version that has not shipped: newer than `latest` on npm and GitHub, and absent from the Prod CDN and as tag `v<x.y.z>`                                                                                                                 |
 | `announcement`         | every npm, CDN and GitHub release link in a draft names the version, and npm and CDN links are present                                                                                                                                                                    |
+| `announcement-draft`   | the version's CHANGELOG section has entries, and the draft built from it and the public links passes `announcement`                                                                                                                                                       |
 | `size`, `links`, `sri` | (informational) bundle bytes and change from `--previous`, announcement links, a file's SRI                                                                                                                                                                               |
 | `help`                 | lists every command and the flags it takes; any other flag is a usage error                                                                                                                                                                                               |
 
