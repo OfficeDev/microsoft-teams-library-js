@@ -22,8 +22,11 @@
  *   beta-version  --version <x.y.z>-beta.<n> [--registry <url>]
  *                                                  the beta is of a version newer than latest on npm and GitHub
  *   pipeline-config                                the checkout's release YAML: Prod runs validate-prod-build.ps1 in
- *                                                  a stage the Lockbox stage depends on and publishes with tag
- *                                                  latest, SDF with tag beta, and each has artifact retention @6 or later;
+ *                                                  the Validate_CI_build job of a stage the Lockbox stage depends on,
+ *                                                  with no continueOnError and no condition but succeeded() on the
+ *                                                  task, the job or the Lockbox stage, and publishes with tag
+ *                                                  latest, SDF gates its Lockbox stage on the Check_Skip decision and
+ *                                                  publishes with tag beta, and each has artifact retention @6 or later;
  *                                                  commented-out, `enabled: false` and script-text tasks don't count
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
  *   announcement-draft --version <v>               prints a Prod announcement draft from the checkout's CHANGELOG
@@ -235,7 +238,7 @@ async function fetchOrUnreachable(fetchImpl, url, label) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : error?.message ?? String(error);
+        : (error?.message ?? String(error));
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -252,7 +255,7 @@ async function readBody(response, read, label, url) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : error?.message ?? String(error);
+        : (error?.message ?? String(error));
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -858,7 +861,40 @@ const MINIMUM_ASSET_RETENTION_VERSION = 6;
 // The Prod validation stage runs this script, and the Lockbox stage must wait for it.
 const PROD_VALIDATION_SCRIPT = 'tools/releases/powershell-commands/validate-prod-build.ps1';
 const PROD_VALIDATION_STAGE = 'Prod_Validation';
+const PROD_VALIDATION_JOB = 'Validate_CI_build';
 const PROD_LOCKBOX_STAGE = 'Prod_Lockbox_Approval_Deployment';
+// The SDF skip gate: the Check job's Decide step runs this script, and the Lockbox stage waits for it and runs a
+// scheduled build only when the step's publish output is true. Manual runs skip the step and always publish.
+const SDF_SKIP_SCRIPT = 'sdf-beta-schedule.js';
+const SDF_SKIP_STAGE = 'Check_Skip';
+const SDF_SKIP_JOB = 'Check';
+const SDF_SKIP_STEP = 'Decide';
+// The options the pipeline passes to the skip script. Its --now option is for local testing only.
+const SDF_SKIP_OPTIONS = new Set([
+  '--reason',
+  '--npm-feed',
+  '--alias',
+  '--source-branch',
+  '--run-id',
+  '--run-name',
+  '--commit',
+]);
+// The options a scheduled run of the skip script needs, each with a non-empty value; without one it throws.
+const SDF_SKIP_REQUIRED_OPTIONS = ['--npm-feed', '--alias', '--source-branch', '--run-id', '--commit'];
+// pipelineTasks records a task key whose value is on or continued onto another line as this, which matches no
+// accepted value.
+const UNREADABLE_VALUE = '\u0000unreadable';
+const UNSET_VALUE = '\u0000unset';
+// The Lockbox stage condition, in either order of its or() branches, as normalizeExpression writes it.
+const SDF_MANUAL_BRANCH = "ne(variables['build.reason'],'schedule')";
+const SDF_PUBLISH_BRANCH = "eq(dependencies.check_skip.outputs['check.decide.publish'],'true')";
+const SDF_LOCKBOX_CONDITIONS = [
+  `and(succeeded(),or(${SDF_MANUAL_BRANCH},${SDF_PUBLISH_BRANCH}))`,
+  `and(succeeded(),or(${SDF_PUBLISH_BRANCH},${SDF_MANUAL_BRANCH}))`,
+];
+const SDF_LOCKBOX_CONDITION_TEXT =
+  "and(succeeded(), or(ne(variables['Build.Reason'], 'Schedule'), " +
+  "eq(dependencies.Check_Skip.outputs['Check.Decide.publish'], 'true')))";
 
 // Drops a YAML comment: a # at the line start or after whitespace, outside a quoted scalar.
 function stripYamlComment(line) {
@@ -903,59 +939,93 @@ function withoutBlockScalars(lines) {
 }
 
 // The `- task: Name@N` items in a pipeline YAML, ignoring comments and block scalars, with the
-// properties the checks read. A task with `enabled: false` is not active.
+// properties the checks read and its raw lines. A task with `enabled: false` is not active. `condition`,
+// `continueOnError` and `name` are read only as the task's own keys, at the indent of `task:`.
 function pipelineTasks(text) {
-  const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
+  const raw = text.split(/\r?\n/);
+  const lines = withoutBlockScalars(raw.map(stripYamlComment));
   const tasks = [];
   for (let index = 0; index < lines.length; index++) {
-    const header = /^([ \t]*)-[ \t]*task:[ \t]*(['"]?)([\w.-]+)@(\d+)\2[ \t]*$/.exec(lines[index]);
+    const header = /^(([ \t]*)-[ \t]*)task:[ \t]*(['"]?)([\w.-]+)@(\d+)\3[ \t]*$/.exec(lines[index]);
     if (!header) {
       continue;
     }
-    const indent = header[1].length;
+    const indent = header[2].length;
+    const keyIndent = header[1].length;
     const task = {
-      name: header[3],
-      version: Number(header[4]),
+      name: header[4],
+      version: Number(header[5]),
       enabled: true,
       displayName: '',
       filePath: '',
+      targetTypes: [],
       productState: [],
+      stepName: '',
+      condition: '',
+      continueOnError: '',
+      lines: [],
     };
-    for (let next = index + 1; next < lines.length; next++) {
+    let end = index + 1;
+    for (; end < lines.length; end++) {
+      const next = end;
       const line = lines[next];
       if (line.trim() === '') {
         continue;
       }
-      if (line.length - line.trimStart().length <= indent) {
+      const lineIndent = line.length - line.trimStart().length;
+      if (lineIndent <= indent) {
         break;
       }
-      const property = /^[ \t]*([\w.]+):[ \t]*(.*)$/.exec(line);
+      const property = /^[ \t]*(['"]?)([\w.]+)\1[ \t]*:[ \t]*(.*)$/.exec(line);
       if (!property) {
         continue;
       }
-      const [, key, value] = property;
-      if (key === 'enabled' && /^false$/i.test(yamlScalar(value))) {
+      const [, , key, value] = property;
+      const own = lineIndent === keyIndent;
+      // A task's own scalar key has no children, so a deeper line after it puts or continues its value on another line,
+      // which the checks don't read; record that as a value no check accepts. A key with no value is null, the default.
+      let after = end + 1;
+      while (after < lines.length && lines[after].trim() === '') {
+        after++;
+      }
+      const continued = after < lines.length && lines[after].length - lines[after].trimStart().length > lineIndent;
+      const scalar = continued ? UNREADABLE_VALUE : yamlScalar(value);
+      if (key === 'name' && own) {
+        task.stepName = yamlScalar(value);
+      } else if (key === 'condition' && own) {
+        task.condition = scalar;
+      } else if (key === 'continueOnError' && own) {
+        task.continueOnError = scalar;
+      } else if (key === 'enabled' && /^false$/i.test(yamlScalar(value))) {
         task.enabled = false;
       } else if (key === 'displayName') {
         task.displayName = yamlScalar(value);
       } else if (key === 'filePath') {
         task.filePath = yamlScalar(value);
+      } else if (key === 'targetType') {
+        task.targetTypes.push(scalar);
       } else if (key.toLowerCase() === 'productstate') {
         task.productState.push(yamlScalar(value));
       }
     }
+    task.lines = raw.slice(index, end);
     tasks.push(task);
   }
   return tasks;
 }
 
-// The stage names a `- stage: <name>` item lists under `dependsOn`, as an inline value, a flow list or a block list,
-// ignoring comments and block scalars. Undefined when the stage is not declared.
+// The stage names a `- stage: <name>` item lists under its own `dependsOn` key (not a job's), as an inline value, a
+// flow list or a block list, ignoring comments and block scalars. Undefined when the stage is not declared.
 function stageDependsOn(text, stage) {
   const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
+  let keyIndent = -1;
   const start = lines.findIndex((line) => {
-    const header = /^[ \t]*-[ \t]*stage:[ \t]*(.+?)[ \t]*$/.exec(line);
-    return header && yamlScalar(header[1]) === stage;
+    const header = /^([ \t]*-[ \t]*)stage:[ \t]*(.+?)[ \t]*$/.exec(line);
+    if (header && yamlScalar(header[2]) === stage) {
+      keyIndent = header[1].length;
+      return true;
+    }
+    return false;
   });
   if (start === -1) {
     return undefined;
@@ -972,7 +1042,8 @@ function stageDependsOn(text, stage) {
       break;
     }
     const property = /^[ \t]*dependsOn:[ \t]*(.*)$/.exec(line);
-    if (!property) {
+    // Only the stage mapping's own keys sit at the indent of `stage:`; deeper ones belong to jobs.
+    if (!property || indent !== keyIndent) {
       continue;
     }
     const value = property[1].trim();
@@ -1004,46 +1075,341 @@ function stageDependsOn(text, stage) {
   return names;
 }
 
-// The lines of a `- stage: <name>` item, up to the next line at or below its indent, ignoring comments and block
-// scalars. Empty when the stage is not declared.
-function stageText(text, stage) {
+// The lines of a `- <kind>: <name>` item (a stage or a job), up to the next line at or below its indent, ignoring
+// comments and block scalars. Empty when the item is not declared.
+function itemText(text, kind, name) {
   const raw = text.split(/\r?\n/);
   const lines = withoutBlockScalars(raw.map(stripYamlComment));
   const start = lines.findIndex((line) => {
-    const header = /^[ \t]*-[ \t]*stage:[ \t]*(.+?)[ \t]*$/.exec(line);
-    return header && yamlScalar(header[1]) === stage;
+    const header = new RegExp(`^[ \\t]*-[ \\t]*${kind}:[ \\t]*(.+?)[ \\t]*$`).exec(line);
+    return header && yamlScalar(header[1]) === name;
   });
   if (start === -1) {
     return '';
   }
-  const stageIndent = lines[start].length - lines[start].trimStart().length;
+  const itemIndent = lines[start].length - lines[start].trimStart().length;
   let end = start + 1;
   while (
     end < lines.length &&
-    (lines[end].trim() === '' || lines[end].length - lines[end].trimStart().length > stageIndent)
+    (lines[end].trim() === '' || lines[end].length - lines[end].trimStart().length > itemIndent)
   ) {
     end++;
   }
   return raw.slice(start, end).join('\n');
 }
 
+function stageText(text, stage) {
+  return itemText(text, 'stage', stage);
+}
+
+// The value of a `- <kind>: <name>` item's own property (a stage's or a job's), not a nested job's or step's, ignoring
+// comments and block scalars. Undefined when the item or the property is not declared, and empty when the value is on
+// another line.
+function itemProperty(text, kind, name, key) {
+  const lines = withoutBlockScalars(text.split(/\r?\n/).map(stripYamlComment));
+  const start = lines.findIndex((line) => {
+    const header = new RegExp(`^[ \\t]*-[ \\t]*${kind}:[ \\t]*(.+?)[ \\t]*$`).exec(line);
+    return header && yamlScalar(header[1]) === name;
+  });
+  if (start === -1) {
+    return undefined;
+  }
+  const itemIndent = lines[start].length - lines[start].trimStart().length;
+  const propertyIndent = lines[start].indexOf(`${kind}:`);
+  for (let index = start + 1; index < lines.length; index++) {
+    const line = lines[index];
+    if (line.trim() === '') {
+      continue;
+    }
+    const indent = line.length - line.trimStart().length;
+    if (indent <= itemIndent) {
+      break;
+    }
+    const property = /^[ \t]*(['"]?)([\w.]+)\1[ \t]*:[ \t]*(.*)$/.exec(line);
+    if (property && indent === propertyIndent && property[2] === key) {
+      return yamlScalar(property[3]);
+    }
+  }
+  return undefined;
+}
+
+function stageProperty(text, stage, key) {
+  return itemProperty(text, 'stage', stage, key);
+}
+
+// The inline script of a PowerShell@2 task written in the one shape the check supports, or undefined. The task's own
+// keys are only name, displayName, condition, inputs and env, each once and unquoted; inputs holds only targetType
+// (inline), script, pwsh and workingDirectory, each once. Scalars can't continue on another line, and env is not read.
+const DECIDE_TASK_KEYS = new Set(['name', 'displayName', 'condition', 'inputs', 'env']);
+const DECIDE_INPUT_KEYS = new Set(['targetType', 'script', 'pwsh', 'workingDirectory']);
+function inlineScript(task) {
+  if (task.name !== 'PowerShell' || task.version !== 2) {
+    return undefined;
+  }
+  const raw = task.lines;
+  const indentOf = (line) => line.length - line.trimStart().length;
+  const keyIndent = /^[ \t]*-[ \t]*/.exec(raw[0])[0].length;
+  const seen = new Set();
+  let inputs;
+  for (let index = 1; index < raw.length; ) {
+    const line = stripYamlComment(raw[index]);
+    if (line.trim() === '') {
+      index++;
+      continue;
+    }
+    const property = /^[ \t]*([\w.]+):(?:[ \t]+(.*))?$/.exec(line);
+    if (indentOf(line) !== keyIndent || !property || seen.has(property[1]) || !DECIDE_TASK_KEYS.has(property[1])) {
+      return undefined;
+    }
+    seen.add(property[1]);
+    const value = (property[2] || '').trim();
+    index++;
+    if (property[1] === 'inputs' || property[1] === 'env') {
+      const start = index;
+      while (index < raw.length && (raw[index].trim() === '' || indentOf(raw[index]) > keyIndent)) {
+        index++;
+      }
+      if (value !== '') {
+        return undefined;
+      }
+      if (property[1] === 'inputs') {
+        inputs = scriptInput(raw.slice(start, index));
+        if (!inputs) {
+          return undefined;
+        }
+      }
+    } else if (value === '' || /^[|>]/.test(value)) {
+      return undefined;
+    }
+  }
+  return inputs;
+}
+
+function scriptInput(block) {
+  const indentOf = (line) => line.length - line.trimStart().length;
+  const first = block.find((line) => line.trim() !== '');
+  if (first === undefined) {
+    return undefined;
+  }
+  const childIndent = indentOf(first);
+  const seen = new Set();
+  let script;
+  for (let index = 0; index < block.length; ) {
+    const line = stripYamlComment(block[index]);
+    if (line.trim() === '') {
+      index++;
+      continue;
+    }
+    const property = /^[ \t]*([\w.]+):(?:[ \t]+(.*))?$/.exec(line);
+    if (indentOf(line) !== childIndent || !property || seen.has(property[1]) || !DECIDE_INPUT_KEYS.has(property[1])) {
+      return undefined;
+    }
+    seen.add(property[1]);
+    const value = (property[2] || '').trim();
+    index++;
+    if (property[1] === 'script' && /^[|>][+-]?$/.test(value)) {
+      const start = index;
+      while (index < block.length && (block[index].trim() === '' || indentOf(block[index]) > childIndent)) {
+        index++;
+      }
+      script = { text: block.slice(start, index).join('\n'), style: value[0] };
+    } else if (value === '' || /^['"|>[{&*!%@`]/.test(value)) {
+      return undefined;
+    } else if (property[1] === 'script') {
+      script = { text: value, style: '' };
+    } else if (property[1] === 'targetType' && value !== 'inline') {
+      return undefined;
+    }
+  }
+  return seen.has('targetType') ? script : undefined;
+}
+
+// The one command a step's script runs, or undefined when the script is anything else: an inline value, a one-line
+// literal block, or a folded block whose lines share one indent with no blank line between them.
+function scriptCommand(task) {
+  const script = inlineScript(task);
+  if (!script) {
+    return undefined;
+  }
+  if (script.style === '') {
+    return script.text;
+  }
+  const lines = script.text.split('\n');
+  while (lines.length > 0 && lines[lines.length - 1].trim() === '') {
+    lines.pop();
+  }
+  while (lines.length > 0 && lines[0].trim() === '') {
+    lines.shift();
+  }
+  const indents = new Set(lines.map((line) => line.length - line.trimStart().length));
+  if (lines.some((line) => line.trim() === '') || indents.size !== 1) {
+    return undefined;
+  }
+  if (script.style === '|' && lines.length !== 1) {
+    return undefined;
+  }
+  return lines.map((line) => line.trim()).join(' ');
+}
+
+// The words of a command written as plain words, single-quoted strings, double-quoted strings without $ or `, and
+// $(Variable) macros; undefined for anything else, such as a second command, a comment, a pipe or a redirect.
+function commandWords(command) {
+  const word = /\s*(?:'([^']*)'|"([^"$`]*)"|((?:[\w.\-/\\=:]|\$\([\w.-]+\))+))(?=\s|$)/y;
+  const words = [];
+  while (command.slice(word.lastIndex).trim() !== '') {
+    const match = word.exec(command);
+    if (!match) {
+      return undefined;
+    }
+    words.push(match[1] ?? match[2] ?? match[3]);
+  }
+  return words;
+}
+
+// Whether the step runs `node <path>/sdf-beta-schedule.js` with exactly one --reason of $(Build.Reason) or Schedule,
+// and the non-empty --npm-feed, --alias, --source-branch, --run-id and --commit a scheduled run needs. The script reads
+// its options in pairs, treats a missing or other reason as a manual run, which always publishes, and throws on a
+// scheduled run without any of the others.
+function runsSkipRule(task) {
+  const command = scriptCommand(task);
+  const words = command === undefined ? undefined : commandWords(command);
+  if (!words || words.length < 2 || !/^node(\.exe)?$/i.test(words[0])) {
+    return false;
+  }
+  if (words[1].startsWith('-') || words[1].split(/[\\/]/).pop() !== SDF_SKIP_SCRIPT) {
+    return false;
+  }
+  // Only the options the pipeline passes, each once; --now would replace the date the skip rule reads.
+  const options = new Map();
+  for (let index = 2; index < words.length; index += 2) {
+    if (!SDF_SKIP_OPTIONS.has(words[index]) || options.has(words[index]) || words[index + 1] === undefined) {
+      return false;
+    }
+    options.set(words[index], words[index + 1]);
+  }
+  return (
+    ['$(Build.Reason)', 'Schedule'].includes(options.get('--reason')) &&
+    SDF_SKIP_REQUIRED_OPTIONS.every((option) => Boolean(options.get(option)))
+  );
+}
+
+// The Decide step may run on every build, after success, or on scheduled builds only.
+const DECIDE_CONDITIONS = new Set([
+  UNSET_VALUE,
+  'succeeded()',
+  "eq(variables['build.reason'],'schedule')",
+  "and(succeeded(),eq(variables['build.reason'],'schedule'))",
+]);
+function decideRunsOnSchedule(task) {
+  return DECIDE_CONDITIONS.has(task.condition === '' ? UNSET_VALUE : normalizeExpression(task.condition));
+}
+
+// A pipeline expression with whitespace outside string literals removed, double quotes made single and case folded,
+// which Azure Pipelines ignores in function names and string comparisons.
+function normalizeExpression(expression) {
+  let normalized = '';
+  let quote = null;
+  for (const character of expression) {
+    if (quote) {
+      normalized += character === quote ? "'" : character;
+      if (character === quote) {
+        quote = null;
+      }
+    } else if (character === "'" || character === '"') {
+      quote = character;
+      normalized += "'";
+    } else if (!/\s/.test(character)) {
+      normalized += character;
+    }
+  }
+  return normalized.toLowerCase();
+}
+
+function checkSdfSkipGate(file, text) {
+  // The step that sets the publish output must be the one that runs the script, in the job the condition names.
+  const job = itemText(stageText(text, SDF_SKIP_STAGE), 'job', SDF_SKIP_JOB);
+  const gateOk = pipelineTasks(job).some(
+    (task) => task.enabled && task.stepName === SDF_SKIP_STEP && decideRunsOnSchedule(task) && runsSkipRule(task),
+  );
+  const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
+  const condition = stageProperty(text, PROD_LOCKBOX_STAGE, 'condition') || '';
+  const conditionOk = SDF_LOCKBOX_CONDITIONS.includes(normalizeExpression(condition));
+  return [
+    result(
+      gateOk ? Outcome.pass : Outcome.fail,
+      gateOk
+        ? `${file} has the ${SDF_SKIP_STAGE} stage with the ${SDF_SKIP_JOB}.${SDF_SKIP_STEP} step running ${SDF_SKIP_SCRIPT}`
+        : `${file} has no ${SDF_SKIP_STAGE} stage with an enabled ${SDF_SKIP_JOB}.${SDF_SKIP_STEP} step running ` +
+            `${SDF_SKIP_SCRIPT}, so a scheduled run that should skip still asks for the Lockbox approval`,
+    ),
+    result(
+      lockboxDependsOn.includes(SDF_SKIP_STAGE) ? Outcome.pass : Outcome.fail,
+      `${file} ${PROD_LOCKBOX_STAGE} depends on [${lockboxDependsOn.join(', ')}], expected ${SDF_SKIP_STAGE}`,
+    ),
+    result(
+      conditionOk ? Outcome.pass : Outcome.fail,
+      conditionOk
+        ? `${file} ${PROD_LOCKBOX_STAGE} runs manual builds, and scheduled builds only when ${SDF_SKIP_STAGE} says publish`
+        : `${file} ${PROD_LOCKBOX_STAGE} condition is ${condition || '(none)'}, expected ${SDF_LOCKBOX_CONDITION_TEXT} ` +
+            'so that manual builds run, and scheduled builds only when the skip rule says publish',
+    ),
+  ];
+}
+
+// A job or stage condition that leaves the default, so the item runs only when everything before it succeeded.
+function runsOnlyAfterSuccess(condition) {
+  return condition === undefined || normalizeExpression(condition) === 'succeeded()';
+}
+
 function checkProdValidation(file, text) {
-  const validation = pipelineTasks(stageText(text, PROD_VALIDATION_STAGE)).some(
-    (task) => task.enabled && task.name === 'PowerShell' && task.filePath === PROD_VALIDATION_SCRIPT,
+  // A condition can skip the task and continueOnError lets it fail, and either way its job still succeeds. The same
+  // holds for the job's own condition and continueOnError, and a Lockbox stage condition can ignore the result.
+  const job = itemText(stageText(text, PROD_VALIDATION_STAGE), 'job', PROD_VALIDATION_JOB);
+  const validation = pipelineTasks(job).some(
+    (task) =>
+      task.enabled &&
+      task.name === 'PowerShell' &&
+      task.filePath === PROD_VALIDATION_SCRIPT &&
+      // PowerShell@2 runs filePath only in its default filePath mode; an inline script replaces it.
+      task.targetTypes.every((targetType) => /^filePath$/i.test(targetType)) &&
+      (task.continueOnError === '' || /^false$/i.test(task.continueOnError)) &&
+      (task.condition === '' || normalizeExpression(task.condition) === 'succeeded()'),
   );
   const stageDeclared = stageDependsOn(text, PROD_VALIDATION_STAGE) !== undefined;
+  const jobCondition = itemProperty(job, 'job', PROD_VALIDATION_JOB, 'condition');
+  const jobContinueOnError = itemProperty(job, 'job', PROD_VALIDATION_JOB, 'continueOnError');
+  const jobOk =
+    runsOnlyAfterSuccess(jobCondition) && (jobContinueOnError === undefined || /^false$/i.test(jobContinueOnError));
   const lockboxDependsOn = stageDependsOn(text, PROD_LOCKBOX_STAGE) || [];
+  const lockboxCondition = stageProperty(text, PROD_LOCKBOX_STAGE, 'condition');
+  const lockboxConditionOk = runsOnlyAfterSuccess(lockboxCondition);
   return [
     result(
       validation && stageDeclared ? Outcome.pass : Outcome.fail,
       validation && stageDeclared
         ? `${file} has the ${PROD_VALIDATION_STAGE} stage running ${PROD_VALIDATION_SCRIPT}`
-        : `${file} has no ${PROD_VALIDATION_STAGE} stage with an enabled task running ${PROD_VALIDATION_SCRIPT}, so a ` +
-            'wrong CI build is caught only after the Lockbox approval',
+        : `${file} has no ${PROD_VALIDATION_STAGE} stage whose ${PROD_VALIDATION_JOB} job has an enabled task running ` +
+            `${PROD_VALIDATION_SCRIPT} as a file, with no condition other than succeeded() and no continueOnError, so a wrong CI ` +
+            'build is caught only after the Lockbox approval',
+    ),
+    result(
+      jobOk ? Outcome.pass : Outcome.fail,
+      jobOk
+        ? `${file} ${PROD_VALIDATION_JOB} fails when the validation fails`
+        : `${file} ${PROD_VALIDATION_JOB} has condition ${jobCondition ?? '(none)'} and continueOnError ` +
+            `${jobContinueOnError ?? '(none)'}, expected no condition other than succeeded() and no continueOnError, ` +
+            'so that a failed validation stops the Lockbox stage',
     ),
     result(
       lockboxDependsOn.includes(PROD_VALIDATION_STAGE) ? Outcome.pass : Outcome.fail,
       `${file} ${PROD_LOCKBOX_STAGE} depends on [${lockboxDependsOn.join(', ')}], expected ${PROD_VALIDATION_STAGE}`,
+    ),
+    result(
+      lockboxConditionOk ? Outcome.pass : Outcome.fail,
+      lockboxConditionOk
+        ? `${file} ${PROD_LOCKBOX_STAGE} runs only after its dependencies succeed`
+        : `${file} ${PROD_LOCKBOX_STAGE} condition is ${lockboxCondition || '(on another line)'}, expected none or ` +
+            'succeeded(), so that it never runs after a failed validation',
     ),
   ];
 }
@@ -1055,6 +1421,8 @@ function checkPipelineConfig({ repoRoot, readFile }) {
     const tasks = pipelineTasks(text).filter((task) => task.enabled);
     if (file === PIPELINE_FILES[0].file) {
       results.push(...checkProdValidation(file, text));
+    } else if (file === PIPELINE_FILES[1].file) {
+      results.push(...checkSdfSkipGate(file, text));
     }
     const retention = tasks.filter((task) => task.name === 'AssetRetention').map((task) => task.version);
     const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
@@ -1619,6 +1987,8 @@ async function checkPreflight({ version, registry, repoRoot, readFile, readDirec
 
 // The date line beachball writes under each version heading, e.g. "Wed, 04 Nov 2026 19:13:09 GMT".
 const RELEASE_DATE_LINE = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} [A-Z][a-z]{2} \d{4}( \d{2}:\d{2}:\d{2} GMT)?\s*$/;
+// A CHANGELOG version heading at column 0, such as "## 2.59.0" or "## 2.60.0-beta.0".
+const VERSION_HEADING = /^## \d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?\s*$/;
 
 function changelogSection(changelog, version) {
   const lines = changelog.split(/\r?\n/);
@@ -1634,7 +2004,8 @@ function changelogSection(changelog, version) {
   let group;
   let entry;
   for (const line of lines.slice(start + 1)) {
-    if (line.startsWith('## ')) {
+    // Only a version heading ends the section; another ## heading (say, in a multiline comment) is a stray heading.
+    if (VERSION_HEADING.test(line)) {
       break;
     }
     if (line.startsWith('### ')) {
@@ -1943,7 +2314,7 @@ const commands = {
     flags: [],
     checkout: true,
     summary:
-      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF tag beta, AssetRetention@6 or later",
+      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF skip gate before Lockbox, SDF tag beta, AssetRetention@6 or later",
     run: async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
   },
   'consumed-changes': {

@@ -244,6 +244,43 @@ const PROD_VALIDATION = [
   "                  filePath: 'tools/releases/powershell-commands/validate-prod-build.ps1'",
 ].join('\n');
 const LOCKBOX_DEPENDS_ON = ['        dependsOn:', '          - Prod_Validation'].join('\n');
+// The SDF skip gate as sdf-release.yml declares it, and the Lockbox stage's dependency on it and condition.
+// The options a scheduled run of the skip script needs, with the values sdf-release.yml passes.
+const SDF_SKIP_REQUIRED_OPTIONS = {
+  '--npm-feed': "'$(Pipeline.Workspace)/NPMFeed'",
+  '--alias': 'microsoft-teams-library-js-pipeline',
+  '--source-branch': "'$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceBranch)'",
+  '--run-id': "'$(resources.pipeline.microsoft-teams-library-js-pipeline.runID)'",
+  '--commit': "'$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceCommit)'",
+};
+// The same options for a skip command written on one line.
+const SDF_SKIP_SHORT_OPTIONS = '--npm-feed feed --alias pipe --source-branch refs/heads/main --run-id 1 --commit abc';
+const SDF_SKIP_SCRIPT_BLOCK = [
+  '                  script: >-',
+  "                    node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+  "                    --reason '$(Build.Reason)'",
+  ...Object.entries(SDF_SKIP_REQUIRED_OPTIONS).map(([option, value]) => `                    ${option} ${value}`),
+].join('\n');
+const SDF_SKIP_GATE = [
+  '      - stage: Check_Skip',
+  '        dependsOn: []',
+  '        jobs:',
+  '          - job: Check',
+  '            steps:',
+  '              - task: PowerShell@2',
+  '                name: Decide',
+  '                displayName: Apply the skip rule',
+  "                condition: eq(variables['Build.Reason'], 'Schedule')",
+  '                inputs:',
+  '                  targetType: inline',
+  SDF_SKIP_SCRIPT_BLOCK,
+  '                env:',
+  '                  SYSTEM_ACCESSTOKEN: $(System.AccessToken)',
+].join('\n');
+const SDF_LOCKBOX_DEPENDS_ON = '        dependsOn: Check_Skip';
+const SDF_LOCKBOX_CONDITION =
+  "        condition: and(succeeded(), or(ne(variables['Build.Reason'], 'Schedule'), " +
+  "eq(dependencies.Check_Skip.outputs['Check.Decide.publish'], 'true')))";
 function writePipelineConfig(
   root,
   {
@@ -252,6 +289,9 @@ function writePipelineConfig(
     retention = 6,
     validation = PROD_VALIDATION,
     lockboxDependsOn = LOCKBOX_DEPENDS_ON,
+    sdfSkipGate = SDF_SKIP_GATE,
+    sdfLockboxDependsOn = SDF_LOCKBOX_DEPENDS_ON,
+    sdfLockboxCondition = SDF_LOCKBOX_CONDITION,
   } = {},
 ) {
   const write = (relativePath, contents) => {
@@ -280,7 +320,21 @@ function writePipelineConfig(
       publish(prodTag, prodState),
     ].join('\n'),
   );
-  write('tools/releases/sdf-release.yml', publish('beta', 'Beta'));
+  write(
+    'tools/releases/sdf-release.yml',
+    [
+      '    stages:',
+      sdfSkipGate,
+      '      - stage: Prod_Lockbox_Approval_Deployment',
+      '        displayName: Lockbox Approval/Deployment',
+      sdfLockboxDependsOn,
+      sdfLockboxCondition,
+      '        jobs:',
+      '          - job: Agent_job',
+      '            steps:',
+      publish('beta', 'Beta'),
+    ].join('\n'),
+  );
   write('tools/releases/ddl-release.yml', `              - task: AssetRetention@${retention}`);
   write('tools/yaml-templates/security.yml', `  - task: AssetRetention@${retention}`);
 }
@@ -1229,6 +1283,27 @@ describe('check-release', () => {
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
     });
 
+    it("reads the Lockbox stage's dependsOn when a job's dependsOn comes first", async () => {
+      writePipelineConfig(root, { lockboxDependsOn: '' });
+      const yaml = path.join(root, 'tools/releases/prod-release.yml');
+      const text = fs
+        .readFileSync(yaml, 'utf8')
+        .replace('- job: Agent_job', '- job: Agent_job\n            dependsOn: []');
+      fs.writeFileSync(yaml, `${text}\n        dependsOn:\n          - Prod_Validation\n`);
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    it("does not take a job's dependsOn for the Lockbox stage", async () => {
+      writePipelineConfig(root, { lockboxDependsOn: '' });
+      const yaml = path.join(root, 'tools/releases/prod-release.yml');
+      const text = fs.readFileSync(yaml, 'utf8');
+      fs.writeFileSync(
+        yaml,
+        text.replace('- job: Agent_job', '- job: Agent_job\n            dependsOn: Prod_Validation'),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
+
     it('reads a dependsOn list written at the same indent as its key', async () => {
       writePipelineConfig(root, { lockboxDependsOn: '        dependsOn:\n        - Prod_Validation' });
       assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
@@ -1261,6 +1336,628 @@ describe('check-release', () => {
       writePipelineConfig(root, { validation: PROD_VALIDATION.replace('stage: Prod_Validation', 'stage: Renamed') });
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
     });
+    for (const [name, options] of [
+      ['has no Check_Skip stage', { sdfSkipGate: '' }],
+      [
+        'has the Decide step commented out',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('- task: PowerShell@2', '# - task: PowerShell@2') },
+      ],
+      [
+        'has the Decide step disabled',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                name: Decide',
+            '                name: Decide\n                enabled: false',
+          ),
+        },
+      ],
+      [
+        'runs another script in the Decide step',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('sdf-beta-schedule.js', 'other.js') },
+      ],
+      [
+        'names the skip script only in a comment',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+            'node other.js # sdf-beta-schedule.js',
+          ),
+        },
+      ],
+      [
+        'renames the Check job the publish output names',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('job: Check', 'job: Other') },
+      ],
+      ['has a Lockbox stage that depends on nothing', { sdfLockboxDependsOn: '        dependsOn: []' }],
+      ['has a Lockbox stage with no condition', { sdfLockboxCondition: '' }],
+      ['has a Lockbox stage condition of succeeded() only', { sdfLockboxCondition: '        condition: succeeded()' }],
+      [
+        'has the Lockbox stage condition commented out',
+        { sdfLockboxCondition: SDF_LOCKBOX_CONDITION.replace('condition:', '# condition:') },
+      ],
+      [
+        'publishes a scheduled run when the publish output is false',
+        { sdfLockboxCondition: SDF_LOCKBOX_CONDITION.replace("publish'], 'true'", "publish'], 'false'") },
+      ],
+      [
+        'drops the manual-run branch from the Lockbox stage condition',
+        {
+          sdfLockboxCondition:
+            "        condition: and(succeeded(), eq(dependencies.Check_Skip.outputs['Check.Decide.publish'], 'true'))",
+        },
+      ],
+      [
+        'compares Build.Reason with a spaced-out Schedule literal',
+        { sdfLockboxCondition: SDF_LOCKBOX_CONDITION.replace("'Schedule'", "'Sched ule'") },
+      ],
+      [
+        'has the skip script only in a PowerShell block comment',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+            "<# node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js' #>",
+          ),
+        },
+      ],
+      [
+        'runs a different script whose name ends in sdf-beta-schedule.js',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('scripts/sdf-beta-schedule.js', 'scripts/not-sdf-beta-schedule.js') },
+      ],
+      [
+        'names the skip script after a command other than node',
+        { sdfSkipGate: SDF_SKIP_GATE.replace("node '$(Pipeline", "echo '$(Pipeline") },
+      ],
+      [
+        'puts --reason on a second line of a literal block, which runs as its own command',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace('script: >-', 'script: |').replace(
+            "sdf-beta-schedule.js'",
+            "sdf-beta-schedule.js' --run-name 1",
+          ),
+        },
+      ],
+      [
+        'ends the skip command with ; before --reason',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'", "sdf-beta-schedule.js' --run-name 1;"),
+        },
+      ],
+      [
+        'comments out --reason with #',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'", "sdf-beta-schedule.js' --run-name #"),
+        },
+      ],
+      [
+        'passes the skip script an argument that is not an option pair, which makes it throw',
+        { sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'", "sdf-beta-schedule.js' stray words") },
+      ],
+      [
+        'splits the skip command with a blank line, which a folded block keeps as a line break',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace("sdf-beta-schedule.js'\n", "sdf-beta-schedule.js' --run-name 1\n\n"),
+        },
+      ],
+      [
+        'runs only an output-setting command, with the skip command in env.script',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            SDF_SKIP_SCRIPT_BLOCK,
+            "                  script: Write-Host 'publish'",
+          ).replace(
+            '                env:',
+            `                env:\n                  script: node scripts/sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS}`,
+          ),
+        },
+      ],
+      [
+        'continues a plain script value on an indented line with --reason Manual',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            SDF_SKIP_SCRIPT_BLOCK,
+            [
+              `                  script: node scripts/sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS}`,
+              '                    --reason Manual',
+            ].join('\n'),
+          ),
+        },
+      ],
+      [
+        'runs Decide from a file, which ignores the inline script',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                  targetType: inline',
+            "                  targetType: filePath\n                  filePath: 'tools/other.ps1'",
+          ),
+        },
+      ],
+      ['runs Decide as a Bash task', { sdfSkipGate: SDF_SKIP_GATE.replace('task: PowerShell@2', 'task: Bash@3') }],
+      [
+        'gives Decide a second script input before the real one',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                  script: >-',
+            '                  script: Write-Host publish\n                  script: >-',
+          ),
+        },
+      ],
+      [
+        'gives Decide a second inputs mapping before the real one',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                inputs:',
+            '                inputs:\n                  targetType: inline\n                  script: Write-Host publish\n                inputs:',
+          ),
+        },
+      ],
+      [
+        'sets Decide targetType to filePath',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('targetType: inline', 'targetType: filePath') },
+      ],
+      [
+        'leaves out Decide targetType, which defaults to filePath',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('                  targetType: inline\n', '') },
+      ],
+      [
+        'quotes the script key',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('                  script: >-', "                  'script': >-") },
+      ],
+      [
+        'writes the Decide inputs as a flow mapping',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            ['                inputs:', '                  targetType: inline', SDF_SKIP_SCRIPT_BLOCK].join('\n'),
+            `                inputs: { targetType: inline, script: node scripts/sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS} }`,
+          ),
+        },
+      ],
+      [
+        'gives Decide an input the check does not know',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                  targetType: inline',
+            '                  targetType: inline\n                  arguments: -Publish',
+          ),
+        },
+      ],
+      [
+        'gives Decide a task key the check does not know, such as continueOnError',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                name: Decide',
+            '                name: Decide\n                continueOnError: true',
+          ),
+        },
+      ],
+      [
+        'runs node --eval with a path-like value ending in the script name',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+            "node '--eval=console.log(1)//sdf-beta-schedule.js'",
+          ),
+        },
+      ],
+      [
+        'passes --now, which overrides the date the skip rule uses',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "--reason '$(Build.Reason)'",
+            "--reason '$(Build.Reason)'\n                    --now 2026-11-11T18:00:00Z",
+          ),
+        },
+      ],
+      [
+        'ends the skip command with an option that has no value, which makes it throw',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "--commit '$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceCommit)'",
+            "--commit '$(resources.pipeline.microsoft-teams-library-js-pipeline.sourceCommit)' --run-name",
+          ),
+        },
+      ],
+      [
+        'passes an option twice',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "--reason '$(Build.Reason)'",
+            "--run-name 1\n                    --reason '$(Build.Reason)'\n                    --run-name 2",
+          ),
+        },
+      ],
+      [
+        'gives Decide condition: false, so it never runs and every scheduled beta skips',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "                condition: eq(variables['Build.Reason'], 'Schedule')",
+            '                condition: false',
+          ),
+        },
+      ],
+      [
+        'gives Decide a condition written on the next line',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "                condition: eq(variables['Build.Reason'], 'Schedule')",
+            '                condition:\n                  false',
+          ),
+        },
+      ],
+      [
+        'prints the skip command with Write-Host instead of running it',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+            "Write-Host node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+          ),
+        },
+      ],
+      [
+        'has the skip command only inside a quoted string',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            SDF_SKIP_SCRIPT_BLOCK,
+            [
+              '                  script: >-',
+              `                    Write-Host "e.g. node scripts/sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS}"`,
+            ].join('\n'),
+          ),
+        },
+      ],
+      [
+        'runs a second command after the skip script in a literal block',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace('script: >-', 'script: |').replace(
+            "                    --reason '$(Build.Reason)'",
+            "                    Write-Host '##vso[task.setvariable variable=publish;isOutput=true]true'",
+          ),
+        },
+      ],
+      ...Object.entries(SDF_SKIP_REQUIRED_OPTIONS).flatMap(([option, value]) => [
+        [
+          `does not pass ${option} to the skip script, which throws on every scheduled run`,
+          { sdfSkipGate: SDF_SKIP_GATE.replace(`\n                    ${option} ${value}`, '') },
+        ],
+        [
+          `passes an empty ${option} to the skip script, which throws on every scheduled run`,
+          { sdfSkipGate: SDF_SKIP_GATE.replace(`${option} ${value}`, `${option} ''`) },
+        ],
+      ]),
+      [
+        'passes an empty --alias in double quotes to the skip script',
+        { sdfSkipGate: SDF_SKIP_GATE.replace('--alias microsoft-teams-library-js-pipeline', '--alias ""') },
+      ],
+      [
+        'does not pass --reason to the skip script',
+        { sdfSkipGate: SDF_SKIP_GATE.replace("\n                    --reason '$(Build.Reason)'", '') },
+      ],
+      [
+        'passes --reason Manual to the skip script',
+        { sdfSkipGate: SDF_SKIP_GATE.replace("--reason '$(Build.Reason)'", '--reason Manual') },
+      ],
+      [
+        'passes --reason twice, the last one Manual',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "--reason '$(Build.Reason)'",
+            "--reason '$(Build.Reason)'\n                    --reason Manual",
+          ),
+        },
+      ],
+      [
+        'wraps the Lockbox stage condition in or(true, ...)',
+        { sdfLockboxCondition: `${SDF_LOCKBOX_CONDITION.replace('condition: and(', 'condition: or(true, and(')})` },
+      ],
+      [
+        'negates the Lockbox stage condition',
+        { sdfLockboxCondition: `${SDF_LOCKBOX_CONDITION.replace('condition: and(', 'condition: not(and(')})` },
+      ],
+      [
+        'names the skip script only in the Decide display name',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            '                name: Decide',
+            '                name: Decide\n                displayName: Apply the sdf-beta-schedule.js skip rule',
+          ).replace(
+            "node '$(Pipeline.Workspace)/scripts/sdf-beta-schedule.js'",
+            'Write-Host "##vso[task.setvariable variable=publish;isOutput=true]true"',
+          ),
+        },
+      ],
+      [
+        'runs the skip script as Decide only in a job other than Check',
+        {
+          sdfSkipGate: [
+            SDF_SKIP_GATE.replace('                name: Decide', '                name: Before'),
+            '          - job: Other',
+            '            steps:',
+            '              - task: PowerShell@2',
+            '                name: Decide',
+            '                inputs:',
+            '                  targetType: inline',
+            `                  script: node sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS}`,
+          ].join('\n'),
+        },
+      ],
+    ]) {
+      it(`fails when sdf-release.yml ${name}`, async () => {
+        writePipelineConfig(root, options);
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('FAIL tools/releases/sdf-release.yml') && line.includes('Check_Skip')),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    for (const [name, options] of [
+      [
+        'double quotes and extra spaces in the Lockbox stage condition',
+        {
+          sdfLockboxCondition:
+            '        condition: and( succeeded(), or( ne(variables["Build.Reason"], "Schedule"), ' +
+            'eq(dependencies.Check_Skip.outputs["Check.Decide.publish"], "true") ) )',
+        },
+      ],
+      [
+        'the or() branches of the Lockbox stage condition in the other order',
+        {
+          sdfLockboxCondition:
+            "        condition: and(succeeded(), or(eq(dependencies.Check_Skip.outputs['Check.Decide.publish'], 'true'), " +
+            "ne(variables['Build.Reason'], 'Schedule')))",
+        },
+      ],
+      [
+        'no Decide condition, since a manual run publishes anyway',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            "                condition: eq(variables['Build.Reason'], 'Schedule')\n",
+            '',
+          ),
+        },
+      ],
+      [
+        'a one-line Decide script',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            SDF_SKIP_SCRIPT_BLOCK,
+            `                  script: node $(Pipeline.Workspace)/scripts/sdf-beta-schedule.js --reason Schedule ${SDF_SKIP_SHORT_OPTIONS}`,
+          ),
+        },
+      ],
+      [
+        'a literal one-line block running NODE with Windows path separators',
+        {
+          sdfSkipGate: SDF_SKIP_GATE.replace(
+            SDF_SKIP_SCRIPT_BLOCK,
+            [
+              '                  script: |',
+              `                    NODE '$(Pipeline.Workspace)\\scripts\\sdf-beta-schedule.js' --reason '$(Build.Reason)' ${SDF_SKIP_SHORT_OPTIONS.replace('pipe', '"pipe"')}`,
+            ].join('\n'),
+          ),
+        },
+      ],
+    ]) {
+      it(`passes the SDF skip gate with ${name}`, async () => {
+        writePipelineConfig(root, options);
+        assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+      });
+    }
+
+    it("takes the SDF Lockbox stage's own condition, not a job's", async () => {
+      writePipelineConfig(root, { sdfLockboxCondition: '' });
+      const sdf = path.join(root, 'tools/releases/sdf-release.yml');
+      fs.writeFileSync(
+        sdf,
+        fs
+          .readFileSync(sdf, 'utf8')
+          .replace('          - job: Agent_job', `          - job: Agent_job\n    ${SDF_LOCKBOX_CONDITION}`),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
+
+    for (const [name, setting] of [
+      ['condition: false', '                condition: false'],
+      ['a condition that can skip it', "                condition: eq(variables['Build.Reason'], 'Schedule')"],
+      ['continueOnError: true', '                continueOnError: true'],
+      ["continueOnError: 'True'", "                continueOnError: 'True'"],
+      ['a template expression for continueOnError', '                continueOnError: ${{ true }}'],
+      ['a variable for continueOnError', '                continueOnError: $(ignoreValidation)'],
+      ['continueOnError: true written on the next line', '                continueOnError:\n                  true'],
+      ['condition: false written on the next line', '                condition:\n                  false'],
+      [
+        'continueOnError: false continued on the next line',
+        '                continueOnError: false\n                  true',
+      ],
+    ]) {
+      it(`fails when the Prod validation task has ${name}`, async () => {
+        writePipelineConfig(root, {
+          validation: PROD_VALIDATION.replace(
+            '                displayName: Check the pinned CI build',
+            `                displayName: Check the pinned CI build\n${setting}`,
+          ),
+        });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some(
+            (line) =>
+              line.startsWith('FAIL tools/releases/prod-release.yml') && line.includes('validate-prod-build.ps1'),
+          ),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    for (const [name, setting] of [
+      ['continueOnError: true', '                continueOnError: true'],
+      ['condition: false', '                condition: false'],
+      ["a quoted 'continueOnError' key", "                'continueOnError': true"],
+    ]) {
+      it(`fails when the Prod validation task has ${name} after a quoted 'inputs' key`, async () => {
+        const validation = `${PROD_VALIDATION.replace(
+          '                displayName: Check the pinned CI build\n',
+          '',
+        ).replace('                inputs:', "                'inputs':")}\n${setting}`;
+        writePipelineConfig(root, { validation });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+      });
+    }
+
+    for (const [name, change] of [
+      [
+        'targetType: inline with its own script, which ignores filePath',
+        (yaml) =>
+          yaml.replace(
+            "                  targetType: 'filePath'",
+            "                  targetType: 'inline'\n                  script: Write-Host skipped",
+          ),
+      ],
+      [
+        'a second targetType of inline',
+        (yaml) =>
+          yaml.replace(
+            "                  targetType: 'filePath'",
+            "                  targetType: 'filePath'\n                  targetType: inline",
+          ),
+      ],
+    ]) {
+      it(`fails when the Prod validation task has ${name}`, async () => {
+        writePipelineConfig(root, { validation: change(PROD_VALIDATION) });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some(
+            (line) =>
+              line.startsWith('FAIL tools/releases/prod-release.yml') && line.includes('validate-prod-build.ps1'),
+          ),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    it('passes when the Prod validation task leaves targetType unset, which defaults to filePath', async () => {
+      writePipelineConfig(root, {
+        validation: PROD_VALIDATION.replace("                  targetType: 'filePath'\n", ''),
+      });
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    for (const [name, after, setting] of [
+      ['condition: succeeded()', 'displayName', '                condition: succeeded()'],
+      [
+        'condition: Succeeded( ), which Azure reads as succeeded()',
+        'displayName',
+        '                condition: Succeeded( )',
+      ],
+      ['continueOnError: false', 'displayName', '                continueOnError: false'],
+      ['continueOnError with no value, which is null', 'displayName', '                continueOnError:'],
+      ['a commented-out continueOnError: true', 'displayName', '                # continueOnError: true'],
+      ['continueOnError: true only under inputs', 'targetType', '                  continueOnError: true'],
+    ]) {
+      it(`passes when the Prod validation task has ${name}`, async () => {
+        const anchor =
+          after === 'displayName'
+            ? '                displayName: Check the pinned CI build'
+            : "                  targetType: 'filePath'";
+        writePipelineConfig(root, { validation: PROD_VALIDATION.replace(anchor, `${anchor}\n${setting}`) });
+        assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+      });
+    }
+
+    for (const [name, options, expected] of [
+      [
+        'a Lockbox stage condition of always(), which runs it after a failed validation',
+        { lockboxDependsOn: `${LOCKBOX_DEPENDS_ON}\n        condition: always()` },
+        'Prod_Lockbox_Approval_Deployment',
+      ],
+      [
+        'a Lockbox stage condition that ignores the validation result',
+        { lockboxDependsOn: `${LOCKBOX_DEPENDS_ON}\n        condition: or(succeeded(), failed())` },
+        'Prod_Lockbox_Approval_Deployment',
+      ],
+      [
+        'a Lockbox stage condition written on the next line',
+        { lockboxDependsOn: `${LOCKBOX_DEPENDS_ON}\n        condition:\n          always()` },
+        'Prod_Lockbox_Approval_Deployment',
+      ],
+      [
+        'continueOnError: true on the validation job, which lets a failed validation succeed with issues',
+        {
+          validation: PROD_VALIDATION.replace(
+            '          - job: Validate_CI_build',
+            '          - job: Validate_CI_build\n            continueOnError: true',
+          ),
+        },
+        'Validate_CI_build',
+      ],
+      [
+        "continueOnError: 'True' on the validation job",
+        {
+          validation: PROD_VALIDATION.replace(
+            '          - job: Validate_CI_build',
+            "          - job: Validate_CI_build\n            continueOnError: 'True'",
+          ),
+        },
+        'Validate_CI_build',
+      ],
+      [
+        'condition: false on the validation job',
+        {
+          validation: PROD_VALIDATION.replace(
+            '          - job: Validate_CI_build',
+            '          - job: Validate_CI_build\n            condition: false',
+          ),
+        },
+        'Validate_CI_build',
+      ],
+      [
+        'the validation task in a job other than Validate_CI_build',
+        { validation: PROD_VALIDATION.replace('job: Validate_CI_build', 'job: Other') },
+        'validate-prod-build.ps1',
+      ],
+    ]) {
+      it(`fails when prod-release.yml has ${name}`, async () => {
+        writePipelineConfig(root, options);
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        assert.ok(
+          lines.some((line) => line.startsWith('FAIL tools/releases/prod-release.yml') && line.includes(expected)),
+          lines.join('\n'),
+        );
+      });
+    }
+
+    for (const [name, options] of [
+      [
+        'a Lockbox stage condition of Succeeded()',
+        { lockboxDependsOn: `${LOCKBOX_DEPENDS_ON}\n        condition: Succeeded()` },
+      ],
+      [
+        'continueOnError: false and condition: succeeded() on the validation job',
+        {
+          validation: PROD_VALIDATION.replace(
+            '          - job: Validate_CI_build',
+            '          - job: Validate_CI_build\n            continueOnError: false\n            condition: succeeded()',
+          ),
+        },
+      ],
+    ]) {
+      it(`passes when prod-release.yml has ${name}`, async () => {
+        writePipelineConfig(root, options);
+        assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+      });
+    }
+
+    it("takes the Prod Lockbox stage's own condition, not a job's", async () => {
+      writePipelineConfig(root);
+      const prod = path.join(root, 'tools/releases/prod-release.yml');
+      fs.writeFileSync(
+        prod,
+        fs
+          .readFileSync(prod, 'utf8')
+          .replace('          - job: Agent_job', '          - job: Agent_job\n            condition: always()'),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
     it('fails when the Prod publish task says tag beta', async () => {
       writePipelineConfig(root, { prodTag: 'beta' });
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
@@ -2434,6 +3131,33 @@ describe('check-release', () => {
         lines.join('\n'),
       );
       assert.ok(!lines.some((line) => line.startsWith('INFO announcement draft')), lines.join('\n'));
+    });
+
+    it('fails on a column-0 ## heading inside a multiline comment instead of ending the section there', async () => {
+      write(
+        [
+          `## ${VERSION}`,
+          '### Minor changes',
+          '- Added `newApi`.',
+          '## Migration',
+          'Call `newApi` instead of `oldApi`.',
+          '### Patches',
+          '- A later fix.',
+          '## 2.58.0',
+        ].join('\n'),
+      );
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('## Migration')),
+        lines.join('\n'),
+      );
+      assert.ok(!lines.some((line) => line.startsWith('INFO announcement draft')), lines.join('\n'));
+    });
+
+    it('ends the section at a prerelease version heading', async () => {
+      write([`## ${VERSION}`, '### Patches', '- A fix.', '## 2.58.0-beta.1', '### Patches', '- Beta fix.'].join('\n'));
+      assert.equal(await runWith(['announcement-draft', '--version', VERSION]), ExitCode.passed, lines.join('\n'));
+      assert.ok(!draftOf().includes('Beta fix.'), draftOf());
     });
 
     it('keeps a second paragraph that beachball writes at column 0, and checks its links', async () => {
