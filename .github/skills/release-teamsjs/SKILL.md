@@ -390,8 +390,10 @@ it in step 10 stays a manual **⛔ Gate 4** after you have read the result.
 - **Never push to `release/<x.y.z>` after Prod.** Internal downstream tests check that branch out by name.
 - **⛔ Gates 2-3:** update the internal hub end-to-end tests to cover the new version, per the internal runbook. On the
   web side that is a PR that bumps the pinned TeamsJS version and adds the version to the client SDK checkpoint lists
-  in both test helpers; it needs a linked work item. The iOS pipelines follow the latest release automatically. This
-  step is easy to forget, and one recent release went without it.
+  in both test helpers; it needs a linked work item. Before that Azure DevOps PR can complete, its author must pass an
+  interactive Proof of Presence check (a security-key prompt in the browser). Automation can set auto-complete but
+  cannot pass the check, so ask the author to do it once the PR is otherwise ready. The iOS pipelines follow the
+  latest release automatically. This step is easy to forget, and one recent release went without it.
 - `postrelease.yml` tries to notify a downstream repository when the prep PR merges. It currently fails on every
   release with a credentials error, so that repository is not being notified; report it, do not block on it.
 - Compare the valid-domains list (DDL section, step 4). If the live list differs from `main`, raise a DDL run with
