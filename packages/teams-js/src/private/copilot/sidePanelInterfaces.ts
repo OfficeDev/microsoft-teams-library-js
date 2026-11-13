@@ -1,4 +1,13 @@
 /**
+ * @beta
+ * @hidden
+ * Interfaces for Microsoft-internal Copilot side panel capabilities.
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
+/**
  * @hidden
  *
  * Interface for content data
