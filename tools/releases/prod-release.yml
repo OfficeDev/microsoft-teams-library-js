@@ -75,6 +75,7 @@ extends:
                   domaintenantid: '$(domainTenantId)'
                   productstate: 'Latest'
           - job: Agent_job
+            displayName: Upload to CDN
             dependsOn: PublishNpm
             templateContext:
               type: releaseJob
