@@ -13,6 +13,16 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ## Pipeline outcomes
 
+### The EV2 upload-tool package cannot be installed from the partner feed
+
+- **Check:** `OneCdnNpmRegistry` must be the partner feed's absolute HTTPS npm registry URL. The build writes it as
+  `@1cdn:registry` before feed authentication, without replacing the default registry. If the variable is unset,
+  no scoped registry is injected.
+- **Fix:** verify the variable is available to the build, the partner feed has the upload-tool upstream, and the
+  build identity has permission to read and save upstream packages. A new packaging job must authenticate its own
+  `.npmrc`; credentials from another job do not carry over. Prove access with an authorized build on the updated
+  branch, not a local config check.
+
 ### A successful Prod run ends "failed" at "View Published Package URLs"
 
 - **Symptom:** since March 2026 every Prod run ends failed (one was canceled at the same step), even though the npm

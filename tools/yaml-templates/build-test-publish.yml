@@ -14,10 +14,21 @@ steps:
       script: |
         $npmrc = Join-Path "$(Build.SourcesDirectory)" ".npmrc"
         Add-Content -Path $npmrc -Value "`nregistry=https://office.pkgs.visualstudio.com/ISS/_packaging/ISS_PublicPackages/npm/registry/"
+        # Optionally route the EV2 upload tool through the partner feed.
+        $oneCdnRegistry = $env:ONECDN_NPM_REGISTRY
+        if (-not [string]::IsNullOrWhiteSpace($oneCdnRegistry) -and $oneCdnRegistry -notmatch '^\$\(') {
+          $registryUri = [Uri]$oneCdnRegistry
+          if (-not $registryUri.IsAbsoluteUri -or $registryUri.Scheme -ne 'https' -or $oneCdnRegistry -match '\s') {
+            throw "OneCdnNpmRegistry must be an absolute HTTPS registry URL without whitespace."
+          }
+          Add-Content -Path $npmrc -Value "@1cdn:registry=$oneCdnRegistry"
+        }
         Add-Content -Path $npmrc -Value "always-auth=true"
         # Disable npm/pnpm update-notifier so package managers don't phone home to
         # registry.npmjs.org to check for newer versions (CFSClean network violation).
         Add-Content -Path $npmrc -Value "update-notifier=false"
+    env:
+      ONECDN_NPM_REGISTRY: '$(OneCdnNpmRegistry)'
 
   - task: npmAuthenticate@0
     inputs:

@@ -87,6 +87,12 @@ approval on its current head.
   PRs into `release/*`.
 - **Internal ADO:** permission to queue the Prod, SDF and DDL release pipelines, and to authorize the CI pipeline
   resource on the first run. Sign in with `az login` if you use the CLI.
+- **EV2 upload-tool feed:** optionally set `OneCdnNpmRegistry` in the build pipeline's variables or an authorized
+  variable group to the partner feed's HTTPS npm registry URL. The build injects it as `@1cdn:registry` before
+  `npmAuthenticate@0`; other packages continue to use the default build feed. The build identity needs access to
+  the partner feed and its upload-tool upstream. Leaving the variable unset preserves the existing registry setup.
+  This configures feed routing only, not EV2 packaging or deployment. Prove authentication and upload-tool
+  installation in an authorized build using this YAML; local checks cannot prove feed permissions.
 - **Lockbox:** two separate permissions, both described in the internal runbook. You need active Lockbox
   eligibility to queue a pipeline that raises a request (Prod, SDF and DDL all do). The approver must be a different
   member of the owning team who is in the release approver group, with active eligibility and the managed device and
