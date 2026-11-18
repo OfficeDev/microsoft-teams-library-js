@@ -86,6 +86,10 @@ steps:
         Write-Host "Generated $configPath"
         Get-Content $configPath
 
+  - template: install-dotnet-sdk.yml
+    parameters:
+      workingDirectory: '$(Build.SourcesDirectory)/apps/blazor-test-app'
+
   - task: NuGetAuthenticate@1
 
   # Clean stale Blazor build artifacts to ensure no cached static web assets
@@ -213,6 +217,7 @@ steps:
     inputs:
       Contents: |
         packages\teams-js\scripts\*.ps1
+        tools\releases\sdf-beta-schedule.js
       TargetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
       flattenFolders: true
-    displayName: 'Copy Power Shell scripts to scripts'
+    displayName: 'Copy release scripts to scripts'

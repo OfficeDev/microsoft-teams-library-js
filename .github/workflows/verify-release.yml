@@ -1,0 +1,231 @@
+# Read-only checks of a published @microsoft/teams-js release, using
+# .github/skills/release-teamsjs/check-release.js. It never changes a release, tag, package, issue or comment:
+# a maintainer reviews the result and marks the release Latest by hand.
+name: Verify Release
+
+on:
+  release:
+    # `published` covers pre-releases, including ones published from a draft (`prereleased` does not fire for those).
+    # `released` fires when a pre-release is changed to a release, so the result confirms that change.
+    types: [published, released]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to verify, such as 2.59.0'
+        required: true
+        type: string
+      expect:
+        description: 'Expected GitHub release state'
+        required: true
+        default: prerelease
+        type: choice
+        options:
+          - prerelease
+          - latest
+
+permissions:
+  contents: read
+
+concurrency:
+  # A release published straight as a full release fires both `published` and `released`; keep only the last run.
+  # The event name keeps a run started from the Actions tab apart, so marking the release Latest never cancels it,
+  # however its version was typed.
+  group: verify-release-${{ github.event_name }}-${{ github.event.release.tag_name || inputs.version }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  Verify:
+    if: >-
+      github.repository == 'OfficeDev/microsoft-teams-library-js' &&
+      (github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'v'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CHECK: ${{ github.workspace }}/checks/.github/skills/release-teamsjs/check-release.js
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Resolve the version and expected state
+        id: target
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_EXPECT: ${{ inputs.expect }}
+        run: |
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+            version="${INPUT_VERSION#v}"
+            expect="$INPUT_EXPECT"
+            check_publication=true
+          else
+            version="${TAG_NAME#v}"
+            if [ "$PRERELEASE" = true ]; then
+              # The pre-release is created before Prod is queued, so npm and the CDN cannot have the version yet.
+              expect=prerelease
+              check_publication=false
+            else
+              expect=latest
+              check_publication=true
+            fi
+          fi
+          if ! [[ "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?$ ]]; then
+            echo "::error::'$version' is not a version such as 2.59.0"
+            exit 1
+          fi
+          if [ "$expect" != prerelease ] && [ "$expect" != latest ]; then
+            echo "::error::expect must be prerelease or latest, not '$expect'"
+            exit 1
+          fi
+          {
+            echo "version=$version"
+            echo "expect=$expect"
+            echo "check_publication=$check_publication"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Checkout the release checks
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: checks
+          sparse-checkout: .github/skills/release-teamsjs
+          persist-credentials: false
+
+      # The carriers (package.json versions and the README and test app SRI) come from the release tag.
+      - name: Checkout the release tag
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: refs/tags/v${{ steps.target.outputs.version }}
+          path: release
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: '20.x'
+
+      - name: Confirm the checks are available
+        id: ready
+        run: |
+          if [ ! -f "$CHECK" ]; then
+            echo "::error::.github/skills/release-teamsjs/check-release.js is not on ${GITHUB_REF}; run this workflow from main"
+            exit 1
+          fi
+
+      # Each check writes its output and exit code (0 passed, 1 failed, 2 usage error, 3 inconclusive) for the summary.
+      - name: Check the version carriers at the tag
+        id: carriers
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        working-directory: release
+        env:
+          VERSION: ${{ steps.target.outputs.version }}
+        run: |
+          set -o pipefail
+          status=0
+          node "$CHECK" carriers --version "$VERSION" 2>&1 | tee "$RUNNER_TEMP/carriers.txt" || status=$?
+          echo "$status" > "$RUNNER_TEMP/carriers.status"
+          exit "$status"
+
+      - name: Check npm and the Prod CDN
+        id: published
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' && steps.target.outputs.check_publication == 'true' }}
+        working-directory: release
+        env:
+          VERSION: ${{ steps.target.outputs.version }}
+          ATTEMPTS: 6
+          DELAY_SECONDS: 300
+        run: |
+          # npm and the CDN can lag a Prod run, so retry only while the result is inconclusive (exit 3).
+          # A failed check (exit 1) or a usage error (exit 2) stops at once.
+          set -o pipefail
+          status=0
+          for attempt in $(seq 1 "$ATTEMPTS"); do
+            echo "Attempt $attempt of $ATTEMPTS"
+            status=0
+            node "$CHECK" published --version "$VERSION" --dist-tag latest 2>&1 | tee "$RUNNER_TEMP/published.out" || status=$?
+            if [ "$status" -ne 3 ]; then
+              break
+            fi
+            if [ "$attempt" -lt "$ATTEMPTS" ]; then
+              echo "Inconclusive (exit 3); trying again in $DELAY_SECONDS seconds"
+              sleep "$DELAY_SECONDS"
+            fi
+          done
+          { echo "Attempt $attempt of $ATTEMPTS"; cat "$RUNNER_TEMP/published.out"; } > "$RUNNER_TEMP/published.txt"
+          echo "$status" > "$RUNNER_TEMP/published.status"
+          exit "$status"
+
+      - name: Check the GitHub release
+        id: github_release
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        env:
+          VERSION: ${{ steps.target.outputs.version }}
+          EXPECT: ${{ steps.target.outputs.expect }}
+        run: |
+          set -o pipefail
+          status=0
+          node "$CHECK" github-release --version "$VERSION" --expect "$EXPECT" 2>&1 | tee "$RUNNER_TEMP/github-release.txt" || status=$?
+          echo "$status" > "$RUNNER_TEMP/github-release.status"
+          exit "$status"
+
+      - name: Write the summary
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        env:
+          VERSION: ${{ steps.target.outputs.version }}
+          EXPECT: ${{ steps.target.outputs.expect }}
+          CHECK_PUBLICATION: ${{ steps.target.outputs.check_publication }}
+        run: |
+          section() {
+            local status=''
+            [ -f "$RUNNER_TEMP/$2.status" ] && status="$(cat "$RUNNER_TEMP/$2.status")"
+            case "$status" in
+              0) status='passed' ;;
+              1) status='failed' ;;
+              2) status='usage error' ;;
+              3) status='inconclusive' ;;
+              '') status='did not run' ;;
+              *) status="exit $status" ;;
+            esac
+            echo "### $1: $status"
+            echo
+            echo '```text'
+            if [ -s "$RUNNER_TEMP/$2.txt" ]; then cat "$RUNNER_TEMP/$2.txt"; else echo "(no output)"; fi
+            echo '```'
+            echo
+          }
+          {
+            echo "## Verify release v$VERSION (expect $EXPECT)"
+            echo
+            section 'Version carriers at the tag' carriers
+            if [ "$CHECK_PUBLICATION" = true ]; then
+              section 'npm and the Prod CDN' published
+            else
+              echo "### npm and the Prod CDN: not checked"
+              echo
+              echo "A new pre-release is created before the Prod release pipeline is queued. After Prod, run this"
+              echo "workflow from the Actions tab with version $VERSION and expect prerelease, and keep the release a"
+              echo "pre-release until that run passes."
+              echo
+            fi
+            section 'GitHub release' github-release
+            echo "### Links"
+            echo
+            echo '```text'
+            node "$CHECK" links --version "$VERSION" 2>&1 || true
+            echo '```'
+            echo
+            if [ "$EXPECT" = prerelease ] && [ "$CHECK_PUBLICATION" = true ]; then
+              passed=true
+              for check in carriers published github-release; do
+                [ "$(cat "$RUNNER_TEMP/$check.status" 2>/dev/null)" = 0 ] || passed=false
+              done
+              if [ "$passed" = true ]; then
+                echo "Every check passed. This workflow never changes the release: once you've reviewed this, mark"
+                echo "the release Latest by hand."
+              else
+                echo "Not every check passed, so keep the release a pre-release. This workflow never changes it."
+              fi
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

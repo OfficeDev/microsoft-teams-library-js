@@ -1,8 +1,47 @@
 # Change Log - @microsoft/teams-js
 
-<!-- This log was last generated on Wed, 02 Sep 2026 20:50:58 GMT and should not be manually modified. -->
+<!-- This log was last generated on Wed, 04 Nov 2026 19:13:09 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 2.59.0
+
+Wed, 04 Nov 2026 19:13:09 GMT
+
+### Minor changes
+
+- Added the `localNetworkAccess` permission APIs.
+- Added `DevicePermission.ClipboardRead`, `clipboard.hasPermission()`, and `clipboard.requestPermission()` for clipboard-read permission. These permission APIs require the host to advertise `permissions.clipboardRead` in its runtime configuration; unsupported hosts throw `NOT_SUPPORTED`, while supported hosts return `false` when permission is not granted.
+- Add extensible brand color palettes to app context and theme change handlers.
+
+### Patches
+
+- Added Copilot Studio web origins to the valid-origins artifact.
+
+## 2.58.0
+
+Wed, 07 Oct 2026 17:05:49 GMT
+
+### Minor changes
+
+- Added `stageView.self.isCloseResultSupported` and optional opaque results to `stageView.self.close`, gated by host-advertised `stageView.self.closeResult` support.
+
+### Patches
+
+- Added connector authentication origins to the valid-origins artifact.
+
+## 2.57.0
+
+Wed, 23 Sep 2026 18:43:57 GMT
+
+### Minor changes
+
+- Added new Copilot commercial and gov cloud origins to valid domains list.
+- Added M365 admin center origins to valid domains list.
+
+### Patches
+
+- Fix `isActionExecuteResponse` so a `null` or non-object response from the host returns `false` instead of throwing a `TypeError`, allowing the intended `INTERNAL_ERROR` to surface.
 
 ## 2.56.0
 

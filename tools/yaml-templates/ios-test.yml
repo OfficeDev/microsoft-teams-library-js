@@ -84,6 +84,10 @@ steps:
       EOF
     displayName: 'Generate Blazor nuget.config (CFS feed only)'
 
+  - template: install-dotnet-sdk.yml
+    parameters:
+      workingDirectory: '$(ClientSdkProjectDirectory)/apps/blazor-test-app'
+
   - task: NuGetAuthenticate@1
 
   - task: DotNetCoreCLI@2

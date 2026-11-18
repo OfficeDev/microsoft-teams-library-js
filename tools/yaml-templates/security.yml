@@ -28,9 +28,8 @@ steps:
     condition: succeededOrFailed()
     displayName: 'Publish Guardian Artifacts 2'
   
-  - task: AssetRetention@3
+  - task: AssetRetention@6
     inputs:
-      ArrowServiceConnection: '$(ArrowConnection)'
       AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
       AssetNumber: '$(Build.BuildId)'
       IsShipped: false

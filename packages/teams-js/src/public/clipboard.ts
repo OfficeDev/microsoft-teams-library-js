@@ -1,15 +1,12 @@
 /**
- * Interact with the system clipboard
+ * Interact with the system clipboard.
  *
- * @deprecated
- * As of TeamsJS v2.54.0, the clipboard capability is deprecated. These APIs may stop working at
- * any time without notice: support for this capability in Teams and other host apps may be removed
- * entirely and independently of a TeamsJS major release, so continued functionality is not
- * guaranteed. The intended long-term replacement is the standardized Clipboard API provided by the
- * browser ({@link https://developer.mozilla.org/docs/Web/API/Clipboard_API | Clipboard API}, `navigator.clipboard`).
- * Note that using the browser-native Clipboard API directly within Teams hosts is not yet fully
- * supported; it depends on native device permission handling that is still being enabled as a
- * separate effort.
+ * @remarks
+ * The host-brokered {@link read}, {@link write}, and {@link isSupported} APIs are deprecated.
+ * For browser-native clipboard reads, use {@link hasPermission} and {@link requestPermission}
+ * before calling `navigator.clipboard.read()` from a user gesture.
+ * The host must advertise `permissions.clipboardRead` in its runtime configuration to support
+ * these permission APIs. The deprecated {@link isSupported} API checks only host-brokered clipboard support.
  *
  * @beta
  * @module
@@ -21,7 +18,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import * as utils from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { ClipboardParams, ClipboardSupportedMimeType } from './interfaces';
+import { ClipboardParams, ClipboardSupportedMimeType, DevicePermission } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -38,9 +35,8 @@ const clipboardTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
  * entirely and independently of a TeamsJS major release, so continued functionality is not
  * guaranteed. The intended long-term replacement is the standardized Clipboard API provided by the
  * browser ({@link https://developer.mozilla.org/docs/Web/API/Clipboard_API | Clipboard API}, `navigator.clipboard`).
- * Note that using the browser-native Clipboard API directly within Teams hosts is not yet fully
- * supported; it depends on native device permission handling that is still being enabled as a
- * separate effort.
+ * For browser-native reads, use {@link hasPermission} and {@link requestPermission} before calling
+ * `navigator.clipboard.read()` from a user gesture.
  *
  * @remarks
  * Note: clipboard.write only supports Text, HTML, PNG, and JPEG data format.
@@ -90,9 +86,8 @@ export async function write(blob: Blob): Promise<void> {
  * entirely and independently of a TeamsJS major release, so continued functionality is not
  * guaranteed. The intended long-term replacement is the standardized Clipboard API provided by the
  * browser ({@link https://developer.mozilla.org/docs/Web/API/Clipboard_API | Clipboard API}, `navigator.clipboard`).
- * Note that using the browser-native Clipboard API directly within Teams hosts is not yet fully
- * supported; it depends on native device permission handling that is still being enabled as a
- * separate effort.
+ * For browser-native reads, use {@link hasPermission} and {@link requestPermission} before calling
+ * `navigator.clipboard.read()` from a user gesture.
  *
  * @returns A promise blob which resolves to the data read from the clipboard or
  *          rejects stating the reason for failure.
@@ -122,6 +117,56 @@ export async function read(): Promise<Blob> {
 }
 
 /**
+ * Checks whether the app has permission to read from the system clipboard.
+ *
+ * @returns A promise that resolves to `true` if clipboard-read permission has been granted,
+ * or `false` if permission has not been granted.
+ * @throws {@link errorNotSupportedOnPlatform} if the host does not advertise `permissions.clipboardRead`.
+ *
+ * @beta
+ */
+export function hasPermission(): Promise<boolean> {
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+  if (!isPermissionSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  const permission: DevicePermission = DevicePermission.ClipboardRead;
+
+  return sendAndHandleSdkError(
+    getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_HasPermission),
+    'permissions.has',
+    permission,
+  );
+}
+
+/**
+ * Requests permission to read from the system clipboard.
+ *
+ * @remarks
+ * The host may need to reload the app frame after the permission is first granted before
+ * `navigator.clipboard.read()` is available to the existing frame.
+ *
+ * @returns A promise that resolves to `true` if clipboard-read permission was granted,
+ * or `false` if permission was not granted.
+ * @throws {@link errorNotSupportedOnPlatform} if the host does not advertise `permissions.clipboardRead`.
+ *
+ * @beta
+ */
+export function requestPermission(): Promise<boolean> {
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+  if (!isPermissionSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  const permission: DevicePermission = DevicePermission.ClipboardRead;
+
+  return sendAndHandleSdkError(
+    getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_RequestPermission),
+    'permissions.request',
+    permission,
+  );
+}
+
+/**
  * Checks if clipboard capability is supported by the host
  * @returns boolean to represent whether the clipboard capability is supported
  *
@@ -133,9 +178,8 @@ export async function read(): Promise<Blob> {
  * entirely and independently of a TeamsJS major release, so continued functionality is not
  * guaranteed. The intended long-term replacement is the standardized Clipboard API provided by the
  * browser ({@link https://developer.mozilla.org/docs/Web/API/Clipboard_API | Clipboard API}, `navigator.clipboard`).
- * Note that using the browser-native Clipboard API directly within Teams hosts is not yet fully
- * supported; it depends on native device permission handling that is still being enabled as a
- * separate effort.
+ * For browser-native reads, use {@link hasPermission} and {@link requestPermission} before calling
+ * `navigator.clipboard.read()` from a user gesture.
  *
  * @beta
  */
@@ -145,4 +189,8 @@ export function isSupported(): boolean {
   } else {
     return ensureInitialized(runtime) && navigator && navigator.clipboard && runtime.supports.clipboard ? true : false;
   }
+}
+
+function isPermissionSupported(): boolean {
+  return ensureInitialized(runtime) && !!runtime.supports.permissions?.clipboardRead;
 }

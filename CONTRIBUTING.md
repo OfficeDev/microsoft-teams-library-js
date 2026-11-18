@@ -75,7 +75,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ### Q. I'm a Microsoft Employee, How Do I Gain Write Access?
 
-1. Use or create a corporate-linked github account (if you already have a github account associated with Microsoft, you can skip this step)
+1. Use or create a corporate-linked GitHub account (if you already have a GitHub account associated with Microsoft, you can skip this step). This must be a standard GitHub.com account, not an EMU account.
 
 2. With your github account ready, visit https://repos.opensource.microsoft.com/ and follow the instructions to link it to Microsoft and join the Microsoft organization.
 
