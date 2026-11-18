@@ -48,7 +48,3 @@ extends:
                   ConnectedServiceNameARM: $(serviceConnectionId)
                   ContainerName: teams-js
                   AdditionalArgumentsForBlobCopy: --log-level=INFO --recursive --overwrite=true
-              - task: AssetRetention@6
-                displayName: ARtifact Retention Orchestrator Workflow (ARROW)
-                inputs:
-                  IsShipped: true
