@@ -291,7 +291,7 @@ function writePipelineConfig(
     sdfSkipGate = SDF_SKIP_GATE,
     sdfLockboxDependsOn = SDF_LOCKBOX_DEPENDS_ON,
     sdfLockboxCondition = SDF_LOCKBOX_CONDITION,
-    sdfRetention = 6,
+    retention = 6,
   } = {},
 ) {
   const write = (relativePath, contents) => {
@@ -346,10 +346,11 @@ function writePipelineConfig(
       '        jobs:',
       lockboxJob,
       publishStage('Npm_Publish'),
-      `              - task: AssetRetention@${sdfRetention}`,
+      `              - task: AssetRetention@${retention}`,
       publish('beta', 'Beta'),
     ].join('\n'),
   );
+  write('tools/yaml-templates/security.yml', ['steps:', `  - task: AssetRetention@${retention}`].join('\n'));
 }
 
 describe('check-release', () => {
@@ -1220,40 +1221,42 @@ describe('check-release', () => {
   });
 
   describe('pipeline-config', () => {
-    it('passes when Prod publishes with tag latest', async () => {
+    it('passes when Prod publishes with tag latest and artifact retention is v6 or later', async () => {
       writePipelineConfig(root);
       assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
     });
 
-    it('fails when SDF artifact retention is older than v6', async () => {
-      writePipelineConfig(root, { sdfRetention: 3 });
-      assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
-      assert.ok(
-        lines.some((line) => line.startsWith('FAIL') && line.includes('AssetRetention@3')),
-        lines.join('\n'),
-      );
-    });
+    for (const file of ['tools/releases/sdf-release.yml', 'tools/yaml-templates/security.yml']) {
+      const editRetention = (replace) => {
+        const yaml = path.join(root, file);
+        fs.writeFileSync(yaml, fs.readFileSync(yaml, 'utf8').replace(/^(\s*)- task: AssetRetention@6$/m, replace));
+      };
+      const failsOn = (fragment) =>
+        assert.ok(
+          lines.some((line) => line.startsWith(`FAIL ${file}`) && line.includes(fragment)),
+          lines.join('\n'),
+        );
 
-    it('fails when SDF has no artifact retention task', async () => {
-      writePipelineConfig(root);
-      const yaml = path.join(root, 'tools/releases/sdf-release.yml');
-      fs.writeFileSync(yaml, fs.readFileSync(yaml, 'utf8').replace(/^.*AssetRetention@6.*$/m, ''));
-      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
-      assert.ok(
-        lines.some((line) => line.startsWith('FAIL tools/releases/sdf-release.yml') && line.includes('AssetRetention')),
-        lines.join('\n'),
-      );
-    });
+      it(`fails when ${file} artifact retention is older than v6`, async () => {
+        writePipelineConfig(root);
+        editRetention('$1- task: AssetRetention@3');
+        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+        failsOn('AssetRetention@3');
+      });
 
-    it('does not count a commented-out SDF artifact retention task', async () => {
-      writePipelineConfig(root);
-      const yaml = path.join(root, 'tools/releases/sdf-release.yml');
-      fs.writeFileSync(
-        yaml,
-        fs.readFileSync(yaml, 'utf8').replace('- task: AssetRetention@6', '# - task: AssetRetention@6'),
-      );
-      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
-    });
+      for (const [label, replace] of [
+        ['has no', ''],
+        ['has a disabled', '$1- task: AssetRetention@6\n$1  enabled: false'],
+        ['has a commented-out', '$1# - task: AssetRetention@6'],
+      ]) {
+        it(`fails when ${file} ${label} artifact retention task`, async () => {
+          writePipelineConfig(root);
+          editRetention(replace);
+          assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+          failsOn('no enabled AssetRetention task');
+        });
+      }
+    }
 
     it('fails when prod-release.yml has no Prod validation task', async () => {
       writePipelineConfig(root, { validation: '      - stage: Prod_Validation' });

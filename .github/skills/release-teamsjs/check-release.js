@@ -855,8 +855,10 @@ const PIPELINE_FILES = [
   { file: 'tools/releases/prod-release.yml', npmTag: 'latest', productState: 'Latest' },
   { file: 'tools/releases/sdf-release.yml', npmTag: 'beta', productState: 'Beta' },
 ];
-// The Prod validation stage runs this script, and the Lockbox stage must wait for it.
+// The CI build template runs ARROW outside the release YAMLs, so it is checked on its own.
+const SECURITY_TEMPLATE_FILE = 'tools/yaml-templates/security.yml';
 const MINIMUM_ASSET_RETENTION_VERSION = 6;
+// The Prod validation stage runs this script, and the Lockbox stage must wait for it.
 const PROD_VALIDATION_SCRIPT = 'tools/releases/powershell-commands/validate-prod-build.ps1';
 const PROD_VALIDATION_STAGE = 'Prod_Validation';
 const PROD_VALIDATION_JOB = 'Validate_CI_build';
@@ -1412,7 +1414,8 @@ function checkProdValidation(file, text) {
   ];
 }
 
-// Non-production release jobs (SDF) don't get the template-injected ARROW step, so they must run it themselves.
+// Non-production release jobs (SDF) and the CI security template don't get a template-injected ARROW step, so they must
+// run it themselves.
 function checkAssetRetention(file, tasks) {
   const retention = tasks.filter((task) => task.name === 'AssetRetention').map((task) => task.version);
   if (retention.length === 0) {
@@ -1455,6 +1458,13 @@ function checkPipelineConfig({ repoRoot, readFile }) {
       ),
     );
   }
+  const securityText = readFile(path.join(repoRoot, SECURITY_TEMPLATE_FILE), 'utf8');
+  results.push(
+    checkAssetRetention(
+      SECURITY_TEMPLATE_FILE,
+      pipelineTasks(securityText).filter((task) => task.enabled),
+    ),
+  );
   return results;
 }
 
@@ -2310,7 +2320,7 @@ const commands = {
     flags: [],
     checkout: true,
     summary:
-      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF skip gate before Lockbox, SDF tag beta, SDF AssetRetention@6 or later",
+      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF skip gate before Lockbox, SDF tag beta, SDF and security.yml AssetRetention@6 or later",
     run: async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
   },
   'consumed-changes': {
