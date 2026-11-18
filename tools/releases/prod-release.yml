@@ -86,11 +86,45 @@ extends:
               subscriptionIds:
                 - $(subscriptionId)
         jobs:
+          # Still on the deprecated m365-custom workflow because the 1CDN upload uses Lockbox credentials; it moves to an
+          # Ev2 shell extension once that infrastructure exists. Everything else runs in Prod_Npm_Publish.
           - job: Agent_job
             condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
             templateContext:
               type: releaseJob
               workflow: m365-custom
+              inputs:
+                - input: pipelineArtifact
+                  pipeline: microsoft-teams-library-js-pipeline
+                  artifactName: CDNFeed
+                  targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/CDNFeed
+            steps:
+              - task: prepare-deployment@1
+                displayName: Prepare deployment
+                inputs:
+                  taskType: credentialFetchTaskAzureRM
+                  armserviceconnection: $(serviceConnectionId)
+                  subscriptionid: $(subscriptionId)
+              - task: M365CdnAssetsUpload@3
+                displayName: Push teams-js to M365 1CDN (Prod)
+                inputs:
+                  SourcePath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/CDNFeed/*
+                  ConnectedServiceNameARM: $(serviceConnectionId)
+                  ContainerName: teams-js
+                  AdditionalArgumentsForBlobCopy: --overwrite=false --log-level=INFO --recursive
+      # The ESRP npm publish needs no Lockbox credentials, so it runs as a plain release job on the pipeline's pool
+      # instead of the deprecated m365-custom workflow. Depending on the Lockbox stage keeps npm behind that approval.
+      - stage: Prod_Npm_Publish
+        displayName: Publish to npm
+        dependsOn:
+          - Prod_Lockbox_Approval_Deployment
+        jobs:
+          - job: Npm_publish
+            displayName: Publish to npm
+            condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+            templateContext:
+              type: releaseJob
+              isProduction: true
               inputs:
                 - input: pipelineArtifact
                   pipeline: microsoft-teams-library-js-pipeline
@@ -105,16 +139,6 @@ extends:
                   artifactName: scripts
                   targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/scripts
             steps:
-              - task: prepare-deployment@1
-                displayName: Prepare deployment
-                inputs:
-                  taskType: credentialFetchTaskAzureRM
-                  armserviceconnection: $(serviceConnectionId)
-                  subscriptionid: $(subscriptionId)
-              - task: AssetRetention@6
-                displayName: ARtifact Retention Orchestrator Workflow (ARROW)
-                inputs:
-                  IsShipped: true
               - task: NodeTool@0
                 displayName: Use Node 18.x
                 inputs:
@@ -145,13 +169,6 @@ extends:
                   mainpublisher: '$(mainPublisher)'
                   domaintenantid: '$(domainTenantId)'
                   productstate: 'Latest'
-              - task: M365CdnAssetsUpload@3
-                displayName: Push teams-js to M365 1CDN (Prod)
-                inputs:
-                  SourcePath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/CDNFeed/*
-                  ConnectedServiceNameARM: $(serviceConnectionId)
-                  ContainerName: teams-js
-                  AdditionalArgumentsForBlobCopy: --overwrite=false --log-level=INFO --recursive
               - task: PowerShell@2
                 displayName: View Published Package URLs
                 inputs:

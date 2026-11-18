@@ -17,10 +17,9 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 - **Symptom:** since March 2026 every Prod run ends failed (one was canceled at the same step), even though the npm
   publish and the CDN upload succeeded; earlier runs ended succeeded or partially succeeded. SDF runs have failed at
-  the same step too. "View Published Package URLs" is the only red task, and the template's closing "Publish to ARROW"
-  step is skipped as a result.
+  the same step too. "View Published Package URLs" is the only red task.
 - **Cause:** the script that step runs reads a stale artifact path.
-- **Fix:** none needed for the release. Check that artifact retention, the ESRP npm publish and the 1CDN upload
+- **Fix:** none needed for the release. Check that the ESRP npm publish and the 1CDN upload
   succeeded, verify as in Prod step 9 (or SDF step 5), and carry on. Any other red task is a real failure. Fixed by
   [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187) in CI builds made after it merged: the
   step runs the script from the selected CI build's `scripts` artifact, not from the queued branch. For Prod that is
@@ -86,18 +85,6 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   not notified. Report it to the maintainers; it does not affect publication.
 - Every Prod run warns that the ESRP release task "will be blocked in future releases". It does not block today; track
   it as a future risk.
-
-### The artifact retention (ARROW) task fails on an end-of-life Node runtime
-
-- **Symptom:** the artifact retention task fails because the agent refuses end-of-life Node 16 task runtimes. In the Prod
-  and SDF pipelines it runs before publishing, so nothing is published. In the DDL pipeline it runs after the upload, so
-  the new list may already be at the origin: purge and verify anyway (DDL steps 3-4).
-- **Cause:** `AssetRetention` versions 3-5 run on Node 16. Queue-time variable overrides are not allowed on these
-  pipelines, so the agent setting cannot be switched off for one run.
-- **Fix:** `main` uses `AssetRetention@6` in `tools/yaml-templates/security.yml` and the three release YAMLs since
-  [#3198](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3198); it runs on Node 20. If you see this
-  failure, the queued branch predates that change: carry it into the release branch through a reviewed PR. PR builds
-  skip this task, so only a `main` or release CI run proves a change to it.
 
 ### A pipeline fix merged to `main` is not in effect for the release
 
@@ -197,18 +184,30 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 ### The 1CDN upload fails after npm succeeded
 
-- **Symptom:** the ESRP npm publish is green and the 1CDN task is red. It has happened on three releases.
+- **Symptom:** the ESRP npm publish is green and the 1CDN task is red. It has happened on three releases, all from
+  release branches that ran the npm publish before the 1CDN upload in one job.
 - **Why not re-run:** npm cannot publish an existing version again, so a plain re-run fails at the npm task before it
   reaches the CDN, and the CDN upload never overwrites.
 - **Fix:** do not retry blindly; check what reached the CDN first (Prod step 9). Agree a CDN-only recovery with the
   maintainers; one past release recovered with a reviewed run from a separate retry branch. Contact the CDN team
   through the channel in the internal runbook with the run and the failing task, described in your own words.
 
+### The 1CDN upload succeeded but the npm publish failed or did not run
+
+- **Symptom:** the Lockbox stage's 1CDN upload is green, and the "Publish to npm" stage is red or skipped. Release
+  branches with the separate "Publish to npm" stage upload to the CDN first.
+- **Why not re-run the whole run:** the CDN upload never overwrites, so a full re-run fails at the CDN task before it
+  reaches npm.
+- **Fix:** check what reached npm and the CDN first (Prod step 9, or SDF step 5). If npm does not have the version,
+  re-run only the failed "Publish to npm" stage of the same run, with approval; it depends only on the Lockbox stage,
+  which already succeeded.
+
 ### The npm publish task fails with "return code 1"
 
 - **Cause:** often transient; on two releases a later run published.
 - **Fix:** before re-running, check whether the version already exists on npm (Prod step 9). If it does, the publish
-  went through and the next problem is the CDN; if not, re-run with approval.
+  went through; if not, re-run the publish with approval (on the stage layout, only the failed "Publish to npm"
+  stage).
 
 ### A tag or GitHub release points at a commit without the bump
 

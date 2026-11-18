@@ -286,7 +286,6 @@ function writePipelineConfig(
   {
     prodTag = 'latest',
     prodState = 'Latest',
-    retention = 6,
     validation = PROD_VALIDATION,
     lockboxDependsOn = LOCKBOX_DEPENDS_ON,
     sdfSkipGate = SDF_SKIP_GATE,
@@ -300,11 +299,25 @@ function writePipelineConfig(
   };
   const publish = (tag, state) =>
     [
-      `              - task: AssetRetention@${retention}`,
       `              - task: EsrpRelease@10`,
       `                displayName: Publish to npm (tag ${tag}) - ESRP release`,
       `                inputs:`,
       `                  productstate: '${state}'`,
+    ].join('\n');
+  // The 1CDN upload stays in the Lockbox stage; the npm publish runs in a stage that depends on it.
+  const lockboxJob = [
+    '          - job: Agent_job',
+    '            steps:',
+    '              - task: M365CdnAssetsUpload@3',
+  ].join('\n');
+  const publishStage = (stage) =>
+    [
+      `      - stage: ${stage}`,
+      '        dependsOn:',
+      '          - Prod_Lockbox_Approval_Deployment',
+      '        jobs:',
+      '          - job: Npm_publish',
+      '            steps:',
     ].join('\n');
   write(
     'tools/releases/prod-release.yml',
@@ -315,8 +328,8 @@ function writePipelineConfig(
       '        displayName: Lockbox Approval/Deployment',
       lockboxDependsOn,
       '        jobs:',
-      '          - job: Agent_job',
-      '            steps:',
+      lockboxJob,
+      publishStage('Prod_Npm_Publish'),
       publish(prodTag, prodState),
     ].join('\n'),
   );
@@ -330,13 +343,11 @@ function writePipelineConfig(
       sdfLockboxDependsOn,
       sdfLockboxCondition,
       '        jobs:',
-      '          - job: Agent_job',
-      '            steps:',
+      lockboxJob,
+      publishStage('Npm_Publish'),
       publish('beta', 'Beta'),
     ].join('\n'),
   );
-  write('tools/releases/ddl-release.yml', `              - task: AssetRetention@${retention}`);
-  write('tools/yaml-templates/security.yml', `  - task: AssetRetention@${retention}`);
 }
 
 describe('check-release', () => {
@@ -1207,7 +1218,7 @@ describe('check-release', () => {
   });
 
   describe('pipeline-config', () => {
-    it('passes when Prod publishes with tag latest and artifact retention is v6 or later', async () => {
+    it('passes when Prod publishes with tag latest', async () => {
       writePipelineConfig(root);
       assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
     });
@@ -1288,8 +1299,12 @@ describe('check-release', () => {
       const yaml = path.join(root, 'tools/releases/prod-release.yml');
       const text = fs
         .readFileSync(yaml, 'utf8')
-        .replace('- job: Agent_job', '- job: Agent_job\n            dependsOn: []');
-      fs.writeFileSync(yaml, `${text}\n        dependsOn:\n          - Prod_Validation\n`);
+        .replace('- job: Agent_job', '- job: Agent_job\n            dependsOn: []')
+        .replace(
+          '      - stage: Prod_Npm_Publish',
+          '        dependsOn:\n          - Prod_Validation\n      - stage: Prod_Npm_Publish',
+        );
+      fs.writeFileSync(yaml, text);
       assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
     });
 
@@ -1968,43 +1983,6 @@ describe('check-release', () => {
       assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
     });
 
-    it('fails when artifact retention is on a Node 16 version', async () => {
-      writePipelineConfig(root, { retention: 3 });
-      assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
-      assert.ok(
-        lines.some((line) => line.startsWith('FAIL') && line.includes('AssetRetention@3')),
-        lines.join('\n'),
-      );
-    });
-
-    for (const file of [
-      'tools/releases/prod-release.yml',
-      'tools/releases/sdf-release.yml',
-      'tools/releases/ddl-release.yml',
-      'tools/yaml-templates/security.yml',
-    ]) {
-      it(`fails when ${file} has no artifact retention task`, async () => {
-        writePipelineConfig(root);
-        const yaml = path.join(root, file);
-        fs.writeFileSync(yaml, fs.readFileSync(yaml, 'utf8').replace(/^.*AssetRetention@6.*$/m, ''));
-        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
-        assert.ok(
-          lines.some((line) => line.startsWith(`FAIL ${file}`) && line.includes('AssetRetention')),
-          lines.join('\n'),
-        );
-      });
-    }
-
-    it('does not count a commented-out artifact retention task', async () => {
-      writePipelineConfig(root);
-      const yaml = path.join(root, 'tools/releases/prod-release.yml');
-      fs.writeFileSync(
-        yaml,
-        fs.readFileSync(yaml, 'utf8').replace('- task: AssetRetention@6', '# - task: AssetRetention@6'),
-      );
-      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
-    });
-
     for (const file of ['tools/releases/prod-release.yml', 'tools/releases/sdf-release.yml']) {
       it(`fails when ${file} has its publish task commented out`, async () => {
         writePipelineConfig(root);
@@ -2012,7 +1990,7 @@ describe('check-release', () => {
         const commented = fs
           .readFileSync(yaml, 'utf8')
           .split('\n')
-          .map((line) => (line.includes('AssetRetention') ? line : line.replace(/^(\s*)/, '$1# ')))
+          .map((line) => line.replace(/^(\s*)/, '$1# '))
           .join('\n');
         fs.writeFileSync(yaml, commented);
         assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
@@ -2105,17 +2083,17 @@ describe('check-release', () => {
       });
     }
 
-    for (const task of ['EsrpRelease@10', 'AssetRetention@6']) {
-      it(`fails when the Prod ${task} task is disabled`, async () => {
-        writePipelineConfig(root);
-        const prod = path.join(root, 'tools/releases/prod-release.yml');
-        fs.writeFileSync(
-          prod,
-          fs.readFileSync(prod, 'utf8').replace(`- task: ${task}`, `- task: ${task}\n                enabled: false`),
-        );
-        assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
-      });
-    }
+    it('fails when the Prod EsrpRelease@10 task is disabled', async () => {
+      writePipelineConfig(root);
+      const prod = path.join(root, 'tools/releases/prod-release.yml');
+      fs.writeFileSync(
+        prod,
+        fs
+          .readFileSync(prod, 'utf8')
+          .replace('- task: EsrpRelease@10', '- task: EsrpRelease@10\n                enabled: false'),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+    });
 
     it('fails when Prod has a second, Beta, publish task', async () => {
       writePipelineConfig(root);
@@ -2137,19 +2115,11 @@ describe('check-release', () => {
     for (const indicator of ['|', '>-', '|+2']) {
       it(`does not count tasks written inside a ${indicator} script block`, async () => {
         writePipelineConfig(root);
-        for (const file of ['tools/releases/prod-release.yml', 'tools/releases/ddl-release.yml']) {
-          const yaml = path.join(root, file);
-          fs.writeFileSync(yaml, asScriptText(fs.readFileSync(yaml, 'utf8'), indicator));
-        }
+        const yaml = path.join(root, 'tools/releases/prod-release.yml');
+        fs.writeFileSync(yaml, asScriptText(fs.readFileSync(yaml, 'utf8'), indicator));
         assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
         assert.ok(
           lines.some((line) => line.startsWith('FAIL tools/releases/prod-release.yml') && line.includes('EsrpRelease')),
-          lines.join('\n'),
-        );
-        assert.ok(
-          lines.some(
-            (line) => line.startsWith('FAIL tools/releases/ddl-release.yml') && line.includes('AssetRetention'),
-          ),
           lines.join('\n'),
         );
       });

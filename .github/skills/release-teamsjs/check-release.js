@@ -25,8 +25,8 @@
  *                                                  the Validate_CI_build job of a stage the Lockbox stage depends on,
  *                                                  with no continueOnError and no condition but succeeded() on the
  *                                                  task, the job or the Lockbox stage, and publishes with tag
- *                                                  latest, SDF gates its Lockbox stage on the Check_Skip decision and
- *                                                  publishes with tag beta, and each has artifact retention @6 or later;
+ *                                                  latest, and SDF gates its Lockbox stage on the Check_Skip decision
+ *                                                  and publishes with tag beta;
  *                                                  commented-out, `enabled: false` and script-text tasks don't count
  *   announcement  --version <v> --file <path>      every npm, CDN and GitHub release link in a draft names <v>
  *   announcement-draft --version <v>               prints a Prod announcement draft from the checkout's CHANGELOG
@@ -238,7 +238,7 @@ async function fetchOrUnreachable(fetchImpl, url, label) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : (error?.message ?? String(error));
+        : error?.message ?? String(error);
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -255,7 +255,7 @@ async function readBody(response, read, label, url) {
     const reason =
       error && error.name === 'TimeoutError'
         ? `timed out after ${FETCH_TIMEOUT_MS / 1000} s`
-        : (error?.message ?? String(error));
+        : error?.message ?? String(error);
     return {
       unreachable: result(
         Outcome.unreachable,
@@ -854,10 +854,7 @@ async function checkBetaVersion({ version, registry, fetchImpl }) {
 const PIPELINE_FILES = [
   { file: 'tools/releases/prod-release.yml', npmTag: 'latest', productState: 'Latest' },
   { file: 'tools/releases/sdf-release.yml', npmTag: 'beta', productState: 'Beta' },
-  { file: 'tools/releases/ddl-release.yml' },
-  { file: 'tools/yaml-templates/security.yml' },
 ];
-const MINIMUM_ASSET_RETENTION_VERSION = 6;
 // The Prod validation stage runs this script, and the Lockbox stage must wait for it.
 const PROD_VALIDATION_SCRIPT = 'tools/releases/powershell-commands/validate-prod-build.ps1';
 const PROD_VALIDATION_STAGE = 'Prod_Validation';
@@ -1424,40 +1421,22 @@ function checkPipelineConfig({ repoRoot, readFile }) {
     } else if (file === PIPELINE_FILES[1].file) {
       results.push(...checkSdfSkipGate(file, text));
     }
-    const retention = tasks.filter((task) => task.name === 'AssetRetention').map((task) => task.version);
-    const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
-    if (retention.length === 0) {
-      results.push(
-        result(Outcome.fail, `${file} has no enabled AssetRetention task, so artifact retention is not configured`),
-      );
-    } else {
-      results.push(
-        result(
-          old.length === 0 ? Outcome.pass : Outcome.fail,
-          old.length === 0
-            ? `${file} uses AssetRetention@${retention.join(', @')}`
-            : `${file} uses AssetRetention@${old.join(', @')}, which runs on end-of-life Node 16; use @6 or later`,
-        ),
-      );
+    const publish = tasks.filter((task) => task.name === 'EsrpRelease');
+    if (publish.length === 0) {
+      results.push(result(Outcome.fail, `${file} has no enabled EsrpRelease task, so nothing publishes to npm`));
+      continue;
     }
-    if (npmTag) {
-      const publish = tasks.filter((task) => task.name === 'EsrpRelease');
-      if (publish.length === 0) {
-        results.push(result(Outcome.fail, `${file} has no enabled EsrpRelease task, so nothing publishes to npm`));
-        continue;
-      }
-      const tags = publish.map((task) => /Publish to npm \(tag (\w+)\)/.exec(task.displayName)?.[1] ?? '(none)');
-      const states = publish.flatMap((task) => (task.productState.length > 0 ? task.productState : ['(none)']));
-      const tagOk = tags.every((found) => found === npmTag);
-      const stateOk = states.every((found) => found === productState);
-      results.push(
-        result(tagOk ? Outcome.pass : Outcome.fail, `${file} npm publish says tag ${tags.join(', ') || '(none)'}`),
-        result(
-          stateOk ? Outcome.pass : Outcome.fail,
-          `${file} productstate is ${states.join(', ') || '(none)'}, expected ${productState}`,
-        ),
-      );
-    }
+    const tags = publish.map((task) => /Publish to npm \(tag (\w+)\)/.exec(task.displayName)?.[1] ?? '(none)');
+    const states = publish.flatMap((task) => (task.productState.length > 0 ? task.productState : ['(none)']));
+    const tagOk = tags.every((found) => found === npmTag);
+    const stateOk = states.every((found) => found === productState);
+    results.push(
+      result(tagOk ? Outcome.pass : Outcome.fail, `${file} npm publish says tag ${tags.join(', ') || '(none)'}`),
+      result(
+        stateOk ? Outcome.pass : Outcome.fail,
+        `${file} productstate is ${states.join(', ') || '(none)'}, expected ${productState}`,
+      ),
+    );
   }
   return results;
 }
@@ -2314,7 +2293,7 @@ const commands = {
     flags: [],
     checkout: true,
     summary:
-      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF skip gate before Lockbox, SDF tag beta, AssetRetention@6 or later",
+      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF skip gate before Lockbox, SDF tag beta",
     run: async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
   },
   'consumed-changes': {
