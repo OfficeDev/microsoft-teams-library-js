@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Hide private module namespace shells from generated public reference documentation",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "patch"
+}
