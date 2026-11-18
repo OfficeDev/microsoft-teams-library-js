@@ -147,6 +147,11 @@ extends:
                   artifactName: scripts
                   targetPath: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/scripts
             steps:
+              # Non-production release jobs don't get the template-injected ARROW step, so SDF runs it explicitly.
+              - task: AssetRetention@6
+                displayName: ARtifact Retention Orchestrator Workflow (ARROW)
+                inputs:
+                  IsShipped: true
               - task: NodeTool@0
                 displayName: Use Node 18.x
                 inputs:

@@ -86,6 +86,16 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - Every Prod run warns that the ESRP release task "will be blocked in future releases". It does not block today; track
   it as a future risk.
 
+### The SDF artifact retention (ARROW) task fails on an end-of-life Node runtime
+
+- **Symptom:** the SDF "Publish to npm" stage fails at the artifact retention task, before publishing, because the agent
+  refuses end-of-life Node 16 task runtimes.
+- **Cause:** `AssetRetention` versions 3-5 run on Node 16. SDF runs the task itself because non-production release jobs
+  get no template-injected ARROW step. Queue-time variable overrides are not allowed, so the agent setting cannot be
+  switched off for one run.
+- **Fix:** `main` uses `AssetRetention@6`, which runs on Node 20. If you see this failure, the queued branch predates that
+  change: carry it into the release branch through a reviewed PR.
+
 ### A pipeline fix merged to `main` is not in effect for the release
 
 - **Cause:** the release pipelines read their YAML from the branch you queue, `release/<x.y.z>`.

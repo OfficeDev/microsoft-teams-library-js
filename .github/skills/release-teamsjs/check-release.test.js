@@ -291,6 +291,7 @@ function writePipelineConfig(
     sdfSkipGate = SDF_SKIP_GATE,
     sdfLockboxDependsOn = SDF_LOCKBOX_DEPENDS_ON,
     sdfLockboxCondition = SDF_LOCKBOX_CONDITION,
+    sdfRetention = 6,
   } = {},
 ) {
   const write = (relativePath, contents) => {
@@ -345,6 +346,7 @@ function writePipelineConfig(
       '        jobs:',
       lockboxJob,
       publishStage('Npm_Publish'),
+      `              - task: AssetRetention@${sdfRetention}`,
       publish('beta', 'Beta'),
     ].join('\n'),
   );
@@ -1221,6 +1223,36 @@ describe('check-release', () => {
     it('passes when Prod publishes with tag latest', async () => {
       writePipelineConfig(root);
       assert.equal(await runWith(['pipeline-config']), ExitCode.passed, lines.join('\n'));
+    });
+
+    it('fails when SDF artifact retention is older than v6', async () => {
+      writePipelineConfig(root, { sdfRetention: 3 });
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed);
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL') && line.includes('AssetRetention@3')),
+        lines.join('\n'),
+      );
+    });
+
+    it('fails when SDF has no artifact retention task', async () => {
+      writePipelineConfig(root);
+      const yaml = path.join(root, 'tools/releases/sdf-release.yml');
+      fs.writeFileSync(yaml, fs.readFileSync(yaml, 'utf8').replace(/^.*AssetRetention@6.*$/m, ''));
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
+      assert.ok(
+        lines.some((line) => line.startsWith('FAIL tools/releases/sdf-release.yml') && line.includes('AssetRetention')),
+        lines.join('\n'),
+      );
+    });
+
+    it('does not count a commented-out SDF artifact retention task', async () => {
+      writePipelineConfig(root);
+      const yaml = path.join(root, 'tools/releases/sdf-release.yml');
+      fs.writeFileSync(
+        yaml,
+        fs.readFileSync(yaml, 'utf8').replace('- task: AssetRetention@6', '# - task: AssetRetention@6'),
+      );
+      assert.equal(await runWith(['pipeline-config']), ExitCode.failed, lines.join('\n'));
     });
 
     it('fails when prod-release.yml has no Prod validation task', async () => {

@@ -856,6 +856,7 @@ const PIPELINE_FILES = [
   { file: 'tools/releases/sdf-release.yml', npmTag: 'beta', productState: 'Beta' },
 ];
 // The Prod validation stage runs this script, and the Lockbox stage must wait for it.
+const MINIMUM_ASSET_RETENTION_VERSION = 6;
 const PROD_VALIDATION_SCRIPT = 'tools/releases/powershell-commands/validate-prod-build.ps1';
 const PROD_VALIDATION_STAGE = 'Prod_Validation';
 const PROD_VALIDATION_JOB = 'Validate_CI_build';
@@ -1411,6 +1412,21 @@ function checkProdValidation(file, text) {
   ];
 }
 
+// Non-production release jobs (SDF) don't get the template-injected ARROW step, so they must run it themselves.
+function checkAssetRetention(file, tasks) {
+  const retention = tasks.filter((task) => task.name === 'AssetRetention').map((task) => task.version);
+  if (retention.length === 0) {
+    return result(Outcome.fail, `${file} has no enabled AssetRetention task, so artifact retention is not configured`);
+  }
+  const old = retention.filter((taskVersion) => taskVersion < MINIMUM_ASSET_RETENTION_VERSION);
+  return result(
+    old.length === 0 ? Outcome.pass : Outcome.fail,
+    old.length === 0
+      ? `${file} uses AssetRetention@${retention.join(', @')}`
+      : `${file} uses AssetRetention@${old.join(', @')}, which runs on end-of-life Node 16; use @6 or later`,
+  );
+}
+
 function checkPipelineConfig({ repoRoot, readFile }) {
   const results = [];
   for (const { file, npmTag, productState } of PIPELINE_FILES) {
@@ -1420,6 +1436,7 @@ function checkPipelineConfig({ repoRoot, readFile }) {
       results.push(...checkProdValidation(file, text));
     } else if (file === PIPELINE_FILES[1].file) {
       results.push(...checkSdfSkipGate(file, text));
+      results.push(checkAssetRetention(file, tasks));
     }
     const publish = tasks.filter((task) => task.name === 'EsrpRelease');
     if (publish.length === 0) {
@@ -2293,7 +2310,7 @@ const commands = {
     flags: [],
     checkout: true,
     summary:
-      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF skip gate before Lockbox, SDF tag beta",
+      "the checkout's release YAML: Prod validation stage before Lockbox, Prod tag latest, SDF skip gate before Lockbox, SDF tag beta, SDF AssetRetention@6 or later",
     run: async (options, { repoRoot, readFile }) => checkPipelineConfig({ repoRoot, readFile }),
   },
   'consumed-changes': {
