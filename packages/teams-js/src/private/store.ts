@@ -1,9 +1,9 @@
 /**
  * @beta
  * @hidden
- * Namespace to open the app store.
+ * Module APIs to open the app store.
  * @internal
- * Limited to Microsoft-internal use
+ * Limited to Microsoft-internal use.
  * @module
  */
 
