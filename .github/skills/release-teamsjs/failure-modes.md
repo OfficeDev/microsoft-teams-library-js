@@ -83,8 +83,8 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 
 - `postrelease.yml`'s downstream notification fails with a credentials error on every release, so that repository is
   not notified. Report it to the maintainers; it does not affect publication.
-- Every Prod run warns that the ESRP release task "will be blocked in future releases". It does not block today; track
-  it as a future risk.
+- Runs from branches that still use `EsrpRelease@10` warn that the ESRP release task runs on an end-of-life Node
+  version or "will be blocked in future releases". Those branches can fail as in the next entry.
 
 ### The SDF artifact retention (ARROW) task fails on an end-of-life Node runtime
 
@@ -95,6 +95,19 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
   switched off for one run.
 - **Fix:** `main` uses `AssetRetention@6`, which runs on Node 20. If you see this failure, the queued branch predates that
   change: carry it into the release branch through a reviewed PR.
+
+### The ESRP npm publish fails on an end-of-life Node runtime
+
+- **Symptom:** the "Publish to npm" stage fails at the ESRP release task, before anything publishes, with "No compatible
+  Node.js version available for host execution" for a Node 16 handler.
+- **Cause:** `EsrpRelease` versions up to 10 run on Node 16, and the pipeline's pool agents no longer carry a Node 16
+  runner. The npm publish moved to that pool in
+  [#3219](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3219); it used to run in a job that had one.
+  The error suggests setting `AGENT_RESTRICT_EOL_NODE_VERSIONS=false`, but that is already the agent's default and does
+  not add the missing runner.
+- **Fix:** `main` uses `EsrpRelease@13`, which runs on Node 20 and takes the same inputs. If you see this failure, the
+  queued branch predates that change: carry it into the release branch through a reviewed PR. Nothing was published,
+  but the 1CDN upload in the Lockbox stage may already have run; check the CDN (Prod step 9) before queuing again.
 
 ### A pipeline fix merged to `main` is not in effect for the release
 

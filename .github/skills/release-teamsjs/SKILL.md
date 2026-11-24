@@ -332,8 +332,9 @@ Then:
   branch. A run whose CI build predates [#3187](https://github.com/OfficeDev/microsoft-teams-library-js/pull/3187)
   still ends **failed** at that step, its only red task. Step 6 pins the build of `release/<x.y.z>` itself, so a branch
   cut after the fix gives a build with the fixed script; that step then passes and prints the run's own CDN link and
-  the npm link. Any other red task is a real failure. A warning that the ESRP release task "will be blocked in future
-  releases" appears on every run and does not block today.
+  the npm link. Any other red task is a real failure. On a branch that still uses `EsrpRelease@10`, the ESRP task
+  warns about an end-of-life Node version and can fail outright; see
+  [failure-modes.md](./failure-modes.md#the-esrp-npm-publish-fails-on-an-end-of-life-node-runtime).
 
 Never re-queue a run that may have published without first checking npm and the CDN (step 9). The CDN upload does not
 overwrite, so a second attempt at a published version fails rather than repairing anything.
