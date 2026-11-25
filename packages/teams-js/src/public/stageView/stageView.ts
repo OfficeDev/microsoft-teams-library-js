@@ -84,14 +84,14 @@ export enum StageViewOpenMode {
 
 /**
  *
- * Opens a stage view to display a Teams application
+ * Opens a stage view to display a Teams application from content or side panel contexts.
  * @beta
  * @param stageViewParams - The parameters to pass into the stage view.
  * @returns Promise that resolves or rejects with an error once the stage view is closed.
  */
 export function open(stageViewParams: StageViewParams): Promise<void> {
   return new Promise((resolve) => {
-    ensureInitialized(runtime, FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
