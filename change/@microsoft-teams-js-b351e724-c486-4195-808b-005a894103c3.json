@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added support for calling `stageView.open` from the side panel frame context.",
+  "packageName": "@microsoft/teams-js",
+  "email": "scarlettcao@microsoft.com_msteamsmdb",
+  "dependentChangeType": "patch"
+}
