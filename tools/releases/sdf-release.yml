@@ -1,7 +1,10 @@
 trigger: none
 # The weekly SDF beta queues itself every Wednesday at 18:00 UTC (10:00 PST, 11:00 PDT), within the hours it has been
 # queued by hand. Check_Skip decides whether a scheduled run publishes, using tools/releases/sdf-beta-schedule.js from
-# the CI build's scripts artifact; manual runs always publish. Both still need the Lockbox approval.
+# the CI build's scripts artifact; manual runs always publish. Both still need the Lockbox approval. A scheduled run
+# asks Lockbox as a release service account, which Lockbox accepts only with pull request evidence that M365 gating
+# doesn't collect for github.com builds, so a scheduled run that publishes fails its Lockbox request. Rerunning the
+# Lockbox stage asks as the person who reran it (release-teamsjs failure-modes.md).
 schedules:
   - cron: '0 18 * * 3'
     displayName: Weekly SDF beta

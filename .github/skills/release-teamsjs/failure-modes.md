@@ -147,8 +147,19 @@ Each entry gives the symptom you see, the cause, and the fix. Recovery steps tha
 - **Fix:** a correct skip needs nothing more; re-running it gives the same answer. If a beta is needed anyway, or the
   check failed, queue the pipeline manually with the intended build (SKILL.md, SDF beta); manual runs are never
   skipped. If a run reached Lockbox in a week that should have been skipped, reject the request; nothing publishes
-  before approval. A scheduled run's Lockbox request is raised for the identity Azure DevOps resolves as its
-  requester, not a person who queued it; if that fails as not eligible, see the entry above.
+  before approval. A scheduled run that is due to publish fails its own Lockbox request; see the next entry.
+
+### A scheduled SDF run fails its Lockbox request
+
+- **Symptom:** a Wednesday run of the SDF pipeline passes its first stage and then fails at "Lockbox Approval
+  Request" after several retries. The error names M365 gating's answer for the CI build: no policy ran because the
+  repository is a GitHub repository, and the task could not find its `metadata`. Nothing was published.
+- **Cause:** a scheduled run asks Lockbox as a release service account, not a person. For a service account Lockbox
+  needs M365 gating's pull request evidence for the CI build, and M365 gating doesn't collect it for repositories on
+  github.com. Manual runs ask as the person who queued them and don't need that evidence.
+- **Fix:** do SDF steps 2 and 3 for the run's CI build, then rerun the "Lockbox Approval/Deployment" stage of the
+  same run as someone with active deploy eligibility. The rerun asks Lockbox as that person, and its approval works as
+  for a manual run. Or queue a manual run with the same build.
 
 ## Branches and versions
 

@@ -446,9 +446,11 @@ first stage applies the skip rule with `tools/releases/sdf-beta-schedule.js` and
 version already released; a skipped run ends without a Lockbox request and with a warning naming the reason. It learns
 the released version from the build's README, which names a release only once the merge-back reaches `main`, so a run
 between a Prod release and its merge-back can't see that release. The Prod-week skip normally covers that gap; step 2's
-check before the Lockbox approval covers the rest. A scheduled run is queued by the pipeline, so Gate 5 does not apply
-to it: its Lockbox approval is the gate. Watch for the request on Wednesdays; before it is approved, do steps 2 and 3
-for the build the run consumes, and reject the request if step 2 fails. The run's job summary lists the decision and its
+check before the Lockbox approval covers the rest. A scheduled run that is due to publish can't raise its own Lockbox
+request: it fails at "Lockbox Approval Request" (see failure-modes.md, "A scheduled SDF run fails its Lockbox
+request"). On Wednesdays, check the run; if it failed there, do steps 2 and 3 for the build the run consumes, then
+rerun its "Lockbox Approval/Deployment" stage yourself. The rerun raises the request as you, so Gate 5 applies to it,
+and if step 2 fails, don't rerun. The run's job summary lists the decision and its
 reasons, the CI build, a link to the changes since the last beta and the bundle SRI to compare with step 3. After the
 run, do step 5. To publish another build or outside the schedule, queue the pipeline manually as below; manual runs are
 never skipped.
