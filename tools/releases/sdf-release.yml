@@ -163,7 +163,7 @@ extends:
                   workingDir: $(System.DefaultWorkingDirectory)/microsoft-teams-library-js-pipeline/NPMFeed
                   verbose: false
                   customCommand: pack
-              - task: EsrpRelease@10
+              - task: EsrpRelease@13
                 displayName: Publish to npm (tag beta) - ESRP release
                 inputs:
                   connectedservicename: '$(connectedServiceName)'
